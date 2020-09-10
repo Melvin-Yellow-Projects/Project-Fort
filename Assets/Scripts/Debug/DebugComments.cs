@@ -8,7 +8,12 @@
  * Additional Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
  *      "yyyy"; updated it to better fit project
- * 
+ *
+ *      The original version of this file can be found here:
+ *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
+ *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      Comment length: 100 Characters
  **/
 
 using System;
@@ -71,8 +76,8 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; This function is called when the script is loaded or a value is changed in the Inspector
-    ///         (Called in the editor only)
+    ///     Unity Method; This function is called when the script is loaded or a value is changed in
+    ///         the Inspector (Called in the editor only)
     /// </summary>
     protected void OnValidate()
     {
@@ -104,8 +109,9 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides with another GameObject; The Colliders
-    ///         involved are not always at the point of initial contact
+    ///     Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides
+    ///         with another GameObject; The Colliders involved are not always at the point of
+    ///         initial contact
     /// </summary>
     /// <param name="otherCollider">other GameObject that the collision has occured with</param>
     private void OnTriggerEnter(Collider otherCollider)
