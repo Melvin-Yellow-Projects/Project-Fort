@@ -97,7 +97,7 @@ public class HexGrid : MonoBehaviour
 	/// <param name="i">cell's index within array cells</param>
 	private void CreateCell(int x, int z, int i)
 	{
-        // initialize cell position
+		// initialize cell position
 		Vector3 cellPosition;
 		cellPosition.x = x;
 		cellPosition.y = 0f;
@@ -113,65 +113,66 @@ public class HexGrid : MonoBehaviour
 
 		// instantiate cell under the grid at its calculated position
 		HexCell cell = Instantiate<HexCell>(
-            cellPrefab, cellPosition, Quaternion.identity, transform
-        );
+			cellPrefab, cellPosition, Quaternion.identity, transform
+		);
 		cells[i] = cell;
 
-        // calculate cell's coordinates
-        cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+		// calculate cell's coordinates
+		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
 		// instantiate the cell's label under the grid's Canvas 
 		Text label = Instantiate<Text>(cellLabelPrefab, gridCanvas.transform);
-        label.rectTransform.anchoredPosition = new Vector2(cellPosition.x, cellPosition.z);
-        label.text = cell.coordinates.ToStringOnSeparateLines(); // cube coordinates
+		label.rectTransform.anchoredPosition = new Vector2(cellPosition.x, cellPosition.z);
+		label.text = cell.coordinates.ToStringOnSeparateLines(); // cube coordinates
 
 		// UNDONE: offset coordinates
 		//label.text = "i:" + i.ToString() + "\nx:" + x.ToString() + "\nz:" + z.ToString(); 
 
-        // assign the cell the grid's default color
-        cell.color = defaultColor;
+		// set label reference to cell's UI RectTransform
+		cell.uiRectTransform = label.rectTransform;
+
+		// assign the cell the grid's default color
+		cell.color = defaultColor;
 
 		// skip first row, then connect South cell neighbors
 		if (z > 0) cell.SetNeighbor(HexDirection.S, cells[i - 1]);
 
-        // skip first column, then connect remaining cells
-        if (x > 0)
-        {
-            // is x even? then connect even column cells' Northwest & Southwest neighbors
-            if ((x & 1) == 0)
-            {
+		// skip first column, then connect remaining cells
+		if (x > 0)
+		{
+			// is x even? then connect even column cells' Northwest & Southwest neighbors
+			if ((x & 1) == 0)
+			{
 				cell.SetNeighbor(HexDirection.NW, cells[i - height]); // grabs correct index
-                if (z > 0) cell.SetNeighbor(HexDirection.SW, cells[i - height - 1]); 
+				if (z > 0) cell.SetNeighbor(HexDirection.SW, cells[i - height - 1]);
 			}
 			else // connect odd column column cells' Northwest & Southwest neighbors
 			{
 				cell.SetNeighbor(HexDirection.SW, cells[i - height]);
 				if (z < height - 1) cell.SetNeighbor(HexDirection.NW, cells[i - height + 1]);
 			}
-        }
-}
+		}
+	}
 
-    /// <summary>
-    ///     Colors a cell at a given position
-    /// </summary>
-    /// <param name="position"></param>
-    /// <param name="color"></param>
-	public void ColorCell(Vector3 position, Color color)
+	// TODO: Comment Function GetCell
+	public HexCell GetCell(Vector3 position)
 	{
-        // gets the relative local position
+		// gets the relative local position
 		Vector3 localPosition = transform.InverseTransformPoint(position);
 
-        // converts local position into HexCoordinates 
+		// converts local position into HexCoordinates 
 		HexCoordinates coordinates = HexCoordinates.FromPosition(localPosition);
 
-        // get a cell's index from the coordinates
+		// get a cell's index from the coordinates
 		int index = coordinates.Z + (coordinates.X * height) + (coordinates.X / 2);
 
-		// change a cell's color using the cell index
-		HexCell cell = cells[index];
-		cell.color = color;
+        // return cell using index
+		return cells[index];
+	}
 
-        // retriangulate grid
+	// TODO: Comment Function
+	public void Refresh()
+	{
 		hexMesh.Triangulate(cells);
 	}
 

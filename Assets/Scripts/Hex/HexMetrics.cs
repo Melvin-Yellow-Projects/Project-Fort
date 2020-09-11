@@ -5,7 +5,7 @@
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
  * 
- * Comments: 
+ * Additional Comments: 
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
@@ -64,16 +64,26 @@ public static class HexMetrics
     /// </summary>
 	public const float blendFactor = 1f - solidFactor;
 
+	/// <summary>
+	///     Height of each successive elevation change; UNDONE: For an actual game I'd probably use
+    ///         a smaller step size. 
+	/// </summary>
+	public const float elevationStep = 5f;
+
+	//public const int terracesPerSlope = 2;
+
+	//public const int terraceSteps = terracesPerSlope * 2 + 1;
+
 	#endregion
 
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
 	/// <summary>
-    ///     Gets the first corner of a given direction (corner that is to the left from the center)
-    /// </summary>
-    /// <param name="direction">given HexDirection</param>
-    /// <returns>the location of a Hex corner</returns>
+	///     Gets the first corner of a given direction (corner that is to the left from the center)
+	/// </summary>
+	/// <param name="direction">given HexDirection</param>
+	/// <returns>the location of a Hex corner</returns>
 	public static Vector3 GetFirstCorner(HexDirection direction)
 	{
 		return corners[(int)direction];

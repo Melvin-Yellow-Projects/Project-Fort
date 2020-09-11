@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      UNDONE: commenting this script
  **/
 
 using UnityEngine;
@@ -27,8 +29,8 @@ public class HexCoordinatesDrawer : PropertyDrawer
     ///     Unity Function; OnGUI is called for rendering and handling GUI events
     /// </summary>
     /// <param name="position">where to draw in the Editor</param>
-    /// <param name="property">what to draw</param>
-    /// <param name="label"></param>
+    /// <param name="property">data to draw</param>
+    /// <param name="label">label to append to data</param>
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
         // this code draws the coordinate in the editor
@@ -37,7 +39,7 @@ public class HexCoordinatesDrawer : PropertyDrawer
             property.FindPropertyRelative("z").intValue  // gets HexCoordinate serialized value z
         );
 
-        // 
+        // idk
 		position = EditorGUI.PrefixLabel(position, label);
 
         // sets the text in the Editor

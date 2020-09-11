@@ -67,10 +67,10 @@ public class HexMesh : MonoBehaviour
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
-    /// <summary>
-    ///     Function to draw all the hex map's cells
-    /// </summary>
-    /// <param name="cells">cells to draw mesh for</param>
+	/// <summary>
+	///     Function to draw all the hex map's cells
+	/// </summary>
+	/// <param name="cells">cells to draw mesh for</param>
 	public void Triangulate(HexCell[] cells)
 	{
         // clear current mesh
@@ -153,8 +153,12 @@ public class HexMesh : MonoBehaviour
 			Vector3 v3 = v1 + bridge;
 			Vector3 v4 = v2 + bridge;
 
+            // set elevation of bridge to be equal to the neighbor's
+            v3.y = neighbor.Elevation * HexMetrics.elevationStep;
+			v4.y = neighbor.Elevation * HexMetrics.elevationStep;
+
             // triangulates bridge quad
-			AddQuad(v1, v2, v3, v4);
+            AddQuad(v1, v2, v3, v4);
 			AddQuadColor(cell.color, neighbor.color);
 
             // get next neighbor to build bridge corner
@@ -165,8 +169,14 @@ public class HexMesh : MonoBehaviour
             //      triangulated by one of the other 3 cells
 			if (direction <= HexDirection.NE && nextNeighbor != null)
 			{
-                // builds corner from the other neighbor's bridge vertex... definitely confusing
-				AddTriangle(v2, v4, v2 + HexMetrics.GetBridge(direction.Next()));
+				// builds corner from the other neighbor's bridge vertex... definitely confusing
+				Vector3 v5 = v2 + HexMetrics.GetBridge(direction.Next());
+
+				// again, set elevation of point to be equal to the (next) neighbor's
+				v5.y = nextNeighbor.Elevation * HexMetrics.elevationStep;
+
+                // triangulate connection triangle 
+				AddTriangle(v2, v4, v5);
 				AddTriangleColor(cell.color, neighbor.color, nextNeighbor.color);
 			}
 		}

@@ -23,14 +23,58 @@ public class HexCell : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    // a cell's coordinates
+    /* Public Variables */
+    [Tooltip("a cell's coordinates")]
     public HexCoordinates coordinates;
 
-    // a cell's color
+    [Tooltip("a cell's color")]
     public Color color;
 
-    // some cell neighbors
+    [Tooltip("a cell's neighbors")]
     [SerializeField] HexCell[] neighbors;
+
+    /// <summary>
+    ///     a cell's reference to the UI Coordinate Text RectTransform
+    /// </summary>
+    public RectTransform uiRectTransform;
+
+    /* Private & Protected Variables */
+
+    /// <summary>
+    ///     a cell's elevation/height
+    /// </summary>
+    private int elevation;
+
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    /// <summary>
+    ///     Elevation/height of a HexCell
+    /// </summary>
+    public int Elevation
+    {
+        get
+        {
+            return elevation;
+        }
+        set
+        {
+            // TODO: Comment this property
+
+            elevation = value;
+            Vector3 position = transform.localPosition;
+            position.y = value * HexMetrics.elevationStep;
+            transform.localPosition = position;
+
+            // because the hex grid canvas is rotated, the labels have to be moved in the negative Z
+            //      direction, instead of the positive Y direction
+            Vector3 uiPosition = uiRectTransform.localPosition;
+            uiPosition.z = elevation * -HexMetrics.elevationStep;
+            uiRectTransform.localPosition = uiPosition;
+        }
+    }
 
     #endregion
 

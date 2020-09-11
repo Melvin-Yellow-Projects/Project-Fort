@@ -5,7 +5,7 @@
  * Authors: XXXX [Youtube Channel], Will Lacey
  * Date Created: August 18, 2020
  * 
- * Comments: 
+ * Additional Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
  *      "yyyy"; updated it to better fit project
  *
@@ -114,7 +114,16 @@ public class DebugComments : MonoBehaviour
     /// <summary>
     ///     Unity Method; Update() is called once per frame
     /// </summary>
-    private void Update()
+    protected void Update()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    ///     Unity Method; LateUpdate is called every frame, if the Behaviour is enabled and after
+    ///         all Update functions have been called
+    /// </summary>
+    protected void LateUpdate()
     {
         throw new NotImplementedException();
     }

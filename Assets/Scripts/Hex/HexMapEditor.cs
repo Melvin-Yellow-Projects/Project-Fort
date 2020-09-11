@@ -35,6 +35,8 @@ public class HexMapEditor : MonoBehaviour
 	/* Private & Protected Variables */
 	private Color activeColor;
 
+	private int activeElevation;
+
 	#endregion
 
 	/********** MARK: Unity Functions **********/
@@ -80,8 +82,8 @@ public class HexMapEditor : MonoBehaviour
 			// draw line for 1 second
 			Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-			// color the cell given the hit position
-			hexGrid.ColorCell(hit.point, activeColor);
+			// edit the cell given the hit position
+			EditCell(hexGrid.GetCell(hit.point));
 		}
 	}
 
@@ -94,5 +96,19 @@ public class HexMapEditor : MonoBehaviour
 		activeColor = colors[index];
 	}
 
-    #endregion
+    // TODO: Write function SetElevation
+	public void SetElevation(float elevation)
+	{
+		activeElevation = (int)elevation;
+	}
+
+	// TODO: Write function EditCell
+	void EditCell(HexCell cell)
+	{
+		cell.color = activeColor;
+		cell.Elevation = activeElevation;
+		hexGrid.Refresh();
+	}
+
+	#endregion
 }
