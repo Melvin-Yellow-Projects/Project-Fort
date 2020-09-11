@@ -1,14 +1,14 @@
 ﻿/**
- * File Name: DebugComments.cs
- * Description: This script is to serve as a placeholder for useful comments
+ * File Name: HexMapEditor.cs
+ * Description: Class to edit a Hex Map
  * 
- * Authors: XXXX [Youtube Channel], Will Lacey
- * Date Created: August 18, 2020
+ * Authors: Catlike Coding, Will Lacey
+ * Date Created: September 10, 2020
  * 
  * Additional Comments: 
- *      The original version of this file can be found on XXXX YouTube channel under the video: 
- *      "yyyy"; updated it to better fit project
- * 
+ *      The original version of this file can be found here:
+ *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
+ *      Hex Map; this file has been updated it to better fit this project
  **/
 
 using UnityEngine;
@@ -16,30 +16,62 @@ using UnityEngine.EventSystems;
 
 public class HexMapEditor : MonoBehaviour
 {
+	/********** MARK: Variables **********/
+	#region Variables
 
-	public Color[] colors;
-
+	/* Cached References */
+	[Header("Cached References")]
+	[Tooltip("instance reference to the HexGrid in the scene")]
 	public HexGrid hexGrid;
 
+	/* Settings */
+	[Header("Settings")]
+	[Tooltip("a list of available map colors")]
+	public Color[] colors;
+
+	/* Private & Protected Variables */
 	private Color activeColor;
 
-	void Awake()
+	#endregion
+
+	/********** MARK: Unity Functions **********/
+	#region Unity Functions
+
+	/// <summary>
+	///     Unity Method; Awake() is called before Start() upon GameObject creation
+	/// </summary>
+	protected void Awake()
 	{
 		SelectColor(0);
 	}
 
-	void Update()
+	/// <summary>
+	///     Unity Method; Update() is called once per frame
+	/// </summary>
+	protected void Update()
 	{
+		// TODO: convert GetMouseButton to a specific input action
 		if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
 		{
 			HandleInput();
 		}
 	}
 
-	void HandleInput()
+	#endregion
+
+	/********** MARK: Class Functions **********/
+	#region Class Functions
+
+    /// <summary>
+    ///     Function to handle the input from a player
+    /// </summary>
+	protected void HandleInput()
 	{
+        // Ray and RaycastHit for camera to mouse position in world space
 		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
+
+        // did we hit anything? then color that HexCell
 		if (Physics.Raycast(inputRay, out hit))
 		{
 			// draw line for 1 second
@@ -50,8 +82,14 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
+    /// <summary>
+    ///     Selects a color within HexMapEditor's available colors
+    /// </summary>
+    /// <param name="index">index of color to select</param>
 	public void SelectColor(int index)
 	{
 		activeColor = colors[index];
 	}
+
+    #endregion
 }

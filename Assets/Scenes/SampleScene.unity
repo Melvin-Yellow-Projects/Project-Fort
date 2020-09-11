@@ -510,12 +510,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996c4303981e545eb9cc35f748d65280, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 8
-  height: 5
   cellPrefab: {fileID: 2386568491370729135, guid: 623f480b2a33d4cc5ae25d0a0e73a493,
     type: 3}
   cellLabelPrefab: {fileID: 5281438768665992024, guid: 45d41606c3b2544888eb3f8d6564f1f3,
     type: 3}
+  width: 8
+  height: 5
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1375060787
 Transform:
@@ -6545,13 +6545,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad9b5c926a06848ee8bd69adcfa9a462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hexGrid: {fileID: 1375060786}
   colors:
   - {r: 1, g: 0.8627451, b: 0, a: 1}
   - {r: 0.003921569, g: 0.68235296, b: 0.03137255, a: 1}
   - {r: 0.07450981, g: 0.21960784, b: 0.8392157, a: 1}
   - {r: 1, g: 0.30588236, b: 0.105882354, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
-  hexGrid: {fileID: 1375060786}
 --- !u!224 &6915321631163075885
 RectTransform:
   m_ObjectHideFlags: 0

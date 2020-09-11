@@ -26,13 +26,18 @@ public class DebugComments : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [Header("Cached References Setup")]
+    /* Cached References */
+    [Header("Cached References")]
     [Tooltip("this is my variable description")]
     [SerializeField] [Range(0f, 1f)] protected float val = 0f;
 
+    /* Settings */
     [Header("Settings")]
     [Tooltip("this is my variable description")]
     [SerializeField] [Range(0f, 1f)] protected float val2 = 0f;
+
+    /* Private & Protected Variables */
+    private float val3 = 0f;
 
     #endregion
 

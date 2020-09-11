@@ -1,4 +1,17 @@
-﻿using UnityEngine;
+﻿/**
+ * File Name: HexMapCamera.cs
+ * Description: Camera controller for the Hex Map
+ * 
+ * Authors: Catlike Coding, Will Lacey
+ * Date Created: September 10, 2020
+ * 
+ * Additional Comments: 
+ *      The original version of this file can be found here:
+ *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
+ *      Hex Map; this file has been updated it to better fit this project
+ **/
+
+using UnityEngine;
 
 public class HexMapCamera : MonoBehaviour
 {
