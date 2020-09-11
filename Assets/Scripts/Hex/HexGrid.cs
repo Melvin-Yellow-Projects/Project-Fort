@@ -1,6 +1,6 @@
 ﻿/**
  * File Name: HexGrid.cs
- * Description: TODO: write this
+ * Description: Script to track the data of a hex map/grid
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
@@ -17,6 +17,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+///     Map/grid of HexCells
+/// </summary>
 public class HexGrid : MonoBehaviour
 {
 	/********** MARK: Variables **********/

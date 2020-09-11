@@ -14,6 +14,9 @@
 using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+///     Draws HexCoordinates within the Unity Editor
+/// </summary>
 [CustomPropertyDrawer(typeof(HexCoordinates))]
 public class HexCoordinatesDrawer : PropertyDrawer
 {

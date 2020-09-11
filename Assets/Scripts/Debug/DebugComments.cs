@@ -5,7 +5,7 @@
  * Authors: XXXX [Youtube Channel], Will Lacey
  * Date Created: August 18, 2020
  * 
- * Additional Comments: 
+ * Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
  *      "yyyy"; updated it to better fit project
  *
@@ -21,6 +21,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+///     Dummy class to write useful comments in
+/// </summary>
 public class DebugComments : MonoBehaviour
 {
     /********** MARK: Variables **********/
@@ -37,6 +40,9 @@ public class DebugComments : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] protected float val2 = 0f;
 
     /* Private & Protected Variables */
+    /// <summary>
+    ///     This is a description for this confusing variable
+    /// </summary>
     private float val3 = 0f;
 
     #endregion
@@ -86,7 +92,7 @@ public class DebugComments : MonoBehaviour
     /// </summary>
     protected void OnValidate()
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(); 
     }
 
     /// <summary>

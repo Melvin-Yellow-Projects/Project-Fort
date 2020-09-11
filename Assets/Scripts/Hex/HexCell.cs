@@ -1,6 +1,6 @@
 ﻿/**
  * File Name: HexCell.cs
- * Description: Class for a specific hex cell or tile
+ * Description: Script for a hex cell or tile
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
@@ -15,6 +15,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+///     Class for a specific hex cell or tile
+/// </summary>
 public class HexCell : MonoBehaviour
 {
     /********** MARK: Variables **********/
@@ -34,13 +37,21 @@ public class HexCell : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    // TODO: Comment Function 
+    /// <summary>
+    ///     Gets the HexCell neighbor given the direction, might return null
+    /// </summary>
+    /// <param name="direction">direction to get neighbor</param>
+    /// <returns></returns>
     public HexCell GetNeighbor(HexDirection direction)
     {
         return neighbors[(int)direction];
     }
 
-    // TODO: Comment Function
+    /// <summary>
+    ///     Sets both the given HexCell and the other cell as neighbors to eachother
+    /// </summary>
+    /// <param name="direction">direction to set neighbor</param>
+    /// <param name="cell">reference to HexCell</param>
     public void SetNeighbor(HexDirection direction, HexCell cell)
     {
         neighbors[(int)direction] = cell;

@@ -14,6 +14,10 @@
 /********** MARK: HexDirection Enum **********/
 #region HexDirection Enum
 
+/// <summary>
+///     Enum for tracking each of the six directions for a HexCell; (North, Northeast, Southeast,
+///         South, Southwest, Northwest)
+/// </summary>
 public enum HexDirection
 {
 	N, NE, SE, S, SW, NW
@@ -24,20 +28,33 @@ public enum HexDirection
 /********** MARK: HexDirection Extensions **********/
 #region HexDirection Extensions
 
-// TODO: write Extensions functions
-
 public static class HexDirectionExtensions
 {
+    /// <summary>
+    ///     Gets the opposite direction of the given enum direction
+    /// </summary>
+    /// <param name="direction">direction to calculate the opposite of</param>
+    /// <returns>the opposite direction</returns>
     public static HexDirection Opposite(this HexDirection direction)
     {
         return (int)direction < 3 ? (direction + 3) : (direction - 3);
     }
 
+    /// <summary>
+    ///     Gets the previous direction of the given enum direction
+    /// </summary>
+    /// <param name="direction">direction to calculate the previous of</param>
+    /// <returns>the previous enum direction</returns>
     public static HexDirection Previous(this HexDirection direction)
     {
         return direction == HexDirection.N ? HexDirection.NW : (direction - 1);
     }
 
+    /// <summary>
+    ///     Gets the previous direction of the given enum direction
+    /// </summary>
+    /// <param name="direction">direction to calculate the previous of</param>
+    /// <returns>the next enum direction</returns>
     public static HexDirection Next(this HexDirection direction)
     {
         return direction == HexDirection.NW ? HexDirection.N : (direction + 1);

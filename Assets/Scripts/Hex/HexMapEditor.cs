@@ -14,6 +14,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+///     Class for editing a hex map/grid
+/// </summary>
 public class HexMapEditor : MonoBehaviour
 {
 	/********** MARK: Variables **********/

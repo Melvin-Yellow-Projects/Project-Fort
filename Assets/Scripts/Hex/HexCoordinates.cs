@@ -1,6 +1,6 @@
 ﻿/**
  * File Name: HexCoordinates.cs
- * Description: Struct to handle the coordinates of a hex cell/tile
+ * Description: A struct script to handle the coordinates of a hex cell/tile
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
@@ -13,13 +13,16 @@
 
 using UnityEngine;
 
+/// <summary>
+///     Hex (cube) coordinates for a HexCell
+/// </summary>
 [System.Serializable]
 public struct HexCoordinates
 {
 	/********** MARK: Variables **********/
 	#region Variables
 
-	[SerializeField] private int x;
+	[SerializeField] private int x; 
 
 	[SerializeField] private int z;
 
