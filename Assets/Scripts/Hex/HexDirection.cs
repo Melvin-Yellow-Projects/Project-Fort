@@ -24,27 +24,24 @@ public enum HexDirection
 /********** MARK: HexDirection Extensions **********/
 #region HexDirection Extensions
 
+// TODO: write Extensions functions
+
 public static class HexDirectionExtensions
 {
-    /// <summary>
-    ///     TODO: Comment Function
-    /// </summary>
-    /// <param name="direction"></param>
-    /// <returns></returns>
     public static HexDirection Opposite(this HexDirection direction)
     {
         return (int)direction < 3 ? (direction + 3) : (direction - 3);
     }
 
-    //public static HexDirection Previous(this HexDirection direction)
-    //{
-    //    return direction == HexDirection.NE ? HexDirection.NW : (direction - 1);
-    //}
+    public static HexDirection Previous(this HexDirection direction)
+    {
+        return direction == HexDirection.N ? HexDirection.NW : (direction - 1);
+    }
 
-    //public static HexDirection Next(this HexDirection direction)
-    //{
-    //    return direction == HexDirection.NW ? HexDirection.NE : (direction + 1);
-    //}
+    public static HexDirection Next(this HexDirection direction)
+    {
+        return direction == HexDirection.NW ? HexDirection.N : (direction + 1);
+    }
 
     //public static HexDirection Previous2(this HexDirection direction)
     //{

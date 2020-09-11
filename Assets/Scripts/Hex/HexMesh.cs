@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      UNDONE: touch up comments
  **/
 
 using System;
@@ -85,23 +87,42 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Function to draw the mesh for a given hex cell
+	///     UNDONE; Function to draw the mesh for a given hex cell
 	/// </summary>
 	/// <param name="cell">HexCell to draw</param>
 	void Triangulate(HexCell cell)
 	{
-		Vector3 center = cell.transform.localPosition;
-		for (int i = 0; i < 6; i++)
+		for (HexDirection d = HexDirection.N; d <= HexDirection.NW; d++)
 		{
-			Vector3 v1 = center;
-			Vector3 v2 = center + HexMetrics.corners[i];
-			Vector3 v3 = center + HexMetrics.corners[i + 1];
-
-			AddTriangle(v1, v2, v3);
-			// AddTriangle(center, center + HexMetrics.corners[i], center + HexMetrics.corners[i + 1]);
-
-			AddTriangleColor(cell.color);
+			Triangulate(d, cell);
 		}
+	}
+
+    /// <summary>
+    ///     TODO: write function
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="cell"></param>
+	void Triangulate(HexDirection direction, HexCell cell)
+	{
+		Vector3 center = cell.transform.localPosition;
+
+		Vector3 v1 = center;
+		Vector3 v2 = center + HexMetrics.GetFirstCorner(direction);
+		Vector3 v3 = center + HexMetrics.GetSecondCorner(direction);
+
+		AddTriangle(v1, v2, v3);
+		// AddTriangle(center, center + HexMetrics.corners[i], center + HexMetrics.corners[i + 1]);
+
+		HexCell prevNeighbor = cell.GetNeighbor(direction.Previous()) ?? cell;
+		HexCell neighbor = cell.GetNeighbor(direction) ?? cell;
+		HexCell nextNeighbor = cell.GetNeighbor(direction.Next()) ?? cell;
+
+		AddTriangleColor(
+			cell.color,
+			(cell.color + prevNeighbor.color + neighbor.color) / 3f,
+			(cell.color + neighbor.color + nextNeighbor.color) / 3f
+		);
 	}
 
 	/// <summary>
@@ -132,5 +153,13 @@ public class HexMesh : MonoBehaviour
 		colors.Add(color);
 	}
 
-    #endregion
+    // TODO: write function
+	void AddTriangleColor(Color c1, Color c2, Color c3)
+	{
+		colors.Add(c1);
+		colors.Add(c2);
+		colors.Add(c3);
+	}
+
+	#endregion
 }
