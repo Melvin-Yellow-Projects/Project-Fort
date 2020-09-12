@@ -70,9 +70,14 @@ public static class HexMetrics
 	/// </summary>
 	public const float elevationStep = 5f;
 
-	//public const int terracesPerSlope = 2;
+    // TODO Comment terrace vars
+    public const int terracesPerSlope = 2;
 
-	//public const int terraceSteps = terracesPerSlope * 2 + 1;
+    public const int terraceSteps = terracesPerSlope * 2 + 1;
+
+	public const float horizontalTerraceStepSize = 1f / terraceSteps;
+
+	public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
 
 	#endregion
 
@@ -122,12 +127,10 @@ public static class HexMetrics
 		return corners[(int)direction + 1] * solidFactor;
 	}
 
-	// 
-	// gets the middle point of the bridge, between v1 and v2
 	/// <summary>
 	///     Returns the midpoint between the two vertices of a HexDirection, which is multiplied
 	///         such that it extends to the neighboring HexCell's solid Hex; a diagram can be viewed
-    ///         here:
+    ///         here between v1 & v2:
     ///     https://catlikecoding.com/unity/tutorials/hex-map/part-2/blend-regions/edge-bridge.png
 	/// </summary>
 	/// <param name="direction">given HexDirection</param>
@@ -137,6 +140,27 @@ public static class HexMetrics
 		// multiplying by blendFactor causes overlap (opposed to just averaging the vectors) this is
         //   done to reduce triangulation
 		return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
+	}
+
+	// TODO: Comment Function TerraceLerp
+	public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
+	{
+        // horizontal lerp
+		float h = step * HexMetrics.horizontalTerraceStepSize;
+		a.x += (b.x - a.x) * h;
+		a.z += (b.z - a.z) * h;
+
+        // verticle lerp 
+		float v = ((step + 1) / 2) * HexMetrics.verticalTerraceStepSize;
+		a.y += (b.y - a.y) * v;
+
+		return a;
+	}
+
+	public static Color TerraceLerp(Color a, Color b, int step)
+	{
+		float h = step * HexMetrics.horizontalTerraceStepSize;
+		return Color.Lerp(a, b, h);
 	}
 
 	#endregion
