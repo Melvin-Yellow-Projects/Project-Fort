@@ -9,8 +9,6 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
- *
- *      UNDONE: commenting this script
  **/
 
 using UnityEngine;
@@ -33,16 +31,16 @@ public class HexCoordinatesDrawer : PropertyDrawer
     /// <param name="label">label to append to data</param>
 	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
 	{
-        // this code draws the coordinate in the editor
-		HexCoordinates coordinates = new HexCoordinates(
+        // fetches the HexCoordinates' serialized properties x & z
+        HexCoordinates coordinates = new HexCoordinates(
 			property.FindPropertyRelative("x").intValue, // gets HexCoordinate serialized value x
             property.FindPropertyRelative("z").intValue  // gets HexCoordinate serialized value z
         );
 
-        // idk
-		position = EditorGUI.PrefixLabel(position, label);
+        // adjusts the position of the label, idk how though
+        position = EditorGUI.PrefixLabel(position, label);
 
-        // sets the text in the Editor
+        // sets the label value in the editor
 		GUI.Label(position, coordinates.ToString());
 	}
 

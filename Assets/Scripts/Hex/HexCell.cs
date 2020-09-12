@@ -36,14 +36,14 @@ public class HexCell : MonoBehaviour
     /// <summary>
     ///     a cell's reference to the UI Coordinate Text RectTransform
     /// </summary>
-    public RectTransform uiRectTransform;
+    [HideInInspector] public RectTransform uiRectTransform;
 
     /* Private & Protected Variables */
 
     /// <summary>
     ///     a cell's elevation/height
     /// </summary>
-    private int elevation;
+    [ReadOnly] [SerializeField] private int elevation;
 
     #endregion
 
