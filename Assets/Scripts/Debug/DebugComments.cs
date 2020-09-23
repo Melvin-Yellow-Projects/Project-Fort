@@ -4,6 +4,7 @@
  * 
  * Authors: XXXX [Youtube Channel], Will Lacey
  * Date Created: August 18, 2020
+ * Last Updated: September 21, 2020
  * 
  * Additional Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
@@ -22,7 +23,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-///     Dummy class to write useful comments in
+/// Template class description goes here
 /// </summary>
 public class DebugComments : MonoBehaviour
 {
@@ -34,16 +35,16 @@ public class DebugComments : MonoBehaviour
     [Tooltip("this is my variable description")]
     [SerializeField] [Range(0f, 1f)] protected float val = 0f;
 
-    /* Settings */
-    [Header("Settings")]
+    /* General Settings */
+    [Header("General Settings")]
     [Tooltip("this is my variable description")]
     [SerializeField] [Range(0f, 1f)] protected float val2 = 0f;
 
     /* Private & Protected Variables */
     /// <summary>
-    ///     This is a description for this confusing variable
+    /// This is a description for this confusing variable
     /// </summary>
-    private float val3 = 0f;
+    //protected float val3 = 0f;
 
     #endregion
 
@@ -51,7 +52,7 @@ public class DebugComments : MonoBehaviour
     #region Properties
 
     /// <summary>
-    ///     Description of MyVal
+    /// Description of MyVal
     /// </summary>
     public float MyVal
     {
@@ -71,7 +72,16 @@ public class DebugComments : MonoBehaviour
     #region Unity Functions
 
     /// <summary>
-    ///     Unity Method; Awake() is called before Start() upon GameObject creation
+    /// Unity Method; This function is called when the script is loaded or a value is changed in the
+    /// Inspector (Called in the editor only)
+    /// </summary>
+    protected void OnValidate()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Unity Method; Awake() is called before Start() upon GameObject creation
     /// </summary>
     protected void Awake()
     {
@@ -79,7 +89,7 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; Start() is called before the first frame update
+    /// Unity Method; Start() is called before the first frame update
     /// </summary>
     protected void Start()
     {
@@ -87,16 +97,7 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; This function is called when the script is loaded or a value is changed in
-    ///         the Inspector (Called in the editor only)
-    /// </summary>
-    protected void OnValidate()
-    {
-        throw new NotImplementedException(); 
-    }
-
-    /// <summary>
-    ///     Unity Method; Called every frame while the mouse is over the Collider
+    /// Unity Method; Called every frame while the mouse is over the Collider
     /// </summary>
     protected void OnMouseOver()
     {
@@ -104,7 +105,7 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; Called when the mouse is not any longer over the Collider
+    /// Unity Method; Called when the mouse is not any longer over the Collider
     /// </summary>
     protected void OnMouseExit()
     {
@@ -112,7 +113,15 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; Update() is called once per frame
+    /// Unity Method; Frame-rate independent method for physics calculations
+    /// </summary>
+    protected void FixedUpdate()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Unity Method; Update() is called once per frame
     /// </summary>
     protected void Update()
     {
@@ -120,8 +129,8 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; LateUpdate is called every frame, if the Behaviour is enabled and after
-    ///         all Update functions have been called
+    /// Unity Method; LateUpdate is called every frame, if the Behaviour is enabled and after all
+    /// Update functions have been called
     /// </summary>
     protected void LateUpdate()
     {
@@ -129,9 +138,8 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides
-    ///         with another GameObject; The Colliders involved are not always at the point of
-    ///         initial contact
+    /// Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides with
+    /// another GameObject; The Colliders involved are not always at the point of initial contact
     /// </summary>
     /// <param name="otherCollider">other GameObject that the collision has occured with</param>
     private void OnTriggerEnter(Collider otherCollider)
@@ -146,4 +154,4 @@ public class DebugComments : MonoBehaviour
 
     #endregion
 
-    }
+}

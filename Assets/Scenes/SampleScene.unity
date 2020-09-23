@@ -400,7 +400,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9868babb2024b92ab24f4384987148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestValue: 3
+  a: Wophie
+  b: 0
+  c: {fileID: 0}
+  d: 000000000000000000000000
+  e: Wophie
+  f: 
 --- !u!4 &1036631047
 Transform:
   m_ObjectHideFlags: 0
