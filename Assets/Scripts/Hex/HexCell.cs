@@ -17,7 +17,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-///     Class for a specific hex cell or tile
+/// Class for a specific hex cell or tile
 /// </summary>
 public class HexCell : MonoBehaviour
 {
@@ -35,14 +35,14 @@ public class HexCell : MonoBehaviour
     [SerializeField] HexCell[] neighbors = null;
 
     /// <summary>
-    ///     a cell's reference to the UI Coordinate Text RectTransform
+    /// a cell's reference to the UI Coordinate Text RectTransform
     /// </summary>
     [HideInInspector] public RectTransform uiRectTransform;
 
     /* Private & Protected Variables */
 
     /// <summary>
-    ///     a cell's elevation/height
+    /// a cell's elevation/height
     /// </summary>
     [ReadOnly] [SerializeField] private int elevation;
 
@@ -52,7 +52,7 @@ public class HexCell : MonoBehaviour
     #region Properties
 
     /// <summary>
-    ///     Elevation/height of a HexCell
+    /// Elevation/height of a HexCell
     /// </summary>
     public int Elevation
     {
@@ -62,15 +62,13 @@ public class HexCell : MonoBehaviour
         }
         set
         {
-            // TODO: Comment this property
-
             elevation = value;
             Vector3 position = transform.localPosition;
             position.y = value * HexMetrics.elevationStep;
             transform.localPosition = position;
 
             // because the hex grid canvas is rotated, the labels have to be moved in the negative Z
-            //      direction, instead of the positive Y direction
+            // direction, instead of the positive Y direction
             Vector3 uiPosition = uiRectTransform.localPosition;
             uiPosition.z = elevation * -HexMetrics.elevationStep;
             uiRectTransform.localPosition = uiPosition;
@@ -83,7 +81,7 @@ public class HexCell : MonoBehaviour
     #region Class Functions
 
     /// <summary>
-    ///     Gets the HexCell neighbor given the direction, might return null
+    /// Gets the HexCell neighbor given the direction, might return null
     /// </summary>
     /// <param name="direction">direction to get neighbor</param>
     /// <returns></returns>
@@ -93,7 +91,7 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    ///     Sets both the given HexCell and the other cell as neighbors to eachother
+    /// Sets both the given HexCell and the other cell as neighbors to eachother
     /// </summary>
     /// <param name="direction">direction to set neighbor</param>
     /// <param name="cell">reference to HexCell</param>
@@ -103,36 +101,45 @@ public class HexCell : MonoBehaviour
         cell.neighbors[(int)direction.Opposite()] = this;
     }
 
-    // TODO: comment Function GetEdgeType
     /// <summary>
-    /// we already know that we're not dealing with a border edge so NullReferenceException cant
-    /// happen
+    /// Gets the HexEdgeType in the given direction, assumes the HexCell has a neighbor; TODO:
+    /// handle null pointer exception
     /// </summary>
-    /// <param name="direction"></param>
-    /// <returns></returns>
+    /// <param name="direction">direction to check the HexEdgeType for</param>
+    /// <returns>a HexEdgeType</returns>
     public HexEdgeType GetEdgeType(HexDirection direction)
     {
         return HexMetrics.GetEdgeType(elevation, neighbors[(int)direction].elevation);
     }
 
+    /// <summary>
+    /// Gets the HexEdgeType between this and the given HexCell
+    /// </summary>
+    /// <param name="otherCell"></param>
+    /// <returns></returns>
     public HexEdgeType GetEdgeType(HexCell otherCell)
     {
         return HexMetrics.GetEdgeType(elevation, otherCell.elevation);
     }
 
-    // TODO: once uiRect added, finish method EnableHighlight
+    /// <summary>
+    /// Enables the HexCellOutline Sprite
+    /// </summary>
+    /// <param name="color">Color to set the Sprite</param>
     public void EnableHighlight(Color color)
     {
-        //Image highlight = uiRect.GetChild(0).GetComponent<Image>();
-        //highlight.color = color;
-        //highlight.enabled = true;
+        Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
+        highlight.color = color;
+        highlight.enabled = true;
     }
 
-    // TODO: once uiRect added, finish method DisableHighlight
+    /// <summary>
+    /// Disables the HexCellOutline Sprite
+    /// </summary>
     public void DisableHighlight()
     {
-        //Image highlight = uiRect.GetChild(0).GetComponent<Image>();
-        //highlight.enabled = false;
+        Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
+        highlight.enabled = false;
     }
 
     #endregion

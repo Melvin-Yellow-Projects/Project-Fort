@@ -31,7 +31,7 @@ public enum HexDirection
 public static class HexDirectionExtensions
 {
     /// <summary>
-    ///     Gets the opposite direction of the given enum direction
+    /// Gets the opposite direction of the given enum direction
     /// </summary>
     /// <param name="direction">direction to calculate the opposite of</param>
     /// <returns>the opposite direction</returns>
@@ -41,7 +41,7 @@ public static class HexDirectionExtensions
     }
 
     /// <summary>
-    ///     Gets the previous direction of the given enum direction
+    /// Gets the previous direction of the given enum direction
     /// </summary>
     /// <param name="direction">direction to calculate the previous of</param>
     /// <returns>the previous enum direction</returns>
@@ -51,7 +51,7 @@ public static class HexDirectionExtensions
     }
 
     /// <summary>
-    ///     Gets the previous direction of the given enum direction
+    /// Gets the previous direction of the given enum direction
     /// </summary>
     /// <param name="direction">direction to calculate the previous of</param>
     /// <returns>the next enum direction</returns>

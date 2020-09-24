@@ -15,7 +15,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-///     Class for editing a hex map/grid
+/// Class for editing a hex map/grid
 /// </summary>
 public class HexMapEditor : MonoBehaviour
 {
@@ -43,7 +43,7 @@ public class HexMapEditor : MonoBehaviour
 	#region Unity Functions
 
 	/// <summary>
-	///     Unity Method; Awake() is called before Start() upon GameObject creation
+	/// Unity Method; Awake() is called before Start() upon GameObject creation
 	/// </summary>
 	protected void Awake()
 	{
@@ -51,7 +51,7 @@ public class HexMapEditor : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Unity Method; Update() is called once per frame
+	/// Unity Method; Update() is called once per frame
 	/// </summary>
 	protected void Update()
 	{
@@ -68,7 +68,7 @@ public class HexMapEditor : MonoBehaviour
 	#region Class Functions
 
     /// <summary>
-    ///     Function to handle the input from a player
+    /// Handles the input from a player
     /// </summary>
 	protected void HandleInput()
 	{
@@ -88,7 +88,7 @@ public class HexMapEditor : MonoBehaviour
 	}
 
     /// <summary>
-    ///     Selects a color within HexMapEditor's available colors
+    /// Selects a color within HexMapEditor's available colors
     /// </summary>
     /// <param name="index">index of color to select</param>
 	public void SelectColor(int index)
@@ -96,13 +96,19 @@ public class HexMapEditor : MonoBehaviour
 		activeColor = colors[index];
 	}
 
-    // TODO: Write function SetElevation
+    /// <summary>
+    /// Sets the elevation for the map editor
+    /// </summary>
+    /// <param name="elevation"></param>
 	public void SetElevation(float elevation)
 	{
 		activeElevation = (int)elevation;
 	}
 
-	// TODO: Write function EditCell
+	/// <summary>
+    /// Edits a given HexCell, assigning it new information
+    /// </summary>
+    /// <param name="cell">HexCell to be editted</param>
 	void EditCell(HexCell cell)
 	{
 		cell.color = activeColor;

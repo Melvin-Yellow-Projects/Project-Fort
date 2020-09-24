@@ -18,7 +18,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-///     Map/grid of HexCells
+/// Map/grid of HexCells
 /// </summary>
 public class HexGrid : MonoBehaviour
 {
@@ -57,7 +57,7 @@ public class HexGrid : MonoBehaviour
 	#region Unity Functions
 
 	/// <summary>
-	///     Unity Method; Awake() is called before Start() upon GameObject creation
+	/// Unity Method; Awake() is called before Start() upon GameObject creation
 	/// </summary>
 	protected void Awake()
 	{
@@ -79,7 +79,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Unity Method; Start() is called before the first frame update
+	/// Unity Method; Start() is called before the first frame update
 	/// </summary>
 	protected void Start()
 	{
@@ -92,7 +92,7 @@ public class HexGrid : MonoBehaviour
 	#region Class Functions
 
 	/// <summary>
-	///     Instantiates and properly initializes a HexCell prefab 
+	/// Instantiates and properly initializes a HexCell prefab 
 	/// </summary>
 	/// <param name="x">x hex offset coordinate</param>
 	/// <param name="z">z hex offset coordinate</param>
@@ -156,7 +156,12 @@ public class HexGrid : MonoBehaviour
         }
 	}
 
-	// TODO: Comment Function GetCell
+	/// <summary>
+    /// Gets the cell within the hex grid given a world position; assumes the position is a legal
+    /// position
+    /// </summary>
+    /// <param name="position">world position to be converted</param>
+    /// <returns>a HexCell contained by the grid</returns>
 	public HexCell GetCell(Vector3 position)
 	{
 		// gets the relative local position
@@ -172,7 +177,9 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
-	// TODO: Comment Function
+	/// <summary>
+    /// Retriangulates the grid
+    /// </summary>
 	public void Refresh()
 	{
 		hexMesh.Triangulate(cells);

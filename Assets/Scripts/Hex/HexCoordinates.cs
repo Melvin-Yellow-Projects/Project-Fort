@@ -14,7 +14,7 @@
 using UnityEngine;
 
 /// <summary>
-///     Hex (cube) coordinates for a HexCell
+/// Hex (cube) coordinates for a HexCell
 /// </summary>
 [System.Serializable]
 public struct HexCoordinates
@@ -32,7 +32,7 @@ public struct HexCoordinates
 	#region Properties
 
     /// <summary>
-    ///     Gets the x hex (cube) coordinate
+    /// Gets the x hex (cube) coordinate
     /// </summary>
 	public int X
 	{
@@ -43,7 +43,7 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	///     Gets the y hex (cube) coordinate
+	/// Gets the y hex (cube) coordinate
 	/// </summary>
 	public int Y
 	{
@@ -54,7 +54,7 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	///     Gets the z hex (cube) coordinate
+	/// Gets the z hex (cube) coordinate
 	/// </summary>
 	public int Z
 	{
@@ -70,8 +70,8 @@ public struct HexCoordinates
 	#region Class Functions
 
 	/// <summary>
-	///     Default constructor for HexCoordinates; takes two values and returns a new HexCoordinate
-    ///         struct
+	/// Default constructor for HexCoordinates; takes two values and returns a new HexCoordinate
+    /// struct
 	/// </summary>
 	/// <param name="x">x hex (cube) coordinate</param>
 	/// <param name="z">z hex (cube) coordinate</param>
@@ -82,8 +82,8 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	///     Offset coordinate constructor for HexCoordinates; takes offset coordinates and converts
-    ///         them to hex (cube)
+	/// Offset coordinate constructor for HexCoordinates; takes offset coordinates and converts them
+	/// to hex (cube)
 	/// </summary>
 	/// <param name="x">x (row) offset coordinate</param>
 	/// <param name="z">z (col) offset coordinate</param>
@@ -97,7 +97,7 @@ public struct HexCoordinates
 	}
 
     /// <summary>
-    ///     Overriden ToString method; displays the HexCoordinate data
+    /// Overriden ToString method; displays the HexCoordinate data
     /// </summary>
     /// <returns>string 3-tuple hex coordinates</returns>
 	public override string ToString()
@@ -106,7 +106,7 @@ public struct HexCoordinates
     }
 
     /// <summary>
-    ///     Displays the HexCoordinate data vertically
+    /// Displays the HexCoordinate data vertically
     /// </summary>
     /// <returns>HexCoordinate in a string data form</returns>
 	public string ToStringOnSeparateLines()
@@ -116,8 +116,8 @@ public struct HexCoordinates
 	}
 
     /// <summary>
-    ///     Converts a world position into a HexCoordinate; Essentially divides position by hex
-    ///         dimensions; Assumes no map offset
+    /// Converts a world position into a HexCoordinate; Essentially divides position by hex
+    /// dimensions; Assumes no map offset
     /// </summary>
     /// <param name="position">world position</param>
     /// <returns>a hex coordinate position</returns>

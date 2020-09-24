@@ -27,15 +27,18 @@ public static class HexMetrics
     public const float solidFactor = 0.75f;
 
     /// <summary>
-    /// height of each successive elevation change; UNDONE: For an actual game I'd probably use
-    ///         a smaller step size. 
+    /// height of each successive elevation change
     /// </summary>
     public const float elevationStep = 5f;
 
-    // TODO Comment terrace var
+    /// <summary>
+    /// number of terraces per slope (small elevation connection between hex cells)
+    /// </summary>
     public const int terracesPerSlope = 2;
 
-    // TODO Comment HexEdgeType cliff/slope var
+    /// <summary>
+    /// how high the elevation delta must be to be considered a cliff (set to 0 for only cliffs)
+    /// </summary>
     public const int cliffDelta = 1;
 
     #endregion
@@ -82,11 +85,19 @@ public static class HexMetrics
     /// </summary>
     public const float blendFactor = 1f - solidFactor;
 
-    // TODO: Comment terrace constants
+    /// <summary>
+    /// horizontal terrace intervals; even intervals are sloped quads, odd are flat quads
+    /// </summary>
     public const int terraceSteps = terracesPerSlope * 2 + 1;
 
+    /// <summary>
+    /// percent distance between each horizontal terrace step 
+    /// </summary>
     public const float horizontalTerraceStepSize = 1f / terraceSteps;
 
+    /// <summary>
+    /// percent distance between each vertical terrace step
+    /// </summary>
     public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
 
     #endregion
@@ -150,7 +161,13 @@ public static class HexMetrics
 		return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 	}
 
-    // TODO: Comment Function TerraceLerp
+    /// <summary>
+    /// Linear interpolation between terrace point 'a' to terrace point 'b'
+    /// </summary>
+    /// <param name="a">start point for lerp</param>
+    /// <param name="b">end point for lerp</param>
+    /// <param name="step">which terrace interval to lerp parameter 'a' to</param>
+    /// <returns>a vector point somewhere along the terrace</returns>
     public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
     {
         // horizontal lerp
@@ -165,14 +182,25 @@ public static class HexMetrics
         return a;
     }
 
-    // TODO: Comment Function TerraceLerp
+    /// <summary>
+    /// Linear interpolation between terrace color 'a' to terrace color 'b'
+    /// </summary>
+    /// <param name="a">start color for lerp</param>
+    /// <param name="b">end color for lerp</param>
+    /// <param name="step">which terrace interval to lerp parameter 'a' to</param>
+    /// <returns>a color somewhere along the terrace</returns>
     public static Color TerraceLerp(Color a, Color b, int step)
     {
         float h = step * HexMetrics.horizontalTerraceStepSize;
         return Color.Lerp(a, b, h);
     }
 
-    // TODO: Comment Function GetEdgeType
+    /// <summary>
+    /// Gets the HexEdgeType (Flat, Slope, or Cliff) from the elevation delta (difference)
+    /// </summary>
+    /// <param name="elevation1">HexCell elevation 1</param>
+    /// <param name="elevation2">HexCell elevation 2</param>
+    /// <returns>a HexEdgeType</returns>
     public static HexEdgeType GetEdgeType(int elevation1, int elevation2)
     {
         // if neither slope or flat
