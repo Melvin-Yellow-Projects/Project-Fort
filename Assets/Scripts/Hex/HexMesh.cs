@@ -29,18 +29,18 @@ public class HexMesh : MonoBehaviour
 
 	protected Mesh hexMesh; // mesh object
 
-	// mesh's vertices
-	protected List<Vector3> vertices;
+    // mesh's vertices TODO: comment these three static lists
+    static List<Vector3> vertices = new List<Vector3>();
 
-	// mesh's color at a given vertex
-	protected List<Color> colors;
+    // mesh's color at a given vertex
+    static List<Color> colors = new List<Color>();
 
-	// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
-	//      triangles than verticesto save space)
-	protected List<int> triangles; 
+    // mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
+    // triangles than verticesto save space)
+    static List<int> triangles = new List<int>();
 
     // collider for the mesh
-	protected MeshCollider meshCollider;
+    protected MeshCollider meshCollider;
 
 	#endregion
 
@@ -57,9 +57,6 @@ public class HexMesh : MonoBehaviour
 		meshCollider = gameObject.AddComponent<MeshCollider>();
 
 		hexMesh.name = "Hex Mesh";
-		vertices = new List<Vector3>();
-		colors = new List<Color>();
-		triangles = new List<int>();
 	}
 
 	#endregion

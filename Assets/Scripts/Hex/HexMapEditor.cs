@@ -33,9 +33,13 @@ public class HexMapEditor : MonoBehaviour
 	public Color[] colors;
 
 	/* Private & Protected Variables */
+	bool applyColor;
 	private Color activeColor;
 
+	bool applyElevation = true;
 	private int activeElevation;
+
+	int brushSize;
 
 	#endregion
 
@@ -82,37 +86,81 @@ public class HexMapEditor : MonoBehaviour
 			// draw line for 1 second
 			Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-			// edit the cell given the hit position
-			EditCell(hexGrid.GetCell(hit.point));
+			// edit the cells given the hit position
+			EditCells(hexGrid.GetCell(hit.point));
 		}
 	}
 
-    /// <summary>
-    /// Selects a color within HexMapEditor's available colors
-    /// </summary>
-    /// <param name="index">index of color to select</param>
-	public void SelectColor(int index)
+	public void SetBrushSize(float size)
 	{
-		activeColor = colors[index];
+		brushSize = (int)size;
 	}
 
-    /// <summary>
-    /// Sets the elevation for the map editor
-    /// </summary>
-    /// <param name="elevation"></param>
+	/// <summary>
+	/// Selects a color within HexMapEditor's available colors
+	/// </summary>
+	/// <param name="index">index of color to select</param>
+	public void SelectColor(int index)
+	{
+		applyColor = (index >= 0);
+
+		if (applyColor) activeColor = colors[index];
+	}
+
+	public void SetApplyElevation(bool toggle)
+	{
+		applyElevation = toggle;
+	}
+
+	/// <summary>
+	/// Sets the elevation for the map editor
+	/// </summary>
+	/// <param name="elevation"></param>
 	public void SetElevation(float elevation)
 	{
 		activeElevation = (int)elevation;
 	}
 
+	void EditCells(HexCell center)
+	{
+		int centerX = center.coordinates.X;
+		int centerZ = center.coordinates.Z;
+
+        // bottom half of cells
+		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++)
+		{
+			for (int x = centerX - r; x <= centerX + brushSize; x++)
+			{
+				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+			}
+		}
+
+        // top half of cells, excluding the center
+		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++)
+		{
+			for (int x = centerX - brushSize; x <= centerX + r; x++)
+			{
+				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+			}
+		}
+	}
+
 	/// <summary>
-    /// Edits a given HexCell, assigning it new information
-    /// </summary>
-    /// <param name="cell">HexCell to be editted</param>
+	/// Edits a given HexCell, assigning it new information
+	/// </summary>
+	/// <param name="cell">HexCell to be editted</param>
 	void EditCell(HexCell cell)
 	{
-		cell.Color = activeColor;
-		cell.Elevation = activeElevation;
+		if (cell == null) return;
+
+		if (applyColor) cell.Color = activeColor;
+
+		if (applyElevation) cell.Elevation = activeElevation;
+	}
+
+	public void ShowUI(bool visible)
+	{
+		hexGrid.ShowUI(visible);
 	}
 
 	#endregion

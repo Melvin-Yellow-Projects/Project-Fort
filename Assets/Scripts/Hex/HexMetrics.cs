@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      TODO: fix all summary indents
  **/
 
 using UnityEngine;
