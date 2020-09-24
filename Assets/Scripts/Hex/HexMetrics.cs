@@ -36,7 +36,7 @@ public static class HexMetrics
     public const int terracesPerSlope = 2;
 
     // TODO Comment HexEdgeType cliff/slope var
-    public const int cliffDelta = 2;
+    public const int cliffDelta = 1;
 
     #endregion
 
