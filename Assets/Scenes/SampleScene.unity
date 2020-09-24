@@ -371,55 +371,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1036631045
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1036631047}
-  - component: {fileID: 1036631046}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1036631046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1036631045}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c9868babb2024b92ab24f4384987148, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  a: Wophie
-  b: 0
-  c: {fileID: 0}
-  d: 000000000000000000000000
-  e: Wophie
-  f: 
---- !u!4 &1036631047
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1036631045}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19.186863, y: -45.80804, z: 55.1897}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1085646472
 GameObject:
   m_ObjectHideFlags: 0
@@ -563,8 +514,8 @@ MonoBehaviour:
     type: 3}
   cellLabelPrefab: {fileID: 5281438768665992024, guid: 45d41606c3b2544888eb3f8d6564f1f3,
     type: 3}
-  width: 8
-  height: 5
+  width: 6
+  height: 6
   defaultColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1375060787
 Transform:

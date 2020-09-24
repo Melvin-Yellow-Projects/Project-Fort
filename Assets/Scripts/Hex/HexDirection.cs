@@ -15,12 +15,12 @@
 #region HexDirection Enum
 
 /// <summary>
-///     Enum for tracking each of the six directions for a HexCell; (North, Northeast, Southeast,
-///         South, Southwest, Northwest)
+/// Enum for tracking each of the six directions for a HexCell; (Northeast, East, Southeast,
+/// Southwest, West, & Northwest)
 /// </summary>
 public enum HexDirection
 {
-	N, NE, SE, S, SW, NW
+    NE, E, SE, SW, W, NW
 }
 
 #endregion
@@ -47,7 +47,7 @@ public static class HexDirectionExtensions
     /// <returns>the previous enum direction</returns>
     public static HexDirection Previous(this HexDirection direction)
     {
-        return direction == HexDirection.N ? HexDirection.NW : (direction - 1);
+        return direction == HexDirection.NE ? HexDirection.NW : (direction - 1);
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public static class HexDirectionExtensions
     /// <returns>the next enum direction</returns>
     public static HexDirection Next(this HexDirection direction)
     {
-        return direction == HexDirection.NW ? HexDirection.N : (direction + 1);
+        return direction == HexDirection.NW ? HexDirection.NE : (direction + 1);
     }
 
     //public static HexDirection Previous2(this HexDirection direction)

@@ -41,23 +41,23 @@ public static class HexMetrics
 	/// </summary>
 	public const float innerRadius = outerRadius * outerToInner;
 
-	/// <summary>
-	///     a hex's 6 corners; has a redundant first corner to handle out of bounds error
-	/// </summary>
-	public static Vector3[] corners = {
-		new Vector3(-0.5f * outerRadius, 0f, innerRadius),
-		new Vector3(0.5f * outerRadius, 0f, innerRadius),
-		new Vector3(outerRadius, 0f, 0f),
-		new Vector3(0.5f * outerRadius, 0f, -innerRadius),
-		new Vector3(-0.5f * outerRadius, 0f, -innerRadius),
-		new Vector3(-outerRadius, 0f, 0f),
-		new Vector3(-0.5f * outerRadius, 0f, innerRadius)
-	};
+    /// <summary>
+    ///     a hex's 6 corners; has a redundant first corner to handle out of bounds error
+    /// </summary>
+    static Vector3[] corners = {
+        new Vector3(0f, 0f, outerRadius),
+        new Vector3(innerRadius, 0f, 0.5f * outerRadius),
+        new Vector3(innerRadius, 0f, -0.5f * outerRadius),
+        new Vector3(0f, 0f, -outerRadius),
+        new Vector3(-innerRadius, 0f, -0.5f * outerRadius),
+        new Vector3(-innerRadius, 0f, 0.5f * outerRadius),
+        new Vector3(0f, 0f, outerRadius)
+    };
 
-	/// <summary>
-	///     Percent of a HexCell that is solid and unaltered by its neighbors
-	/// </summary>
-	public const float solidFactor = 0.75f;
+    /// <summary>
+    ///     Percent of a HexCell that is solid and unaltered by its neighbors
+    /// </summary>
+    public const float solidFactor = 0.75f;
 
     /// <summary>
     ///     Percent of a HexCell that is blended and altered by its neighbors
@@ -70,14 +70,14 @@ public static class HexMetrics
 	/// </summary>
 	public const float elevationStep = 5f;
 
-    // TODO Comment terrace vars
-    public const int terracesPerSlope = 2;
+ //   // TODO Comment terrace vars
+ //   public const int terracesPerSlope = 2;
 
-    public const int terraceSteps = terracesPerSlope * 2 + 1;
+ //   public const int terraceSteps = terracesPerSlope * 2 + 1;
 
-	public const float horizontalTerraceStepSize = 1f / terraceSteps;
+	//public const float horizontalTerraceStepSize = 1f / terraceSteps;
 
-	public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
+	//public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
 
 	#endregion
 
@@ -142,26 +142,26 @@ public static class HexMetrics
 		return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 	}
 
-	// TODO: Comment Function TerraceLerp
-	public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
-	{
-        // horizontal lerp
-		float h = step * HexMetrics.horizontalTerraceStepSize;
-		a.x += (b.x - a.x) * h;
-		a.z += (b.z - a.z) * h;
+	//// TODO: Comment Function TerraceLerp
+	//public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
+	//{
+ //       // horizontal lerp
+	//	float h = step * HexMetrics.horizontalTerraceStepSize;
+	//	a.x += (b.x - a.x) * h;
+	//	a.z += (b.z - a.z) * h;
 
-        // verticle lerp 
-		float v = ((step + 1) / 2) * HexMetrics.verticalTerraceStepSize;
-		a.y += (b.y - a.y) * v;
+ //       // verticle lerp 
+	//	float v = ((step + 1) / 2) * HexMetrics.verticalTerraceStepSize;
+	//	a.y += (b.y - a.y) * v;
 
-		return a;
-	}
+	//	return a;
+	//}
 
-	public static Color TerraceLerp(Color a, Color b, int step)
-	{
-		float h = step * HexMetrics.horizontalTerraceStepSize;
-		return Color.Lerp(a, b, h);
-	}
+	//public static Color TerraceLerp(Color a, Color b, int step)
+	//{
+	//	float h = step * HexMetrics.horizontalTerraceStepSize;
+	//	return Color.Lerp(a, b, h);
+	//}
 
 	#endregion
 }

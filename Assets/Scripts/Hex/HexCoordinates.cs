@@ -90,8 +90,8 @@ public struct HexCoordinates
 	/// <returns>a new HexCoordinate struct</returns>
 	public static HexCoordinates FromOffsetCoordinates(int x, int z)
 	{
-		int xCube = x;
-		int zCube = z - x / 2; // undo verticle shift/offset
+		int xCube = x - z / 2; // undo horizontal shift/offset
+        int zCube = z;
 
         return new HexCoordinates(xCube, zCube);
 	}
@@ -123,30 +123,30 @@ public struct HexCoordinates
     /// <returns>a hex coordinate position</returns>
     public static HexCoordinates FromPosition(Vector3 position)
     {
-        // get z coordinate by dividing by a stacked verticle hex
-		float z = position.z / (2f * HexMetrics.innerRadius);
-        float y = -z;
+        // get x coordinate by dividing by a stacked horizontal hex
+        float x = position.x / (2f * HexMetrics.innerRadius);
+        float y = -x;
 
-        // calculate verticle offset as the position moves horizontally 
-        float offset = position.x / (3f * HexMetrics.outerRadius);
-        z -= offset;
+        // calculate horizontal offset as the position moves vertically 
+        float offset = position.z / (3f * HexMetrics.outerRadius);
+        x -= offset;
         y -= offset;
 
         // round values to suspected coordinates
-        int iX = Mathf.RoundToInt(-(y + z));
+        int iX = Mathf.RoundToInt(x);
         int iY = Mathf.RoundToInt(y);
-        int iZ = Mathf.RoundToInt(z);
+        int iZ = Mathf.RoundToInt(-(x + y));
 
         // possible rounding error? then correct coordinates
         if (iX + iY + iZ != 0)
         {
-			// get each rounding delta
-			float deltaX = Mathf.Abs(-(y + z) - iX);
-			float deltaY = Mathf.Abs(y - iY);
-			float deltaZ = Mathf.Abs(z - iZ);
+            // get each rounding delta
+            float deltaX = Mathf.Abs(x - iX);
+            float deltaY = Mathf.Abs(y - iY);
+            float deltaZ = Mathf.Abs(-x - y - iZ);
 
-			// find largest delta and reconstruct flawed coordinate 
-			if (deltaX > deltaY && deltaX > deltaZ)
+            // find largest delta and reconstruct flawed coordinate 
+            if (deltaX > deltaY && deltaX > deltaZ)
 			{
 				iX = -iY - iZ; // reconstruct X
 			}

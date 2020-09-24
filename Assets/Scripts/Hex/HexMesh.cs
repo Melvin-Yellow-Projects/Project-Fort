@@ -102,7 +102,7 @@ public class HexMesh : MonoBehaviour
 	protected void Triangulate(HexCell cell)
 	{
         // triangulates the mesh in each hex direction
-		for (HexDirection d = HexDirection.N; d <= HexDirection.NW; d++)
+		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 		{
 			Triangulate(d, cell);
 		}
@@ -164,10 +164,10 @@ public class HexMesh : MonoBehaviour
             // get next neighbor to build bridge corner
 			HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
 
-			// builds the bridge corner if there is another neighbor; this only needs to be done
-            //      for North & Northeast because 3 cells share these intersections and will be
-            //      triangulated by one of the other 3 cells
-			if (direction <= HexDirection.NE && nextNeighbor != null)
+            // builds the bridge corner if there is another neighbor; this only needs to be done
+            //      for Northeast & East because 3 cells share these intersections and is 
+            //      guaranteed to be triangulated by a cell from one of those 3 directions UNDONE: Finish this comment  
+            if (direction <= HexDirection.E && nextNeighbor != null)
 			{
 				// builds corner from the other neighbor's bridge vertex... definitely confusing
 				Vector3 v5 = v2 + HexMetrics.GetBridge(direction.Next());

@@ -36,10 +36,10 @@ public class HexGrid : MonoBehaviour
 	/* Settings */
 	[Header("Settings")]
 	[Tooltip("number of cols or x offset coordinates")]
-	public int width = 8;
+	public int width = 6;
 
 	[Tooltip("number of rows or z offset coordinates")]
-	public int height = 5;
+	public int height = 6;
 
 	[Tooltip("default/initial cell color")]
 	public Color defaultColor = Color.white;
@@ -65,12 +65,14 @@ public class HexGrid : MonoBehaviour
 		gridCanvas = GetComponentInChildren<Canvas>();
 		hexMesh = GetComponentInChildren<HexMesh>();
 
-		// create cells for each hex column
+		// create cells for each hex row
 		cells = new HexCell[height * width];
-		for (int x = 0, i = 0; x < width; x++) // new column
+
+        int i = 0;
+        for (int z = 0; z < height; z++) // new row 
 		{
-			for (int z = 0; z < height; z++) // fill column
-			{
+            for (int x = 0; x < width; x++) // fill row
+            {
 				CreateCell(x, z, i++);
 			}
 		}
@@ -102,17 +104,17 @@ public class HexGrid : MonoBehaviour
 		cellPosition.x = x;
 		cellPosition.y = 0f;
 		cellPosition.z = z;
+        
+        // calculate x position
+        cellPosition.x += (z / 2f); // offset x by half of z (horizontal shift)
+		cellPosition.x -= (z / 2); // undo offset with integer math (this will effect odd rows) 
+		cellPosition.x *= (2f * HexMetrics.innerRadius); // multiply by correct z hex metric
 
-		// calculate x position
-		cellPosition.x *= (1.5f * HexMetrics.outerRadius);
+        // calculate z position
+        cellPosition.z *= (1.5f * HexMetrics.outerRadius);
 
-		// calculate z position
-		cellPosition.z += (x / 2f); // offset z by half of x (verticle shift)
-		cellPosition.z -= (x / 2); // undo offset with integer math (this will effect odd rows)
-		cellPosition.z *= (2f * HexMetrics.innerRadius); // multiply by correct z hex metric
-
-		// instantiate cell under the grid at its calculated position
-		HexCell cell = Instantiate<HexCell>(
+        // instantiate cell under the grid at its calculated position
+        HexCell cell = Instantiate<HexCell>(
 			cellPrefab, cellPosition, Quaternion.identity, transform
 		);
 		cells[i] = cell;
@@ -134,24 +136,24 @@ public class HexGrid : MonoBehaviour
 		// assign the cell the grid's default color
 		cell.color = defaultColor;
 
-		// skip first row, then connect South cell neighbors
-		if (z > 0) cell.SetNeighbor(HexDirection.S, cells[i - 1]);
+		// skip first column, then connect West cell neighbors
+		if (x > 0) cell.SetNeighbor(HexDirection.W, cells[i - 1]);
 
-		// skip first column, then connect remaining cells
-		if (x > 0)
+		// skip first row, then connect remaining cells
+		if (z > 0)
 		{
-			// is x even? then connect even column cells' Northwest & Southwest neighbors
-			if ((x & 1) == 0)
-			{
-				cell.SetNeighbor(HexDirection.NW, cells[i - height]); // grabs correct index
-				if (z > 0) cell.SetNeighbor(HexDirection.SW, cells[i - height - 1]);
-			}
-			else // connect odd column column cells' Northwest & Southwest neighbors
-			{
-				cell.SetNeighbor(HexDirection.SW, cells[i - height]);
-				if (z < height - 1) cell.SetNeighbor(HexDirection.NW, cells[i - height + 1]);
-			}
-		}
+			// is z even? then connect even rows cells' Southeast & Southwest neighbors
+			if ((z % 2) == 0)
+            {
+                cell.SetNeighbor(HexDirection.SE, cells[i - width]); // (i - width) gets neighbor i
+                if (x > 0) cell.SetNeighbor(HexDirection.SW, cells[i - width - 1]);
+            }
+            else
+            {
+                cell.SetNeighbor(HexDirection.SW, cells[i - width]);
+                if (x < width - 1) cell.SetNeighbor(HexDirection.SE, cells[i - width + 1]);
+            }
+        }
 	}
 
 	// TODO: Comment Function GetCell
@@ -164,7 +166,7 @@ public class HexGrid : MonoBehaviour
 		HexCoordinates coordinates = HexCoordinates.FromPosition(localPosition);
 
 		// get a cell's index from the coordinates
-		int index = coordinates.Z + (coordinates.X * height) + (coordinates.X / 2);
+		int index = coordinates.X + (coordinates.Z * width) + (coordinates.Z / 2);
 
         // return cell using index
 		return cells[index];
