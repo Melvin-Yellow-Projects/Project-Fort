@@ -89,6 +89,14 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
+    /// Unity Method; This function is called when the object becomes enabled and active
+    /// </summary>
+    protected void OnEnable()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
     /// Unity Method; Start() is called before the first frame update
     /// </summary>
     protected void Start()

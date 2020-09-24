@@ -111,9 +111,8 @@ public class HexMapEditor : MonoBehaviour
     /// <param name="cell">HexCell to be editted</param>
 	void EditCell(HexCell cell)
 	{
-		cell.color = activeColor;
+		cell.Color = activeColor;
 		cell.Elevation = activeElevation;
-		hexGrid.Refresh();
 	}
 
 	#endregion

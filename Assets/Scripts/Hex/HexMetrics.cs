@@ -21,15 +21,25 @@ public static class HexMetrics
     /********** MARK: Metric Variables **********/
     #region Metric Variables
 
+    // TODO: metric vars
+    public const int chunkSizeX = 5;
+
+    public const int chunkSizeZ = 5;
+
+    /// <summary>
+    /// a hex's outer radius
+    /// </summary>
+    public const float outerRadius = 10f;
+
     /// <summary>
     /// percent of a HexCell that is solid and unaltered by its neighbors
     /// </summary>
-    public const float solidFactor = 0.75f;
+    public const float solidFactor = 0.8f;
 
     /// <summary>
     /// height of each successive elevation change
     /// </summary>
-    public const float elevationStep = 5f;
+    public const float elevationStep = 3f;
 
     /// <summary>
     /// number of terraces per slope (small elevation connection between hex cells)
@@ -40,6 +50,22 @@ public static class HexMetrics
     /// how high the elevation delta must be to be considered a cliff (set to 0 for only cliffs)
     /// </summary>
     public const int cliffDelta = 1;
+
+    /// <summary>
+    /// strength of hex grid vertex noise; max displacement will equal [2 * (value ** 2)] ** 0.5
+    /// </summary>
+    public const float cellPerturbStrength = 4f;
+
+    /// <summary>
+    /// strength of hex grid elevation noise; this should be relatively related to a vertical
+    /// terrace step and an elevation step
+    /// </summary>
+    public const float elevationPerturbStrength = 1.5f;
+
+    /// <summary>
+    /// how often the noise repeats itself; repeats every [1 / (2 * noiseScale * innerRadius)]
+    /// </summary>
+    public const float noiseScale = 0.003f;
 
     #endregion
 
@@ -55,11 +81,6 @@ public static class HexMetrics
     /// conversion from a hex's inner radius to its outer radius
     /// </summary>
     public const float innerToOuter = 1f / outerToInner;
-
-    /// <summary>
-    /// a hex's outer radius
-    /// </summary>
-    public const float outerRadius = 10f;
 
     /// <summary>
     /// a hex's inner radius
@@ -99,6 +120,11 @@ public static class HexMetrics
     /// percent distance between each vertical terrace step
     /// </summary>
     public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
+
+    /// <summary>
+    /// TODO: write noiseSource var
+    /// </summary>
+    public static Texture2D noiseSource;
 
     #endregion
 
@@ -215,6 +241,16 @@ public static class HexMetrics
         
         // return slope
         return edgeType;
+    }
+
+    /// <summary>
+    /// TODO: comment sample noise func
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    public static Vector4 SampleNoise(Vector3 position)
+    {
+        return noiseSource.GetPixelBilinear(position.x * noiseScale, position.z * noiseScale);
     }
 
     #endregion
