@@ -14,6 +14,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 ///     Class for a specific hex cell or tile
@@ -31,7 +32,7 @@ public class HexCell : MonoBehaviour
     public Color color;
 
     [Tooltip("a cell's neighbors")]
-    [SerializeField] HexCell[] neighbors;
+    [SerializeField] HexCell[] neighbors = null;
 
     /// <summary>
     ///     a cell's reference to the UI Coordinate Text RectTransform
@@ -100,6 +101,33 @@ public class HexCell : MonoBehaviour
     {
         neighbors[(int)direction] = cell;
         cell.neighbors[(int)direction.Opposite()] = this;
+    }
+
+    // TODO: comment Function GetEdgeType
+    /// <summary>
+    /// we already know that we're not dealing with a border edge so NullReferenceException cant
+    /// happen
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    public HexEdgeType GetEdgeType(HexDirection direction)
+    {
+        return HexMetrics.GetEdgeType(elevation, neighbors[(int)direction].elevation);
+    }
+
+    // TODO: once uiRect added, finish method EnableHighlight
+    public void EnableHighlight(Color color)
+    {
+        //Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+        //highlight.color = color;
+        //highlight.enabled = true;
+    }
+
+    // TODO: once uiRect added, finish method DisableHighlight
+    public void DisableHighlight()
+    {
+        //Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+        //highlight.enabled = false;
     }
 
     #endregion

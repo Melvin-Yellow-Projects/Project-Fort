@@ -131,14 +131,14 @@ public class HexMesh : MonoBehaviour
 
 	}
 
-	/// <summary>
-	///     Builds a connection bridge between two cells given a direction
-	/// </summary>
-	/// <param name="direction">direction to triangulate</param>
-	/// <param name="cell">the cell to triangulate</param>
-	/// <param name="v1">reused param from Triangulate; first solid hex corner</param>
-	/// <param name="v2">reused param from Triangulate; second solid hex corner</param>
-	void TriangulateConnection(HexDirection direction, HexCell cell, Vector3 v1, Vector3 v2)
+    /// <summary>
+    ///     Builds a connection bridge between two cells given a direction
+    /// </summary>
+    /// <param name="direction">direction to triangulate</param>
+    /// <param name="cell">the cell to triangulate</param>
+    /// <param name="v1">reused param from Triangulate; first solid hex corner</param>
+    /// <param name="v2">reused param from Triangulate; second solid hex corner</param>
+    protected void TriangulateConnection(HexDirection direction, HexCell cell, Vector3 v1, Vector3 v2)
 	{
         // get the neighbor for the given direction
 		HexCell neighbor = cell.GetNeighbor(direction);
@@ -158,15 +158,22 @@ public class HexMesh : MonoBehaviour
 			v4.y = neighbor.Elevation * HexMetrics.elevationStep;
 
             // triangulates bridge quad
-            AddQuad(v1, v2, v3, v4);
-			AddQuadColor(cell.color, neighbor.color);
+            if (cell.GetEdgeType(direction) == HexEdgeType.Slope)
+            {
+                TriangulateEdgeTerraces(v1, v2, cell, v3, v4, neighbor);
+            }
+            else
+            {
+                AddQuad(v1, v2, v3, v4);
+                AddQuadColor(cell.color, neighbor.color);
+            }
 
             // get next neighbor to build bridge corner
-			HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
+            HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
 
             // builds the bridge corner if there is another neighbor; this only needs to be done
-            //      for Northeast & East because 3 cells share these intersections and is 
-            //      guaranteed to be triangulated by a cell from one of those 3 directions UNDONE: Finish this comment  
+            // for Northeast & East because 3 cells share these intersections and is 
+            // guaranteed to be triangulated by a cell from one of those 3 directions 
             if (direction <= HexDirection.E && nextNeighbor != null)
 			{
 				// builds corner from the other neighbor's bridge vertex... definitely confusing
@@ -182,13 +189,43 @@ public class HexMesh : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	///     Adds a triangle to the mesh
-	/// </summary>
-	/// <param name="v1">first triangle vertex</param>
-	/// <param name="v2">second triangle vertex</param>
-	/// <param name="v3">third triangle vertex</param>
-	protected void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
+    // TODO: Comment TriangulateEdgeTerraces
+    protected void TriangulateEdgeTerraces(
+        Vector3 beginLeft, Vector3 beginRight, HexCell beginCell, 
+        Vector3 endLeft, Vector3 endRight, HexCell endCell
+    )
+    {
+        for (int i = 0; i < HexMetrics.terraceSteps; i++)
+        {
+            Vector3 v1 = HexMetrics.TerraceLerp(beginLeft, endLeft, i);
+            Vector3 v2 = HexMetrics.TerraceLerp(beginRight, endRight, i);
+            Vector3 v3 = HexMetrics.TerraceLerp(beginLeft, endLeft, i + 1);
+            Vector3 v4 = HexMetrics.TerraceLerp(beginRight, endRight, i + 1);
+
+            Color c1 = HexMetrics.TerraceLerp(beginCell.color, endCell.color, i);
+            Color c2 = HexMetrics.TerraceLerp(beginCell.color, endCell.color, i + 1);
+
+            AddQuad(v1, v2, v3, v4);
+            AddQuadColor(c1, c2);
+        }
+    }
+
+    void TriangulateCorner(
+        Vector3 bottom, HexCell bottomCell, Vector3 left, HexCell leftCell, 
+        Vector3 right, HexCell rightCell
+    )
+    {
+        AddTriangle(bottom, left, right);
+        AddTriangleColor(bottomCell.color, leftCell.color, rightCell.color);
+    }
+
+    /// <summary>
+    ///     Adds a triangle to the mesh
+    /// </summary>
+    /// <param name="v1">first triangle vertex</param>
+    /// <param name="v2">second triangle vertex</param>
+    /// <param name="v3">third triangle vertex</param>
+    protected void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
 	{
 		int vertexIndex = vertices.Count;
 		vertices.Add(v1);
