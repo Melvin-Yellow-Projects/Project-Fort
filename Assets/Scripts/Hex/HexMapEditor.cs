@@ -91,13 +91,18 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Sets the map editor's brush size; size correlates to how many neighbors to edit after the
+    /// targeted cell (a brush size of 0 only edits the targeted cell)
+	/// </summary>
+	/// <param name="size">new size</param>
 	public void SetBrushSize(float size)
 	{
 		brushSize = (int)size;
 	}
 
 	/// <summary>
-	/// Selects a color within HexMapEditor's available colors
+	/// Selects a color within HexMapEditor's available colors; a value of -1 disables color editing
 	/// </summary>
 	/// <param name="index">index of color to select</param>
 	public void SelectColor(int index)
@@ -107,13 +112,18 @@ public class HexMapEditor : MonoBehaviour
 		if (applyColor) activeColor = colors[index];
 	}
 
+    /// <summary>
+    /// Toggles elevation editing
+    /// </summary>
+    /// <param name="toggle">enables or disables elevation editting</param>
 	public void SetApplyElevation(bool toggle)
 	{
 		applyElevation = toggle;
 	}
 
 	/// <summary>
-	/// Sets the elevation for the map editor
+	/// Sets the elevation for the map editor; this function is independent of SetApplyElevation and
+    /// will not enable elevation editing if it is turned off
 	/// </summary>
 	/// <param name="elevation"></param>
 	public void SetElevation(float elevation)
@@ -121,6 +131,11 @@ public class HexMapEditor : MonoBehaviour
 		activeElevation = (int)elevation;
 	}
 
+    /// <summary>
+    /// Edits all HexCells within the brush range starting from the given cell; uses the given
+    /// cell's HexCoordinates to loop around all neighbors
+    /// </summary>
+    /// <param name="center">targeted cell to edit</param>
 	void EditCells(HexCell center)
 	{
 		int centerX = center.coordinates.X;
@@ -158,6 +173,10 @@ public class HexMapEditor : MonoBehaviour
 		if (applyElevation) cell.Elevation = activeElevation;
 	}
 
+	/// <summary>
+	/// Toggles HexCell coordinates
+	/// </summary>
+	/// <param name="visible">enables or disables cell UI</param>
 	public void ShowUI(bool visible)
 	{
 		hexGrid.ShowUI(visible);

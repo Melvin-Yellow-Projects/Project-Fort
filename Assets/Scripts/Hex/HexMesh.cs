@@ -1,6 +1,7 @@
 ﻿/**
  * File Name: HexMesh.cs
- * Description: Class responsible for handling the triangulation and orientation of a hex mesh
+ * Description: Class responsible for handling the triangulation and orientation of a generic hex
+ *                  mesh
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
@@ -9,8 +10,6 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
- *
- *      UNDONE: Class description is subject to change
  **/
 
 using System;
@@ -19,7 +18,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-///     A mesh specificly for a hex map; UNDONE: subject to change
+/// A general hex mesh object; consists of a Mesh Filter, a Mesh Renderer, and an optional Mesh
+/// Collider
 /// </summary>
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour
@@ -39,21 +39,38 @@ public class HexMesh : MonoBehaviour
 	public bool useUVCoordinates;
 
 	/* Private & Protected Variables */
-	protected Mesh hexMesh; // mesh object
 
-	// mesh's vertices TODO: comment these three ~static lists
+	/// <summary>
+	/// class's mesh object
+	/// </summary>
+	protected Mesh hexMesh; 
+
+	/// <summary>
+	/// mesh's vertices; this variable is used as a placeholder for the static ListPool struct
+	/// </summary>
 	[NonSerialized] List<Vector3> vertices;
 
-	// mesh's color at a given vertex
+	/// <summary>
+	/// mesh's color at a given vertex; this variable is used as a placeholder for the static
+    /// ListPool struct
+	/// </summary>
 	[NonSerialized] List<Color> colors;
 
+	/// <summary>
+	/// mesh's uvs; this variable is used as a placeholder for the static ListPool struct
+	/// </summary>
 	[NonSerialized] List<Vector2> uvs;
 
-	// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
-	// triangles than verticesto save space)
+	/// <summary>
+	/// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
+	/// triangles than vertices to save space); this variable is used as a placeholder for the 
+	/// static ListPool struct
+	/// </summary>
 	[NonSerialized] List<int> triangles;
 
-	// collider for the mesh
+	/// <summary>
+    /// mesh's optional collider 
+    /// </summary>
 	protected MeshCollider meshCollider;
 
 	#endregion
@@ -66,12 +83,13 @@ public class HexMesh : MonoBehaviour
 	/// </summary>
 	protected void Awake()
 	{
-        // initialize mesh
-		GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-
-		if (useCollider) meshCollider = gameObject.AddComponent<MeshCollider>();
-
+		// initialize mesh
+		hexMesh = new Mesh();
+		GetComponent<MeshFilter>().mesh = hexMesh;
 		hexMesh.name = "Hex Mesh";
+
+		// set a mesh collider if it is enabled
+		if (useCollider) meshCollider = gameObject.AddComponent<MeshCollider>();
 	}
 
 	#endregion
@@ -79,6 +97,9 @@ public class HexMesh : MonoBehaviour
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
+    /// <summary>
+    /// Clears the hex mesh by clearing the ListPool structs
+    /// </summary>
 	public void Clear()
 	{
 		hexMesh.Clear();
@@ -92,61 +113,71 @@ public class HexMesh : MonoBehaviour
 		triangles = ListPool<int>.Get();
 	}
 
+    /// <summary>
+    /// Sets the hex mesh's data through setting the ListPool structs
+    /// </summary>
 	public void Apply()
 	{
+        // set vertices
 		hexMesh.SetVertices(vertices);
 		ListPool<Vector3>.Add(vertices);
 
+        // set optional colors
 		if (useColors)
 		{
 			hexMesh.SetColors(colors);
 			ListPool<Color>.Add(colors);
 		}
 
+        // set optional UV coordinates
 		if (useUVCoordinates)
 		{
 			hexMesh.SetUVs(0, uvs);
 			ListPool<Vector2>.Add(uvs);
 		}
 
+        // set triangles
 		hexMesh.SetTriangles(triangles, 0);
 		ListPool<int>.Add(triangles);
 
+        // apply data to hex mesh
 		hexMesh.RecalculateNormals();
 
+        // set optional collider
 		if (useCollider) meshCollider.sharedMesh = hexMesh;
 	}
 
-	public void AddTriangleUnperturbed(Vector3 v1, Vector3 v2, Vector3 v3)
-    {
-        int vertexIndex = vertices.Count;
-        vertices.Add(v1);
-        vertices.Add(v2);
-        vertices.Add(v3);
-        triangles.Add(vertexIndex);
-        triangles.Add(vertexIndex + 1);
-        triangles.Add(vertexIndex + 2);
-    }
-
 	/// <summary>
-	///     Adds a triangle to the mesh
+	/// Adds a triangle to the mesh; can also perturb this triangle's vertices
 	/// </summary>
 	/// <param name="v1">first triangle vertex</param>
 	/// <param name="v2">second triangle vertex</param>
 	/// <param name="v3">third triangle vertex</param>
-	public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
+	/// <param name="perturb">optional perturb flag, default is set to true</param>
+	public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, bool perturb = true)
 	{
 		int vertexIndex = vertices.Count;
-        vertices.Add(HexMetrics.Perturb(v1));
-        vertices.Add(HexMetrics.Perturb(v2));
-        vertices.Add(HexMetrics.Perturb(v3));
+
+        if (perturb)
+        {
+			vertices.Add(HexMetrics.Perturb(v1));
+			vertices.Add(HexMetrics.Perturb(v2));
+			vertices.Add(HexMetrics.Perturb(v3));
+		}
+        else
+        {
+			vertices.Add(v1);
+			vertices.Add(v2);
+			vertices.Add(v3);
+		}
+        
         triangles.Add(vertexIndex);
 		triangles.Add(vertexIndex + 1);
 		triangles.Add(vertexIndex + 2);
 	}
 
 	/// <summary>
-	///     Adds a color to a triangle
+	/// Adds a color to a triangle
 	/// </summary>
 	/// <param name="color">color to add</param>
 	public void AddTriangleColor(Color color)
@@ -157,7 +188,7 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Adds/blends three colors to a triangle
+	/// Adds/blends three colors to a triangle
 	/// </summary>
 	/// <param name="c1">color for the first vertex</param>
 	/// <param name="c2">color for the second vertex</param>
@@ -170,8 +201,7 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3,
-	///         v4)
+	/// Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3, v4)
 	/// </summary>
 	/// <param name="v1">first vertex</param>
 	/// <param name="v2">second vertex</param>
@@ -195,7 +225,7 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Adds two colors to a triangulated quad
+	/// Adds two colors to a triangulated quad
 	/// </summary>
 	/// <param name="c1">first color</param>
 	/// <param name="c2">second color</param>
@@ -208,7 +238,7 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Adds four colors to a triangulated quad
+	/// Adds four colors to a triangulated quad
 	/// </summary>
 	/// <param name="c1">first color</param>
 	/// <param name="c2">second color</param>
@@ -222,6 +252,12 @@ public class HexMesh : MonoBehaviour
 		colors.Add(c4);
 	}
 
+	/// <summary>
+	/// Adds three UV coordinates to a triangle
+	/// </summary>
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
 	public void AddTriangleUV(Vector2 uv1, Vector2 uv2, Vector2 uv3)
 	{
 		uvs.Add(uv1);
@@ -229,6 +265,13 @@ public class HexMesh : MonoBehaviour
 		uvs.Add(uv3);
 	}
 
+	/// <summary>
+	/// Adds four UV coordinates to a triangulated quad
+	/// </summary>
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
+	/// <param name="uv4">fourth UV coordinate</param>
 	public void AddQuadUV(Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
 	{
 		uvs.Add(uv1);
@@ -237,7 +280,14 @@ public class HexMesh : MonoBehaviour
 		uvs.Add(uv4);
 	}
 
-    // I dont get this method
+	/// <summary>
+	/// Adds four UV coordinates to a triangulated quad using 4 uv values; TODO: TBH I don't get 
+	/// this function 
+	/// </summary>
+	/// <param name="uMin"></param>
+	/// <param name="uMax"></param>
+	/// <param name="vMin"></param>
+	/// <param name="vMax"></param>
 	public void AddQuadUV(float uMin, float uMax, float vMin, float vMax)
 	{
 		uvs.Add(new Vector2(uMin, vMin));

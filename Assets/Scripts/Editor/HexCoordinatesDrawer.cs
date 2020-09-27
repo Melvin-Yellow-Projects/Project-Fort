@@ -15,7 +15,7 @@ using UnityEngine;
 using UnityEditor;
 
 /// <summary>
-///     Draws HexCoordinates within the Unity Editor
+/// Draws HexCoordinates within the Unity Editor
 /// </summary>
 [CustomPropertyDrawer(typeof(HexCoordinates))]
 public class HexCoordinatesDrawer : PropertyDrawer
@@ -24,7 +24,7 @@ public class HexCoordinatesDrawer : PropertyDrawer
     #region Unity Functions
 
     /// <summary>
-    ///     Unity Function; OnGUI is called for rendering and handling GUI events
+    /// Unity Function; OnGUI is called for rendering and handling GUI events
     /// </summary>
     /// <param name="position">where to draw in the Editor</param>
     /// <param name="property">data to draw</param>

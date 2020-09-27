@@ -47,23 +47,24 @@ public class HexGrid : MonoBehaviour
 	[Tooltip("default/initial cell color")]
 	public Color defaultColor = Color.white;
 
+    [Tooltip("noise source for Hex Metrics")]
+	public Texture2D noiseSource;
+
 	/* Private & Protected Variables */
 
-    /// <summary>
-    /// width? TODO: rewrite
-    /// </summary>
+	/// <summary>
+	/// number of cell in the x direction; effectively width
+	/// </summary>
 	private int cellCountX;
 
-    /// <summary>
-    /// height? TODO: rewrite
-    /// </summary>
+	/// <summary>
+	/// number of cell in the z direction; effectively height
+	/// </summary>
 	private int cellCountZ;
 
-	HexGridChunk[] chunks;
-
+    // references to the grid's chunks and cells
+	private HexGridChunk[] chunks;
 	private HexCell[] cells;
-
-	public Texture2D noiseSource; // TODO: i dont like using this file as a intermediary 
 
 	#endregion
 
@@ -94,6 +95,7 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	protected void OnEnable()
 	{
+        // this class serves as an intermediate for HexMetrics
 		HexMetrics.noiseSource = noiseSource;
 	}
 
@@ -102,32 +104,38 @@ public class HexGrid : MonoBehaviour
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
-	void CreateChunks()
+    /// <summary>
+    /// Creates chunks of cells, builds grid row by row
+    /// </summary>
+	protected void CreateChunks()
 	{
 		chunks = new HexGridChunk[chunkCountX * chunkCountZ];
 
-		int i = 0;
+		int index = 0;
 		for (int z = 0; z < chunkCountZ; z++)
 		{
 			for (int x = 0; x < chunkCountX; x++)
 			{
-				HexGridChunk chunk = Instantiate(chunkPrefab); // TODO: change line
-				chunks[i++] = chunk;
-				chunk.transform.SetParent(transform);
+				chunks[index] = Instantiate(chunkPrefab);
+				chunks[index].transform.SetParent(transform);
+				index++;
 			}
 		}
 	}
 
-	void CreateCells()
+	/// <summary>
+	/// Creates each cell in the grid, builds grid row by row
+	/// </summary>
+	protected void CreateCells()
 	{
 		cells = new HexCell[cellCountZ * cellCountX];
 
-		int i = 0;
+		int index = 0;
 		for (int z = 0; z < cellCountZ; z++)
 		{
 			for (int x = 0; x < cellCountX; x++)
 			{
-				CreateCell(x, z, i++);
+				CreateCell(x, z, index++);
 			}
 		}
 	}
@@ -203,15 +211,29 @@ public class HexGrid : MonoBehaviour
 		AddCellToChunk(x, z, cell);
 	}
 
+	/// <summary>
+	/// Adds a cell to its corresponding chunk
+	/// </summary>
+	/// <param name="x">cell's offset coordinate X</param>
+	/// <param name="z">cell's offset coordinate Z</param>
+	/// <param name="cell">cell to add to its chunk</param>
 	void AddCellToChunk(int x, int z, HexCell cell)
 	{
+        // gets the corresponding chunk given the offset x and z
 		int chunkX = x / HexMetrics.chunkSizeX;
 		int chunkZ = z / HexMetrics.chunkSizeZ;
-		HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
 
+		// fetch chunk with chunk index calculation
+		int chunkIndex = chunkX + chunkZ * chunkCountX;
+		HexGridChunk chunk = chunks[chunkIndex];
+
+        // gets the local index for x and z
 		int localX = x - chunkX * HexMetrics.chunkSizeX;
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
-		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
+
+		// add the cell to the chunk using the local cell index
+		int localCellIndex = localX + localZ * HexMetrics.chunkSizeX;
+		chunk.AddCell(localCellIndex, cell);
 	}
 
 	/// <summary>
@@ -235,17 +257,30 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
+    /// <summary>
+    /// Gets the corresponding cell given the HexCoordinates
+    /// </summary>
+    /// <param name="coordinates">a cell's coordinates</param>
+    /// <returns>a HexCell</returns>
 	public HexCell GetCell(HexCoordinates coordinates)
 	{
+        // z coordinate validation
 		int z = coordinates.Z;
 		if (z < 0 || z >= cellCountZ) return null;
 
+        // x coordinate validation
 		int x = coordinates.X + z / 2;
 		if (x < 0 || x >= cellCountX) return null;
 
-		return cells[x + z * cellCountX];
+        // gets cell through index calculation
+		int index = x + z * cellCountX;
+		return cells[index];
 	}
 
+    /// <summary>
+    /// Toggles the HexCell UI for a chunk
+    /// </summary>
+    /// <param name="visible"></param>
 	public void ShowUI(bool visible)
 	{
 		for (int i = 0; i < chunks.Length; i++)

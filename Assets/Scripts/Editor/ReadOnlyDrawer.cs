@@ -5,14 +5,15 @@
  * Authors: Will Lacey
  * Date Created: September 11, 2020
  * 
- * Additional Comments: 
+ * Additional Comments:
+ *      UNDONE: add a parameter that can change the text
  **/
 
 using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-///     Draws a displayable, non-editable value within the Unity Editor
+/// Draws a displayable, non-editable value within the Unity Editor
 /// </summary>
 [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
 public class ReadOnlyDrawer : PropertyDrawer
@@ -21,7 +22,7 @@ public class ReadOnlyDrawer : PropertyDrawer
     #region Unity Functions
 
     /// <summary>
-    ///     Unity Function; OnGUI is called for rendering and handling GUI events
+    /// Unity Function; OnGUI is called for rendering and handling GUI events
     /// </summary>
     /// <param name="position">where to draw the data in the Editor</param>
     /// <param name="property">Serialized Property data to draw</param>

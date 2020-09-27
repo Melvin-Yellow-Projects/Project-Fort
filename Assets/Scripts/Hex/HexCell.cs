@@ -1,6 +1,6 @@
 ﻿/**
  * File Name: HexCell.cs
- * Description: Script for a hex cell or tile
+ * Description: Script for a hex cell or hex tile
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
@@ -43,7 +43,10 @@ public class HexCell : MonoBehaviour
     /// </summary>
     [ReadOnly] [SerializeField] private int elevation = int.MinValue;
 
-    [ReadOnly] public HexGridChunk chunk;
+    /// <summary>
+    /// a reference to a cell's chunk
+    /// </summary>
+    public HexGridChunk chunk;
 
     /// <summary>
     /// a cell's color; connects to the mesh's UV colors's i think TODO: figure this out
@@ -67,7 +70,7 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// Elevation/height of a HexCell
+    /// Elevation/height of a HexCell, retriangulates when setting a new elevation
     /// </summary>
     public int Elevation
     {
@@ -83,9 +86,8 @@ public class HexCell : MonoBehaviour
             Vector3 position = transform.localPosition;
             position.y = value * HexMetrics.elevationStep;
 
-            // add elevation noise
-            float noiseSample = HexMetrics.SampleNoise(position).y;
-            position.y += (noiseSample * 2f - 1f) * HexMetrics.elevationPerturbStrength;
+            // perturb hex height
+            position = HexMetrics.Perturb(position, perturbElevation: true);
 
             // set elevation to new height
             elevation = value;
@@ -102,6 +104,9 @@ public class HexCell : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Color of a HexCell, retriangulates when setting a new color
+    /// </summary>
     public Color Color
     {
         get
@@ -110,10 +115,7 @@ public class HexCell : MonoBehaviour
         }
         set
         {
-            if (color == value)
-            {
-                return;
-            }
+            if (color == value) return;
             color = value;
             Refresh();
         }
@@ -128,7 +130,7 @@ public class HexCell : MonoBehaviour
     /// Gets the HexCell neighbor given the direction, might return null
     /// </summary>
     /// <param name="direction">direction to get neighbor</param>
-    /// <returns></returns>
+    /// <returns>a HexCell neighbor</returns>
     public HexCell GetNeighbor(HexDirection direction)
     {
         return neighbors[(int)direction];
@@ -146,7 +148,7 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the HexEdgeType in the given direction, assumes the HexCell has a neighbor; TODO:
+    /// Gets the HexEdgeType in the given direction, assumes the HexCell has a neighbor; UNDONE:
     /// handle null pointer exception
     /// </summary>
     /// <param name="direction">direction to check the HexEdgeType for</param>
@@ -166,13 +168,16 @@ public class HexCell : MonoBehaviour
         return HexMetrics.GetEdgeType(elevation, otherCell.elevation);
     }
 
-    // TODO: write method
+    /// <summary>
+    /// Queries a hex cell's chunk (and possibly neighboring chunk) to retriangulate
+    /// </summary>
     void Refresh()
     {
         if (chunk != null)
         {
             chunk.Refresh();
 
+            // retriangulate neighbors' chunks if updating cell is from a different chunks
             for (int i = 0; i < neighbors.Length; i++)
             {
                 HexCell neighbor = neighbors[i];

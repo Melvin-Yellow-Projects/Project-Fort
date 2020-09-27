@@ -9,8 +9,6 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
- *
- *      TODO: fix all summary indents
  **/
 
 using UnityEngine;
@@ -23,9 +21,14 @@ public static class HexMetrics
     /********** MARK: Metric Variables **********/
     #region Metric Variables
 
-    // TODO: metric vars
+    /// <summary>
+    /// number of hex map chunks in the X direction
+    /// </summary>
     public const int chunkSizeX = 5;
 
+    /// <summary>
+    /// number of hex map chunks in the Z direction
+    /// </summary>
     public const int chunkSizeZ = 5;
 
     /// <summary>
@@ -124,7 +127,9 @@ public static class HexMetrics
     public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
 
     /// <summary>
-    /// TODO: write noiseSource var
+    /// source of map noise; HexGrid serves as an intermediate to assign the noise source to 
+    /// HexMetrics because this is a static class, UNDONE: remove assignment from HexGrid
+    /// HexGrid
     /// </summary>
     public static Texture2D noiseSource;
 
@@ -176,16 +181,17 @@ public static class HexMetrics
 	}
 
 	/// <summary>
-	/// Returns the midpoint between the two vertices of a HexDirection, which is multiplied such that
-    /// it extends to the neighboring HexCell's solid Hex; a diagram can be viewed here between v1 and 
-    /// v2: https://catlikecoding.com/unity/tutorials/hex-map/part-2/blend-regions/edge-bridge.png
+	/// Returns the midpoint between the two vertices of a HexDirection, which is multiplied such
+    /// that it extends to the neighboring HexCell's solid Hex; a diagram can be viewed here between
+    /// v1 and v2:
+    /// https://catlikecoding.com/unity/tutorials/hex-map/part-2/blend-regions/edge-bridge.png
 	/// </summary>
 	/// <param name="direction">given HexDirection</param>
 	/// <returns>the bridge point</returns>
 	public static Vector3 GetBridge(HexDirection direction)
 	{
 		// multiplying by blendFactor causes overlap (opposed to just averaging the vectors) this is
-        //   done to reduce triangulation
+        // done to reduce triangulation
 		return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
 	}
 
@@ -246,20 +252,33 @@ public static class HexMetrics
     }
 
     /// <summary>
-    /// TODO: comment sample noise func
+    /// Perturbs a cell's vertex position; a bool flag can be set to perturb only the height as
+    /// opposed to a cell's XZ
     /// </summary>
-    /// <param name="position"></param>
-    /// <returns></returns>
-    public static Vector4 SampleNoise(Vector3 position)
+    /// <param name="position">vertex to perturb</param>
+    /// <param name="perturbElevation">whether to perturb Y or XZ</param>
+    /// <returns>a perturbed vertex</returns>
+    public static Vector3 Perturb(Vector3 position, bool perturbElevation = false)
     {
-        return noiseSource.GetPixelBilinear(position.x * noiseScale, position.z * noiseScale);
-    }
+        // Samples the Perlin noise source for randomness using a given world position, yields a
+        // random value between 0 and 1
+        Vector4 sample = noiseSource.GetPixelBilinear(
+            position.x * noiseScale, position.z * noiseScale
+        );
 
-    public static Vector3 Perturb(Vector3 position)
-    {
-        Vector4 sample = SampleNoise(position);
-        position.x += (sample.x * 2f - 1f) * cellPerturbStrength;
-        position.z += (sample.z * 2f - 1f) * cellPerturbStrength;
+        // convert the sample to a value between -1 and 1, then multiply it by it corresponding
+        // noise strength
+        if (perturbElevation)
+        {
+            position.y += (sample.y * 2f - 1f) * elevationPerturbStrength;
+        }
+        else
+        {
+            position.x += (sample.x * 2f - 1f) * cellPerturbStrength;
+            position.z += (sample.z * 2f - 1f) * cellPerturbStrength;
+        }
+
+        // return position
         return position;
     }
 
