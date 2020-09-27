@@ -14,7 +14,7 @@
 using UnityEngine;
 
 /// <summary>
-///     Hex (cube) coordinates for a HexCell
+/// Hex (cube) coordinates for a HexCell
 /// </summary>
 [System.Serializable]
 public struct HexCoordinates
@@ -32,7 +32,7 @@ public struct HexCoordinates
 	#region Properties
 
     /// <summary>
-    ///     Gets the x hex (cube) coordinate
+    /// Gets the x hex (cube) coordinate
     /// </summary>
 	public int X
 	{
@@ -43,7 +43,7 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	///     Gets the y hex (cube) coordinate
+	/// Gets the y hex (cube) coordinate
 	/// </summary>
 	public int Y
 	{
@@ -54,7 +54,7 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	///     Gets the z hex (cube) coordinate
+	/// Gets the z hex (cube) coordinate
 	/// </summary>
 	public int Z
 	{
@@ -70,8 +70,8 @@ public struct HexCoordinates
 	#region Class Functions
 
 	/// <summary>
-	///     Default constructor for HexCoordinates; takes two values and returns a new HexCoordinate
-    ///         struct
+	/// Default constructor for HexCoordinates; takes two values and returns a new HexCoordinate
+    /// struct
 	/// </summary>
 	/// <param name="x">x hex (cube) coordinate</param>
 	/// <param name="z">z hex (cube) coordinate</param>
@@ -82,22 +82,22 @@ public struct HexCoordinates
 	}
 
 	/// <summary>
-	///     Offset coordinate constructor for HexCoordinates; takes offset coordinates and converts
-    ///         them to hex (cube)
+	/// Offset coordinate constructor for HexCoordinates; takes offset coordinates and converts them
+	/// to hex (cube)
 	/// </summary>
 	/// <param name="x">x (row) offset coordinate</param>
 	/// <param name="z">z (col) offset coordinate</param>
 	/// <returns>a new HexCoordinate struct</returns>
 	public static HexCoordinates FromOffsetCoordinates(int x, int z)
 	{
-		int xCube = x;
-		int zCube = z - x / 2; // undo verticle shift/offset
+		int xCube = x - z / 2; // undo horizontal shift/offset
+        int zCube = z;
 
         return new HexCoordinates(xCube, zCube);
 	}
 
     /// <summary>
-    ///     Overriden ToString method; displays the HexCoordinate data
+    /// Overriden ToString method; displays the HexCoordinate data
     /// </summary>
     /// <returns>string 3-tuple hex coordinates</returns>
 	public override string ToString()
@@ -106,7 +106,7 @@ public struct HexCoordinates
     }
 
     /// <summary>
-    ///     Displays the HexCoordinate data vertically
+    /// Displays the HexCoordinate data vertically
     /// </summary>
     /// <returns>HexCoordinate in a string data form</returns>
 	public string ToStringOnSeparateLines()
@@ -116,37 +116,37 @@ public struct HexCoordinates
 	}
 
     /// <summary>
-    ///     Converts a world position into a HexCoordinate; Essentially divides position by hex
-    ///         dimensions; Assumes no map offset
+    /// Converts a world position into a HexCoordinate; Essentially divides position by hex
+    /// dimensions; Assumes no map offset
     /// </summary>
     /// <param name="position">world position</param>
     /// <returns>a hex coordinate position</returns>
     public static HexCoordinates FromPosition(Vector3 position)
     {
-        // get z coordinate by dividing by a stacked verticle hex
-		float z = position.z / (2f * HexMetrics.innerRadius);
-        float y = -z;
+        // get x coordinate by dividing by a stacked horizontal hex
+        float x = position.x / (2f * HexMetrics.innerRadius);
+        float y = -x;
 
-        // calculate verticle offset as the position moves horizontally 
-        float offset = position.x / (3f * HexMetrics.outerRadius);
-        z -= offset;
+        // calculate horizontal offset as the position moves vertically 
+        float offset = position.z / (3f * HexMetrics.outerRadius);
+        x -= offset;
         y -= offset;
 
         // round values to suspected coordinates
-        int iX = Mathf.RoundToInt(-(y + z));
+        int iX = Mathf.RoundToInt(x);
         int iY = Mathf.RoundToInt(y);
-        int iZ = Mathf.RoundToInt(z);
+        int iZ = Mathf.RoundToInt(-(x + y));
 
         // possible rounding error? then correct coordinates
         if (iX + iY + iZ != 0)
         {
-			// get each rounding delta
-			float deltaX = Mathf.Abs(-(y + z) - iX);
-			float deltaY = Mathf.Abs(y - iY);
-			float deltaZ = Mathf.Abs(z - iZ);
+            // get each rounding delta
+            float deltaX = Mathf.Abs(x - iX);
+            float deltaY = Mathf.Abs(y - iY);
+            float deltaZ = Mathf.Abs(-x - y - iZ);
 
-			// find largest delta and reconstruct flawed coordinate 
-			if (deltaX > deltaY && deltaX > deltaZ)
+            // find largest delta and reconstruct flawed coordinate 
+            if (deltaX > deltaY && deltaX > deltaZ)
 			{
 				iX = -iY - iZ; // reconstruct X
 			}

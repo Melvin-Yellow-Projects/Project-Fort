@@ -1,6 +1,7 @@
 ﻿/**
  * File Name: HexMesh.cs
- * Description: Class responsible for handling the triangulation and orientation of a hex mesh
+ * Description: Class responsible for handling the triangulation and orientation of a generic hex
+ *                  mesh
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
@@ -9,8 +10,6 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
- *
- *      UNDONE: Class description is subject to change
  **/
 
 using System;
@@ -19,7 +18,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-///     A mesh specificly for a hex map; UNDONE: subject to change
+/// A general hex mesh object; consists of a Mesh Filter, a Mesh Renderer, and an optional Mesh
+/// Collider
 /// </summary>
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour
@@ -27,19 +27,50 @@ public class HexMesh : MonoBehaviour
 	/********** MARK: Variables **********/
 	#region Variables
 
-	protected Mesh hexMesh; // mesh object
+	/* Settings */
+	[Header("Settings")]
+	[Tooltip("wether or not this HexMesh uses a MeshCollider")]
+	public bool useCollider;
 
-	// mesh's vertices
-	protected List<Vector3> vertices;
+	[Tooltip("wether or not this HexMesh uses different vertex colors")]
+	public bool useColors;
 
-	// mesh's color at a given vertex
-	protected List<Color> colors;
+	[Tooltip("wether or not this HexMesh uses its UV coordinates")]
+	public bool useUVCoordinates;
 
-	// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
-	//      triangles than verticesto save space)
-	protected List<int> triangles; 
+	/* Private & Protected Variables */
 
-    // collider for the mesh
+	/// <summary>
+	/// class's mesh object
+	/// </summary>
+	protected Mesh hexMesh; 
+
+	/// <summary>
+	/// mesh's vertices; this variable is used as a placeholder for the static ListPool struct
+	/// </summary>
+	[NonSerialized] List<Vector3> vertices;
+
+	/// <summary>
+	/// mesh's color at a given vertex; this variable is used as a placeholder for the static
+    /// ListPool struct
+	/// </summary>
+	[NonSerialized] List<Color> colors;
+
+	/// <summary>
+	/// mesh's uvs; this variable is used as a placeholder for the static ListPool struct
+	/// </summary>
+	[NonSerialized] List<Vector2> uvs;
+
+	/// <summary>
+	/// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
+	/// triangles than vertices to save space); this variable is used as a placeholder for the 
+	/// static ListPool struct
+	/// </summary>
+	[NonSerialized] List<int> triangles;
+
+	/// <summary>
+    /// mesh's optional collider 
+    /// </summary>
 	protected MeshCollider meshCollider;
 
 	#endregion
@@ -52,14 +83,13 @@ public class HexMesh : MonoBehaviour
 	/// </summary>
 	protected void Awake()
 	{
-        // initialize mesh
-		GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-		meshCollider = gameObject.AddComponent<MeshCollider>();
-
+		// initialize mesh
+		hexMesh = new Mesh();
+		GetComponent<MeshFilter>().mesh = hexMesh;
 		hexMesh.name = "Hex Mesh";
-		vertices = new List<Vector3>();
-		colors = new List<Color>();
-		triangles = new List<int>();
+
+		// set a mesh collider if it is enabled
+		if (useCollider) meshCollider = gameObject.AddComponent<MeshCollider>();
 	}
 
 	#endregion
@@ -67,143 +97,90 @@ public class HexMesh : MonoBehaviour
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
-	/// <summary>
-	///     Function to draw all the hex map's cells
-	/// </summary>
-	/// <param name="cells">cells to draw mesh for</param>
-	public void Triangulate(HexCell[] cells)
+    /// <summary>
+    /// Clears the hex mesh by clearing the ListPool structs
+    /// </summary>
+	public void Clear()
 	{
-        // clear current mesh
 		hexMesh.Clear();
-		vertices.Clear();
-		colors.Clear();
-		triangles.Clear();
 
-        // draw every cell
-		for (int i = 0; i < cells.Length; i++)
+		vertices = ListPool<Vector3>.Get();
+
+		if (useColors) colors = ListPool<Color>.Get();
+
+		if (useUVCoordinates) uvs = ListPool<Vector2>.Get();
+
+		triangles = ListPool<int>.Get();
+	}
+
+    /// <summary>
+    /// Sets the hex mesh's data through setting the ListPool structs
+    /// </summary>
+	public void Apply()
+	{
+        // set vertices
+		hexMesh.SetVertices(vertices);
+		ListPool<Vector3>.Add(vertices);
+
+        // set optional colors
+		if (useColors)
 		{
-			Triangulate(cells[i]);
+			hexMesh.SetColors(colors);
+			ListPool<Color>.Add(colors);
 		}
 
-        // assign mesh triangulation to the mesh
-		hexMesh.vertices = vertices.ToArray();
-		hexMesh.colors = colors.ToArray();
-		hexMesh.triangles = triangles.ToArray();
+        // set optional UV coordinates
+		if (useUVCoordinates)
+		{
+			hexMesh.SetUVs(0, uvs);
+			ListPool<Vector2>.Add(uvs);
+		}
+
+        // set triangles
+		hexMesh.SetTriangles(triangles, 0);
+		ListPool<int>.Add(triangles);
+
+        // apply data to hex mesh
 		hexMesh.RecalculateNormals();
 
-        // assign meshCollider to mesh
-		meshCollider.sharedMesh = hexMesh;
+        // set optional collider
+		if (useCollider) meshCollider.sharedMesh = hexMesh;
 	}
 
 	/// <summary>
-	///    Builds a mesh for given cell and connects it to its neighbors
-	/// </summary>
-	/// <param name="cell">HexCell to draw</param>
-	protected void Triangulate(HexCell cell)
-	{
-        // triangulates the mesh in each hex direction
-		for (HexDirection d = HexDirection.N; d <= HexDirection.NW; d++)
-		{
-			Triangulate(d, cell);
-		}
-	}
-
-	/// <summary>
-	///     Builds the structure of a particular hex direction
-	/// </summary>
-	/// <param name="direction">direction to triangulate</param>
-	/// <param name="cell">the cell to triangulate</param>
-	protected void Triangulate(HexDirection direction, HexCell cell)
-	{
-        // gets the local position of the cell
-		Vector3 center = cell.transform.localPosition;
-
-        // gets the iterior hex cell's vertices
-		Vector3 v1 = center + HexMetrics.GetFirstSolidCorner(direction);
-		Vector3 v2 = center + HexMetrics.GetSecondSolidCorner(direction);
-
-        // builds interior
-		AddTriangle(center, v1, v2);
-		AddTriangleColor(cell.color);
-
-		// builds connections for Southeast/Northwest, Northeast/Southwest, & North/South
-		if (direction <= HexDirection.SE) TriangulateConnection(direction, cell, v1, v2);
-
-	}
-
-	/// <summary>
-	///     Builds a connection bridge between two cells given a direction
-	/// </summary>
-	/// <param name="direction">direction to triangulate</param>
-	/// <param name="cell">the cell to triangulate</param>
-	/// <param name="v1">reused param from Triangulate; first solid hex corner</param>
-	/// <param name="v2">reused param from Triangulate; second solid hex corner</param>
-	void TriangulateConnection(HexDirection direction, HexCell cell, Vector3 v1, Vector3 v2)
-	{
-        // get the neighbor for the given direction
-		HexCell neighbor = cell.GetNeighbor(direction);
-
-        // do not triangulate connection if there is no neighbor
-		if (neighbor != null)
-		{
-            // gets birdge point
-			Vector3 bridge = HexMetrics.GetBridge(direction);
-
-            // gets bridge vertices
-			Vector3 v3 = v1 + bridge;
-			Vector3 v4 = v2 + bridge;
-
-            // set elevation of bridge to be equal to the neighbor's
-            v3.y = neighbor.Elevation * HexMetrics.elevationStep;
-			v4.y = neighbor.Elevation * HexMetrics.elevationStep;
-
-            // triangulates bridge quad
-            AddQuad(v1, v2, v3, v4);
-			AddQuadColor(cell.color, neighbor.color);
-
-            // get next neighbor to build bridge corner
-			HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
-
-			// builds the bridge corner if there is another neighbor; this only needs to be done
-            //      for North & Northeast because 3 cells share these intersections and will be
-            //      triangulated by one of the other 3 cells
-			if (direction <= HexDirection.NE && nextNeighbor != null)
-			{
-				// builds corner from the other neighbor's bridge vertex... definitely confusing
-				Vector3 v5 = v2 + HexMetrics.GetBridge(direction.Next());
-
-				// again, set elevation of point to be equal to the (next) neighbor's
-				v5.y = nextNeighbor.Elevation * HexMetrics.elevationStep;
-
-                // triangulate connection triangle 
-				AddTriangle(v2, v4, v5);
-				AddTriangleColor(cell.color, neighbor.color, nextNeighbor.color);
-			}
-		}
-	}
-
-	/// <summary>
-	///     Adds a triangle to the mesh
+	/// Adds a triangle to the mesh; can also perturb this triangle's vertices
 	/// </summary>
 	/// <param name="v1">first triangle vertex</param>
 	/// <param name="v2">second triangle vertex</param>
 	/// <param name="v3">third triangle vertex</param>
-	protected void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
+	/// <param name="perturb">optional perturb flag, default is set to true</param>
+	public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, bool perturb = true)
 	{
 		int vertexIndex = vertices.Count;
-		vertices.Add(v1);
-		vertices.Add(v2);
-		vertices.Add(v3);
-		triangles.Add(vertexIndex);
+
+        if (perturb)
+        {
+			vertices.Add(HexMetrics.Perturb(v1));
+			vertices.Add(HexMetrics.Perturb(v2));
+			vertices.Add(HexMetrics.Perturb(v3));
+		}
+        else
+        {
+			vertices.Add(v1);
+			vertices.Add(v2);
+			vertices.Add(v3);
+		}
+        
+        triangles.Add(vertexIndex);
 		triangles.Add(vertexIndex + 1);
 		triangles.Add(vertexIndex + 2);
 	}
 
 	/// <summary>
-	///     Adds a color to a triangle
+	/// Adds a color to a triangle
 	/// </summary>
 	/// <param name="color">color to add</param>
-	protected void AddTriangleColor(Color color)
+	public void AddTriangleColor(Color color)
 	{
 		colors.Add(color);
 		colors.Add(color);
@@ -211,12 +188,12 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Adds/blends three colors to a triangle
+	/// Adds/blends three colors to a triangle
 	/// </summary>
 	/// <param name="c1">color for the first vertex</param>
 	/// <param name="c2">color for the second vertex</param>
 	/// <param name="c3">color for the third vertex</param>
-	protected void AddTriangleColor(Color c1, Color c2, Color c3)
+	public void AddTriangleColor(Color c1, Color c2, Color c3)
 	{
 		colors.Add(c1);
 		colors.Add(c2);
@@ -224,22 +201,21 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3,
-	///         v4)
+	/// Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3, v4)
 	/// </summary>
 	/// <param name="v1">first vertex</param>
 	/// <param name="v2">second vertex</param>
 	/// <param name="v3">third vertex</param>
 	/// <param name="v4">fourth vertex</param>
-	protected void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
+	public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
 	{
 		int vertexIndex = vertices.Count;
-		vertices.Add(v1);
-		vertices.Add(v2);
-		vertices.Add(v3);
-		vertices.Add(v4);
+        vertices.Add(HexMetrics.Perturb(v1));
+        vertices.Add(HexMetrics.Perturb(v2));
+        vertices.Add(HexMetrics.Perturb(v3));
+        vertices.Add(HexMetrics.Perturb(v4));
 
-		triangles.Add(vertexIndex);     // v1
+        triangles.Add(vertexIndex);     // v1
 		triangles.Add(vertexIndex + 2); // v3
 		triangles.Add(vertexIndex + 1); // v2
 
@@ -248,12 +224,12 @@ public class HexMesh : MonoBehaviour
 		triangles.Add(vertexIndex + 3); // v4
 	}
 
-    /// <summary>
-    ///     Adds two colors to a triangulated quad
-    /// </summary>
-    /// <param name="c1">first color</param>
-    /// <param name="c2">second color</param>
-	void AddQuadColor(Color c1, Color c2)
+	/// <summary>
+	/// Adds two colors to a triangulated quad
+	/// </summary>
+	/// <param name="c1">first color</param>
+	/// <param name="c2">second color</param>
+	public void AddQuadColor(Color c1, Color c2)
 	{
 		colors.Add(c1);
 		colors.Add(c1);
@@ -262,18 +238,62 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Adds four colors to a triangulated quad
+	/// Adds four colors to a triangulated quad
 	/// </summary>
 	/// <param name="c1">first color</param>
 	/// <param name="c2">second color</param>
 	/// <param name="c3">third color</param>
 	/// <param name="c4">fourth color</param>
-	protected void AddQuadColor(Color c1, Color c2, Color c3, Color c4)
+	public void AddQuadColor(Color c1, Color c2, Color c3, Color c4)
 	{
 		colors.Add(c1);
 		colors.Add(c2);
 		colors.Add(c3);
 		colors.Add(c4);
+	}
+
+	/// <summary>
+	/// Adds three UV coordinates to a triangle
+	/// </summary>
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
+	public void AddTriangleUV(Vector2 uv1, Vector2 uv2, Vector2 uv3)
+	{
+		uvs.Add(uv1);
+		uvs.Add(uv2);
+		uvs.Add(uv3);
+	}
+
+	/// <summary>
+	/// Adds four UV coordinates to a triangulated quad
+	/// </summary>
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
+	/// <param name="uv4">fourth UV coordinate</param>
+	public void AddQuadUV(Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
+	{
+		uvs.Add(uv1);
+		uvs.Add(uv2);
+		uvs.Add(uv3);
+		uvs.Add(uv4);
+	}
+
+	/// <summary>
+	/// Adds four UV coordinates to a triangulated quad using 4 uv values; TODO: TBH I don't get 
+	/// this function 
+	/// </summary>
+	/// <param name="uMin"></param>
+	/// <param name="uMax"></param>
+	/// <param name="vMin"></param>
+	/// <param name="vMax"></param>
+	public void AddQuadUV(float uMin, float uMax, float vMin, float vMax)
+	{
+		uvs.Add(new Vector2(uMin, vMin));
+		uvs.Add(new Vector2(uMax, vMin));
+		uvs.Add(new Vector2(uMin, vMax));
+		uvs.Add(new Vector2(uMax, vMax));
 	}
 
 	#endregion

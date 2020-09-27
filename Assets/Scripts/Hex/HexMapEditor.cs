@@ -15,7 +15,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-///     Class for editing a hex map/grid
+/// Class for editing a hex map/grid
 /// </summary>
 public class HexMapEditor : MonoBehaviour
 {
@@ -33,9 +33,13 @@ public class HexMapEditor : MonoBehaviour
 	public Color[] colors;
 
 	/* Private & Protected Variables */
+	bool applyColor;
 	private Color activeColor;
 
+	bool applyElevation = true;
 	private int activeElevation;
+
+	int brushSize;
 
 	#endregion
 
@@ -43,7 +47,7 @@ public class HexMapEditor : MonoBehaviour
 	#region Unity Functions
 
 	/// <summary>
-	///     Unity Method; Awake() is called before Start() upon GameObject creation
+	/// Unity Method; Awake() is called before Start() upon GameObject creation
 	/// </summary>
 	protected void Awake()
 	{
@@ -51,7 +55,7 @@ public class HexMapEditor : MonoBehaviour
 	}
 
 	/// <summary>
-	///     Unity Method; Update() is called once per frame
+	/// Unity Method; Update() is called once per frame
 	/// </summary>
 	protected void Update()
 	{
@@ -68,7 +72,7 @@ public class HexMapEditor : MonoBehaviour
 	#region Class Functions
 
     /// <summary>
-    ///     Function to handle the input from a player
+    /// Handles the input from a player
     /// </summary>
 	protected void HandleInput()
 	{
@@ -82,32 +86,100 @@ public class HexMapEditor : MonoBehaviour
 			// draw line for 1 second
 			Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-			// edit the cell given the hit position
-			EditCell(hexGrid.GetCell(hit.point));
+			// edit the cells given the hit position
+			EditCells(hexGrid.GetCell(hit.point));
 		}
 	}
 
-    /// <summary>
-    ///     Selects a color within HexMapEditor's available colors
-    /// </summary>
-    /// <param name="index">index of color to select</param>
-	public void SelectColor(int index)
+	/// <summary>
+	/// Sets the map editor's brush size; size correlates to how many neighbors to edit after the
+    /// targeted cell (a brush size of 0 only edits the targeted cell)
+	/// </summary>
+	/// <param name="size">new size</param>
+	public void SetBrushSize(float size)
 	{
-		activeColor = colors[index];
+		brushSize = (int)size;
 	}
 
-    // TODO: Write function SetElevation
+	/// <summary>
+	/// Selects a color within HexMapEditor's available colors; a value of -1 disables color editing
+	/// </summary>
+	/// <param name="index">index of color to select</param>
+	public void SelectColor(int index)
+	{
+		applyColor = (index >= 0);
+
+		if (applyColor) activeColor = colors[index];
+	}
+
+    /// <summary>
+    /// Toggles elevation editing
+    /// </summary>
+    /// <param name="toggle">enables or disables elevation editting</param>
+	public void SetApplyElevation(bool toggle)
+	{
+		applyElevation = toggle;
+	}
+
+	/// <summary>
+	/// Sets the elevation for the map editor; this function is independent of SetApplyElevation and
+    /// will not enable elevation editing if it is turned off
+	/// </summary>
+	/// <param name="elevation"></param>
 	public void SetElevation(float elevation)
 	{
 		activeElevation = (int)elevation;
 	}
 
-	// TODO: Write function EditCell
+    /// <summary>
+    /// Edits all HexCells within the brush range starting from the given cell; uses the given
+    /// cell's HexCoordinates to loop around all neighbors
+    /// </summary>
+    /// <param name="center">targeted cell to edit</param>
+	void EditCells(HexCell center)
+	{
+		int centerX = center.coordinates.X;
+		int centerZ = center.coordinates.Z;
+
+        // bottom half of cells
+		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++)
+		{
+			for (int x = centerX - r; x <= centerX + brushSize; x++)
+			{
+				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+			}
+		}
+
+        // top half of cells, excluding the center
+		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++)
+		{
+			for (int x = centerX - brushSize; x <= centerX + r; x++)
+			{
+				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+			}
+		}
+	}
+
+	/// <summary>
+	/// Edits a given HexCell, assigning it new information
+	/// </summary>
+	/// <param name="cell">HexCell to be editted</param>
 	void EditCell(HexCell cell)
 	{
-		cell.color = activeColor;
-		cell.Elevation = activeElevation;
-		hexGrid.Refresh();
+		if (cell == null) return;
+
+		if (applyColor) cell.Color = activeColor;
+
+		if (applyElevation) cell.Elevation = activeElevation;
+	}
+
+	/// <summary>
+	/// Toggles HexCell coordinates
+	/// </summary>
+	/// <param name="visible">enables or disables cell UI</param>
+	public void ShowUI(bool visible)
+	{
+		hexGrid.ShowUI(visible);
 	}
 
 	#endregion
