@@ -9,6 +9,9 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      TODO: the old value for the hex cell label was a font size of 4 and normal text; have it be
+ *              an opion
  **/
 
 using System.Collections;
@@ -36,6 +39,9 @@ public class HexCell : MonoBehaviour
     /// </summary>
     [HideInInspector] public RectTransform uiRectTransform;
 
+    // TODO: comment index further
+    public int globalIndex;
+
     /* Private & Protected Variables */
 
     /// <summary>
@@ -49,9 +55,12 @@ public class HexCell : MonoBehaviour
     public HexGridChunk chunk;
 
     /// <summary>
-    /// a cell's color; connects to the mesh's UV colors's i think TODO: figure this out
+    /// a cell's terrain type; this variable also initializes the terrain type for the map
     /// </summary>
-    private Color color;
+    private int terrainTypeIndex;
+
+    // todo: comment dist
+    int distance;
 
     #endregion
 
@@ -105,19 +114,72 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// Color of a HexCell, retriangulates when setting a new color
+    /// TODO: comment TerrainTypeIndex Property; Color of a HexCell, retriangulates when setting a
+    /// new color
     /// </summary>
-    public Color Color
+    public int TerrainTypeIndex
     {
         get
         {
-            return color;
+            return terrainTypeIndex;
         }
         set
         {
-            if (color == value) return;
-            color = value;
-            Refresh();
+            if (terrainTypeIndex != value)
+            {
+                terrainTypeIndex = value;
+                Refresh();
+            }
+        }
+    }
+
+    /// <summary>
+    /// TODO: comment LabelTypeIndex Property
+    /// </summary>
+    public int LabelTypeIndex
+    {
+        set
+        {
+            switch (value)
+            {
+                case -1: // hide label
+                    UpdateLabel("");
+                    break;
+
+                case 0: // offset coordinates
+                    string text = "i:" + globalIndex.ToString() + "\n";
+                    text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
+                    UpdateLabel(text);
+                    break;
+
+                case 1: // cube coordinates
+                    UpdateLabel(coordinates.ToStringOnSeparateLines(addHeaders: true));
+                    break;
+
+                case 2: // navigation
+                    UpdateLabel(
+                        "x",
+                        fontStyle: FontStyle.Bold,
+                        fontSize: 8
+                    );
+                    break;
+            }
+        }
+    }
+
+    public int Distance
+    {
+        get
+        {
+            return distance;
+        }
+        set
+        {
+            distance = value;
+
+            // update distance label
+            string text = (distance == int.MaxValue) ? "" : distance.ToString();
+            UpdateLabel(text, fontStyle: FontStyle.Bold, fontSize: 8);
         }
     }
 
@@ -187,6 +249,15 @@ public class HexCell : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
+    {
+        Text label = uiRectTransform.gameObject.GetComponent<Text>();
+
+        label.text = text;
+        label.fontSize = fontSize;
+        label.fontStyle = fontStyle;
     }
 
     /// <summary>

@@ -38,23 +38,29 @@ public class HexMesh : MonoBehaviour
 	[Tooltip("wether or not this HexMesh uses its UV coordinates")]
 	public bool useUVCoordinates;
 
-	/* Private & Protected Variables */
+    [Tooltip("wether or not this HexMesh uses varying types of terrain")]
+    public bool useTerrainTypes;
 
-	/// <summary>
-	/// class's mesh object
-	/// </summary>
-	protected Mesh hexMesh; 
+    /* Private & Protected Variables */
+
+    /// <summary>
+    /// class's mesh object
+    /// </summary>
+    protected Mesh hexMesh; 
 
 	/// <summary>
 	/// mesh's vertices; this variable is used as a placeholder for the static ListPool struct
 	/// </summary>
 	[NonSerialized] List<Vector3> vertices;
 
-	/// <summary>
-	/// mesh's color at a given vertex; this variable is used as a placeholder for the static
+    // TODO: comment terrainTypes
+    [NonSerialized] List<Vector3> terrainTypes;
+
+    /// <summary>
+    /// mesh's color at a given vertex; this variable is used as a placeholder for the static
     /// ListPool struct
-	/// </summary>
-	[NonSerialized] List<Color> colors;
+    /// </summary>
+    [NonSerialized] List<Color> colors;
 
 	/// <summary>
 	/// mesh's uvs; this variable is used as a placeholder for the static ListPool struct
@@ -110,7 +116,9 @@ public class HexMesh : MonoBehaviour
 
 		if (useUVCoordinates) uvs = ListPool<Vector2>.Get();
 
-		triangles = ListPool<int>.Get();
+        if (useTerrainTypes) terrainTypes = ListPool<Vector3>.Get();
+
+        triangles = ListPool<int>.Get();
 	}
 
     /// <summary>
@@ -122,7 +130,7 @@ public class HexMesh : MonoBehaviour
 		hexMesh.SetVertices(vertices);
 		ListPool<Vector3>.Add(vertices);
 
-        // set optional colors
+		// set optional colors
 		if (useColors)
 		{
 			hexMesh.SetColors(colors);
@@ -136,8 +144,17 @@ public class HexMesh : MonoBehaviour
 			ListPool<Vector2>.Add(uvs);
 		}
 
+        if (useTerrainTypes)
+        {
+            // "store the terrain types in the third UV set. That way, it won't clash with the other
+            // two sets, if we were to ever use them together."
+            // I think its 0: water, 1: shore, 2: terrain
+            hexMesh.SetUVs(2, terrainTypes);
+            ListPool<Vector3>.Add(terrainTypes);
+        }
+
         // set triangles
-		hexMesh.SetTriangles(triangles, 0);
+        hexMesh.SetTriangles(triangles, 0);
 		ListPool<int>.Add(triangles);
 
         // apply data to hex mesh
@@ -296,5 +313,22 @@ public class HexMesh : MonoBehaviour
 		uvs.Add(new Vector2(uMax, vMax));
 	}
 
-	#endregion
+    // TODO: comment AddTriangleTerrainTypes
+    public void AddTriangleTerrainTypes(Vector3 types)
+    {
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+    }
+
+    // TODO: comment AddQuadTerrainTypes
+    public void AddQuadTerrainTypes(Vector3 types)
+    {
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+    }
+
+    #endregion
 }

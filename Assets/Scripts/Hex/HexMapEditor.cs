@@ -27,19 +27,23 @@ public class HexMapEditor : MonoBehaviour
 	[Tooltip("instance reference to the HexGrid in the scene")]
 	public HexGrid hexGrid;
 
+	[Tooltip("prefab reference to the HexGrid material")]
+	public Material terrainMaterial;
+
 	/* Settings */
-	[Header("Settings")]
-	[Tooltip("a list of available map colors")]
-	public Color[] colors;
+	// redacted
 
 	/* Private & Protected Variables */
-	bool applyColor;
-	private Color activeColor;
+	bool editMode;
+
+	int brushSize;
+
+	int activeCellLabelType;
+
+	int activeTerrainTypeIndex;
 
 	bool applyElevation = true;
 	private int activeElevation;
-
-	int brushSize;
 
 	#endregion
 
@@ -51,7 +55,8 @@ public class HexMapEditor : MonoBehaviour
 	/// </summary>
 	protected void Awake()
 	{
-		SelectColor(0);
+        // turn off grid
+		terrainMaterial.DisableKeyword("GRID_ON");
 	}
 
 	/// <summary>
@@ -86,14 +91,31 @@ public class HexMapEditor : MonoBehaviour
 			// draw line for 1 second
 			Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-			// edit the cells given the hit position
-			EditCells(hexGrid.GetCell(hit.point));
+			HexCell currentCell = hexGrid.GetCell(hit.point);
+
+			// edit the cells given the hit position if in edit mode
+			if (editMode) EditCells(currentCell);
+            else if (activeCellLabelType == 2) hexGrid.FindDistancesTo(currentCell); 
 		}
+	}
+
+    /// <summary>
+    /// TODO: Comment this
+    /// </summary>
+    /// <param name="toggle"></param>
+	public void SetEditMode(bool toggle)
+	{
+		editMode = toggle;
+
+		// turn off cell labels during edit mode
+		int index = toggle ? -1 : activeCellLabelType;
+		hexGrid.UpdateCellUI(index);
+		transform.Find("Bottom Panel").gameObject.SetActive(!toggle);
 	}
 
 	/// <summary>
 	/// Sets the map editor's brush size; size correlates to how many neighbors to edit after the
-    /// targeted cell (a brush size of 0 only edits the targeted cell)
+	/// targeted cell (a brush size of 0 only edits the targeted cell)
 	/// </summary>
 	/// <param name="size">new size</param>
 	public void SetBrushSize(float size)
@@ -103,19 +125,18 @@ public class HexMapEditor : MonoBehaviour
 
 	/// <summary>
 	/// Selects a color within HexMapEditor's available colors; a value of -1 disables color editing
+    /// TODO: rewrite method desc
 	/// </summary>
 	/// <param name="index">index of color to select</param>
-	public void SelectColor(int index)
+	public void SetTerrainTypeIndex(int index)
 	{
-		applyColor = (index >= 0);
-
-		if (applyColor) activeColor = colors[index];
+		activeTerrainTypeIndex = index;
 	}
 
-    /// <summary>
-    /// Toggles elevation editing
-    /// </summary>
-    /// <param name="toggle">enables or disables elevation editting</param>
+	/// <summary>
+	/// Toggles elevation editing
+	/// </summary>
+	/// <param name="toggle">enables or disables elevation editting</param>
 	public void SetApplyElevation(bool toggle)
 	{
 		applyElevation = toggle;
@@ -168,18 +189,28 @@ public class HexMapEditor : MonoBehaviour
 	{
 		if (cell == null) return;
 
-		if (applyColor) cell.Color = activeColor;
+		if (activeTerrainTypeIndex >= 0) cell.TerrainTypeIndex = activeTerrainTypeIndex;
 
 		if (applyElevation) cell.Elevation = activeElevation;
 	}
 
-	/// <summary>
-	/// Toggles HexCell coordinates
-	/// </summary>
-	/// <param name="visible">enables or disables cell UI</param>
-	public void ShowUI(bool visible)
+    // TODO: comment ShowGrid
+	public void ShowGrid(bool visible)
 	{
-		hexGrid.ShowUI(visible);
+		if (visible)
+		{
+			terrainMaterial.EnableKeyword("GRID_ON");
+		}
+		else
+		{
+			terrainMaterial.DisableKeyword("GRID_ON");
+		}
+	}
+
+    public void UpdateCellUI(int index)
+    {
+		activeCellLabelType = index;
+		hexGrid.UpdateCellUI(index);
 	}
 
 	#endregion

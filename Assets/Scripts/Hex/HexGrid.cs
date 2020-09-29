@@ -36,6 +36,9 @@ public class HexGrid : MonoBehaviour
 	[Tooltip("reference to the HexGridChunk prefab")]
 	public HexGridChunk chunkPrefab;
 
+	[Tooltip("noise source for Hex Metrics")]
+	public Texture2D noiseSource;
+
 	/* Settings */
 	[Header("Settings")]
 	[Tooltip("number of chunk columns")]
@@ -43,12 +46,6 @@ public class HexGrid : MonoBehaviour
 
 	[Tooltip("number of chunk rows")]
 	public int chunkCountZ = 3;
-
-	[Tooltip("default/initial cell color")]
-	public Color defaultColor = Color.white;
-
-    [Tooltip("noise source for Hex Metrics")]
-	public Texture2D noiseSource;
 
 	/* Private & Protected Variables */
 
@@ -78,8 +75,9 @@ public class HexGrid : MonoBehaviour
 	{
         // Set HexMetrics's noise
 		HexMetrics.noiseSource = noiseSource;
+		//HexMetrics.InitializeHashGrid(seed);
 
-        // initialize width and height
+		// initialize width and height
 		cellCountX = chunkCountX * HexMetrics.chunkSizeX;
 		cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
 
@@ -95,8 +93,12 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	protected void OnEnable()
 	{
-        // this class serves as an intermediate for HexMetrics
-		HexMetrics.noiseSource = noiseSource;
+		if (!HexMetrics.noiseSource)
+		{
+			// this class serves as an intermediate for HexMetrics
+			HexMetrics.noiseSource = noiseSource;
+			//HexMetrics.InitializeHashGrid(seed);
+		}
 	}
 
 	#endregion
@@ -167,24 +169,23 @@ public class HexGrid : MonoBehaviour
 		cells[i] = cell;
 		cell.transform.localPosition = cellPosition;
 
-		// assign the cell the grid's default color
-		cell.Color = defaultColor;
-
 		// calculate cell's coordinates
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+
+        // set global cell index
+		cell.globalIndex = i;
 
 		// instantiate the cell's label under the grid's Canvas TODO: rewrite comment
 		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(cellPosition.x, cellPosition.z);
-		label.text = cell.coordinates.ToStringOnSeparateLines(); // cube coordinates
 
-		// UNDONE: offset coordinates
-		//label.text = "i:" + i.ToString() + "\nx:" + x.ToString() + "\nz:" + z.ToString(); 
+        // set label reference to cell's UI RectTransform
+        cell.uiRectTransform = label.rectTransform;
 
-		// set label reference to cell's UI RectTransform
-		cell.uiRectTransform = label.rectTransform;
+		// set cell label to cube coordinates
+		cell.LabelTypeIndex = 1;
 
-        // set cell's elevation
+		// set cell's elevation
 		cell.Elevation = 0;
 
         // Neighbor Logic
@@ -277,17 +278,115 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
-    /// <summary>
-    /// Toggles the HexCell UI for a chunk
-    /// </summary>
-    /// <param name="visible"></param>
-	public void ShowUI(bool visible)
+	// TODO: comment UpdateCellUI
+	public void UpdateCellUI(int index)
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+			cells[i].LabelTypeIndex = index;
+        }
+	}
+
+	// TODO: comment FindDistancesTo
+	public void FindDistancesTo(HexCell cell)
 	{
-		for (int i = 0; i < chunks.Length; i++)
+		StopAllCoroutines();
+		StartCoroutine(Search(cell));
+	}
+
+	// TODO: comment Breadth-First Search function
+	private IEnumerator Search(HexCell cell)
+	{
+		for (int i = 0; i < cells.Length; i++)
 		{
-			chunks[i].ShowUI(visible);
+			cells[i].Distance = int.MaxValue;
+		}
+
+        // "frequency of 60 iterations per second is slow enough that we can see what's happening"
+        // I might be using a different value
+        //WaitForSeconds delay = new WaitForSeconds(1 / 120f); // fast
+        //WaitForSeconds delay = new WaitForSeconds(1 / 60f); // medium
+        WaitForSeconds delay = new WaitForSeconds(1 / 30f); // slow
+
+        // create queue of cells to search, add the starting cell to the queue
+        Queue<HexCell> frontier = new Queue<HexCell>();
+		cell.Distance = 0;
+		frontier.Enqueue(cell);
+
+        // as long as there is something in the queue, keep searching
+		while (frontier.Count > 0)
+		{
+			HexCell current = frontier.Dequeue(); // remove current cell 
+			yield return delay;
+
+            // search all neighbors of the current cell
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+			{
+                // check if the neighbors are valid cells to search
+				HexCell neighbor = current.GetNeighbor(d);
+				if (IsValidCellForSearch(current, neighbor))
+				{
+					// if they are valid, calculate distance and add them to the queue
+					neighbor.Distance = GetDistanceCalculation(current, neighbor);
+					frontier.Enqueue(neighbor);
+				}
+			}
 		}
 	}
+
+	/// <summary>
+	/// TODO: comment GetDistanceCalculation; UNDONE: add rivers and water
+	/// </summary>
+	/// <param name="current"></param>
+	/// <param name="neighbor"></param>
+	/// <returns></returns>
+	private int GetDistanceCalculation(HexCell current, HexCell neighbor)
+    {
+        // starting distance
+		int distance = current.Distance;
+
+		//if (current.HasRoadThroughEdge(d)) // roads
+		if (neighbor.TerrainTypeIndex == 1 || neighbor.TerrainTypeIndex == 3) // if grass or stone
+        {
+			distance += 1;
+		}
+        else
+        {
+			distance += 10;
+		}
+
+		return distance;
+	}
+
+	/// <summary>
+	/// todo: comment IsValidCellForSearch; UNDONE: add rivers and water
+	/// </summary>
+	/// <param name="current"></param>
+	/// <param name="neighbor"></param>
+	/// <returns></returns>
+	private bool IsValidCellForSearch(HexCell current, HexCell neighbor)
+    {
+		// invalid if neighbor is null
+		if (neighbor == null) return false;
+
+		// invalid if the neighbor has been visited
+		if (neighbor.Distance != int.MaxValue) return false;
+
+		// invalid if cell is underwater
+		//if (neighbor.IsUnderwater) return false;
+
+		// invalid if edge between cells is a cliff
+		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
+
+        // neighbor is a valid cell
+		return true;
+    }
+
+	//public void Load(BinaryReader reader, int header)
+	//{
+	//	StopAllCoroutines(); // "Also, we should stop searching when another map is loaded"
+	//	…
+	//}
 
 	#endregion
 }

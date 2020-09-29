@@ -64,6 +64,28 @@ public struct HexCoordinates
 		}
 	}
 
+	/// <summary>
+	/// TODO: comment OffsetX
+	/// </summary>
+	public int OffsetX
+    {
+        get
+        {
+			return x + z / 2;
+        }
+    }
+
+	/// <summary>
+	/// TODO: comment OffsetZ
+	/// </summary>
+	public int OffsetZ
+	{
+		get
+		{
+			return z;
+		}
+	}
+
 	#endregion
 
 	/********** MARK: Class Functions **********/
@@ -71,7 +93,7 @@ public struct HexCoordinates
 
 	/// <summary>
 	/// Default constructor for HexCoordinates; takes two values and returns a new HexCoordinate
-    /// struct
+	/// struct
 	/// </summary>
 	/// <param name="x">x hex (cube) coordinate</param>
 	/// <param name="z">z hex (cube) coordinate</param>
@@ -105,14 +127,31 @@ public struct HexCoordinates
         return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
     }
 
-    /// <summary>
-    /// Displays the HexCoordinate data vertically
-    /// </summary>
-    /// <returns>HexCoordinate in a string data form</returns>
-	public string ToStringOnSeparateLines()
+	/// <summary>
+	/// Displays the HexCoordinate data vertically
+	/// </summary>
+	/// <param name="offset"></param>
+	/// <param name="addHeaders"></param>
+	/// <returns></returns>
+	public string ToStringOnSeparateLines(bool offset = false, bool addHeaders = false)
 	{
-		return "x:" + X.ToString() + "\ny:" + Y.ToString() + "\nz:" + Z.ToString();
-		//return X.ToString() + "\n" + Y.ToString() + "\n" + Z.ToString();
+		string[] headers = {"", "", ""};
+        if (addHeaders)
+        {
+			headers[0] = (offset) ? "c:" : "x:";
+			headers[1] = "y:";
+			headers[2] = (offset) ? "r:" : "z:";
+		}
+
+        if (offset)
+        {
+			return headers[2] + OffsetZ.ToString() + "\n" + headers[0] + OffsetX.ToString();
+		}
+        else
+        {
+			return headers[0] + X.ToString() + "\n" + headers[1] + Y.ToString() +
+				"\n" + headers[2] + Z.ToString();
+		}
 	}
 
     /// <summary>
@@ -160,5 +199,15 @@ public struct HexCoordinates
 
     }
 
-    #endregion
+    /// <summary>
+    /// TODO: comment DistanceTo
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+	public int DistanceTo(HexCoordinates other)
+	{
+		return (Mathf.Abs(x - other.x) + Mathf.Abs(Y - other.Y) + Mathf.Abs(z - other.z)) / 2;
+	}
+
+	#endregion
 }

@@ -94,6 +94,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useCollider: 1
   useColors: 1
+  useUVCoordinates: 0
+  useTerrainTypes: 1
 --- !u!1 &2533712665694807437
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d492c19e4db42c2bd82a6961192df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrain: {fileID: 2533712665060378439}
 --- !u!1 &2533712666010125814
 GameObject:
   m_ObjectHideFlags: 0
