@@ -308,16 +308,20 @@ public class HexGrid : MonoBehaviour
         //WaitForSeconds delay = new WaitForSeconds(1 / 60f); // medium
         WaitForSeconds delay = new WaitForSeconds(1 / 30f); // slow
 
-        // create queue of cells to search, add the starting cell to the queue
-        Queue<HexCell> frontier = new Queue<HexCell>();
+		// create queue of cells to search, add the starting cell to the queue (currently a list)
+		List<HexCell> frontier = new List<HexCell>();
 		cell.Distance = 0;
-		frontier.Enqueue(cell);
+		frontier.Add(cell);
 
-        // as long as there is something in the queue, keep searching
+		// as long as there is something in the queue, keep searching
 		while (frontier.Count > 0)
 		{
-			HexCell current = frontier.Dequeue(); // remove current cell 
+            // wait for delay time
 			yield return delay;
+
+			// pop current cell 
+			HexCell current = frontier[0];
+			frontier.RemoveAt(0); 
 
             // search all neighbors of the current cell
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -327,15 +331,38 @@ public class HexGrid : MonoBehaviour
 				if (IsValidCellForSearch(current, neighbor))
 				{
 					// if they are valid, calculate distance and add them to the queue
-					neighbor.Distance = GetDistanceCalculation(current, neighbor);
-					frontier.Enqueue(neighbor);
+					int distance = GetDistanceCalculation(current, neighbor);
+
+                    // TODO: verify this ...
+					//if (neighbor.Distance == int.MaxValue)
+					//{
+					//	neighbor.Distance = distance;
+					//	frontier.Add(neighbor);
+					//}
+					//else if (distance < neighbor.Distance)
+					//{
+					//	neighbor.Distance = distance;
+					//}
+
+					// ... vs. this
+					if (distance < neighbor.Distance)
+					{
+						neighbor.Distance = distance;
+						frontier.Add(neighbor);
+					}
+
+					// sort data structure off of distance
+					frontier.Sort(
+                        (x, y) => x.Distance.CompareTo(y.Distance)
+                    );
 				}
 			}
 		}
 	}
 
 	/// <summary>
-	/// TODO: comment GetDistanceCalculation; UNDONE: add rivers and water
+	/// TODO: comment GetDistanceCalculation; UNDONE: add rivers, water, edge type calculation, and
+    /// other
 	/// </summary>
 	/// <param name="current"></param>
 	/// <param name="neighbor"></param>
@@ -346,13 +373,18 @@ public class HexGrid : MonoBehaviour
 		int distance = current.Distance;
 
 		//if (current.HasRoadThroughEdge(d)) // roads
-		if (neighbor.TerrainTypeIndex == 1 || neighbor.TerrainTypeIndex == 3) // if grass or stone
+		if (neighbor.TerrainTypeIndex == 1) // if grass 
         {
 			distance += 1;
 		}
         else
         {
-			distance += 10;
+			HexEdgeType edgeType = current.GetEdgeType(neighbor);
+			distance += (edgeType == HexEdgeType.Flat) ? 5 : 10;
+
+            // if there is special terrain features
+			//distance += neighbor.UrbanLevel + neighbor.FarmLevel +
+			//			neighbor.PlantLevel;
 		}
 
 		return distance;
@@ -369,11 +401,11 @@ public class HexGrid : MonoBehaviour
 		// invalid if neighbor is null
 		if (neighbor == null) return false;
 
-		// invalid if the neighbor has been visited
-		if (neighbor.Distance != int.MaxValue) return false;
-
 		// invalid if cell is underwater
 		//if (neighbor.IsUnderwater) return false;
+
+        // invalid if there is a river inbetween
+        //if (current.GetEdgeType(neighbor) == river) return false;
 
 		// invalid if edge between cells is a cliff
 		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;

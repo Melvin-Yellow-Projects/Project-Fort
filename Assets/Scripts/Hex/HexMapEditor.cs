@@ -38,7 +38,11 @@ public class HexMapEditor : MonoBehaviour
 
 	int brushSize;
 
-	int activeCellLabelType;
+    /// <summary>
+    /// tracks which label is to be displayed on the cells, a value of 1 initializes the cells to
+    /// cube coordinates
+    /// </summary>
+	int activeCellLabelType = 1;
 
 	int activeTerrainTypeIndex;
 
