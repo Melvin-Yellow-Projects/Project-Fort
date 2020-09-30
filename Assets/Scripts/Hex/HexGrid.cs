@@ -63,6 +63,9 @@ public class HexGrid : MonoBehaviour
 	private HexGridChunk[] chunks;
 	private HexCell[] cells;
 
+    // priority queue data structure
+	HexCellPriorityQueue searchFrontier;
+
 	#endregion
 
 	/********** MARK: Unity Functions **********/
@@ -255,7 +258,7 @@ public class HexGrid : MonoBehaviour
 		int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
         // return cell using index
-		return cells[index];
+		return cells[index]; // BUG: out of bounds error when editing top most cells
 	}
 
     /// <summary>
@@ -278,6 +281,21 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
+    /// <summary>
+    /// TODO: comment ShowCellUI
+    /// </summary>
+    /// <param name="visible"></param>
+    public void ShowCellUI(bool visible)
+    {
+        // stops any pathfinding and goes into new mode
+		StopAllCoroutines();
+
+		for (int i = 0; i < chunks.Length; i++)
+        {
+			chunks[i].ShowCellUI(visible);
+        }
+    }
+
 	// TODO: comment UpdateCellUI
 	public void UpdateCellUI(int index)
     {
@@ -288,19 +306,29 @@ public class HexGrid : MonoBehaviour
 	}
 
 	// TODO: comment FindDistancesTo
-	public void FindDistancesTo(HexCell cell)
+	public void FindPath(HexCell fromCell, HexCell toCell)
 	{
 		StopAllCoroutines();
-		StartCoroutine(Search(cell));
+		StartCoroutine(Search(fromCell, toCell));
 	}
 
 	// TODO: comment Breadth-First Search function
-	private IEnumerator Search(HexCell cell)
+	private IEnumerator Search(HexCell fromCell, HexCell toCell)
 	{
+        // initialize the search priority queue
+		if (searchFrontier == null) searchFrontier = new HexCellPriorityQueue();
+		else searchFrontier.Clear();
+
 		for (int i = 0; i < cells.Length; i++)
 		{
 			cells[i].Distance = int.MaxValue;
+			cells[i].PathFrom = null;
+            cells[i].DisableHighlight(); // disable previous highlights
 		}
+
+        // rehighlight the from and to cells
+		fromCell.EnableHighlight(Color.blue);
+		toCell.EnableHighlight(Color.red);
 
         // "frequency of 60 iterations per second is slow enough that we can see what's happening"
         // I might be using a different value
@@ -308,20 +336,25 @@ public class HexGrid : MonoBehaviour
         //WaitForSeconds delay = new WaitForSeconds(1 / 60f); // medium
         WaitForSeconds delay = new WaitForSeconds(1 / 30f); // slow
 
-		// create queue of cells to search, add the starting cell to the queue (currently a list)
-		List<HexCell> frontier = new List<HexCell>();
-		cell.Distance = 0;
-		frontier.Add(cell);
+        // add the starting cell to the queue
+        fromCell.Distance = 0;
+		searchFrontier.Enqueue(fromCell);
 
 		// as long as there is something in the queue, keep searching
-		while (frontier.Count > 0)
+		while (searchFrontier.Count > 0)
 		{
             // wait for delay time
 			yield return delay;
 
 			// pop current cell 
-			HexCell current = frontier[0];
-			frontier.RemoveAt(0); 
+			HexCell current = searchFrontier.Dequeue();
+
+			// check if we've found the target cell
+			if (current == toCell)
+			{
+				HighlightCellPath(current);
+				break;
+			}
 
             // search all neighbors of the current cell
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -333,28 +366,25 @@ public class HexGrid : MonoBehaviour
 					// if they are valid, calculate distance and add them to the queue
 					int distance = GetDistanceCalculation(current, neighbor);
 
-                    // TODO: verify this ...
-					//if (neighbor.Distance == int.MaxValue)
-					//{
-					//	neighbor.Distance = distance;
-					//	frontier.Add(neighbor);
-					//}
-					//else if (distance < neighbor.Distance)
-					//{
-					//	neighbor.Distance = distance;
-					//}
+                    // adding a new cell that hasn't been updated
+                    if (neighbor.Distance == int.MaxValue)
+                    {
+                        neighbor.Distance = distance;
+                        neighbor.PathFrom = current;
 
-					// ... vs. this
-					if (distance < neighbor.Distance)
-					{
-						neighbor.Distance = distance;
-						frontier.Add(neighbor);
-					}
+						// because our lowest distance cost is 1, heuristic is just the DistanceTo()
+						neighbor.SearchHeuristic =
+                            neighbor.coordinates.DistanceTo(toCell.coordinates);
 
-					// sort data structure off of distance
-					frontier.Sort(
-                        (x, y) => x.Distance.CompareTo(y.Distance)
-                    );
+                        searchFrontier.Enqueue(neighbor);
+                    }
+                    else if (distance < neighbor.Distance) // adjusting cell that's already in queue
+                    {
+                        int oldPriority = neighbor.SearchPriority;
+                        neighbor.Distance = distance;
+                        neighbor.PathFrom = current; 
+                        searchFrontier.Change(neighbor, oldPriority);
+                    }
 				}
 			}
 		}
@@ -413,6 +443,16 @@ public class HexGrid : MonoBehaviour
         // neighbor is a valid cell
 		return true;
     }
+
+    private void HighlightCellPath(HexCell current)
+    {
+		current = current.PathFrom;
+		while (current.PathFrom != null)
+		{
+			current.EnableHighlight(Color.white);
+			current = current.PathFrom;
+		}
+	}
 
 	//public void Load(BinaryReader reader, int header)
 	//{

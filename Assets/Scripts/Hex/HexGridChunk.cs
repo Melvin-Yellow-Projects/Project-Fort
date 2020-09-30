@@ -27,7 +27,7 @@ public class HexGridChunk : MonoBehaviour
 
 	HexMesh terrain;
 
-	//Canvas gridCanvas;
+    Canvas gridCanvas;
 
     HexCell[] cells;
 
@@ -48,10 +48,10 @@ public class HexGridChunk : MonoBehaviour
 	{
         terrain = transform.Find("Terrain").GetComponent<HexMesh>();
 
-        //gridCanvas = GetComponentInChildren<Canvas>();
+        gridCanvas = GetComponentInChildren<Canvas>();
 
         // initialize cells
-		cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
+        cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
 	}
 
 	/// <summary>
@@ -81,9 +81,8 @@ public class HexGridChunk : MonoBehaviour
 		cell.chunk = this;
 		cell.transform.SetParent(transform, false);
 
-        // allows for the cell label to be visible
-        cell.uiRectTransform.SetParent(GetComponentInChildren<Canvas>().transform, false);
-        //cell.uiRectTransform.SetParent(gridCanvas.transform, false);
+        // allows for the cell ui to be visible
+        cell.uiRectTransform.SetParent(gridCanvas.transform, false);
     }
 
     /// <summary>
@@ -519,7 +518,19 @@ public class HexGridChunk : MonoBehaviour
         //terrain.AddQuadTerrainTypes(types);
     }
 
-	public void Refresh()
+    /// <summary>
+    /// TODO: comment ShowCellUI
+    /// </summary>
+    /// <param name="visible"></param>
+    public void ShowCellUI(bool visible)
+    {
+        gridCanvas.gameObject.SetActive(visible);
+    }
+
+    /// <summary>
+    /// TODO: comment refresh
+    /// </summary>
+    public void Refresh()
 	{
 		enabled = true;
 	}

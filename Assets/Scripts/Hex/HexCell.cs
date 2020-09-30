@@ -9,9 +9,6 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
- *
- *      TODO: the old value for the hex cell label was a font size of 4 and normal text; have it be
- *              an opion
  **/
 
 using System.Collections;
@@ -39,7 +36,9 @@ public class HexCell : MonoBehaviour
     /// </summary>
     [HideInInspector] public RectTransform uiRectTransform;
 
-    // TODO: comment index further
+    /// <summary>
+    /// cell's index count relative to the other cells in the map (assumes only 1 HexGrid)
+    /// </summary>
     public int globalIndex;
 
     /* Private & Protected Variables */
@@ -59,8 +58,10 @@ public class HexCell : MonoBehaviour
     /// </summary>
     private int terrainTypeIndex;
 
-    // todo: comment dist
-    int distance;
+    /// <summary>
+    /// a reference to how far away a cell is from the source cell
+    /// </summary>
+    private int distance;
 
     #endregion
 
@@ -114,8 +115,8 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// TODO: comment TerrainTypeIndex Property; Color of a HexCell, retriangulates when setting a
-    /// new color
+    /// Index for a cell's terrain type, retriangulates when setting a new index; the acceptable
+    /// index values are determined by a cell's material's texture array
     /// </summary>
     public int TerrainTypeIndex
     {
@@ -134,7 +135,8 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// TODO: comment LabelTypeIndex Property
+    /// Index for a cell's label type, updates a cell's label; [0: offset coordinates, 1: cube
+    /// coordinates, 2: navigation/distance label]
     /// </summary>
     public int LabelTypeIndex
     {
@@ -142,10 +144,6 @@ public class HexCell : MonoBehaviour
         {
             switch (value)
             {
-                case -1: // hide label
-                    UpdateLabel("");
-                    break;
-
                 case 0: // offset coordinates
                     string text = "i:" + globalIndex.ToString() + "\n";
                     text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
@@ -167,6 +165,10 @@ public class HexCell : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Property used for tracking a cell's distance from a source cell; when set, this cell's label
+    /// will be updated to its new distance value
+    /// </summary>
     public int Distance
     {
         get
@@ -182,6 +184,38 @@ public class HexCell : MonoBehaviour
             UpdateLabel(text, fontStyle: FontStyle.Bold, fontSize: 8);
         }
     }
+
+    /// <summary>
+    /// A reference tracker to a cell's previous neighbor that updated this cell's distance from a 
+    /// source cell; this value can be recursively used to trace the path from a cell to the
+    /// starting source cell
+    /// </summary>
+    public HexCell PathFrom { get; set; }
+
+    /// <summary>
+    /// A reference to a cell's optimal/potential distance from a source cell; this value can be
+    /// used to gauge the possible distance this cell is from the source cell and will return the 
+    /// lowest potential distance cost
+    /// </summary>
+    public int SearchHeuristic { get; set; }
+
+    /// <summary>
+    /// A reference to a cell's distance priority for when it should be evaluated in the search
+    /// relative to other cells; this value is determined by a cell's current distance from the
+    /// source cell and the search heuristic
+    /// </summary>
+    public int SearchPriority
+    {
+        get
+        {
+            return distance + SearchHeuristic;
+        }
+    }
+
+    /// <summary>
+    /// TODO: comment NextWithSamePriority prop
+    /// </summary>
+    public HexCell NextWithSamePriority { get; set; }
 
     #endregion
 

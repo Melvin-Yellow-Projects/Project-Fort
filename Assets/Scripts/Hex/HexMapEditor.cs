@@ -49,6 +49,10 @@ public class HexMapEditor : MonoBehaviour
 	bool applyElevation = true;
 	private int activeElevation;
 
+	HexCell previousCell;
+	HexCell searchFromCell;
+	HexCell searchToCell;
+
 	#endregion
 
 	/********** MARK: Unity Functions **********/
@@ -89,7 +93,7 @@ public class HexMapEditor : MonoBehaviour
 		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 
-        // did we hit anything? then color that HexCell
+		// did we hit anything? then color that HexCell
 		if (Physics.Raycast(inputRay, out hit))
 		{
 			// draw line for 1 second
@@ -98,8 +102,32 @@ public class HexMapEditor : MonoBehaviour
 			HexCell currentCell = hexGrid.GetCell(hit.point);
 
 			// edit the cells given the hit position if in edit mode
-			if (editMode) EditCells(currentCell);
-            else if (activeCellLabelType == 2) hexGrid.FindDistancesTo(currentCell); 
+			if (editMode)
+			{
+				EditCells(currentCell);
+			}
+			else if (
+                Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell
+                && activeCellLabelType == 2
+			) // in nav mode HACK: this is kinda weird b0ss
+			{
+				if (searchFromCell)
+				{
+					searchFromCell.DisableHighlight();
+				}
+				searchFromCell = currentCell;
+				searchFromCell.EnableHighlight(Color.blue);
+				if (searchToCell)
+				{
+					hexGrid.FindPath(searchFromCell, searchToCell);
+				}
+
+			}
+			else if (searchFromCell && searchFromCell != currentCell && activeCellLabelType == 2)
+			{
+				searchToCell = currentCell;
+				hexGrid.FindPath(searchFromCell, searchToCell);
+			}
 		}
 	}
 
@@ -111,9 +139,16 @@ public class HexMapEditor : MonoBehaviour
 	{
 		editMode = toggle;
 
-		// turn off cell labels during edit mode
-		int index = toggle ? -1 : activeCellLabelType;
-		hexGrid.UpdateCellUI(index);
+		// stop navigation calculation
+		hexGrid.StopAllCoroutines();
+
+		// display cell labels when not in edit mode
+		hexGrid.UpdateCellUI(activeCellLabelType);
+
+		// display cell UI when not in edit mode
+		hexGrid.ShowCellUI(!toggle);
+
+        // display the bottom panel when not in edit mode
 		transform.Find("Bottom Panel").gameObject.SetActive(!toggle);
 	}
 
@@ -214,6 +249,10 @@ public class HexMapEditor : MonoBehaviour
     public void UpdateCellUI(int index)
     {
 		activeCellLabelType = index;
+
+		// stop navigation calculation
+		hexGrid.StopAllCoroutines();
+
 		hexGrid.UpdateCellUI(index);
 	}
 

@@ -2,7 +2,7 @@
  * File Name: HexMetrics.cs
  * Description: Manual configuration file/script for hex metrics and calculations
  * 
- * Authors: Catlike Coding, Will Lacey
+ * Authors: Catlike Coding, Will Lacey 👀
  * Date Created: September 9, 2020
  * 
  * Additional Comments: 
