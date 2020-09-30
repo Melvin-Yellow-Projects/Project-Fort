@@ -213,7 +213,9 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// TODO: comment NextWithSamePriority prop
+    /// A reference to a cell's adjacent neighbor in the linked list data structure of the
+    /// HexCellPriorityQueue object; if this property is null, then the cell has no neighbor in the
+    /// queue
     /// </summary>
     public HexCell NextWithSamePriority { get; set; }
 
@@ -285,6 +287,12 @@ public class HexCell : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the label that is connected to this cell
+    /// </summary>
+    /// <param name="text">new text to write on the label</param>
+    /// <param name="fontStyle">the style of the font; default is Normal</param>
+    /// <param name="fontSize">the size of the font; default is 3</param>
     private void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
     {
         Text label = uiRectTransform.gameObject.GetComponent<Text>();
