@@ -13,6 +13,7 @@
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.IO;
 
 /// <summary>
 /// Class for editing a hex map/grid
@@ -51,7 +52,7 @@ public class HexMapEditor : MonoBehaviour
 
 	HexCell previousCell;
 	HexCell searchFromCell;
-	HexCell searchToCell;
+	HexCell searchToCell; // comment editor variables
 
 	#endregion
 
@@ -246,6 +247,10 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
+    /// <summary>
+    /// TODO: write update cell ui func
+    /// </summary>
+    /// <param name="index"></param>
     public void UpdateCellUI(int index)
     {
 		activeCellLabelType = index;

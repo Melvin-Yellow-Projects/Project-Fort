@@ -36,10 +36,28 @@ public class HexMapCamera : MonoBehaviour
 
 	public HexGrid grid;
 
+	static HexMapCamera instance;
+
+	public static bool Locked
+	{
+		set
+		{
+			instance.enabled = !value;
+		}
+	}
+
 	void Awake()
 	{
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
+	}
+
+	/// <summary>
+	/// Unity Method; This function is called when the object becomes enabled and active
+	/// </summary>
+	protected void OnEnable()
+	{
+		instance = this;
 	}
 
 	void Update()
@@ -96,11 +114,11 @@ public class HexMapCamera : MonoBehaviour
 
 	Vector3 ClampPosition(Vector3 position)
 	{
-        float xMax = (grid.chunkCountX * HexMetrics.chunkSizeX - 0.5f) *
+        float xMax = (grid.cellCountX * HexMetrics.chunkSizeX - 0.5f) *
             (2f * HexMetrics.innerRadius);
         position.x = Mathf.Clamp(position.x, 0f, xMax);
 
-        float zMax = (grid.chunkCountZ * HexMetrics.chunkSizeZ - 1) *
+        float zMax = (grid.cellCountZ * HexMetrics.chunkSizeZ - 1) *
             (1.5f * HexMetrics.outerRadius);
         position.z = Mathf.Clamp(position.z, 0f, zMax);
 
@@ -116,5 +134,10 @@ public class HexMapCamera : MonoBehaviour
 
 		float angle = Mathf.Lerp(swivelMinZoom, swivelMaxZoom, zoom);
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
+	}
+
+	public static void ValidatePosition()
+	{
+		instance.AdjustPosition(0f, 0f);
 	}
 }

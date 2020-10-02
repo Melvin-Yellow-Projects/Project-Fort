@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 /// <summary>
 /// Class for a specific hex cell or tile
@@ -92,22 +93,11 @@ public class HexCell : MonoBehaviour
         {
             if (elevation == value) return;
 
-            // update old position to new height
-            Vector3 position = transform.localPosition;
-            position.y = value * HexMetrics.elevationStep;
-
-            // perturb hex height
-            position = HexMetrics.Perturb(position, perturbElevation: true);
-
-            // set elevation to new height
+            // updates new cell position
             elevation = value;
-            transform.localPosition = position;
+            RefreshPosition();
 
-            // update ui label position; because the hex grid canvas is rotated, the labels have to
-            // be moved in the negative Z direction, instead of the positive Y direction
-            Vector3 uiPosition = uiRectTransform.localPosition;
-            uiPosition.z = -position.y;
-            uiRectTransform.localPosition = uiPosition;
+            // UNDONE: validation logic should go here for rivers, terrain, etc.
 
             // refresh the cell's chunk
             Refresh();
@@ -288,6 +278,28 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
+    /// TODO: comment RefreshPosition, is the name right since it's only for elevation?
+    /// </summary>
+    private void RefreshPosition()
+    {
+        // update old position to new height
+        Vector3 position = transform.localPosition;
+        position.y = elevation * HexMetrics.elevationStep;
+
+        // perturb hex height
+        position = HexMetrics.Perturb(position, perturbElevation: true);
+
+        // set position to new height
+        transform.localPosition = position;
+
+        // update ui label position; because the hex grid canvas is rotated, the labels have to
+        // be moved in the negative Z direction, instead of the positive Y direction
+        Vector3 uiPosition = uiRectTransform.localPosition;
+        uiPosition.z = -position.y;
+        uiRectTransform.localPosition = uiPosition;
+    }
+
+    /// <summary>
     /// Updates the label that is connected to this cell
     /// </summary>
     /// <param name="text">new text to write on the label</param>
@@ -320,6 +332,29 @@ public class HexCell : MonoBehaviour
     {
         Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
         highlight.enabled = false;
+    }
+
+    /// <summary>
+    /// TODO: write Save; because our integers will certainly be within the range of 0 to 255, we
+    /// can use bytes instead of integers; see Hex Map section 12 to see further ways to reduce
+    /// file size
+    /// </summary>
+    /// <param name="writer"></param>
+    public void Save(BinaryWriter writer)
+    {
+        writer.Write((byte)terrainTypeIndex);
+        writer.Write((byte)elevation);
+    }
+
+    /// <summary>
+    /// TODO: write Load func
+    /// </summary>
+    /// <param name="reader"></param>
+    public void Load(BinaryReader reader)
+    {
+        terrainTypeIndex = reader.ReadByte();
+        elevation = reader.ReadByte();
+        RefreshPosition();
     }
 
     #endregion

@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 /// <summary>
 /// Map/grid of HexCells
@@ -41,23 +42,23 @@ public class HexGrid : MonoBehaviour
 
 	/* Settings */
 	[Header("Settings")]
-	[Tooltip("number of chunk columns")]
-	public int chunkCountX = 4;
+	[Tooltip("number of cell in the x direction; effectively width")]
+	public int cellCountX = 20;
 
-	[Tooltip("number of chunk rows")]
-	public int chunkCountZ = 3;
+	[Tooltip("number of cell in the z direction; effectively height")]
+	public int cellCountZ = 15;
 
 	/* Private & Protected Variables */
 
 	/// <summary>
-	/// number of cell in the x direction; effectively width
+	/// number of chunk columns
 	/// </summary>
-	private int cellCountX;
+	private int chunkCountX;
 
 	/// <summary>
-	/// number of cell in the z direction; effectively height
+	/// number of chunk rows
 	/// </summary>
-	private int cellCountZ;
+	private int chunkCountZ;
 
     // references to the grid's chunks and cells
 	private HexGridChunk[] chunks;
@@ -80,15 +81,7 @@ public class HexGrid : MonoBehaviour
 		HexMetrics.noiseSource = noiseSource;
 		//HexMetrics.InitializeHashGrid(seed);
 
-		// initialize width and height
-		cellCountX = chunkCountX * HexMetrics.chunkSizeX;
-		cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
-
-        // create chunks
-		CreateChunks();
-
-		// create cells 
-		CreateCells();
+		CreateMap(cellCountX, cellCountZ);
 	}
 
 	/// <summary>
@@ -96,12 +89,10 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	protected void OnEnable()
 	{
-		if (!HexMetrics.noiseSource)
-		{
-			// this class serves as an intermediate for HexMetrics
-			HexMetrics.noiseSource = noiseSource;
-			//HexMetrics.InitializeHashGrid(seed);
-		}
+		// this class serves as an intermediate for HexMetrics
+		HexMetrics.noiseSource = noiseSource;
+		//HexMetrics.InitializeHashGrid(seed);
+		CreateMap(cellCountX, cellCountZ);
 	}
 
 	#endregion
@@ -109,9 +100,41 @@ public class HexGrid : MonoBehaviour
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
-    /// <summary>
-    /// Creates chunks of cells, builds grid row by row
-    /// </summary>
+	public bool CreateMap(int x, int z)
+	{
+        // destroy previous cells and chunks
+		if (chunks != null)
+		{
+			for (int i = 0; i < chunks.Length; i++)
+			{
+				Destroy(chunks[i].gameObject); // TODO: destroy chunks, no?
+			}
+		}
+
+		// verify valid map; UNDONE: add support for chunks that are partially filled with cells
+		if (x <= 0 || x % HexMetrics.chunkSizeX != 0 || z <= 0 || z % HexMetrics.chunkSizeZ != 0)
+		{
+			Debug.LogError("Unsupported map size.");
+			return false;
+		}
+
+		// initialize number of cells
+		cellCountX = x;
+		cellCountZ = z;
+
+		// initialize number of chunks
+		chunkCountX = cellCountX / HexMetrics.chunkSizeX;
+		chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
+
+		CreateChunks(); // create chunks
+		CreateCells(); // create cells
+
+		return true;
+	}
+
+	/// <summary>
+	/// Creates chunks of cells, builds grid row by row
+	/// </summary>
 	protected void CreateChunks()
 	{
 		chunks = new HexGridChunk[chunkCountX * chunkCountZ];
@@ -444,7 +467,11 @@ public class HexGrid : MonoBehaviour
 		return true;
     }
 
-    private void HighlightCellPath(HexCell current)
+	/// <summary>
+	/// TODO: comment HighlightCellPath
+	/// </summary>
+	/// <param name="current"></param>
+	private void HighlightCellPath(HexCell current)
     {
 		current = current.PathFrom;
 		while (current.PathFrom != null)
@@ -454,11 +481,53 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-	//public void Load(BinaryReader reader, int header)
-	//{
-	//	StopAllCoroutines(); // "Also, we should stop searching when another map is loaded"
-	//	…
-	//}
+    /// <summary>
+    /// TODO: comment save
+    /// </summary>
+    /// <param name="writer"></param>
+	public void Save(BinaryWriter writer)
+	{
+		writer.Write(cellCountX);
+		writer.Write(cellCountZ);
+
+		for (int i = 0; i < cells.Length; i++)
+		{
+			cells[i].Save(writer);
+		}
+	}
+
+    /// <summary>
+    /// TODO comment load
+    /// </summary>
+    /// <param name="reader"></param>
+	public void Load(BinaryReader reader, int header)
+	{
+		// stop searching when another map is loaded
+		StopAllCoroutines();
+
+		int x = 20, z = 15;
+		if (header >= 1)
+		{
+			x = reader.ReadInt32();
+			z = reader.ReadInt32();
+		}
+
+		// we dont need to make another map if it's the same size as the existing one
+		if (x != cellCountX || z != cellCountZ)
+		{
+			// check if map failed to be created
+			if (!CreateMap(x, z)) return;
+		}
+
+		for (int i = 0; i < cells.Length; i++)
+		{
+			cells[i].Load(reader);
+		}
+		for (int i = 0; i < chunks.Length; i++)
+		{
+			chunks[i].Refresh();
+		}
+	}
 
 	#endregion
 }

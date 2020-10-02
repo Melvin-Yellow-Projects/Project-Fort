@@ -62,7 +62,7 @@ public class PriorityQueue
 		int priority = cell.SearchPriority;
 
         // add null elements into the list until the count matches the cell's priority
-		while (priority >= ds.Count) ds.Add(null); // BUG: this might need to be a new List<HexCell>
+		while (priority >= ds.Count) ds.Add(null);
 
 		// this creates a linked list of cells; the structure of filling the list with empty cells
 		// and adding a linked list to existing indices looks like this:

@@ -2,7 +2,7 @@
  * File Name: HexMetrics.cs
  * Description: Manual configuration file/script for hex metrics and calculations
  * 
- * Authors: Catlike Coding, Will Lacey 👀
+ * Authors: Catlike Coding, Will Lacey
  * Date Created: September 9, 2020
  * 
  * Additional Comments: 
@@ -24,12 +24,12 @@ public static class HexMetrics
     /// <summary>
     /// number of hex map chunks in the X direction
     /// </summary>
-    public const int chunkSizeX = 5;
+    public const int chunkSizeX = 4;
 
     /// <summary>
     /// number of hex map chunks in the Z direction
     /// </summary>
-    public const int chunkSizeZ = 5;
+    public const int chunkSizeZ = 3;
 
     /// <summary>
     /// a hex's outer radius
