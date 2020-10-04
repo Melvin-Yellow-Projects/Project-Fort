@@ -60,11 +60,11 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	private int chunkCountZ;
 
-    // references to the grid's chunks and cells
+	// references to the grid's chunks and cells
 	private HexGridChunk[] chunks;
 	private HexCell[] cells;
 
-    // priority queue data structure
+	// priority queue data structure
 	HexCellPriorityQueue searchFrontier;
 
 	#endregion
@@ -77,7 +77,7 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	protected void Awake()
 	{
-        // Set HexMetrics's noise
+		// Set HexMetrics's noise
 		HexMetrics.noiseSource = noiseSource;
 		//HexMetrics.InitializeHashGrid(seed);
 
@@ -102,7 +102,7 @@ public class HexGrid : MonoBehaviour
 
 	public bool CreateMap(int x, int z)
 	{
-        // destroy previous cells and chunks
+		// destroy previous cells and chunks
 		if (chunks != null)
 		{
 			for (int i = 0; i < chunks.Length; i++)
@@ -181,14 +181,14 @@ public class HexGrid : MonoBehaviour
 		cellPosition.x = x;
 		cellPosition.y = 0f;
 		cellPosition.z = z;
-        
-        // calculate x position
-        cellPosition.x += (z / 2f); // offset x by half of z (horizontal shift)
+
+		// calculate x position
+		cellPosition.x += (z / 2f); // offset x by half of z (horizontal shift)
 		cellPosition.x -= (z / 2); // undo offset with integer math (this will effect odd rows) 
 		cellPosition.x *= (2f * HexMetrics.innerRadius); // multiply by correct z hex metric
 
-        // calculate z position
-        cellPosition.z *= (1.5f * HexMetrics.outerRadius);
+		// calculate z position
+		cellPosition.z *= (1.5f * HexMetrics.outerRadius);
 
 		// instantiate cell under the grid at its calculated position TODO: rewrite comment
 		HexCell cell = Instantiate<HexCell>(cellPrefab);
@@ -198,15 +198,15 @@ public class HexGrid : MonoBehaviour
 		// calculate cell's coordinates
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
-        // set global cell index
+		// set global cell index
 		cell.globalIndex = i;
 
 		// instantiate the cell's label under the grid's Canvas TODO: rewrite comment
 		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(cellPosition.x, cellPosition.z);
 
-        // set label reference to cell's UI RectTransform
-        cell.uiRectTransform = label.rectTransform;
+		// set label reference to cell's UI RectTransform
+		cell.uiRectTransform = label.rectTransform;
 
 		// set cell label to cube coordinates
 		cell.LabelTypeIndex = 1;
@@ -214,7 +214,7 @@ public class HexGrid : MonoBehaviour
 		// set cell's elevation
 		cell.Elevation = 0;
 
-        // Neighbor Logic
+		// Neighbor Logic
 		// assign cell neighbors; skip first column, then connect West cell neighbors
 		if (x > 0) cell.SetNeighbor(HexDirection.W, cells[i - 1]);
 
@@ -223,18 +223,18 @@ public class HexGrid : MonoBehaviour
 		{
 			// is z even? then connect even rows cells' Southeast & Southwest neighbors
 			if ((z % 2) == 0)
-            {
-                cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX]); // (i - width) gets neighbor i
-                if (x > 0) cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX - 1]);
-            }
-            else
-            {
-                cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX]);
-                if (x < cellCountX - 1) cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX + 1]);
-            }
-        }
+			{
+				cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX]); // (i - width) gets neighbor i
+				if (x > 0) cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX - 1]);
+			}
+			else
+			{
+				cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX]);
+				if (x < cellCountX - 1) cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX + 1]);
+			}
+		}
 
-        // add cell to its chunk
+		// add cell to its chunk
 		AddCellToChunk(x, z, cell);
 	}
 
@@ -246,7 +246,7 @@ public class HexGrid : MonoBehaviour
 	/// <param name="cell">cell to add to its chunk</param>
 	void AddCellToChunk(int x, int z, HexCell cell)
 	{
-        // gets the corresponding chunk given the offset x and z
+		// gets the corresponding chunk given the offset x and z
 		int chunkX = x / HexMetrics.chunkSizeX;
 		int chunkZ = z / HexMetrics.chunkSizeZ;
 
@@ -254,7 +254,7 @@ public class HexGrid : MonoBehaviour
 		int chunkIndex = chunkX + chunkZ * chunkCountX;
 		HexGridChunk chunk = chunks[chunkIndex];
 
-        // gets the local index for x and z
+		// gets the local index for x and z
 		int localX = x - chunkX * HexMetrics.chunkSizeX;
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
 
@@ -280,167 +280,169 @@ public class HexGrid : MonoBehaviour
 		// get a cell's index from the coordinates
 		int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
-        // return cell using index
+		// return cell using index
 		return cells[index]; // BUG: out of bounds error when editing top most cells
 	}
 
-    /// <summary>
-    /// Gets the corresponding cell given the HexCoordinates
-    /// </summary>
-    /// <param name="coordinates">a cell's coordinates</param>
-    /// <returns>a HexCell</returns>
+	/// <summary>
+	/// Gets the corresponding cell given the HexCoordinates
+	/// </summary>
+	/// <param name="coordinates">a cell's coordinates</param>
+	/// <returns>a HexCell</returns>
 	public HexCell GetCell(HexCoordinates coordinates)
 	{
-        // z coordinate validation
+		// z coordinate validation
 		int z = coordinates.Z;
 		if (z < 0 || z >= cellCountZ) return null;
 
-        // x coordinate validation
+		// x coordinate validation
 		int x = coordinates.X + z / 2;
 		if (x < 0 || x >= cellCountX) return null;
 
-        // gets cell through index calculation
+		// gets cell through index calculation
 		int index = x + z * cellCountX;
 		return cells[index];
 	}
 
-    /// <summary>
-    /// TODO: comment ShowCellUI
-    /// </summary>
-    /// <param name="visible"></param>
-    public void ShowCellUI(bool visible)
-    {
-        // stops any pathfinding and goes into new mode
-		StopAllCoroutines();
-
+	/// <summary>
+	/// TODO: comment ShowCellUI
+	/// </summary>
+	/// <param name="visible"></param>
+	public void ShowCellUI(bool visible)
+	{
 		for (int i = 0; i < chunks.Length; i++)
-        {
+		{
 			chunks[i].ShowCellUI(visible);
-        }
-    }
+		}
+	}
 
 	// TODO: comment UpdateCellUI
 	public void UpdateCellUI(int index)
-    {
-        for (int i = 0; i < cells.Length; i++)
-        {
+	{
+		for (int i = 0; i < cells.Length; i++)
+		{
 			cells[i].LabelTypeIndex = index;
-        }
+		}
 	}
 
 	// TODO: comment FindDistancesTo
-	public void FindPath(HexCell fromCell, HexCell toCell)
+	public void FindPath(HexCell fromCell, HexCell toCell, int speed)
 	{
-		StopAllCoroutines();
-		StartCoroutine(Search(fromCell, toCell));
+		Search(fromCell, toCell, speed);
 	}
 
 	// TODO: comment Breadth-First Search function
-	private IEnumerator Search(HexCell fromCell, HexCell toCell)
+	// HACK: this function is mega long
+	private void Search(HexCell fromCell, HexCell toCell, int speed)
 	{
-        // initialize the search priority queue
+		// initialize the search priority queue
 		if (searchFrontier == null) searchFrontier = new HexCellPriorityQueue();
 		else searchFrontier.Clear();
 
 		for (int i = 0; i < cells.Length; i++)
 		{
 			cells[i].Distance = int.MaxValue;
+
+			// HACK: not necessary, but this way cells will only have a val if they are in a path
 			cells[i].PathFrom = null;
-            cells[i].DisableHighlight(); // disable previous highlights
+
+			cells[i].UpdateLabel(null); // hides labels
+
+			cells[i].DisableHighlight(); // disable previous highlights
 		}
 
-        // rehighlight the from and to cells
+		// rehighlight the start cell
 		fromCell.EnableHighlight(Color.blue);
-		toCell.EnableHighlight(Color.red);
 
-        // "frequency of 60 iterations per second is slow enough that we can see what's happening"
-        // I might be using a different value
-        //WaitForSeconds delay = new WaitForSeconds(1 / 120f); // fast
-        //WaitForSeconds delay = new WaitForSeconds(1 / 60f); // medium
-        WaitForSeconds delay = new WaitForSeconds(1 / 30f); // slow
-
-        // add the starting cell to the queue
-        fromCell.Distance = 0;
+		// add the starting cell to the queue
+		fromCell.Distance = 0;
 		searchFrontier.Enqueue(fromCell);
 
 		// as long as there is something in the queue, keep searching
 		while (searchFrontier.Count > 0)
 		{
-            // wait for delay time
-			yield return delay;
-
 			// pop current cell 
 			HexCell current = searchFrontier.Dequeue();
 
 			// check if we've found the target cell
 			if (current == toCell)
 			{
-				HighlightCellPath(current);
+				HighlightCellPath(current, toCell, speed);
 				break;
 			}
 
-            // search all neighbors of the current cell
+			int currentTurn = current.Distance / speed;
+
+			// search all neighbors of the current cell
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 			{
-                // check if the neighbors are valid cells to search
+				// check if the neighbors are valid cells to search
 				HexCell neighbor = current.GetNeighbor(d);
 				if (IsValidCellForSearch(current, neighbor))
 				{
 					// if they are valid, calculate distance and add them to the queue
-					int distance = GetDistanceCalculation(current, neighbor);
+					int moveCost = GetMoveCostCalculation(current, neighbor);
 
-                    // adding a new cell that hasn't been updated
-                    if (neighbor.Distance == int.MaxValue)
-                    {
-                        neighbor.Distance = distance;
-                        neighbor.PathFrom = current;
+					// distance is calculated from move cost
+					int distance = current.Distance + moveCost;
+					int turn = distance / speed;
+
+					// this adjusts the distance if there is left over movement
+					// TODO: is this the system we want?
+					if (turn > currentTurn) distance = turn * speed + moveCost;
+
+					// adding a new cell that hasn't been updated
+					if (neighbor.Distance == int.MaxValue)
+					{
+						neighbor.Distance = distance;
+						neighbor.PathFrom = current;
 
 						// because our lowest distance cost is 1, heuristic is just the DistanceTo()
 						neighbor.SearchHeuristic =
-                            neighbor.coordinates.DistanceTo(toCell.coordinates);
+							neighbor.coordinates.DistanceTo(toCell.coordinates);
 
-                        searchFrontier.Enqueue(neighbor);
-                    }
-                    else if (distance < neighbor.Distance) // adjusting cell that's already in queue
-                    {
-                        int oldPriority = neighbor.SearchPriority;
-                        neighbor.Distance = distance;
-                        neighbor.PathFrom = current; 
-                        searchFrontier.Change(neighbor, oldPriority);
-                    }
+						searchFrontier.Enqueue(neighbor);
+					}
+					else if (distance < neighbor.Distance) // adjusting cell that's already in queue
+					{
+						int oldPriority = neighbor.SearchPriority;
+						neighbor.Distance = distance;
+						neighbor.PathFrom = current;
+						searchFrontier.Change(neighbor, oldPriority);
+					}
 				}
 			}
 		}
 	}
 
 	/// <summary>
-	/// TODO: comment GetDistanceCalculation; UNDONE: add rivers, water, edge type calculation, and
-    /// other
+	/// TODO: comment GetMoveCostCalculation; Should this be move cost or Distance calculation?
+	/// UNDONE: add rivers, water, edge type calculation, and other
 	/// </summary>
 	/// <param name="current"></param>
 	/// <param name="neighbor"></param>
 	/// <returns></returns>
-	private int GetDistanceCalculation(HexCell current, HexCell neighbor)
-    {
-        // starting distance
-		int distance = current.Distance;
+	private int GetMoveCostCalculation(HexCell current, HexCell neighbor)
+	{
+		// starting move cost
+		int moveCost = 0;
 
 		//if (current.HasRoadThroughEdge(d)) // roads
 		if (neighbor.TerrainTypeIndex == 1) // if grass 
-        {
-			distance += 1;
+		{
+			moveCost += 1;
 		}
-        else
-        {
+		else
+		{
 			HexEdgeType edgeType = current.GetEdgeType(neighbor);
-			distance += (edgeType == HexEdgeType.Flat) ? 5 : 10;
+			moveCost += (edgeType == HexEdgeType.Flat) ? 5 : 10;
 
-            // if there is special terrain features
+			// if there is special terrain features
 			//distance += neighbor.UrbanLevel + neighbor.FarmLevel +
 			//			neighbor.PlantLevel;
 		}
 
-		return distance;
+		return moveCost;
 	}
 
 	/// <summary>
@@ -450,41 +452,43 @@ public class HexGrid : MonoBehaviour
 	/// <param name="neighbor"></param>
 	/// <returns></returns>
 	private bool IsValidCellForSearch(HexCell current, HexCell neighbor)
-    {
+	{
 		// invalid if neighbor is null
 		if (neighbor == null) return false;
 
 		// invalid if cell is underwater
 		//if (neighbor.IsUnderwater) return false;
 
-        // invalid if there is a river inbetween
-        //if (current.GetEdgeType(neighbor) == river) return false;
+		// invalid if there is a river inbetween
+		//if (current.GetEdgeType(neighbor) == river) return false;
 
 		// invalid if edge between cells is a cliff
 		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
 
-        // neighbor is a valid cell
+		// neighbor is a valid cell
 		return true;
-    }
+	}
 
 	/// <summary>
 	/// TODO: comment HighlightCellPath
 	/// </summary>
 	/// <param name="current"></param>
-	private void HighlightCellPath(HexCell current)
-    {
-		current = current.PathFrom;
+	private void HighlightCellPath(HexCell current, HexCell destination, int speed)
+	{
 		while (current.PathFrom != null)
 		{
+			int turn = current.Distance / speed;
+			current.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
 			current.EnableHighlight(Color.white);
 			current = current.PathFrom;
 		}
+		destination.EnableHighlight(Color.red);
 	}
 
-    /// <summary>
-    /// TODO: comment save
-    /// </summary>
-    /// <param name="writer"></param>
+	/// <summary>
+	/// TODO: comment save
+	/// </summary>
+	/// <param name="writer"></param>
 	public void Save(BinaryWriter writer)
 	{
 		writer.Write(cellCountX);
@@ -496,15 +500,12 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-    /// <summary>
-    /// TODO comment load
-    /// </summary>
-    /// <param name="reader"></param>
+	/// <summary>
+	/// TODO comment load
+	/// </summary>
+	/// <param name="reader"></param>
 	public void Load(BinaryReader reader, int header)
 	{
-		// stop searching when another map is loaded
-		StopAllCoroutines();
-
 		int x = 20, z = 15;
 		if (header >= 1)
 		{

@@ -134,6 +134,10 @@ public class HexCell : MonoBehaviour
         {
             switch (value)
             {
+                case -1: // hide text
+                    UpdateLabel(null);
+                    break;
+
                 case 0: // offset coordinates
                     string text = "i:" + globalIndex.ToString() + "\n";
                     text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
@@ -156,24 +160,9 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
-    /// Property used for tracking a cell's distance from a source cell; when set, this cell's label
-    /// will be updated to its new distance value
+    /// Property used for tracking a cell's distance from a source cell
     /// </summary>
-    public int Distance
-    {
-        get
-        {
-            return distance;
-        }
-        set
-        {
-            distance = value;
-
-            // update distance label
-            string text = (distance == int.MaxValue) ? "" : distance.ToString();
-            UpdateLabel(text, fontStyle: FontStyle.Bold, fontSize: 8);
-        }
-    }
+    public int Distance { get; set; }
 
     /// <summary>
     /// A reference tracker to a cell's previous neighbor that updated this cell's distance from a 
@@ -305,7 +294,7 @@ public class HexCell : MonoBehaviour
     /// <param name="text">new text to write on the label</param>
     /// <param name="fontStyle">the style of the font; default is Normal</param>
     /// <param name="fontSize">the size of the font; default is 3</param>
-    private void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
+    public void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
     {
         Text label = uiRectTransform.gameObject.GetComponent<Text>();
 

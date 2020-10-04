@@ -108,26 +108,32 @@ public class HexMapEditor : MonoBehaviour
 				EditCells(currentCell);
 			}
 			else if (
-                Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell
-                && activeCellLabelType == 2
+				Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell
+				&& activeCellLabelType == 2
 			) // in nav mode HACK: this is kinda weird b0ss
 			{
-				if (searchFromCell)
-				{
-					searchFromCell.DisableHighlight();
-				}
-				searchFromCell = currentCell;
-				searchFromCell.EnableHighlight(Color.blue);
-				if (searchToCell)
-				{
-					hexGrid.FindPath(searchFromCell, searchToCell);
-				}
+			    if (searchFromCell != currentCell)
+			    { 
+				    if (searchFromCell)
+				    {
+					    searchFromCell.DisableHighlight();
+				    }
+				    searchFromCell = currentCell;
+				    searchFromCell.EnableHighlight(Color.blue);
+				    if (searchToCell)
+				    {
+					    hexGrid.FindPath(searchFromCell, searchToCell, 24);
+				    }
+			    }
 
 			}
 			else if (searchFromCell && searchFromCell != currentCell && activeCellLabelType == 2)
 			{
-				searchToCell = currentCell;
-				hexGrid.FindPath(searchFromCell, searchToCell);
+				if (searchToCell != currentCell)
+				{
+					searchToCell = currentCell;
+					hexGrid.FindPath(searchFromCell, searchToCell, 24);
+				}
 			}
 		}
 	}

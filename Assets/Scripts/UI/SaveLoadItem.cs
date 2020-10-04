@@ -1,4 +1,18 @@
-﻿using UnityEngine;
+﻿/**
+ * File Name: SaveLoadItem.cs
+ * Description: TODO: comment script
+ * 
+ * Authors: Catlike Coding, Will Lacey
+ * Date Created: October 2, 2020
+ * 
+ * Additional Comments: 
+ *      The original version of this file can be found here:
+ *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
+ *      Hex Map; this file has been updated it to better fit this project
+ **/
+
+
+using UnityEngine;
 using UnityEngine.UI;
 
 public class SaveLoadItem : MonoBehaviour
