@@ -11,7 +11,7 @@
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
  *
- *      BUG: occurs when a path is impossible
+ *      UNDONE: this can be templated if a priority queue item class is made
  **/
 
 using System.Collections.Generic;

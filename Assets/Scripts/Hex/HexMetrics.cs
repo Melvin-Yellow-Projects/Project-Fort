@@ -9,6 +9,9 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      TODO: remove private and protected headers from functions that do not need it
+ *      TODO: remove private and protected headers from variables that do not need it
  **/
 
 using UnityEngine;

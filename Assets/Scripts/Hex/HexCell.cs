@@ -121,7 +121,7 @@ public class HexCell : MonoBehaviour
 
     /// <summary>
     /// Index for a cell's label type, updates a cell's label; [0: offset coordinates, 1: cube
-    /// coordinates, 2: navigation/distance label]
+    /// coordinates, 2: navigation/distance label] HACK: is this realllllly needed
     /// </summary>
     public int LabelTypeIndex
     {
@@ -129,10 +129,6 @@ public class HexCell : MonoBehaviour
         {
             switch (value)
             {
-                case -1: // hide text
-                    UpdateLabel(null);
-                    break;
-
                 case 0: // offset coordinates
                     string text = "i:" + globalIndex.ToString() + "\n";
                     text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
@@ -143,12 +139,8 @@ public class HexCell : MonoBehaviour
                     UpdateLabel(coordinates.ToStringOnSeparateLines(addHeaders: true));
                     break;
 
-                case 2: // navigation
-                    UpdateLabel(
-                        "x",
-                        fontStyle: FontStyle.Bold,
-                        fontSize: 8
-                    );
+                case 2: // hide text (for navigation)
+                    UpdateLabel(null);
                     break;
             }
         }
@@ -192,6 +184,12 @@ public class HexCell : MonoBehaviour
     /// queue
     /// </summary>
     public HexCell NextWithSamePriority { get; set; }
+
+    /// <summary>
+    /// Tracker of which phase of the search a cell is in; either not yet in the frontier [0],
+    /// currently part of the frontier [1], or behind the frontier 2
+    /// </summary>
+    public int SearchPhase { get; set; }
 
     #endregion
 

@@ -67,6 +67,21 @@ public class HexGrid : MonoBehaviour
 	// priority queue data structure
 	HexCellPriorityQueue searchFrontier;
 
+	/// <summary>
+	/// TODO: comment var; HACK: im certain this variable isn't needed, but it might speed up
+	/// computation
+	/// </summary>
+	int searchFrontierPhase;
+
+    /// <summary>
+    /// TODO: rename these vars, start and end
+    /// </summary>
+	HexCell currentPathFrom;
+
+	HexCell currentPathTo;
+
+	bool currentPathExists;
+
 	#endregion
 
 	/********** MARK: Unity Functions **********/
@@ -102,6 +117,8 @@ public class HexGrid : MonoBehaviour
 
 	public bool CreateMap(int x, int z)
 	{
+		ClearPath();
+
 		// destroy previous cells and chunks
 		if (chunks != null)
 		{
@@ -331,33 +348,33 @@ public class HexGrid : MonoBehaviour
     // TODO: comment FindDistancesTo
     public void FindPath(HexCell fromCell, HexCell toCell, int speed)
 	{
-		Search(fromCell, toCell, speed);
+		ClearPath();
+		currentPathFrom = fromCell;
+		currentPathTo = toCell;
+		currentPathExists = Search(fromCell, toCell, speed);
+		ShowPath(speed);
 	}
 
-	// TODO: comment Breadth-First Search function
-	// HACK: this function is mega long
-	private void Search(HexCell fromCell, HexCell toCell, int speed)
+	/// <summary>
+	/// TODO: comment Breadth-First Search function
+	/// HACK: this function is mega long
+	/// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
+    /// not necessary to do so... but it might make future features or debugging easier
+	/// </summary>
+	/// <param name="fromCell"></param>
+	/// <param name="toCell"></param>
+	/// <param name="speed"></param>
+	/// <returns></returns>
+	private bool Search(HexCell fromCell, HexCell toCell, int speed)
 	{
+		searchFrontierPhase += 2; // initialize new search frontier phase
+
 		// initialize the search priority queue
 		if (searchFrontier == null) searchFrontier = new HexCellPriorityQueue();
 		else searchFrontier.Clear();
 
-		for (int i = 0; i < cells.Length; i++)
-		{
-			cells[i].Distance = int.MaxValue;
-
-            // HACK: not necessary, but this way cells will only have a val if they are in a path
-            cells[i].PathFrom = null;
-
-            cells[i].UpdateLabel(null); // hides labels
-
-			cells[i].DisableHighlight(); // disable previous highlights
-		}
-
-		// rehighlight the start cell
-		fromCell.EnableHighlight(Color.blue);
-
 		// add the starting cell to the queue
+		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
 		searchFrontier.Enqueue(fromCell);
 
@@ -366,12 +383,12 @@ public class HexGrid : MonoBehaviour
 		{
 			// pop current cell 
 			HexCell current = searchFrontier.Dequeue();
+			current.SearchPhase += 1;
 
 			// check if we've found the target cell
 			if (current == toCell)
 			{
-				HighlightCellPath(current, fromCell, speed);
-				break;
+				return true;
 			}
 
 			int currentTurn = current.Distance / speed;
@@ -395,10 +412,11 @@ public class HexGrid : MonoBehaviour
 					if (turn > currentTurn) distance = turn * speed + moveCost;
 
 					// adding a new cell that hasn't been updated
-					if (neighbor.Distance == int.MaxValue)
+					if (neighbor.SearchPhase < searchFrontierPhase)
 					{
+						neighbor.SearchPhase = searchFrontierPhase;
 						neighbor.Distance = distance;
-                        neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+                        //neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
                         neighbor.PathFrom = current;
 
 						// because our lowest distance cost is 1, heuristic is just the DistanceTo()
@@ -411,13 +429,14 @@ public class HexGrid : MonoBehaviour
 					{
 						int oldPriority = neighbor.SearchPriority;
 						neighbor.Distance = distance;
-                        neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+                        //neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
                         neighbor.PathFrom = current;
 						searchFrontier.Change(neighbor, oldPriority);
 					}
 				}
 			}
 		}
+		return false;
 	}
 
 	/// <summary>
@@ -458,8 +477,8 @@ public class HexGrid : MonoBehaviour
 	/// <returns></returns>
 	private bool IsValidCellForSearch(HexCell current, HexCell neighbor)
 	{
-		// invalid if neighbor is null
-		if (neighbor == null) return false;
+		// invalid if neighbor is null or if the cell is already out of the queue
+		if (neighbor == null || neighbor.SearchPhase > searchFrontierPhase) return false;
 
 		// invalid if cell is underwater
 		//if (neighbor.IsUnderwater) return false;
@@ -475,21 +494,51 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/// <summary>
-	/// TODO: comment HighlightCellPath
+	/// TODO: comment ShowPath
+    /// HACK: show path and clear path can be compressed into one function
 	/// </summary>
-	/// <param name="current"></param>
-	private void HighlightCellPath(HexCell current, HexCell end, int speed)
+	/// <param name="speed"></param>
+	void ShowPath(int speed)
 	{
-		HexCell start = current;
-		while (current != end)
+		if (currentPathExists)
 		{
-			int turn = current.Distance / speed;
-			current.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-			current.EnableHighlight(Color.white);
-			current = current.PathFrom;
+			HexCell current = currentPathTo;
+			while (current != currentPathFrom)
+			{
+				int turn = current.Distance / speed;
+				current.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+				current.EnableHighlight(Color.white);
+				current = current.PathFrom;
+			}
 		}
-		start.EnableHighlight(Color.red);
-    }
+		currentPathFrom.EnableHighlight(Color.blue);
+		currentPathTo.EnableHighlight(Color.red);
+	}
+
+    /// <summary>
+    /// TODO: comment ClearPath
+    /// </summary>
+	void ClearPath()
+	{
+		if (currentPathExists)
+		{
+			HexCell current = currentPathTo;
+			while (current != currentPathFrom)
+			{
+				current.UpdateLabel(null);
+				current.DisableHighlight();
+				current = current.PathFrom;
+			}
+			current.DisableHighlight();
+			currentPathExists = false;
+		}
+		else if (currentPathFrom)
+		{
+			currentPathFrom.DisableHighlight();
+			currentPathTo.DisableHighlight();
+		}
+		currentPathFrom = currentPathTo = null;
+	}
 
 	/// <summary>
 	/// TODO: comment save
@@ -512,6 +561,8 @@ public class HexGrid : MonoBehaviour
 	/// <param name="reader"></param>
 	public void Load(BinaryReader reader, int header)
 	{
+		ClearPath();
+
 		int x = 20, z = 15;
 		if (header >= 1)
 		{
