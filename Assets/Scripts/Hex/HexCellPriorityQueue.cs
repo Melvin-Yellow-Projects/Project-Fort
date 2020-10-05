@@ -10,6 +10,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      UNDONE: this can be templated if a priority queue item class is made
  **/
 
 using System.Collections.Generic;
@@ -114,7 +116,7 @@ public class HexCellPriorityQueue
 	public void Change(HexCell cell, int oldPriority)
 	{
         HexCell current = priorityQueue[oldPriority];
-        HexCell next = current.NextWithSamePriority; // this could be null
+        HexCell next = current.NextWithSamePriority; // this could be null 
 
         // fix list after removing cell logic
         if (current == cell)

@@ -59,11 +59,6 @@ public class HexCell : MonoBehaviour
     /// </summary>
     private int terrainTypeIndex;
 
-    /// <summary>
-    /// a reference to how far away a cell is from the source cell
-    /// </summary>
-    private int distance;
-
     #endregion
 
     /********** MARK: Properties **********/
@@ -126,7 +121,7 @@ public class HexCell : MonoBehaviour
 
     /// <summary>
     /// Index for a cell's label type, updates a cell's label; [0: offset coordinates, 1: cube
-    /// coordinates, 2: navigation/distance label]
+    /// coordinates, 2: navigation/distance label] HACK: is this realllllly needed
     /// </summary>
     public int LabelTypeIndex
     {
@@ -144,36 +139,17 @@ public class HexCell : MonoBehaviour
                     UpdateLabel(coordinates.ToStringOnSeparateLines(addHeaders: true));
                     break;
 
-                case 2: // navigation
-                    UpdateLabel(
-                        "x",
-                        fontStyle: FontStyle.Bold,
-                        fontSize: 8
-                    );
+                case 2: // hide text (for navigation)
+                    UpdateLabel(null);
                     break;
             }
         }
     }
 
     /// <summary>
-    /// Property used for tracking a cell's distance from a source cell; when set, this cell's label
-    /// will be updated to its new distance value
+    /// Property used for tracking a cell's distance from a source cell
     /// </summary>
-    public int Distance
-    {
-        get
-        {
-            return distance;
-        }
-        set
-        {
-            distance = value;
-
-            // update distance label
-            string text = (distance == int.MaxValue) ? "" : distance.ToString();
-            UpdateLabel(text, fontStyle: FontStyle.Bold, fontSize: 8);
-        }
-    }
+    public int Distance { get; set; }
 
     /// <summary>
     /// A reference tracker to a cell's previous neighbor that updated this cell's distance from a 
@@ -198,7 +174,7 @@ public class HexCell : MonoBehaviour
     {
         get
         {
-            return distance + SearchHeuristic;
+            return Distance + SearchHeuristic;
         }
     }
 
@@ -208,6 +184,12 @@ public class HexCell : MonoBehaviour
     /// queue
     /// </summary>
     public HexCell NextWithSamePriority { get; set; }
+
+    /// <summary>
+    /// Tracker of which phase of the search a cell is in; either not yet in the frontier [0],
+    /// currently part of the frontier [1], or behind the frontier 2
+    /// </summary>
+    public int SearchPhase { get; set; }
 
     #endregion
 
@@ -305,7 +287,7 @@ public class HexCell : MonoBehaviour
     /// <param name="text">new text to write on the label</param>
     /// <param name="fontStyle">the style of the font; default is Normal</param>
     /// <param name="fontSize">the size of the font; default is 3</param>
-    private void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
+    public void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
     {
         Text label = uiRectTransform.gameObject.GetComponent<Text>();
 
