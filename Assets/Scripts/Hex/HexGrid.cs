@@ -195,24 +195,27 @@ public class HexGrid : MonoBehaviour
 		cells[i] = cell;
 		cell.transform.localPosition = cellPosition;
 
+		// set cell name
+		cell.name = "hexcell" + UnityEngine.Random.Range(0, 100000).ToString();
+
 		// calculate cell's coordinates
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
-		// set global cell index
-		cell.globalIndex = i;
+        // set global cell index
+        cell.globalIndex = i;
 
-		// instantiate the cell's label under the grid's Canvas TODO: rewrite comment
-		Text label = Instantiate<Text>(cellLabelPrefab);
+        // instantiate the cell's label under the grid's Canvas TODO: rewrite comment
+        Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(cellPosition.x, cellPosition.z);
 
 		// set label reference to cell's UI RectTransform
 		cell.uiRectTransform = label.rectTransform;
 
-		// set cell label to cube coordinates
-		cell.LabelTypeIndex = 1;
+        // set cell label to cube coordinates
+        cell.LabelTypeIndex = 1;
 
-		// set cell's elevation
-		cell.Elevation = 0;
+        // set cell's elevation
+        cell.Elevation = 0;
 
 		// Neighbor Logic
 		// assign cell neighbors; skip first column, then connect West cell neighbors
@@ -316,17 +319,17 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-	// TODO: comment UpdateCellUI
-	public void UpdateCellUI(int index)
-	{
-		for (int i = 0; i < cells.Length; i++)
-		{
-			cells[i].LabelTypeIndex = index;
-		}
-	}
+    // TODO: comment UpdateCellUI
+    public void UpdateCellUI(int index)
+    {
+        for (int i = 0; i < cells.Length; i++)
+        {
+            cells[i].LabelTypeIndex = index;
+        }
+    }
 
-	// TODO: comment FindDistancesTo
-	public void FindPath(HexCell fromCell, HexCell toCell, int speed)
+    // TODO: comment FindDistancesTo
+    public void FindPath(HexCell fromCell, HexCell toCell, int speed)
 	{
 		Search(fromCell, toCell, speed);
 	}
@@ -343,10 +346,10 @@ public class HexGrid : MonoBehaviour
 		{
 			cells[i].Distance = int.MaxValue;
 
-			// HACK: not necessary, but this way cells will only have a val if they are in a path
-			cells[i].PathFrom = null;
+            // HACK: not necessary, but this way cells will only have a val if they are in a path
+            cells[i].PathFrom = null;
 
-			cells[i].UpdateLabel(null); // hides labels
+            cells[i].UpdateLabel(null); // hides labels
 
 			cells[i].DisableHighlight(); // disable previous highlights
 		}
@@ -367,7 +370,7 @@ public class HexGrid : MonoBehaviour
 			// check if we've found the target cell
 			if (current == toCell)
 			{
-				HighlightCellPath(current, toCell, speed);
+				HighlightCellPath(current, fromCell, speed);
 				break;
 			}
 
@@ -395,7 +398,8 @@ public class HexGrid : MonoBehaviour
 					if (neighbor.Distance == int.MaxValue)
 					{
 						neighbor.Distance = distance;
-						neighbor.PathFrom = current;
+                        neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+                        neighbor.PathFrom = current;
 
 						// because our lowest distance cost is 1, heuristic is just the DistanceTo()
 						neighbor.SearchHeuristic =
@@ -407,7 +411,8 @@ public class HexGrid : MonoBehaviour
 					{
 						int oldPriority = neighbor.SearchPriority;
 						neighbor.Distance = distance;
-						neighbor.PathFrom = current;
+                        neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+                        neighbor.PathFrom = current;
 						searchFrontier.Change(neighbor, oldPriority);
 					}
 				}
@@ -428,7 +433,7 @@ public class HexGrid : MonoBehaviour
 		int moveCost = 0;
 
 		//if (current.HasRoadThroughEdge(d)) // roads
-		if (neighbor.TerrainTypeIndex == 1) // if grass 
+		if (current.TerrainTypeIndex == 1) // if grass 
 		{
 			moveCost += 1;
 		}
@@ -473,17 +478,18 @@ public class HexGrid : MonoBehaviour
 	/// TODO: comment HighlightCellPath
 	/// </summary>
 	/// <param name="current"></param>
-	private void HighlightCellPath(HexCell current, HexCell destination, int speed)
+	private void HighlightCellPath(HexCell current, HexCell end, int speed)
 	{
-		while (current.PathFrom != null)
+		HexCell start = current;
+		while (current != end)
 		{
 			int turn = current.Distance / speed;
 			current.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
 			current.EnableHighlight(Color.white);
 			current = current.PathFrom;
 		}
-		destination.EnableHighlight(Color.red);
-	}
+		start.EnableHighlight(Color.red);
+    }
 
 	/// <summary>
 	/// TODO: comment save

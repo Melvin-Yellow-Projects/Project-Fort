@@ -144,56 +144,56 @@ public static class HexMetrics
     /// <param name="direction">given HexDirection</param>
     /// <returns>the location of a Hex corner</returns>
     public static Vector3 GetFirstCorner(HexDirection direction)
-	{
-		return corners[(int)direction];
-	}
+    {
+        return corners[(int)direction];
+    }
 
-	/// <summary>
-	/// Gets the second corner of a given direction (corner that is to the right from the center)
-	/// </summary>
-	/// <param name="direction">given HexDirection</param>
-	/// <returns>the location of a Hex corner</returns>
-	public static Vector3 GetSecondCorner(HexDirection direction)
-	{
-		return corners[(int)direction + 1];
-	}
+    /// <summary>
+    /// Gets the second corner of a given direction (corner that is to the right from the center)
+    /// </summary>
+    /// <param name="direction">given HexDirection</param>
+    /// <returns>the location of a Hex corner</returns>
+    public static Vector3 GetSecondCorner(HexDirection direction)
+    {
+        return corners[(int)direction + 1];
+    }
 
-	/// <summary>
-	/// Gets the first solid, unaltered corner of a given direction (corner that is to the left from 
+    /// <summary>
+    /// Gets the first solid, unaltered corner of a given direction (corner that is to the left from 
     /// the center and unaltered by neighboring cells)
-	/// </summary>
-	/// <param name="direction">given HexDirection</param>
-	/// <returns>the location of a solid Hex corner</returns>
-	public static Vector3 GetFirstSolidCorner(HexDirection direction)
-	{
-		return corners[(int)direction] * solidFactor;
-	}
+    /// </summary>
+    /// <param name="direction">given HexDirection</param>
+    /// <returns>the location of a solid Hex corner</returns>
+    public static Vector3 GetFirstSolidCorner(HexDirection direction)
+    {
+        return corners[(int)direction] * solidFactor;
+    }
 
-	/// <summary>
-	/// Gets the second solid, unaltered corner of a given direction (corner that is to the right 
+    /// <summary>
+    /// Gets the second solid, unaltered corner of a given direction (corner that is to the right 
     /// from the center and unaltered by neighboring cells)
-	/// </summary>
-	/// <param name="direction">given HexDirection</param>
-	/// <returns>the location of a solid Hex corner</returns>
-	public static Vector3 GetSecondSolidCorner(HexDirection direction)
-	{
-		return corners[(int)direction + 1] * solidFactor;
-	}
+    /// </summary>
+    /// <param name="direction">given HexDirection</param>
+    /// <returns>the location of a solid Hex corner</returns>
+    public static Vector3 GetSecondSolidCorner(HexDirection direction)
+    {
+        return corners[(int)direction + 1] * solidFactor;
+    }
 
-	/// <summary>
-	/// Returns the midpoint between the two vertices of a HexDirection, which is multiplied such
+    /// <summary>
+    /// Returns the midpoint between the two vertices of a HexDirection, which is multiplied such
     /// that it extends to the neighboring HexCell's solid Hex; a diagram can be viewed here between
     /// v1 and v2:
     /// https://catlikecoding.com/unity/tutorials/hex-map/part-2/blend-regions/edge-bridge.png
-	/// </summary>
-	/// <param name="direction">given HexDirection</param>
-	/// <returns>the bridge point</returns>
-	public static Vector3 GetBridge(HexDirection direction)
-	{
-		// multiplying by blendFactor causes overlap (opposed to just averaging the vectors) this is
+    /// </summary>
+    /// <param name="direction">given HexDirection</param>
+    /// <returns>the bridge point</returns>
+    public static Vector3 GetBridge(HexDirection direction)
+    {
+        // multiplying by blendFactor causes overlap (opposed to just averaging the vectors) this is
         // done to reduce triangulation
-		return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
-	}
+        return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
+    }
 
     /// <summary>
     /// Linear interpolation between terrace point 'a' to terrace point 'b'
@@ -246,7 +246,7 @@ public static class HexMetrics
 
         // check if flat
         if (elevation1 == elevation2) edgeType = HexEdgeType.Flat;
-        
+
         // return slope
         return edgeType;
     }

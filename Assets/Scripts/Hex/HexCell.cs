@@ -59,11 +59,6 @@ public class HexCell : MonoBehaviour
     /// </summary>
     private int terrainTypeIndex;
 
-    /// <summary>
-    /// a reference to how far away a cell is from the source cell
-    /// </summary>
-    private int distance;
-
     #endregion
 
     /********** MARK: Properties **********/
@@ -187,7 +182,7 @@ public class HexCell : MonoBehaviour
     {
         get
         {
-            return distance + SearchHeuristic;
+            return Distance + SearchHeuristic;
         }
     }
 
