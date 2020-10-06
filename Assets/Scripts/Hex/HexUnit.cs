@@ -3,15 +3,12 @@
  * Description: Script for managing a hex unit
  * 
  * Authors: Catlike Coding, Will Lacey
- * Date Created: September 9, 2020
+ * Date Created: October 6, 2020
  * 
  * Additional Comments: 
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
- *
- *      TODO: remove private and protected headers from functions that do not need it
- *      TODO: remove private and protected headers from variables that do not need it
  **/
 
 using UnityEngine;
@@ -44,6 +41,8 @@ public class HexUnit : MonoBehaviour
         }
         set
         {
+            if (location) location.Unit = null;
+
             location = value;
             value.Unit = this; // sets this hex cell's unit to this one
             transform.localPosition = value.Position;
@@ -71,6 +70,17 @@ public class HexUnit : MonoBehaviour
 
     /********** MARK: Class Functions **********/
     #region Class Functions
+
+    public bool IsValidDestination(HexCell cell)
+    {
+        bool isValid = true;
+
+        isValid &= !cell.Unit; // cell does not already have a unit
+
+        //isValid &= !cell.IsUnderwater; // cell is not underwater
+
+        return isValid;
+    }
 
     public void ValidateLocation()
     {
