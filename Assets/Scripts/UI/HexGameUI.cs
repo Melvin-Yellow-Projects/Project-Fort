@@ -40,13 +40,13 @@ public class HexGameUI : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
         {
-            if (Input.GetMouseButtonDown(0)) // HACK: hardcoded input
+            if (Input.GetMouseButtonDown(0)) // HACK: hardcoded input / left click
             { 
                 DoSelection();
             }
             else if (selectedUnit)
             {
-                if (Input.GetMouseButtonDown(1))
+                if (Input.GetMouseButtonDown(1)) //right click
                 {
                     DoMove();
                 }

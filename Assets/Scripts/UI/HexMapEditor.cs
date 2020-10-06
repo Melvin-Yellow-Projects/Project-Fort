@@ -60,7 +60,13 @@ public class HexMapEditor : MonoBehaviour
     {
         // turn off grid
         terrainMaterial.DisableKeyword("GRID_ON");
+    }
 
+    /// <summary>
+    /// Unity Method; Start() is called before the first frame update
+    /// </summary>
+    protected void Start()
+    {
         // disable hex map editor
         SetEditMode(false);
     }

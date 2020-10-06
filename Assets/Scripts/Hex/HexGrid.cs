@@ -437,7 +437,7 @@ public class HexGrid : MonoBehaviour
 				return true;
 			}
 
-			int currentTurn = current.Distance / speed;
+			int currentTurn = (current.Distance - 1) / speed;
 
 			// search all neighbors of the current cell
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -451,7 +451,7 @@ public class HexGrid : MonoBehaviour
 
 					// distance is calculated from move cost
 					int distance = current.Distance + moveCost;
-					int turn = distance / speed;
+					int turn = (distance - 1) / speed;
 
 					// this adjusts the distance if there is left over movement
 					// TODO: is this the system we want?
@@ -554,7 +554,7 @@ public class HexGrid : MonoBehaviour
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom)
 			{
-				int turn = current.Distance / speed;
+				int turn = (current.Distance - 1) / speed;
 				current.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
