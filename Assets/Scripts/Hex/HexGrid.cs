@@ -85,17 +85,33 @@ public class HexGrid : MonoBehaviour
 
 	bool currentPathExists;
 
-	List<HexUnit> units = new List<HexUnit>(); 
+	List<HexUnit> units = new List<HexUnit>();
 
 	#endregion
 
-	/********** MARK: Unity Functions **********/
-	#region Unity Functions
+	/********** MARK: Properties **********/
+	#region Properties
 
 	/// <summary>
-	/// Unity Method; Awake() is called before Start() upon GameObject creation
+	/// TODO: comment HasPath prop
 	/// </summary>
-	protected void Awake()
+	public bool HasPath
+	{
+		get
+		{
+			return currentPathExists;
+		}
+	}
+
+    #endregion
+
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
+
+    /// <summary>
+    /// Unity Method; Awake() is called before Start() upon GameObject creation
+    /// </summary>
+    protected void Awake()
 	{
 		// Set HexMetrics's noise
 		HexMetrics.noiseSource = noiseSource;
@@ -332,6 +348,28 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
+
+	/// <summary>
+	/// TODO: comment GetCell and touch up vars
+	/// </summary>
+	/// <returns></returns>
+	public HexCell GetCell(Ray inputRay)
+	{
+		RaycastHit hit;
+
+		// did we hit anything? then return that HexCell
+		if (Physics.Raycast(inputRay, out hit))
+		{
+			// draw line for 1 second
+			Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
+
+			return GetCell(hit.point);
+		}
+
+		// nothing was found
+		return null;
+	}
+
 	/// <summary>
 	/// TODO: comment ShowCellUI
 	/// </summary>
@@ -347,10 +385,10 @@ public class HexGrid : MonoBehaviour
     // TODO: comment UpdateCellUI
     public void UpdateCellUI(int index)
     {
-        for (int i = 0; i < cells.Length; i++)
-        {
-            cells[i].LabelTypeIndex = index;
-        }
+        //for (int i = 0; i < cells.Length; i++)
+        //{
+        //    cells[i].LabelTypeIndex = index;
+        //}
     }
 
     // TODO: comment FindDistancesTo
@@ -491,6 +529,9 @@ public class HexGrid : MonoBehaviour
 		// invalid if cell is underwater
 		//if (neighbor.IsUnderwater) return false;
 
+        // if a Unit exists on this cell
+		if (neighbor.Unit) return false; // TODO: check unit type
+
 		// invalid if there is a river inbetween
 		//if (current.GetEdgeType(neighbor) == river) return false;
 
@@ -526,7 +567,7 @@ public class HexGrid : MonoBehaviour
     /// <summary>
     /// TODO: comment ClearPath
     /// </summary>
-	void ClearPath()
+	public void ClearPath()
 	{
 		if (currentPathExists)
 		{

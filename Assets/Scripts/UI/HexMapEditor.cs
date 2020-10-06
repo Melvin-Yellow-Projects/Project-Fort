@@ -35,8 +35,6 @@ public class HexMapEditor : MonoBehaviour
     // redacted
 
     /* Private & Protected Variables */
-    bool editMode;
-
     int brushSize;
 
     /// <summary>
@@ -50,10 +48,6 @@ public class HexMapEditor : MonoBehaviour
     bool applyElevation = true;
     private int activeElevation;
 
-    //HexCell previousCell;
-    HexCell searchFromCell;
-    HexCell searchToCell; // comment editor variables
-
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -66,6 +60,9 @@ public class HexMapEditor : MonoBehaviour
     {
         // turn off grid
         terrainMaterial.DisableKeyword("GRID_ON");
+
+        // disable hex map editor
+        SetEditMode(false);
     }
 
     /// <summary>
@@ -112,39 +109,7 @@ public class HexMapEditor : MonoBehaviour
         HexCell currentCell = GetCellUnderCursor();
         if (currentCell)
         {
-            // edit the cells given the hit position if in edit mode
-            if (editMode)
-            {
-                EditCells(currentCell);
-            }
-            else if (
-                Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell
-                && activeCellLabelType == 2
-            ) // in nav mode HACK: this is kinda weird b0ss
-            {
-                if (searchFromCell != currentCell)
-                {
-                    if (searchFromCell)
-                    {
-                        searchFromCell.DisableHighlight();
-                    }
-                    searchFromCell = currentCell;
-                    searchFromCell.EnableHighlight(Color.blue);
-                    if (searchToCell)
-                    {
-                        hexGrid.FindPath(searchFromCell, searchToCell, 24);
-                    }
-                }
-
-            }
-            else if (searchFromCell && searchFromCell != currentCell && activeCellLabelType == 2)
-            {
-                if (searchToCell != currentCell)
-                {
-                    searchToCell = currentCell;
-                    hexGrid.FindPath(searchFromCell, searchToCell, 24);
-                }
-            }
+            EditCells(currentCell);
         }
     }
 
@@ -154,21 +119,8 @@ public class HexMapEditor : MonoBehaviour
     /// <returns></returns>
     HexCell GetCellUnderCursor()
     {
-        // Ray and RaycastHit for camera to mouse position in world space
-        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        // did we hit anything? then return that HexCell
-        if (Physics.Raycast(inputRay, out hit))
-        {
-            // draw line for 1 second
-            Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
-
-            return hexGrid.GetCell(hit.point);
-        }
-
-        // nothing was found
-        return null;
+        // Ray for camera to mouse position in world space
+        return hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
     }
 
     /// <summary>
@@ -177,10 +129,8 @@ public class HexMapEditor : MonoBehaviour
     /// <param name="toggle"></param>
 	public void SetEditMode(bool toggle)
     {
-        editMode = toggle;
-
-        // stop navigation calculation
-        hexGrid.StopAllCoroutines();
+        // toggle on editor mode
+        enabled = toggle;
 
         // display cell labels when not in edit mode
         hexGrid.UpdateCellUI(activeCellLabelType);

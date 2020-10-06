@@ -9883,6 +9883,8 @@ MonoBehaviour:
   chunkPrefab: {fileID: 8047540563214710014, guid: abdb84c07d29c48fdbd50fbc8ac049dc,
     type: 3}
   noiseSource: {fileID: 2800000, guid: 1e50e6ea9fe0e4d769145f832958c457, type: 3}
+  unitPrefab: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+    type: 3}
   cellCountX: 20
   cellCountZ: 15
 --- !u!4 &1375060787
