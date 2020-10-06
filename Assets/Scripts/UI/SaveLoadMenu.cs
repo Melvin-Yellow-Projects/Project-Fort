@@ -165,7 +165,7 @@ public class SaveLoadMenu : MonoBehaviour
         // sense of this... so ignore warnings or any editor suggestions outside of Unity Editor
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
-            writer.Write(0);
+            writer.Write(2);
             hexGrid.Save(writer);
         }
     }
@@ -187,7 +187,7 @@ public class SaveLoadMenu : MonoBehaviour
         using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
         {
             int header = reader.ReadInt32();
-            if (header <= 1)
+            if (header <= 2)
             {
                 hexGrid.Load(reader, header);
 

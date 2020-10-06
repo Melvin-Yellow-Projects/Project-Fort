@@ -191,6 +191,11 @@ public class HexCell : MonoBehaviour
     /// </summary>
     public int SearchPhase { get; set; }
 
+    /// <summary>
+    /// TODO: comment Unit
+    /// </summary>
+    public HexUnit Unit { get; set; }
+
     #endregion
 
     /********** MARK: Class Functions **********/
@@ -256,8 +261,17 @@ public class HexCell : MonoBehaviour
                     neighbor.chunk.Refresh();
                 }
             }
+
+            // refresh unit location
+            if (Unit) Unit.ValidateLocation();
         }
     }
+
+    //void RefreshSelfOnly()
+    //{
+    //    chunk.Refresh();
+    //    if (Unit) Unit.ValidateLocation();
+    //}
 
     /// <summary>
     /// TODO: comment RefreshPosition, is the name right since it's only for elevation?

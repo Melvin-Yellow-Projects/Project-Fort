@@ -50,7 +50,7 @@ public class HexMapEditor : MonoBehaviour
     bool applyElevation = true;
     private int activeElevation;
 
-    HexCell previousCell;
+    //HexCell previousCell;
     HexCell searchFromCell;
     HexCell searchToCell; // comment editor variables
 
@@ -70,14 +70,32 @@ public class HexMapEditor : MonoBehaviour
 
     /// <summary>
     /// Unity Method; Update() is called once per frame
+    /// HACK: direct manipulation of input
     /// </summary>
     protected void Update()
     {
         // TODO: convert GetMouseButton to a specific input action
-        if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            HandleInput();
+            if (Input.GetMouseButton(0))
+            {
+                HandleInput();
+                return;
+            }
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    DestroyUnit();
+                }
+                else
+                {
+                    CreateUnit();
+                }
+                return;
+            }
         }
+        //previousCell = null;
     }
 
     #endregion
@@ -87,21 +105,13 @@ public class HexMapEditor : MonoBehaviour
 
     /// <summary>
     /// Handles the input from a player
+    /// HACK: raw input from left shift is used, should be an action
     /// </summary>
     protected void HandleInput()
     {
-        // Ray and RaycastHit for camera to mouse position in world space
-        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        // did we hit anything? then color that HexCell
-        if (Physics.Raycast(inputRay, out hit))
+        HexCell currentCell = GetCellUnderCursor();
+        if (currentCell)
         {
-            // draw line for 1 second
-            Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
-
-            HexCell currentCell = hexGrid.GetCell(hit.point);
-
             // edit the cells given the hit position if in edit mode
             if (editMode)
             {
@@ -136,6 +146,29 @@ public class HexMapEditor : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// TODO: comment GetCellUnderCursor
+    /// </summary>
+    /// <returns></returns>
+    HexCell GetCellUnderCursor()
+    {
+        // Ray and RaycastHit for camera to mouse position in world space
+        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        // did we hit anything? then return that HexCell
+        if (Physics.Raycast(inputRay, out hit))
+        {
+            // draw line for 1 second
+            Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
+
+            return hexGrid.GetCell(hit.point);
+        }
+
+        // nothing was found
+        return null;
     }
 
     /// <summary>
@@ -265,6 +298,30 @@ public class HexMapEditor : MonoBehaviour
         hexGrid.StopAllCoroutines();
 
         hexGrid.UpdateCellUI(index);
+    }
+
+    /// <summary>
+    /// TODO: comment func CreateUnit
+    /// </summary>
+    void CreateUnit()
+    {
+        HexCell cell = GetCellUnderCursor();
+        if (cell && !cell.Unit) // if the cell exists and the cell does not have a unit...
+        {
+            hexGrid.AddUnit(Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f));
+        }
+    }
+
+    /// <summary>
+    /// TODO: comment func Destroy Unit
+    /// </summary>
+    void DestroyUnit()
+    {
+        HexCell cell = GetCellUnderCursor();
+        if (cell && cell.Unit) // if the cell exists and the cell does have a unit...
+        {
+            hexGrid.RemoveUnit(cell.Unit);
+        }
     }
 
     #endregion
