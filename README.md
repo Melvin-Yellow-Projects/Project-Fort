@@ -7,7 +7,7 @@ A medieval, chess-like strategy game where multiple players compete against one 
 
 
 ### Tags
-<strong>strategy</strong>, <strong>chess</strong>, <strong>turn-based</strong>, <strong>RTS</strong>, <strong>medieval</strong>
+<strong>#strategy</strong>, <strong>chess</strong>, <strong>turn-based</strong>, <strong>RTS</strong>, <strong>medieval</strong>
 
 
 ### Todo
@@ -30,7 +30,7 @@ List of objectives to complete
 	- Tutorials
 		- [x] Catlike Coding Hex Map, Unit Pathfinding
 
-- **Week 2 (October 5, 2020): Basic Play Mode**
+- **Week 2 (October 5, 2020): Refactoring and Basic Play Mode**
 	- Game Design
 		- [x] initial concept design
 		- [ ] keyframe design
