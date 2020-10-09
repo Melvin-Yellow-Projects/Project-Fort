@@ -28,7 +28,7 @@ using UnityEngine;
 public class DebugComments : MonoBehaviour
 {
     /********** MARK: Public Variables **********/
-    #region Variables
+    #region Public Variables
 
     /* Cached References */
     [Header("Cached References")]
@@ -43,7 +43,7 @@ public class DebugComments : MonoBehaviour
     #endregion
 
     /********** MARK: Private Variables **********/
-    #region Variables
+    #region Private Variables
 
     /// <summary>
     /// This is a description for this confusing variable

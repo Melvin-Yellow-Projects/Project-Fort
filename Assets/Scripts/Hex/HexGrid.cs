@@ -252,13 +252,11 @@ public class HexGrid : MonoBehaviour
 		// set label reference to cell's UI RectTransform
 		cell.uiRectTransform = label.rectTransform;
 
-        // set cell label to cube coordinates
-        cell.LabelTypeIndex = 1;
-
         // set cell's elevation
         cell.Elevation = 0;
 
-		// Neighbor Logic
+		/****** Neighbor Logic *****/
+
 		// assign cell neighbors; skip first column, then connect West cell neighbors
 		if (x > 0) cell.SetNeighbor(HexDirection.W, cells[i - 1]);
 
@@ -370,25 +368,13 @@ public class HexGrid : MonoBehaviour
 		return null;
 	}
 
-	/// <summary>
-	/// TODO: comment ShowCellUI
-	/// </summary>
-	/// <param name="visible"></param>
-	public void ShowCellUI(bool visible)
-	{
-		for (int i = 0; i < chunks.Length; i++)
-		{
-			chunks[i].ShowCellUI(visible);
-		}
-	}
-
     // TODO: comment UpdateCellUI
     public void UpdateCellUI(int index)
     {
-        //for (int i = 0; i < cells.Length; i++)
-        //{
-        //    cells[i].LabelTypeIndex = index;
-        //}
+        for (int i = 0; i < cells.Length; i++)
+        {
+            cells[i].LabelTypeIndex = index;
+        }
     }
 
     // TODO: comment FindDistancesTo

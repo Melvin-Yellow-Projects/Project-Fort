@@ -1,6 +1,7 @@
 ﻿/**
  * File Name: TextureArrayWizard.cs
- * Description: TODO: TextureArrayWizard script description
+ * Description: Script for creating a custom widget/wizard to create a texture array asset for more
+ *                  information, see https://docs.unity3d.com/ScriptReference/ScriptableWizard.html
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 27, 2020
@@ -27,7 +28,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// TODO: TextureArrayWizard class description
+/// UI wizard Class to create a custom Texture Array
 /// </summary>
 public class TextureArrayWizard : ScriptableWizard
 {
@@ -41,22 +42,24 @@ public class TextureArrayWizard : ScriptableWizard
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    // "To access the wizard via the editor, we have to add this method to Unity's menu. This is 
-    // done by adding the MenuItem attribute to the method. Let's add it to the Assets menu, 
-    // specifically Assets / Create / Texture Array."
+    /// <summary>
+    /// "To access the wizard via the editor, we have to add this method to Unity's menu. This is 
+    /// done by adding the MenuItem attribute to the method. Let's add it to the Assets menu, 
+    /// specifically Assets / Create / Texture Array."
+    /// </summary>
     [MenuItem("Assets/Create/Texture Array")]
     static void CreateWizard()
     {
         // "We can open our wizard via the generic static ScriptableWizard.DisplayWizard method. Its
         // parameters are the names of the wizard's window and its create button."
-        ScriptableWizard.DisplayWizard<TextureArrayWizard>(             
-            "Create Texture Array", "Create"
-        );
+        ScriptableWizard.DisplayWizard<TextureArrayWizard>("Create Texture Array", "Create");
     }
 
-    // "When you press the wizard's Create button, it will disappear. Also, Unity will complain that
-    // there's no OnWizardCreate method. This is the method that gets invoked when the create button
-    // is pressed, so we should add it to our wizard."
+    /// <summary>
+    /// "When you press the wizard's Create button, it will disappear. Also, Unity will complain 
+    /// that there's no OnWizardCreate method. This is the method that gets invoked when the create 
+    /// button is pressed, so we should add it to our wizard."
+    /// </summary>
     void OnWizardCreate()
     {
         // no textures were added to the panel
@@ -105,8 +108,8 @@ public class TextureArrayWizard : ScriptableWizard
         // write the data to a file in the project, and it will appear in the project window
         AssetDatabase.CreateAsset(textureArray, path);
 
-        // this needs to be done manually after creating the asset as this is a Read Only property;
-        // we do this because we don't need to read pixel data from the array
+        // this needs to be done manually (in the editor) after creating the asset as this is a Read
+        // Only property; we do this because we don't need to read pixel data from the array
         //textureArray.isReadable = false;
     }
 

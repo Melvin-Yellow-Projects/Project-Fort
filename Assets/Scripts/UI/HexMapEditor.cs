@@ -14,14 +14,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.IO;
+using UnityEngine.UI;
 
 /// <summary>
 /// Class for editing a hex map/grid
 /// </summary>
 public class HexMapEditor : MonoBehaviour
 {
-    /********** MARK: Variables **********/
-    #region Variables
+    /********** MARK: Public Variables **********/
+    #region Public Variables
 
     /* Cached References */
     [Header("Cached References")]
@@ -34,14 +35,18 @@ public class HexMapEditor : MonoBehaviour
     /* Settings */
     // redacted
 
-    /* Private & Protected Variables */
+    #endregion
+
+    /********** MARK: Private Variables **********/
+    #region Private Variables
+
     int brushSize;
 
     /// <summary>
     /// tracks which label is to be displayed on the cells, a value of 1 initializes the cells to
     /// cube coordinates
     /// </summary>
-	int activeCellLabelType = 1;
+	int activeCellLabelType = 0;
 
     int activeTerrainTypeIndex;
 
@@ -138,14 +143,15 @@ public class HexMapEditor : MonoBehaviour
         // toggle on editor mode
         enabled = toggle;
 
-        // display cell labels when not in edit mode
-        hexGrid.UpdateCellUI(activeCellLabelType);
+        // reset hexcell display
+        hexGrid.UpdateCellUI(0); // turn off cells
 
-        // display cell UI when not in edit mode
-        hexGrid.ShowCellUI(!toggle);
+        // display the bottom panel when in edit mode
+        Transform bottomPanel = transform.Find("Bottom Panel");
+        bottomPanel.gameObject.SetActive(toggle);
 
-        // display the bottom panel when not in edit mode
-        transform.Find("Bottom Panel").gameObject.SetActive(!toggle);
+        // reset cell UI toggle in bottom panel
+        bottomPanel.Find("Cell Panel").Find("Toggle ---").GetComponent<Toggle>().isOn = true;
     }
 
     /// <summary>

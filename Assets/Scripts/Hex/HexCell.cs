@@ -129,18 +129,18 @@ public class HexCell : MonoBehaviour
         {
             switch (value)
             {
-                case 0: // offset coordinates
+                case 0: // hide text (for navigation)
+                    UpdateLabel(null);
+                    break;
+
+                case 1: // offset coordinates
                     string text = "i:" + globalIndex.ToString() + "\n";
                     text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
                     UpdateLabel(text);
                     break;
 
-                case 1: // cube coordinates
+                case 2: // cube coordinates
                     UpdateLabel(coordinates.ToStringOnSeparateLines(addHeaders: true));
-                    break;
-
-                case 2: // hide text (for navigation)
-                    UpdateLabel(null);
                     break;
             }
         }

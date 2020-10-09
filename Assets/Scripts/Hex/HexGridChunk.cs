@@ -519,15 +519,6 @@ public class HexGridChunk : MonoBehaviour
     }
 
     /// <summary>
-    /// TODO: comment ShowCellUI
-    /// </summary>
-    /// <param name="visible"></param>
-    public void ShowCellUI(bool visible)
-    {
-        gridCanvas.gameObject.SetActive(visible);
-    }
-
-    /// <summary>
     /// TODO: comment refresh
     /// </summary>
     public void Refresh()

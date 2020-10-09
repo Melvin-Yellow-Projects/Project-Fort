@@ -4711,7 +4711,7 @@ GameObject:
   - component: {fileID: 587040627}
   - component: {fileID: 587040628}
   m_Layer: 5
-  m_Name: Toggle Cube
+  m_Name: Toggle Offset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4795,7 +4795,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &631250381
 GameObject:
   m_ObjectHideFlags: 0
@@ -5388,9 +5388,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Offset
-
-'
+  m_Text: ---
 --- !u!222 &704933725
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9015,7 +9013,7 @@ GameObject:
   - component: {fileID: 1179222546}
   - component: {fileID: 1179222547}
   m_Layer: 5
-  m_Name: Toggle Nav
+  m_Name: Toggle Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13220,6 +13218,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1596436050}
+        m_MethodName: SetEditMode
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
 --- !u!1 &1772413337
 GameObject:
@@ -13549,9 +13558,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Nav
-
-'
+  m_Text: Cube
 --- !u!222 &1803460816
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13831,7 +13838,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Cube
+  m_Text: 'Offset
 
 '
 --- !u!222 &1838989543
@@ -16012,7 +16019,7 @@ GameObject:
   - component: {fileID: 2088360599}
   - component: {fileID: 2088360600}
   m_Layer: 5
-  m_Name: Toggle Offset
+  m_Name: Toggle ---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16096,7 +16103,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &2089644192
 GameObject:
   m_ObjectHideFlags: 0

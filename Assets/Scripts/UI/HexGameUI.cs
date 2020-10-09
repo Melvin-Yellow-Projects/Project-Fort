@@ -77,8 +77,8 @@ public class HexGameUI : MonoBehaviour
 
     public void SetEditMode(bool toggle)
     {
+        Debug.Log("Game UI is toggled:" + toggle);
         enabled = !toggle;
-        grid.ShowCellUI(!toggle);
         grid.ClearPath();
     }
 
