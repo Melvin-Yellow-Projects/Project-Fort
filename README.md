@@ -1,8 +1,14 @@
 # Project: Fort
 ### Turn-Based Strategy Game
 
+
 ### Description
 A medieval, chess-like strategy game where multiple players compete against one another for control of forts
+
+
+### Tags
+<strong>strategy</strong>, <strong>chess</strong>, <strong>turn-based</strong>, <strong>RTS</strong>, <strong>medieval</strong>
+
 
 ### Todo
 List of objectives to complete
@@ -18,8 +24,8 @@ List of objectives to complete
 
 - **Week 1 (September 28, 2020): Initialization II**
 	- Game Design
-		- [x] piece design II
 		- [x] movement system (turn-based, simultaneous turns, realtime) 
+		- [x] multiplayer design I
 		- [x] piece stacking & collisions
 	- Tutorials
 		- [x] Catlike Coding Hex Map, Unit Pathfinding
@@ -41,8 +47,11 @@ List of objectives to complete
 	- Tutorials
 		- [x] Catlike Coding Hex Map, Unit Animation
 	- Other
+		- [ ] organize README.md
 		- [ ] create a 1 second video collection starting from october 1st
 		- [ ] resume 1 second a day videos
+		- [ ] emails 
+
 
 ### Future Dates & Features
 List of future objectives to complete
