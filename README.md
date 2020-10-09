@@ -7,7 +7,7 @@ A medieval, chess-like strategy game where multiple players compete against one 
 
 
 ### Tags
-<strong>#strategy</strong>, <strong>chess</strong>, <strong>turn-based</strong>, <strong>RTS</strong>, <strong>medieval</strong>
+<strong>#strategy #chess #turn-based #medieval #RTS</strong>
 
 
 ### Todo
@@ -19,6 +19,7 @@ List of objectives to complete
 		- [x] keyframe design
 		- [x] piece design I
 		- [x] combat system I
+		- [x] day and night cycle design
 	- Tutorials
 		- [x] Catlike Coding Hex Map, Map Editing
 
