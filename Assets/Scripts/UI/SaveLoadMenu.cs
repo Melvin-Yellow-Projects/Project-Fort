@@ -54,6 +54,15 @@ public class SaveLoadMenu : MonoBehaviour
         hexGrid = FindObjectOfType<HexGrid>(); // assumes one hex grid in scene
     }
 
+    /// <summary>
+    /// Unity Method; Update() is called once per frame
+    /// </summary>
+    protected void Update()
+    {
+        // HACK: these inputs are hardcoded, is that okay?
+        if (Input.GetKeyDown("return") || Input.GetKeyDown("enter")) Action();
+    }
+
     #endregion
 
     /********** MARK: Class Functions **********/

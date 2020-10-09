@@ -33,18 +33,20 @@ List of objectives to complete
 
 - **Week 2 (October 5, 2020): xxx**
 	- Game Design
+		- [ ] neutral game I
 		- [ ] turns and rounds
-		- [ ] neutral game
 		- [ ] economy
 	- Gameplay
 		- [ ] launch screen
 		- [ ] play mode and editor mode revamp
 		- [ ] hide editor UI in game mode
+		- [ ] mouse on cell edge can change a unit's direction
 		- [ ] 1 player with correct movement inputs
 		- [ ] move submission button
 		- [ ] basic piece combat
 		- [ ] hot seat
 	- Quality of Life
+		- [x] enter button auto loads a map
 		- [ ] comment existing code
 		- [ ] refactor existing code
 	- Tutorials
@@ -85,7 +87,6 @@ List of future objectives to complete
 		- [ ] drum for piece movement
 	- Quality of Life
 		- [ ] parameterize number of edge vertices
-		- [ ] enter button auto loads a map
 	- Tutorials
 		- [ ] Catlike Coding Hex Map, Fog of War
 		- [ ] Blender
