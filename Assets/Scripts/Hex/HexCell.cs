@@ -130,17 +130,17 @@ public class HexCell : MonoBehaviour
             switch (value)
             {
                 case 0: // hide text (for navigation)
-                    UpdateLabel(null);
+                    SetLabel(null);
                     break;
 
                 case 1: // offset coordinates
                     string text = "i:" + globalIndex.ToString() + "\n";
                     text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
-                    UpdateLabel(text);
+                    SetLabel(text);
                     break;
 
                 case 2: // cube coordinates
-                    UpdateLabel(coordinates.ToStringOnSeparateLines(addHeaders: true));
+                    SetLabel(coordinates.ToStringOnSeparateLines(addHeaders: true));
                     break;
             }
         }
@@ -301,7 +301,7 @@ public class HexCell : MonoBehaviour
     /// <param name="text">new text to write on the label</param>
     /// <param name="fontStyle">the style of the font; default is Normal</param>
     /// <param name="fontSize">the size of the font; default is 3</param>
-    public void UpdateLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
+    public void SetLabel(string text, FontStyle fontStyle = FontStyle.Normal, int fontSize = 3)
     {
         Text label = uiRectTransform.gameObject.GetComponent<Text>();
 

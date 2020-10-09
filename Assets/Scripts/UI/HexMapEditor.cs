@@ -42,12 +42,6 @@ public class HexMapEditor : MonoBehaviour
 
     int brushSize;
 
-    /// <summary>
-    /// tracks which label is to be displayed on the cells, a value of 1 initializes the cells to
-    /// cube coordinates
-    /// </summary>
-	int activeCellLabelType = 0;
-
     int activeTerrainTypeIndex;
 
     bool applyElevation = true;
@@ -144,7 +138,7 @@ public class HexMapEditor : MonoBehaviour
         enabled = toggle;
 
         // reset hexcell display
-        hexGrid.UpdateCellUI(0); // turn off cells
+        hexGrid.SetCellLabel(0); // turn off cells
 
         // display the bottom panel when in edit mode
         Transform bottomPanel = transform.Find("Bottom Panel");
@@ -152,6 +146,12 @@ public class HexMapEditor : MonoBehaviour
 
         // reset cell UI toggle in bottom panel
         bottomPanel.Find("Cell Panel").Find("Toggle ---").GetComponent<Toggle>().isOn = true;
+
+        // toggle game UI
+        FindObjectOfType<HexGameUI>().enabled = !toggle;
+
+        // clear paths existing on the hex grid
+        hexGrid.ClearPath();
     }
 
     /// <summary>
@@ -254,12 +254,10 @@ public class HexMapEditor : MonoBehaviour
     /// <param name="index"></param>
     public void UpdateCellUI(int index)
     {
-        activeCellLabelType = index;
-
         // stop navigation calculation
         hexGrid.StopAllCoroutines();
 
-        hexGrid.UpdateCellUI(index);
+        hexGrid.SetCellLabel(index);
     }
 
     /// <summary>

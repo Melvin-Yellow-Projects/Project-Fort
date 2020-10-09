@@ -368,8 +368,8 @@ public class HexGrid : MonoBehaviour
 		return null;
 	}
 
-    // TODO: comment UpdateCellUI
-    public void UpdateCellUI(int index)
+	// TODO: comment SetCellLabel
+	public void SetCellLabel(int index)
     {
         for (int i = 0; i < cells.Length; i++)
         {
@@ -541,7 +541,7 @@ public class HexGrid : MonoBehaviour
 			while (current != currentPathFrom)
 			{
 				int turn = (current.Distance - 1) / speed;
-				current.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+				current.SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
 				current.EnableHighlight(Color.white);
 				current = current.PathFrom;
 			}
@@ -560,7 +560,7 @@ public class HexGrid : MonoBehaviour
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom)
 			{
-				current.UpdateLabel(null);
+				current.SetLabel(null);
 				current.DisableHighlight();
 				current = current.PathFrom;
 			}
