@@ -12,6 +12,7 @@
  *
  *      TODO: remove private and protected headers from functions that do not need it
  *      TODO: remove private and protected headers from variables that do not need it
+ *      TODO: comment shaders
  **/
 
 using UnityEngine;

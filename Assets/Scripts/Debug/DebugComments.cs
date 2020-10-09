@@ -4,7 +4,7 @@
  * 
  * Authors: XXXX [Youtube Channel], Will Lacey
  * Date Created: August 18, 2020
- * Last Updated: September 21, 2020
+ * Last Updated: October 8, 2020
  * 
  * Additional Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
@@ -14,7 +14,7 @@
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
  *
- *      Comment length: 100 Characters
+ *      Line length: 100 Characters
  **/
 
 using System;
@@ -27,7 +27,7 @@ using UnityEngine;
 /// </summary>
 public class DebugComments : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /********** MARK: Public Variables **********/
     #region Variables
 
     /* Cached References */
@@ -40,11 +40,15 @@ public class DebugComments : MonoBehaviour
     [Tooltip("this is my variable description")]
     [SerializeField] [Range(0f, 1f)] protected float val2 = 0f;
 
-    /* Private & Protected Variables */
+    #endregion
+
+    /********** MARK: Private Variables **********/
+    #region Variables
+
     /// <summary>
     /// This is a description for this confusing variable
     /// </summary>
-    //protected float val3 = 0f;
+    protected float val3 = 0f;
 
     #endregion
 
@@ -150,7 +154,7 @@ public class DebugComments : MonoBehaviour
     /// another GameObject; The Colliders involved are not always at the point of initial contact
     /// </summary>
     /// <param name="otherCollider">other GameObject that the collision has occured with</param>
-    private void OnTriggerEnter(Collider otherCollider)
+    protected void OnTriggerEnter(Collider otherCollider)
     {
         throw new NotImplementedException();
     }
@@ -162,4 +166,25 @@ public class DebugComments : MonoBehaviour
 
     #endregion
 
+    /********** MARK: Debug **********/
+    #region Debug
+
+    /// <summary>
+    /// Unity Method; OnDrawGizmos() is for debugging purposes; implement this method to draw gizmos
+    /// in the scene
+    /// </summary>
+    protected void OnDrawGizmos()
+    {
+        // change Gizmos color
+        Gizmos.color = Color.red;
+
+        // DrawSphere() input parameters
+        Vector3 center = new Vector3();
+        float radius = 1f;
+
+        // draws spheres in scene
+        Gizmos.DrawSphere(center, radius);
+    }
+
+    #endregion
 }
