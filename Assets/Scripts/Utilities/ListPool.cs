@@ -27,16 +27,16 @@ public static class ListPool<T>
 
 	static Stack<List<T>> stack = new Stack<List<T>>();
 
-	#endregion
+    #endregion
 
-	/********** MARK: Class Functions **********/
-	#region Class Functions
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
     /// <summary>
     /// Pops a list from the stack
     /// </summary>
     /// <returns></returns>
-	public static List<T> Get()
+    public static List<T> Get()
 	{
 		if (stack.Count > 0)
 		{

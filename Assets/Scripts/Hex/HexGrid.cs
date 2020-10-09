@@ -612,6 +612,26 @@ public class HexGrid : MonoBehaviour
 		units.Clear();
 	}
 
+	public List<HexCell> GetPath()
+	{
+        // return if there is no path
+		if (!currentPathExists) return null;
+
+        // initialize path HACK: this should just be a list since there will be multiple paths
+		List<HexCell> path = ListPool<HexCell>.Get();
+
+        // fill path
+		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom)
+		{
+			path.Add(c);
+		}
+
+		path.Add(currentPathFrom); // since the path is in reverse order...
+		path.Reverse(); // let's reverse it so it's easier to work with
+
+		return path;
+	}
+
 	/// <summary>
 	/// TODO: comment save
 	/// </summary>
