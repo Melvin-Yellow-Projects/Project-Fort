@@ -24,29 +24,32 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour
 {
-	/********** MARK: Variables **********/
-	#region Variables
+	/********** MARK: Public Variables **********/
+	#region Public Variables
 
 	/* Settings */
 	[Header("Settings")]
 	[Tooltip("wether or not this HexMesh uses a MeshCollider")]
 	public bool useCollider;
 
-	[Tooltip("wether or not this HexMesh uses different vertex colors")]
-	public bool useColors;
+	[Tooltip("wether or not this HexMesh uses cell data")]
+	public bool useCellData;
 
 	[Tooltip("wether or not this HexMesh uses its UV coordinates")]
 	public bool useUVCoordinates;
 
-    [Tooltip("wether or not this HexMesh uses varying types of terrain")]
-    public bool useTerrainTypes;
+	//[Tooltip("wether or not this HexMesh uses its UV coordinates")]
+	//public bool useUV2Coordinates;
 
-    /* Private & Protected Variables */
+	#endregion
 
-    /// <summary>
-    /// class's mesh object
-    /// </summary>
-    protected Mesh hexMesh; 
+	/********** MARK: Private Variables **********/
+	#region Private Variables
+
+	/// <summary>
+	/// class's mesh object
+	/// </summary>
+	protected Mesh hexMesh; 
 
 	/// <summary>
 	/// mesh's vertices; this variable is used as a placeholder for the static ListPool struct
@@ -54,18 +57,20 @@ public class HexMesh : MonoBehaviour
 	[NonSerialized] List<Vector3> vertices;
 
     // TODO: comment terrainTypes
-    [NonSerialized] List<Vector3> terrainTypes;
+    [NonSerialized] List<Vector3> cellIndices;
 
     /// <summary>
     /// mesh's color at a given vertex; this variable is used as a placeholder for the static
     /// ListPool struct
     /// </summary>
-    [NonSerialized] List<Color> colors;
+    [NonSerialized] List<Color> cellWeights;
 
 	/// <summary>
 	/// mesh's uvs; this variable is used as a placeholder for the static ListPool struct
 	/// </summary>
 	[NonSerialized] List<Vector2> uvs;
+
+	//[NonSerialized] List<Vector2> uv2s;
 
 	/// <summary>
 	/// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
@@ -112,13 +117,17 @@ public class HexMesh : MonoBehaviour
 
 		vertices = ListPool<Vector3>.Get();
 
-		if (useColors) colors = ListPool<Color>.Get();
-
+		if (useCellData)
+		{
+			cellWeights = ListPool<Color>.Get();
+			cellIndices = ListPool<Vector3>.Get();
+		}
+        
 		if (useUVCoordinates) uvs = ListPool<Vector2>.Get();
 
-        if (useTerrainTypes) terrainTypes = ListPool<Vector3>.Get();
+		//if (useUV2Coordinates) uv2s = ListPool<Vector2>.Get();
 
-        triangles = ListPool<int>.Get();
+		triangles = ListPool<int>.Get();
 	}
 
     /// <summary>
@@ -130,11 +139,12 @@ public class HexMesh : MonoBehaviour
 		hexMesh.SetVertices(vertices);
 		ListPool<Vector3>.Add(vertices);
 
-		// set optional colors
-		if (useColors)
+		if (useCellData)
 		{
-			hexMesh.SetColors(colors);
-			ListPool<Color>.Add(colors);
+			hexMesh.SetColors(cellWeights);
+			ListPool<Color>.Add(cellWeights);
+			hexMesh.SetUVs(2, cellIndices);
+			ListPool<Vector3>.Add(cellIndices);
 		}
 
         // set optional UV coordinates
@@ -144,14 +154,12 @@ public class HexMesh : MonoBehaviour
 			ListPool<Vector2>.Add(uvs);
 		}
 
-        if (useTerrainTypes)
-        {
-            // "store the terrain types in the third UV set. That way, it won't clash with the other
-            // two sets, if we were to ever use them together."
-            // I think its 0: water, 1: shore, 2: terrain
-            hexMesh.SetUVs(2, terrainTypes);
-            ListPool<Vector3>.Add(terrainTypes);
-        }
+		//// set optional UV2 coordinates
+		//if (useUV2Coordinates)
+		//{
+		//	hexMesh.SetUVs(1, uv2s);
+		//	ListPool<Vector2>.Add(uv2s);
+		//}
 
         // set triangles
         hexMesh.SetTriangles(triangles, 0);
@@ -163,6 +171,9 @@ public class HexMesh : MonoBehaviour
         // set optional collider
 		if (useCollider) meshCollider.sharedMesh = hexMesh;
 	}
+
+	/********** MARK: Triangle Functions **********/
+	#region Triangle Functions
 
 	/// <summary>
 	/// Adds a triangle to the mesh; can also perturb this triangle's vertices
@@ -194,37 +205,57 @@ public class HexMesh : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Adds a color to a triangle
+	/// Adds three UV coordinates to a triangle
 	/// </summary>
-	/// <param name="color">color to add</param>
-	public void AddTriangleColor(Color color)
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
+	public void AddTriangleUV(Vector2 uv1, Vector2 uv2, Vector2 uv3)
 	{
-		colors.Add(color);
-		colors.Add(color);
-		colors.Add(color);
+		uvs.Add(uv1);
+		uvs.Add(uv2);
+		uvs.Add(uv3);
 	}
 
 	/// <summary>
-	/// Adds/blends three colors to a triangle
+	/// TODO: comment AddTriangleCellData
 	/// </summary>
-	/// <param name="c1">color for the first vertex</param>
-	/// <param name="c2">color for the second vertex</param>
-	/// <param name="c3">color for the third vertex</param>
-	public void AddTriangleColor(Color c1, Color c2, Color c3)
+	/// <param name="indices"></param>
+	/// <param name="weights1"></param>
+	/// <param name="weights2"></param>
+	/// <param name="weights3"></param>
+	public void AddTriangleCellData(Vector3 indices, Color weights1, Color weights2, Color weights3)
 	{
-		colors.Add(c1);
-		colors.Add(c2);
-		colors.Add(c3);
+		cellIndices.Add(indices);
+		cellIndices.Add(indices);
+		cellIndices.Add(indices);
+		cellWeights.Add(weights1);
+		cellWeights.Add(weights2);
+		cellWeights.Add(weights3);
 	}
 
 	/// <summary>
-	/// Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3, v4)
+	/// TODO: comment AddTriangleCellData
 	/// </summary>
-	/// <param name="v1">first vertex</param>
-	/// <param name="v2">second vertex</param>
-	/// <param name="v3">third vertex</param>
-	/// <param name="v4">fourth vertex</param>
-	public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
+	/// <param name="indices"></param>
+	/// <param name="weights"></param>
+	public void AddTriangleCellData(Vector3 indices, Color weights)
+	{
+		AddTriangleCellData(indices, weights, weights, weights);
+	}
+
+    #endregion
+
+    /********** MARK: Quad Functions **********/
+
+    /// <summary>
+    /// Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3, v4)
+    /// </summary>
+    /// <param name="v1">first vertex</param>
+    /// <param name="v2">second vertex</param>
+    /// <param name="v3">third vertex</param>
+    /// <param name="v4">fourth vertex</param>
+    public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
 	{
 		int vertexIndex = vertices.Count;
         vertices.Add(HexMetrics.Perturb(v1));
@@ -239,47 +270,6 @@ public class HexMesh : MonoBehaviour
 		triangles.Add(vertexIndex + 1); // v2
 		triangles.Add(vertexIndex + 2); // v3
 		triangles.Add(vertexIndex + 3); // v4
-	}
-
-	/// <summary>
-	/// Adds two colors to a triangulated quad
-	/// </summary>
-	/// <param name="c1">first color</param>
-	/// <param name="c2">second color</param>
-	public void AddQuadColor(Color c1, Color c2)
-	{
-		colors.Add(c1);
-		colors.Add(c1);
-		colors.Add(c2);
-		colors.Add(c2);
-	}
-
-	/// <summary>
-	/// Adds four colors to a triangulated quad
-	/// </summary>
-	/// <param name="c1">first color</param>
-	/// <param name="c2">second color</param>
-	/// <param name="c3">third color</param>
-	/// <param name="c4">fourth color</param>
-	public void AddQuadColor(Color c1, Color c2, Color c3, Color c4)
-	{
-		colors.Add(c1);
-		colors.Add(c2);
-		colors.Add(c3);
-		colors.Add(c4);
-	}
-
-	/// <summary>
-	/// Adds three UV coordinates to a triangle
-	/// </summary>
-	/// <param name="uv1">first UV coordinate</param>
-	/// <param name="uv2">second UV coordinate</param>
-	/// <param name="uv3">third UV coordinate</param>
-	public void AddTriangleUV(Vector2 uv1, Vector2 uv2, Vector2 uv3)
-	{
-		uvs.Add(uv1);
-		uvs.Add(uv2);
-		uvs.Add(uv3);
 	}
 
 	/// <summary>
@@ -313,22 +303,31 @@ public class HexMesh : MonoBehaviour
 		uvs.Add(new Vector2(uMax, vMax));
 	}
 
-    // TODO: comment AddTriangleTerrainTypes
-    public void AddTriangleTerrainTypes(Vector3 types)
-    {
-        terrainTypes.Add(types);
-        terrainTypes.Add(types);
-        terrainTypes.Add(types);
-    }
+	// TODO Comment AddQuadCellData
+	public void AddQuadCellData(
+        Vector3 indices, Color weights1, Color weights2, Color weights3, Color weights4)
+	{
+		cellIndices.Add(indices);
+		cellIndices.Add(indices);
+		cellIndices.Add(indices);
+		cellIndices.Add(indices);
+		cellWeights.Add(weights1);
+		cellWeights.Add(weights2);
+		cellWeights.Add(weights3);
+		cellWeights.Add(weights4);
+	}
 
-    // TODO: comment AddQuadTerrainTypes
-    public void AddQuadTerrainTypes(Vector3 types)
-    {
-        terrainTypes.Add(types);
-        terrainTypes.Add(types);
-        terrainTypes.Add(types);
-        terrainTypes.Add(types);
-    }
+	// TODO Comment AddQuadCellData
+	public void AddQuadCellData(Vector3 indices, Color weights1, Color weights2)
+	{
+		AddQuadCellData(indices, weights1, weights1, weights2, weights2);
+	}
 
-    #endregion
+	// TODO Comment AddQuadCellData
+	public void AddQuadCellData(Vector3 indices, Color weights)
+	{
+		AddQuadCellData(indices, weights, weights, weights, weights);
+	}
+
+	#endregion
 }

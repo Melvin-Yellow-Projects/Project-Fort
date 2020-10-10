@@ -23,8 +23,8 @@ using System.IO;
 /// </summary>
 public class HexGrid : MonoBehaviour
 {
-	/********** MARK: Variables **********/
-	#region Variables
+	/********** MARK: Public Variables **********/
+	#region Public Variables
 
 	/* Cached References */
 	[Header("Cached References")]
@@ -51,12 +51,15 @@ public class HexGrid : MonoBehaviour
 	[Tooltip("number of cell in the z direction; effectively height")]
 	public int cellCountZ = 15;
 
-	/* Private & Protected Variables */
+    #endregion
 
-	/// <summary>
-	/// number of chunk columns
-	/// </summary>
-	private int chunkCountX;
+    /********** MARK: Private Variables **********/
+    #region Private Variables
+
+    /// <summary>
+    /// number of chunk columns
+    /// </summary>
+    private int chunkCountX;
 
 	/// <summary>
 	/// number of chunk rows
@@ -87,6 +90,8 @@ public class HexGrid : MonoBehaviour
 
 	List<HexUnit> units = new List<HexUnit>();
 
+	HexCellShaderData cellShaderData;
+
 	#endregion
 
 	/********** MARK: Properties **********/
@@ -115,8 +120,8 @@ public class HexGrid : MonoBehaviour
 	{
 		// Set HexMetrics's noise
 		HexMetrics.noiseSource = noiseSource;
-		//HexMetrics.InitializeHashGrid(seed);
 		HexUnit.unitPrefab = unitPrefab;
+		cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
 		CreateMap(cellCountX, cellCountZ);
 	}
@@ -166,6 +171,9 @@ public class HexGrid : MonoBehaviour
 		// initialize number of chunks
 		chunkCountX = cellCountX / HexMetrics.chunkSizeX;
 		chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
+
+        // initialize shader data
+		cellShaderData.Initialize(cellCountX, cellCountZ);
 
 		CreateChunks(); // create chunks
 		CreateCells(); // create cells
@@ -236,17 +244,20 @@ public class HexGrid : MonoBehaviour
 		cells[i] = cell;
 		cell.transform.localPosition = cellPosition;
 
-		// set cell name
-		cell.name = "hexcell" + UnityEngine.Random.Range(0, 100000).ToString();
-
 		// calculate cell's coordinates
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 
-        // set global cell index
-        cell.globalIndex = i;
+        // set cell's shader data
+		cell.ShaderData = cellShaderData;
 
-        // instantiate the cell's label under the grid's Canvas TODO: rewrite comment
-        Text label = Instantiate<Text>(cellLabelPrefab);
+		// set cell index
+		cell.Index = i;
+
+		// set cell name
+		cell.name = "hexcell " + i.ToString();
+
+		// instantiate the cell's label under the grid's Canvas TODO: rewrite comment
+		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(cellPosition.x, cellPosition.z);
 
 		// set label reference to cell's UI RectTransform

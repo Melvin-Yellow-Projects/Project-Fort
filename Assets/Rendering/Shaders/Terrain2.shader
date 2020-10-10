@@ -24,6 +24,8 @@
 
         #pragma multi_compile _ GRID_ON
 
+        #include "HexCellData.cginc"
+
 		//sampler2D _MainTex; // this was when MainTex was only one texture
         UNITY_DECLARE_TEX2DARRAY(_MainTex); // MainTex is now a texture array
         sampler2D _GridTex;
@@ -60,12 +62,23 @@
             float3 terrain;
 		};
 
-        void vert (inout appdata_full v, out Input data) {
+        void vert (inout appdata_full v, out Input data) 
+        {
 			UNITY_INITIALIZE_OUTPUT(Input, data);
-			data.terrain = v.texcoord2.xyz;
+
+			// retrieve the cell data for all three cell indices stored in the vertex data. Then 
+			// assign their terrain indices to data.terrain.
+			float4 cell0 = GetCellData(v, 0);
+			float4 cell1 = GetCellData(v, 1);
+			float4 cell2 = GetCellData(v, 2);
+
+			data.terrain.x = cell0.w;
+			data.terrain.y = cell1.w;
+			data.terrain.z = cell2.w;
 		}
 
-        float4 GetTerrainColor (Input IN, int index) {
+        float4 GetTerrainColor (Input IN, int index) 
+        {
 
             // parameters for UNITY_SAMPLE_TEX2DARRAY()...
 

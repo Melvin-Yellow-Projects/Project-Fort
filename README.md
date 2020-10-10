@@ -21,7 +21,11 @@ List of objectives to complete
 		- [x] combat system I
 		- [x] day and night cycle design
 	- Tutorials
-		- [x] Catlike Coding Hex Map, Map Editing
+		- [x] Catlike Coding Hex Map, Creating a Hexagonal Grid
+		- [x] Catlike Coding Hex Map, Blending Cell Colors
+		- [x] Catlike Coding Hex Map, Elevation and Terraces
+		- [x] Catlike Coding Hex Map, Irregularity
+		- [x] Catlike Coding Hex Map, Larger Maps
 
 - **Week 1 (September 28, 2020): Initialization II**
 	- Game Design
@@ -29,7 +33,11 @@ List of objectives to complete
 		- [x] multiplayer design I
 		- [x] piece stacking & collisions
 	- Tutorials
-		- [x] Catlike Coding Hex Map, Unit Pathfinding
+		- [x] Catlike Coding Hex Map, Terrain Textures
+		- [x] Catlike Coding Hex Map, Distances
+		- [x] Catlike Coding Hex Map, Pathfinding
+		- [x] Catlike Coding Hex Map, Saving and Loading
+		- [x] Catlike Coding Hex Map, Managing Maps
 
 - **Week 2 (October 5, 2020): xxx**
 	- Game Design
@@ -37,10 +45,9 @@ List of objectives to complete
 		- [ ] turns and rounds
 		- [ ] economy
 	- Gameplay
-		- [ ] launch screen
+		- [x] hide editor UI in game mode
 		- [ ] play mode and editor mode revamp
-		- [ ] hide editor UI in game mode
-		- [ ] mouse on cell edge can change a unit's direction
+		- [ ] mouse over cell edge can change a unit's direction
 		- [ ] 1 player with correct movement inputs
 		- [ ] move submission button
 		- [ ] basic piece combat
@@ -50,8 +57,12 @@ List of objectives to complete
 		- [ ] comment existing code
 		- [ ] refactor existing code
 	- Tutorials
-		- [x] Catlike Coding Hex Map, Unit Animation
+		- [x] Catlike Coding Hex Map, Limited Movement
+		- [x] Catlike Coding Hex Map, Units
+		- [x] Catlike Coding Hex Map, Animating Movement
 		- [ ] Catlike Coding Hex Map, Fog of War
+		- [ ] Catlike Coding Hex Map, Exploration
+		- [ ] Catlike Coding Hex Map, Advanced Sight
 	- Other
 		- [x] organize README.md
 		- [x] emails 
@@ -75,6 +86,7 @@ List of future objectives to complete
 	- Game Design
 		- [ ] cell queue combat flow
 	- Gameplay
+		- [ ] launch screen
 		- [ ] water cells 
 		- [ ] variant map shapes
 		- [ ] rivers edges

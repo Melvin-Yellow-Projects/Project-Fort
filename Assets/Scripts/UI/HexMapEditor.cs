@@ -32,8 +32,8 @@ public class HexMapEditor : MonoBehaviour
     [Tooltip("prefab reference to the HexGrid material")]
     public Material terrainMaterial;
 
-    /* Settings */
-    // redacted
+    [Tooltip("an array of editor panels")]
+    public Transform[] editorPanels;
 
     #endregion
 
@@ -141,11 +141,17 @@ public class HexMapEditor : MonoBehaviour
         hexGrid.SetCellLabel(0); // turn off cells
 
         // display the bottom panel when in edit mode
-        Transform bottomPanel = transform.Find("Bottom Panel");
-        bottomPanel.gameObject.SetActive(toggle);
+        foreach (Transform panel in editorPanels)
+        {
+            panel.gameObject.SetActive(toggle);
 
-        // reset cell UI toggle in bottom panel
-        bottomPanel.Find("Cell Panel").Find("Toggle ---").GetComponent<Toggle>().isOn = true;
+            // HACK: hardcoded string references, this could be expanded into its own class
+            if (panel.name == "Cell Label Panel")
+            {
+                // reset cell UI toggle in bottom panel
+                panel.Find("Cell Panel").Find("Toggle ---").GetComponent<Toggle>().isOn = true;
+            }
+        }
 
         // toggle game UI
         FindObjectOfType<HexGameUI>().enabled = !toggle;

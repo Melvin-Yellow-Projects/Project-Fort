@@ -22,8 +22,8 @@ using System.IO;
 /// </summary>
 public class HexCell : MonoBehaviour
 {
-    /********** MARK: Variables **********/
-    #region Variables
+    /********** MARK: Public Variables **********/
+    #region Public Variables
 
     /* Public Variables */
     [Tooltip("a cell's coordinates")]
@@ -33,26 +33,24 @@ public class HexCell : MonoBehaviour
     [SerializeField] HexCell[] neighbors = null;
 
     /// <summary>
+    /// a reference to a cell's chunk
+    /// </summary>
+    public HexGridChunk chunk;
+
+    /// <summary>
     /// a cell's reference to the UI Coordinate Text RectTransform
     /// </summary>
     [HideInInspector] public RectTransform uiRectTransform;
 
-    /// <summary>
-    /// cell's index count relative to the other cells in the map (assumes only 1 HexGrid)
-    /// </summary>
-    public int globalIndex;
+    #endregion
 
-    /* Private & Protected Variables */
+    /********** MARK: Public Variables **********/
+    #region Public Variables
 
     /// <summary>
     /// a cell's elevation/height
     /// </summary>
     [ReadOnly] [SerializeField] private int elevation = int.MinValue;
-
-    /// <summary>
-    /// a reference to a cell's chunk
-    /// </summary>
-    public HexGridChunk chunk;
 
     /// <summary>
     /// a cell's terrain type; this variable also initializes the terrain type for the map
@@ -63,6 +61,11 @@ public class HexCell : MonoBehaviour
 
     /********** MARK: Properties **********/
     #region Properties
+
+    /// <summary>
+    /// cell's index count relative to the other cells in the map (assumes only 1 HexGrid)
+    /// </summary>
+    public int Index { get; set; }
 
     /// <summary>
     /// Gets the cell's local position relative to its parent grid
@@ -114,7 +117,7 @@ public class HexCell : MonoBehaviour
             if (terrainTypeIndex != value)
             {
                 terrainTypeIndex = value;
-                Refresh();
+                ShaderData.RefreshTerrain(this);
             }
         }
     }
@@ -134,7 +137,7 @@ public class HexCell : MonoBehaviour
                     break;
 
                 case 1: // offset coordinates
-                    string text = "i:" + globalIndex.ToString() + "\n";
+                    string text = "i:" + Index.ToString() + "\n";
                     text += coordinates.ToStringOnSeparateLines(offset: true, addHeaders: true);
                     SetLabel(text);
                     break;
@@ -195,6 +198,13 @@ public class HexCell : MonoBehaviour
     /// TODO: comment Unit
     /// </summary>
     public HexUnit Unit { get; set; }
+
+    /// <summary>
+    /// TODO: comment ShaderData
+    /// </summary>
+    public HexCellShaderData ShaderData { get; set; }
+
+    
 
     #endregion
 
@@ -348,7 +358,10 @@ public class HexCell : MonoBehaviour
     /// <param name="reader"></param>
     public void Load(BinaryReader reader)
     {
+        // HACK: this could be replaced with the terrain type index property
         terrainTypeIndex = reader.ReadByte();
+        ShaderData.RefreshTerrain(this);
+
         elevation = reader.ReadByte();
         RefreshPosition();
     }

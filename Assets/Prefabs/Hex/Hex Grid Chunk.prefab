@@ -93,9 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useCollider: 1
-  useColors: 1
+  useCellData: 1
   useUVCoordinates: 0
-  useTerrainTypes: 1
 --- !u!1 &2533712665694807437
 GameObject:
   m_ObjectHideFlags: 0
