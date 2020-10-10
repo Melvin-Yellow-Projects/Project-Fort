@@ -21,8 +21,8 @@ using System.IO;
 /// </summary>
 public class SaveLoadMenu : MonoBehaviour
 {
-    /********** MARK: Variables **********/
-    #region Variables
+    /********** MARK: Public Variables **********/
+    #region Public Variables
 
     public Text menuLabel;
 
@@ -34,12 +34,22 @@ public class SaveLoadMenu : MonoBehaviour
 
     public SaveLoadItem itemPrefab;
 
-    private HexGrid hexGrid;
+    #endregion
+
+    /********** MARK: Public Variables **********/
+    #region Public Variables
+
+    /// <summary>
+    /// current map save/load version
+    /// </summary>
+    const int mapFileVersion = 3;
 
     /// <summary>
     /// determines if the user is either saving or loading
     /// </summary>
     bool saveMode;
+
+    private HexGrid hexGrid;
 
     #endregion
 
@@ -174,7 +184,7 @@ public class SaveLoadMenu : MonoBehaviour
         // sense of this... so ignore warnings or any editor suggestions outside of Unity Editor
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
-            writer.Write(2);
+            writer.Write(mapFileVersion);
             hexGrid.Save(writer);
         }
     }
@@ -196,7 +206,7 @@ public class SaveLoadMenu : MonoBehaviour
         using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
         {
             int header = reader.ReadInt32();
-            if (header <= 2)
+            if (header <= mapFileVersion)
             {
                 hexGrid.Load(reader, header);
 

@@ -108,8 +108,11 @@ public class HexCellShaderData : MonoBehaviour
 
     public void RefreshVisibility(HexCell cell)
     {
+        int index = cell.Index;
+
         // convert 0-1 to bytes
-        cellTextureData[cell.Index].r = cell.IsVisible ? (byte)255 : (byte)0;
+        cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0; // stored in r channel
+        cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0; // stored in g channel
         enabled = true;
     }
 

@@ -25,6 +25,7 @@
         // shader target level from 3.0 to 3.5."
 
         #pragma multi_compile _ GRID_ON
+        #pragma multi_compile _ HEX_MAP_EDIT_MODE
 
         #include "HexCellData.cginc"
 
@@ -62,7 +63,7 @@
 			float4 color : COLOR; // gets color from the mesh's uv's ?
             float3 worldPos;
             float3 terrain;
-            float3 visibility;
+            float4 visibility;
 		};
 
         void vert (inout appdata_full v, out Input data) 
@@ -86,7 +87,12 @@
 			data.visibility.z = cell2.x;
 
 			// complete darkness is a lot for cell's that aren't visible, let's change it to 0.25
-			data.visibility = lerp(0.25, 1, data.visibility);
+			data.visibility.xyz = lerp(0.25, 1, data.visibility.xyz);
+
+			// "After that, combine the exploration states and put the result in 
+			// data.visibility.w. This is done like combining the visibility in the other 
+			// shaders, but using the Y component of the cell data."
+			data.visibility.w = cell0.y * v.color.x + cell1.y * v.color.y + cell2.y * v.color.z;
 		}
 
         float4 GetTerrainColor (Input IN, int index) 
@@ -123,7 +129,8 @@
 	            grid = tex2D(_GridTex, gridUV);
 			#endif
 
-			o.Albedo = c.rgb * grid * _Color;
+			float explored = IN.visibility.w;
+			o.Albedo = c.rgb * grid * _Color * explored;
 
 			//fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color * _ColorStrength;
 			//o.Albedo = saturate(c.rgb + IN.color);

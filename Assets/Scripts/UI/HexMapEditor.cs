@@ -158,6 +158,10 @@ public class HexMapEditor : MonoBehaviour
 
         // clear paths existing on the hex grid
         hexGrid.ClearPath();
+
+        // toggle map visibility when in edit mode by setting a global shader keyword
+        if (toggle) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
     }
 
     /// <summary>

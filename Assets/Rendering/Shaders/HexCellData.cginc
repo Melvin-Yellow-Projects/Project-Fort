@@ -1,6 +1,15 @@
 ﻿sampler2D _HexCellData;
 float4 _HexCellData_TexelSize;
 
+// toggles visibility and exploration for a hex cell
+float4 FilterCellData (float4 data)
+{
+	#if defined(HEX_MAP_EDIT_MODE)
+		data.xy = 1;
+	#endif
+	return data;
+}
+
 // ...Give it an integer index parameter, which we use to access the cell index vector's component.
 float4 GetCellData (appdata_full v, int index)
 {
@@ -33,5 +42,5 @@ float4 GetCellData (appdata_full v, int index)
     data.w *= 255;
 
     // After that, we can return the data.
-	return data;
+	return FilterCellData(data);
 }

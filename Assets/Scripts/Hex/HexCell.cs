@@ -217,6 +217,8 @@ public class HexCell : MonoBehaviour
         }
     }
 
+    public bool IsExplored { get; private set; }
+
     #endregion
 
     /********** MARK: Class Functions **********/
@@ -357,7 +359,11 @@ public class HexCell : MonoBehaviour
     public void IncreaseVisibility()
     {
         visibility += 1;
-        if (visibility == 1) ShaderData.RefreshVisibility(this);
+        if (visibility == 1)
+        {
+            IsExplored = true;
+            ShaderData.RefreshVisibility(this);
+        }
     }
 
     /// <summary>
@@ -379,19 +385,25 @@ public class HexCell : MonoBehaviour
     {
         writer.Write((byte)terrainTypeIndex);
         writer.Write((byte)elevation);
+        writer.Write(IsExplored);
     }
 
     /// <summary>
     /// TODO: write Load func
     /// </summary>
     /// <param name="reader"></param>
-    public void Load(BinaryReader reader)
+    public void Load(BinaryReader reader, int header)
     {
         // HACK: this could be replaced with the terrain type index property
         terrainTypeIndex = reader.ReadByte();
         ShaderData.RefreshTerrain(this);
 
         elevation = reader.ReadByte();
+
+        // HACK: hardcoded value
+        IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        ShaderData.RefreshVisibility(this);
+
         RefreshPosition();
     }
 
