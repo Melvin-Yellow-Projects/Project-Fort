@@ -24,13 +24,15 @@ public class HexUnit : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    const float travelSpeed = 4f; // HACK: this needs to be configurable
-
+    // HACK: this needs to be configurable
+    const float travelSpeed = 4f; 
     const float rotationSpeed = 180f;
+    const int visionRange = 3;
 
     public static HexUnit unitPrefab;
 
     HexCell location; // HACK: i really don't like this name
+    HexCell currentTravelLocation;
 
     float orientation;
 
@@ -50,10 +52,17 @@ public class HexUnit : MonoBehaviour
         }
         set
         {
-            if (location) location.Unit = null;
+            // if there is a previous location...
+            if (location) 
+            {
+                Grid.DecreaseVisibility(location, visionRange);
+                location.Unit = null;
+            }
 
+            // update for new location
             location = value;
             value.Unit = this; // sets this hex cell's unit to this one
+            Grid.IncreaseVisibility(value, visionRange);
             transform.localPosition = value.Position;
         }
     }
@@ -75,6 +84,11 @@ public class HexUnit : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// HACK: does HexUnit reeaaally need a reference to grid
+    /// </summary>
+    public HexGrid Grid { get; set; }
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -85,41 +99,17 @@ public class HexUnit : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        if (location) transform.localPosition = location.Position;
+        if (location) // prevents failure during recompile
+        {
+            transform.localPosition = location.Position;
+            if (currentTravelLocation)
+            {
+                Grid.IncreaseVisibility(location, visionRange);
+                Grid.DecreaseVisibility(currentTravelLocation, visionRange);
+                currentTravelLocation = null;
+            }
+        }
     }
-
-    ///// <summary>
-    ///// Unity Method; Gizmos are drawn only when the object is selected; Gizmos are not pickable;
-    ///// This is used to ease setup
-    ///// </summary>
-    //void OnDrawGizmos()
-    //{
-    //    if (pathToTravel == null || pathToTravel.Count == 0)
-    //    {
-    //        return;
-    //    }
-
-    //    Vector3 a, b, c = pathToTravel[0].Position;
-
-    //    for (int i = 1; i < pathToTravel.Count; i++)
-    //    {
-    //        a = c;
-    //        b = pathToTravel[i - 1].Position;
-    //        c = (b + pathToTravel[i].Position) * 0.5f;
-    //        for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed)
-    //        {
-    //            Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
-    //        }
-    //    }
-
-    //    a = c;
-    //    b = pathToTravel[pathToTravel.Count - 1].Position;
-    //    c = b;
-    //    for (float t = 0f; t < 1f; t += 0.1f)
-    //    {
-    //        Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
-    //    }
-    //}
 
     #endregion
 
@@ -149,7 +139,9 @@ public class HexUnit : MonoBehaviour
 
     public void Travel(List<HexCell> path)
     {
-        Location = path[path.Count - 1];
+        location.Unit = null;
+        location = path[path.Count - 1];
+        location.Unit = this;
         pathToTravel = path;
         StopAllCoroutines();
         StartCoroutine(TravelPath());
@@ -163,15 +155,27 @@ public class HexUnit : MonoBehaviour
     IEnumerator TravelPath()
     {
         Vector3 a, b, c = pathToTravel[0].Position;
-        transform.localPosition = c;
+
+        // perform lookat
         yield return LookAt(pathToTravel[1].Position);
+
+        // decrease vision HACK: this ? shenanigans is confusing
+        Grid.DecreaseVisibility(
+            currentTravelLocation ? currentTravelLocation : pathToTravel[0],
+            visionRange
+        );
 
         float t = Time.deltaTime * travelSpeed;
         for (int i = 1; i < pathToTravel.Count; i++)
         {
+            currentTravelLocation = pathToTravel[i]; // prevents teleportation
+
             a = c;
             b = pathToTravel[i - 1].Position;
-            c = (b + pathToTravel[i].Position) * 0.5f;
+            c = (b + currentTravelLocation.Position) * 0.5f;
+
+            Grid.IncreaseVisibility(pathToTravel[i], visionRange);
+
             for (; t < 1f; t += Time.deltaTime * travelSpeed)
             {
                 transform.localPosition = Bezier.GetPoint(a, b, c, t);
@@ -180,13 +184,20 @@ public class HexUnit : MonoBehaviour
                 transform.localRotation = Quaternion.LookRotation(d);
                 yield return null;
             }
+
+            Grid.DecreaseVisibility(pathToTravel[i], visionRange);
+
             t -= 1f;
         }
+        currentTravelLocation = null;
 
         // arriving at the center if the last cell
         a = c;
-        b = pathToTravel[pathToTravel.Count - 1].Position;
+        b = location.Position; // We can simply use the destination here.
         c = b;
+
+        Grid.IncreaseVisibility(location, visionRange);
+
         for (; t < 1f; t += Time.deltaTime * travelSpeed)
         {
             transform.localPosition = Bezier.GetPoint(a, b, c, t);
@@ -233,10 +244,10 @@ public class HexUnit : MonoBehaviour
 
     }
 
-        
-
     public void Die()
     {
+        if (location) Grid.DecreaseVisibility(location, visionRange);
+
         location.Unit = null;
         Destroy(gameObject);
     }
@@ -256,6 +267,45 @@ public class HexUnit : MonoBehaviour
     }
 
     #endregion
+
+    /********** MARK: Debug **********/
+    #region Debug
+
+    ///// <summary>
+    ///// Unity Method; Gizmos are drawn only when the object is selected; Gizmos are not pickable;
+    ///// This is used to ease setup
+    ///// </summary>
+    //void OnDrawGizmos()
+    //{
+    //    if (pathToTravel == null || pathToTravel.Count == 0)
+    //    {
+    //        return;
+    //    }
+
+    //    Vector3 a, b, c = pathToTravel[0].Position;
+
+    //    for (int i = 1; i < pathToTravel.Count; i++)
+    //    {
+    //        a = c;
+    //        b = pathToTravel[i - 1].Position;
+    //        c = (b + pathToTravel[i].Position) * 0.5f;
+    //        for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed)
+    //        {
+    //            Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
+    //        }
+    //    }
+
+    //    a = c;
+    //    b = pathToTravel[pathToTravel.Count - 1].Position;
+    //    c = b;
+    //    for (float t = 0f; t < 1f; t += 0.1f)
+    //    {
+    //        Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
+    //    }
+    //}
+
+    #endregion
+
 }
 
 

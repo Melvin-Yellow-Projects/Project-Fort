@@ -56,11 +56,12 @@ List of objectives to complete
 		- [x] enter button auto loads a map
 		- [ ] comment existing code
 		- [ ] refactor existing code
+		- [ ] comprehend shader code
 	- Tutorials
 		- [x] Catlike Coding Hex Map, Limited Movement
 		- [x] Catlike Coding Hex Map, Units
 		- [x] Catlike Coding Hex Map, Animating Movement
-		- [ ] Catlike Coding Hex Map, Fog of War
+		- [x] Catlike Coding Hex Map, Fog of War
 		- [ ] Catlike Coding Hex Map, Exploration
 		- [ ] Catlike Coding Hex Map, Advanced Sight
 	- Other

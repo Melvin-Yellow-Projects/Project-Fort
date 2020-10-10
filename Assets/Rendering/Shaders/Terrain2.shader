@@ -20,7 +20,9 @@
 		
 		CGPROGRAM
 		#pragma surface surf LambertClampFunc vertex:vert
-		#pragma target 3.5
+		#pragma target 3.5 // TODO: i dont get this line
+        // "To enable texture arrays on all platforms that support it, we have to increase our 
+        // shader target level from 3.0 to 3.5."
 
         #pragma multi_compile _ GRID_ON
 
@@ -60,6 +62,7 @@
 			float4 color : COLOR; // gets color from the mesh's uv's ?
             float3 worldPos;
             float3 terrain;
+            float3 visibility;
 		};
 
         void vert (inout appdata_full v, out Input data) 
@@ -75,6 +78,15 @@
 			data.terrain.x = cell0.w;
 			data.terrain.y = cell1.w;
 			data.terrain.z = cell2.w;
+
+			// use the first component of the cell data to store the visibility; visibility of 0 
+			// means that a cell is currently not visible; 1 means visible
+			data.visibility.x = cell0.x;
+			data.visibility.y = cell1.x;
+			data.visibility.z = cell2.x;
+
+			// complete darkness is a lot for cell's that aren't visible, let's change it to 0.25
+			data.visibility = lerp(0.25, 1, data.visibility);
 		}
 
         float4 GetTerrainColor (Input IN, int index) 
@@ -91,8 +103,8 @@
             // sample the texture array
 			float4 c = UNITY_SAMPLE_TEX2DARRAY(_MainTex, uvw);
 
-            // modulate the sample with the splat map for one index
-			return c * IN.color[index];
+            // modulate the sample with the splat map for one index and a cell's visibility
+			return c * (IN.color[index] * IN.visibility[index]);
 		}
 
 		void surf (Input IN, inout SurfaceOutput o)

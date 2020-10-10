@@ -111,6 +111,12 @@ public class TextureArrayWizard : ScriptableWizard
         // this needs to be done manually (in the editor) after creating the asset as this is a Read
         // Only property; we do this because we don't need to read pixel data from the array
         //textureArray.isReadable = false;
+
+        // "Also note that there is a Color Space field, which is set to 1. This means that the
+        // textures are assumed to be in gamma space, which is correct.If they had to be in linear
+        // space, we would have to set this field to 0.The constructor of Texture2DArray actually
+        // has an extra parameter to set the color space, however Texture2D doesn't expose whether
+        // it's in linear space or not, so you'd have to set it manually anyway."
     }
 
     #endregion

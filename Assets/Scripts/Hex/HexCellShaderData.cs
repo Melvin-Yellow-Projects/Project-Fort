@@ -41,6 +41,11 @@ public class HexCellShaderData : MonoBehaviour
         cellTexture.SetPixels32(cellTextureData);
         cellTexture.Apply();
         enabled = false;
+
+        // "To actually apply the data to the texture and push it to the GPU, we have to invoke
+        // Texture2D.SetPixels32 followed by Texture2D.Apply. Like we do with chunks, we're going
+        // to delay this to LateUpdate so we do it at most once per frame, no matter how many cells
+        // were changed."
     }
 
     #endregion
@@ -99,6 +104,13 @@ public class HexCellShaderData : MonoBehaviour
 
         // schedule update
         enabled = true; 
+    }
+
+    public void RefreshVisibility(HexCell cell)
+    {
+        // convert 0-1 to bytes
+        cellTextureData[cell.Index].r = cell.IsVisible ? (byte)255 : (byte)0;
+        enabled = true;
     }
 
     #endregion

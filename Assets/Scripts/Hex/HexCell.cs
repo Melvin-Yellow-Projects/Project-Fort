@@ -44,8 +44,8 @@ public class HexCell : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Public Variables **********/
-    #region Public Variables
+    /********** MARK: Private Variables **********/
+    #region Private Variables
 
     /// <summary>
     /// a cell's elevation/height
@@ -56,6 +56,8 @@ public class HexCell : MonoBehaviour
     /// a cell's terrain type; this variable also initializes the terrain type for the map
     /// </summary>
     private int terrainTypeIndex;
+
+    int visibility;
 
     #endregion
 
@@ -204,7 +206,16 @@ public class HexCell : MonoBehaviour
     /// </summary>
     public HexCellShaderData ShaderData { get; set; }
 
-    
+    /// <summary>
+    /// TODO: comment IsVisible
+    /// </summary>
+    public bool IsVisible
+    {
+        get
+        {
+            return visibility > 0;
+        }
+    }
 
     #endregion
 
@@ -338,6 +349,24 @@ public class HexCell : MonoBehaviour
     {
         Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
         highlight.enabled = false;
+    }
+
+    /// <summary>
+    /// TODO: comment IncreaseVisibility
+    /// </summary>
+    public void IncreaseVisibility()
+    {
+        visibility += 1;
+        if (visibility == 1) ShaderData.RefreshVisibility(this);
+    }
+
+    /// <summary>
+    /// TODO: comment DecreaseVisibility
+    /// </summary>
+    public void DecreaseVisibility()
+    {
+        visibility -= 1;
+        if (visibility == 0) ShaderData.RefreshVisibility(this);
     }
 
     /// <summary>
