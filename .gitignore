@@ -43,7 +43,7 @@ sysinfo.txt
 *.DS_Store
 
 # Project Specific Files
-Assets/Kenny Assets
-Assets/Kenny Assets.meta
+Assets/Packages
+Assets/Packages.meta
 
 
