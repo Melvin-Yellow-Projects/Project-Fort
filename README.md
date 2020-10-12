@@ -64,6 +64,7 @@ List of objectives to complete
 		- [ ] economy		
 		- [ ] cell queue combat flow
 	- Gameplay
+		- [ ] hex curser
 		- [ ] play mode and editor mode revamp
 		- [ ] mouse over cell edge can change a unit's direction
 		- [ ] 1 player with correct movement inputs
@@ -75,8 +76,6 @@ List of objectives to complete
 		- [ ] comment existing code
 		- [ ] refactor existing code
 		- [ ] comprehend shader code
-	- Tutorials
-		- [ ] *pending requirements*
 	- Other
 		- [ ] create a 1 second video collection starting from october 1st
 		- [ ] resume 1 second a day videos
@@ -120,6 +119,7 @@ List of future objectives to complete
 		- [ ] Spine weights
 		- [ ] Spine UI assets
 		- [ ] Shaders & Materials II
+		- [ ] Mirror Multiplayer
 	- Other
 		- [ ] multiplayer test project
 		- [ ] Reddit Page

@@ -33,12 +33,12 @@ public class DebugComments : MonoBehaviour
     /* Cached References */
     [Header("Cached References")]
     [Tooltip("this is my variable description")]
-    [SerializeField] [Range(0f, 1f)] protected float val = 0f;
+    [SerializeField] [Range(0f, 1f)] public float val = 0f;
 
     /* General Settings */
     [Header("General Settings")]
     [Tooltip("this is my variable description")]
-    [SerializeField] [Range(0f, 1f)] protected float val2 = 0f;
+    [SerializeField] [Range(0f, 1f)] public float val2 = 0f;
 
     #endregion
 
