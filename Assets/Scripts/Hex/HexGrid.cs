@@ -258,9 +258,12 @@ public class HexGrid : MonoBehaviour
 
 		// set cell index
 		cell.Index = i;
+        
+        // set if a cell is explorable
+        cell.Explorable = x > 0 && z > 0 && x < cellCountX - 1 && z < cellCountZ - 1;
 
-		// set cell name
-		cell.name = "hexcell " + i.ToString();
+        // set cell name
+        cell.name = "hexcell " + i.ToString();
 
 		// instantiate the cell's label under the grid's Canvas TODO: rewrite comment
 		Text label = Instantiate<Text>(cellLabelPrefab);
@@ -632,10 +635,8 @@ public class HexGrid : MonoBehaviour
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 			{
 				HexCell neighbor = current.GetNeighbor(d);
-				if (
-					neighbor == null ||
-					neighbor.SearchPhase > searchFrontierPhase
-				)
+				if (neighbor == null || neighbor.SearchPhase > searchFrontierPhase ||
+                    !neighbor.Explorable)
 				{
 					continue;
 				}
