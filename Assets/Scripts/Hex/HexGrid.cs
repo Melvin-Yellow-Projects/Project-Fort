@@ -354,8 +354,73 @@ public class HexGrid : MonoBehaviour
 		return null;
 	}
 
-	// TODO: comment SetCellLabel
-	public void SetCellLabel(int index)
+    public Vector3 GetEdgeMidpoint(Vector3 position)
+    {
+        // gets the relative local position
+        Vector3 localPosition = transform.InverseTransformPoint(position);
+
+        // converts local position into HexCoordinates 
+        HexCoordinates coordinates = HexCoordinates.FromPosition(localPosition);
+
+        // get a cell's index from the coordinates
+        int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
+
+        _testmidpoint = cells[index].Position;
+        _testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(HexDirection.NE);
+        _testleftpoint = cells[index].Position + HexMetrics.GetFirstCorner(HexDirection.NE);
+        _testrightpoint = cells[index].Position + HexMetrics.GetSecondCorner(HexDirection.NE);
+        _testHeight = new Vector3(0, 1f, 0);
+
+        // return edge midpoint
+        return cells[index].Position; 
+    }
+
+    Vector3 _testmidpoint = new Vector3();
+    Vector3 _testmidpoint2 = new Vector3();
+    Vector3 _testleftpoint = new Vector3();
+    Vector3 _testrightpoint = new Vector3();
+    Vector3 _testHeight = new Vector3();
+
+    protected void OnDrawGizmos()
+    {
+        // change Gizmos color
+        Gizmos.color = Color.white;
+
+        // draw a gizmo where the location was 
+        Gizmos.DrawSphere(_testmidpoint, 1.5f);
+
+        // change Gizmos color
+        Gizmos.color = Color.blue;
+
+        // draw a gizmo where the location was 
+        Gizmos.DrawSphere(_testmidpoint2, 1.5f);
+
+        Gizmos.DrawLine(_testleftpoint + _testHeight, _testrightpoint + _testHeight);
+    }
+
+    /// <summary>
+	/// TODO: comment GetEdgeMidpoint and touch up vars
+	/// </summary>
+	/// <returns></returns>
+	public Vector3 GetEdgeMidpoint(Ray inputRay)
+    {
+        RaycastHit hit;
+
+        // did we hit anything? then return that HexCell
+        if (Physics.Raycast(inputRay, out hit))
+        {
+            // draw line for 1 second
+            Debug.DrawLine(inputRay.origin, hit.point, Color.blue, 1f);
+
+            return GetEdgeMidpoint(hit.point);
+        }
+
+        // nothing was found
+        return new Vector3(); // HACK: idk if this works dawg
+    }
+
+    // TODO: comment SetCellLabel
+    public void SetCellLabel(int index)
     {
         for (int i = 0; i < cells.Length; i++)
         {

@@ -295,6 +295,18 @@ public class HexCell : MonoBehaviour
         return HexMetrics.GetEdgeType(elevation, otherCell.elevation);
     }
 
+    public HexDirection GetEdgeMidpoint(Vector3 point)
+    {
+        if (point.z > Position.z) // the point is north
+        {
+
+        }
+        else // the point is south
+        {
+
+        }
+    }
+
     /// <summary>
     /// Queries a hex cell's chunk (and possibly neighboring chunk) to retriangulate
     /// </summary>

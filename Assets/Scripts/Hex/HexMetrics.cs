@@ -185,7 +185,7 @@ public static class HexMetrics
     }
 
     /// <summary>
-    /// Returns the midpoint between the two vertices of a HexDirection, which is multiplied such
+    /// Gets the midpoint between the two vertices of a HexDirection, which is multiplied such
     /// that it extends to the neighboring HexCell's solid Hex; a diagram can be viewed here between
     /// v1 and v2:
     /// https://catlikecoding.com/unity/tutorials/hex-map/part-2/blend-regions/edge-bridge.png

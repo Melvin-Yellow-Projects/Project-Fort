@@ -96,6 +96,10 @@ public class HexMapEditor : MonoBehaviour
                 }
                 return;
             }
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                hexGrid.GetEdgeMidpoint(Camera.main.ScreenPointToRay(Input.mousePosition));
+            }
         }
         //previousCell = null;
     }
