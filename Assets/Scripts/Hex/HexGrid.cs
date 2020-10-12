@@ -70,45 +70,11 @@ public class HexGrid : MonoBehaviour
 	private HexGridChunk[] chunks;
 	private HexCell[] cells;
 
-	// priority queue data structure
-	HexCellPriorityQueue searchFrontier;
-
-	/// <summary>
-	/// TODO: comment var; HACK: im certain this variable isn't needed, but it might speed up
-	/// computation
-	/// </summary>
-	int searchFrontierPhase;
-
-    /// <summary>
-    /// TODO: rename these vars, start and end
-    /// </summary>
-	HexCell currentPathFrom;
-
-	HexCell currentPathTo;
-
-	bool currentPathExists;
-
 	List<HexUnit> units = new List<HexUnit>();
 
 	HexCellShaderData cellShaderData;
 
 	#endregion
-
-	/********** MARK: Properties **********/
-	#region Properties
-
-	/// <summary>
-	/// TODO: comment HasPath prop
-	/// </summary>
-	public bool HasPath
-	{
-		get
-		{
-			return currentPathExists;
-		}
-	}
-
-    #endregion
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
@@ -151,7 +117,7 @@ public class HexGrid : MonoBehaviour
 
 	public bool CreateMap(int x, int z)
 	{
-		ClearPath();
+		HexPathfinding.ClearPath();
 		ClearUnits();
 
 		// destroy previous cells and chunks
@@ -397,301 +363,9 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    // TODO: comment FindDistancesTo
-    public void FindPath(HexCell fromCell, HexCell toCell, int speed)
-	{
-		ClearPath();
-		currentPathFrom = fromCell;
-		currentPathTo = toCell;
-		currentPathExists = Search(fromCell, toCell, speed);
-		ShowPath(speed);
-	}
-
-	/// <summary>
-	/// TODO: comment Breadth-First Search function
-	/// HACK: this function is mega long
-	/// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
-    /// not necessary to do so... but it might make future features or debugging easier
-	/// </summary>
-	/// <param name="fromCell"></param>
-	/// <param name="toCell"></param>
-	/// <param name="speed"></param>
-	/// <returns></returns>
-	private bool Search(HexCell fromCell, HexCell toCell, int speed)
-	{
-		searchFrontierPhase += 2; // initialize new search frontier phase
-
-		// initialize the search priority queue
-		if (searchFrontier == null) searchFrontier = new HexCellPriorityQueue();
-		else searchFrontier.Clear();
-
-		// add the starting cell to the queue
-		fromCell.SearchPhase = searchFrontierPhase;
-		fromCell.Distance = 0;
-		searchFrontier.Enqueue(fromCell);
-
-		// as long as there is something in the queue, keep searching
-		while (searchFrontier.Count > 0)
-		{
-			// pop current cell 
-			HexCell current = searchFrontier.Dequeue();
-			current.SearchPhase += 1;
-
-			// check if we've found the target cell
-			if (current == toCell)
-			{
-				return true;
-			}
-
-			int currentTurn = (current.Distance - 1) / speed;
-
-			// search all neighbors of the current cell
-			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-			{
-				// check if the neighbors are valid cells to search
-				HexCell neighbor = current.GetNeighbor(d);
-				if (IsValidCellForSearch(current, neighbor))
-				{
-					// if they are valid, calculate distance and add them to the queue
-					int moveCost = GetMoveCostCalculation(current, neighbor);
-
-					// distance is calculated from move cost
-					int distance = current.Distance + moveCost;
-					int turn = (distance - 1) / speed;
-
-					// this adjusts the distance if there is left over movement
-					// TODO: is this the system we want?
-					if (turn > currentTurn) distance = turn * speed + moveCost;
-
-					// adding a new cell that hasn't been updated
-					if (neighbor.SearchPhase < searchFrontierPhase)
-					{
-						neighbor.SearchPhase = searchFrontierPhase;
-						neighbor.Distance = distance;
-                        //neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-                        neighbor.PathFrom = current;
-
-						// because our lowest distance cost is 1, heuristic is just the DistanceTo()
-						neighbor.SearchHeuristic =
-							neighbor.coordinates.DistanceTo(toCell.coordinates);
-
-						searchFrontier.Enqueue(neighbor);
-					}
-					else if (distance < neighbor.Distance) // adjusting cell that's already in queue
-					{
-						int oldPriority = neighbor.SearchPriority;
-						neighbor.Distance = distance;
-                        //neighbor.UpdateLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-                        neighbor.PathFrom = current;
-						searchFrontier.Change(neighbor, oldPriority);
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	/// <summary>
-	/// TODO: comment GetMoveCostCalculation; Should this be move cost or Distance calculation?
-	/// UNDONE: add rivers, water, edge type calculation, and other
-	/// </summary>
-	/// <param name="current"></param>
-	/// <param name="neighbor"></param>
-	/// <returns></returns>
-	private int GetMoveCostCalculation(HexCell current, HexCell neighbor)
-	{
-		// starting move cost
-		int moveCost = 0;
-
-		//if (current.HasRoadThroughEdge(d)) // roads
-		if (current.TerrainTypeIndex == 1) // if grass 
-		{
-			moveCost += 1;
-		}
-		else
-		{
-			HexEdgeType edgeType = current.GetEdgeType(neighbor);
-			moveCost += (edgeType == HexEdgeType.Flat) ? 5 : 10;
-
-			// if there is special terrain features
-			//distance += neighbor.UrbanLevel + neighbor.FarmLevel +
-			//			neighbor.PlantLevel;
-		}
-
-		return moveCost;
-	}
-
-	/// <summary>
-	/// todo: comment IsValidCellForSearch; UNDONE: add rivers and water
-	/// </summary>
-	/// <param name="current"></param>
-	/// <param name="neighbor"></param>
-	/// <returns></returns>
-	private bool IsValidCellForSearch(HexCell current, HexCell neighbor)
-	{
-		// invalid if neighbor is null or if the cell is already out of the queue
-		if (neighbor == null || neighbor.SearchPhase > searchFrontierPhase) return false;
-
-		// invalid if cell is underwater
-		//if (neighbor.IsUnderwater) return false;
-
-        // if a Unit exists on this cell
-		if (neighbor.Unit) return false; // TODO: check unit type
-
-		// invalid if there is a river inbetween
-		//if (current.GetEdgeType(neighbor) == river) return false;
-
-		// invalid if edge between cells is a cliff
-		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
-
-        // invalid if cell is unexplored
-		if (!neighbor.IsExplored) return false;
-
-		// neighbor is a valid cell
-		return true;
-	}
-
-	/// <summary>
-	/// TODO: comment ShowPath
-    /// HACK: show path and clear path can be compressed into one function
-	/// </summary>
-	/// <param name="speed"></param>
-	void ShowPath(int speed)
-	{
-		if (currentPathExists)
-		{
-			HexCell current = currentPathTo;
-			while (current != currentPathFrom)
-			{
-				int turn = (current.Distance - 1) / speed;
-				current.SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-				current.EnableHighlight(Color.white);
-				current = current.PathFrom;
-			}
-		}
-		currentPathFrom.EnableHighlight(Color.blue);
-		currentPathTo.EnableHighlight(Color.red);
-	}
-
-    /// <summary>
-    /// TODO: comment ClearPath
-    /// </summary>
-	public void ClearPath()
-	{
-		if (currentPathExists)
-		{
-			HexCell current = currentPathTo;
-			while (current != currentPathFrom)
-			{
-				current.SetLabel(null);
-				current.DisableHighlight();
-				current = current.PathFrom;
-			}
-			current.DisableHighlight();
-			currentPathExists = false;
-		}
-		else if (currentPathFrom)
-		{
-			currentPathFrom.DisableHighlight();
-			currentPathTo.DisableHighlight();
-		}
-		currentPathFrom = currentPathTo = null;
-	}
-
-	/// <summary>
-	/// TODO: comment GetVisibleCells
-    /// HACK: this is also soooo close to Search
-    /// HACK: verify visibility calculations, will most likely need an update
-	/// </summary>
-	/// <param name="fromCell"></param>
-	/// <param name="range"></param>
-	/// <returns></returns>
-	List<HexCell> GetVisibleCells(HexCell fromCell, int range)
-	{
-		List<HexCell> visibleCells = ListPool<HexCell>.Get();
-
-		searchFrontierPhase += 2;
-		if (searchFrontier == null)
-		{
-			searchFrontier = new HexCellPriorityQueue();
-		}
-		else
-		{
-			searchFrontier.Clear();
-		}
-
-		range += fromCell.ViewElevation;
-		fromCell.SearchPhase = searchFrontierPhase;
-		fromCell.Distance = 0;
-		searchFrontier.Enqueue(fromCell);
-
-		HexCoordinates fromCoordinates = fromCell.coordinates;
-		while (searchFrontier.Count > 0)
-		{
-			HexCell current = searchFrontier.Dequeue();
-			current.SearchPhase += 1;
-			visibleCells.Add(current);
-
-			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-			{
-				HexCell neighbor = current.GetNeighbor(d);
-				if (neighbor == null || neighbor.SearchPhase > searchFrontierPhase ||
-                    !neighbor.Explorable)
-				{
-					continue;
-				}
-
-				int distance = current.Distance + 1;
-
-				// adds view elevation to dist calc; TODO: verify this line
-				if (distance + neighbor.ViewElevation > range ||
-					distance > fromCoordinates.DistanceTo(neighbor.coordinates)) 
-				{
-					continue;
-				}
-
-				if (neighbor.SearchPhase < searchFrontierPhase)
-				{
-					neighbor.SearchPhase = searchFrontierPhase;
-					neighbor.Distance = distance;
-					neighbor.SearchHeuristic = 0;
-					searchFrontier.Enqueue(neighbor);
-				}
-				else if (distance < neighbor.Distance)
-				{
-					int oldPriority = neighbor.SearchPriority;
-					neighbor.Distance = distance;
-					searchFrontier.Change(neighbor, oldPriority);
-				}
-			}
-		}
-		return visibleCells;
-	}
-
-	public void IncreaseVisibility(HexCell fromCell, int range)
-	{
-		List<HexCell> cells = GetVisibleCells(fromCell, range);
-		for (int i = 0; i < cells.Count; i++)
-		{
-			cells[i].IncreaseVisibility();
-		}
-		ListPool<HexCell>.Add(cells);
-	}
-
-	public void DecreaseVisibility(HexCell fromCell, int range)
-	{
-		List<HexCell> cells = GetVisibleCells(fromCell, range);
-		for (int i = 0; i < cells.Count; i++)
-		{
-			cells[i].DecreaseVisibility();
-		}
-		ListPool<HexCell>.Add(cells);
-	}
-
 	public void AddUnit(HexUnit unit, HexCell location, float orientation)
 	{
 		units.Add(unit);
-		unit.Grid = this;
 		unit.transform.SetParent(transform, false); // HACK: parent the unit to the hex grid... hmm
 		unit.Location = location;
 		unit.Orientation = orientation;
@@ -712,26 +386,6 @@ public class HexGrid : MonoBehaviour
 		units.Clear();
 	}
 
-	public List<HexCell> GetPath()
-	{
-        // return if there is no path
-		if (!currentPathExists) return null;
-
-        // initialize path HACK: this should just be a list since there will be multiple paths
-		List<HexCell> path = ListPool<HexCell>.Get();
-
-        // fill path
-		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom)
-		{
-			path.Add(c);
-		}
-
-		path.Add(currentPathFrom); // since the path is in reverse order...
-		path.Reverse(); // let's reverse it so it's easier to work with
-
-		return path;
-	}
-
 	public void ResetVisibility()
 	{
 		for (int i = 0; i < cells.Length; i++)
@@ -742,7 +396,7 @@ public class HexGrid : MonoBehaviour
 		for (int i = 0; i < units.Count; i++)
 		{
 			HexUnit unit = units[i];
-			IncreaseVisibility(unit.Location, unit.VisionRange);
+			HexPathfinding.IncreaseVisibility(unit.Location, unit.VisionRange);
 		}
 	}
 
@@ -773,7 +427,7 @@ public class HexGrid : MonoBehaviour
 	/// <param name="reader"></param>
 	public void Load(BinaryReader reader, int header)
 	{
-		ClearPath();
+		HexPathfinding.ClearPath();
 		ClearUnits();
 
 		int x = 20, z = 15;

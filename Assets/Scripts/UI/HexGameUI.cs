@@ -77,7 +77,7 @@ public class HexGameUI : MonoBehaviour
 
     void DoSelection()
     {
-        grid.ClearPath();
+        HexPathfinding.ClearPath();
         UpdateCurrentCell();
 
         if (currentCell) selectedUnit = currentCell.Unit;
@@ -89,21 +89,21 @@ public class HexGameUI : MonoBehaviour
         {
             if (currentCell && selectedUnit.IsValidDestination(currentCell))
             {
-                grid.FindPath(selectedUnit.Location, currentCell, 24);
+                HexPathfinding.FindPath(selectedUnit.Location, currentCell, 24);
             }
             else
             {
-                grid.ClearPath();
+                HexPathfinding.ClearPath();
             }
         }
     }
 
     void DoMove()
     {
-        if (grid.HasPath)
+        if (HexPathfinding.HasPath)
         {
-            selectedUnit.Travel(grid.GetPath());
-            grid.ClearPath();
+            selectedUnit.Travel(HexPathfinding.GetPath());
+            HexPathfinding.ClearPath();
         }
     }
 

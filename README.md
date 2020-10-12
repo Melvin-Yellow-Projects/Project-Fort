@@ -73,6 +73,7 @@ List of objectives to complete
 		- [ ] unit ability UI
 		- [ ] hot seat
 	- Quality of Life
+		- [x] refactor pathfinding logic from hex grid into new class
 		- [ ] comment existing code
 		- [ ] refactor existing code
 		- [ ] comprehend shader code

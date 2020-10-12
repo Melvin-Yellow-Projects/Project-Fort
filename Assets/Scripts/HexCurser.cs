@@ -24,10 +24,10 @@ public class HexCurser : MonoBehaviour
 
     [Header("Cached References")]
     [Tooltip("head GameObject of the hex curser")]
-    [SerializeField] GameObject curserHead;
+    [SerializeField] GameObject curserHead = null;
 
     [Tooltip("body GameObject of the hex curser")]
-    [SerializeField] GameObject curserBody;
+    [SerializeField] GameObject curserBody = null;
 
     List<GameObject> nodes = new List<GameObject>();
 

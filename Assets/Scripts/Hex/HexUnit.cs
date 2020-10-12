@@ -44,11 +44,6 @@ public class HexUnit : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    /// <summary>
-    /// HACK: does HexUnit reeaaally need a reference to grid
-    /// </summary>
-    public HexGrid Grid { get; set; }
-
     public HexCell Location
     {
         get
@@ -60,14 +55,14 @@ public class HexUnit : MonoBehaviour
             // if there is a previous location...
             if (location) 
             {
-                Grid.DecreaseVisibility(location, visionRange);
+                HexPathfinding.DecreaseVisibility(location, visionRange);
                 location.Unit = null;
             }
 
             // update for new location
             location = value;
             value.Unit = this; // sets this hex cell's unit to this one
-            Grid.IncreaseVisibility(value, visionRange);
+            HexPathfinding.IncreaseVisibility(value, visionRange);
             transform.localPosition = value.Position;
         }
     }
@@ -120,8 +115,8 @@ public class HexUnit : MonoBehaviour
             transform.localPosition = location.Position;
             if (currentTravelLocation)
             {
-                Grid.IncreaseVisibility(location, visionRange);
-                Grid.DecreaseVisibility(currentTravelLocation, visionRange);
+                HexPathfinding.IncreaseVisibility(location, visionRange);
+                HexPathfinding.DecreaseVisibility(currentTravelLocation, visionRange);
                 currentTravelLocation = null;
             }
         }
@@ -176,7 +171,7 @@ public class HexUnit : MonoBehaviour
         yield return LookAt(pathToTravel[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
-        Grid.DecreaseVisibility(
+        HexPathfinding.DecreaseVisibility(
             currentTravelLocation ? currentTravelLocation : pathToTravel[0],
             visionRange
         );
@@ -190,7 +185,7 @@ public class HexUnit : MonoBehaviour
             b = pathToTravel[i - 1].Position;
             c = (b + currentTravelLocation.Position) * 0.5f;
 
-            Grid.IncreaseVisibility(pathToTravel[i], visionRange);
+            HexPathfinding.IncreaseVisibility(pathToTravel[i], visionRange);
 
             for (; t < 1f; t += Time.deltaTime * travelSpeed)
             {
@@ -201,7 +196,7 @@ public class HexUnit : MonoBehaviour
                 yield return null;
             }
 
-            Grid.DecreaseVisibility(pathToTravel[i], visionRange);
+            HexPathfinding.DecreaseVisibility(pathToTravel[i], visionRange);
 
             t -= 1f;
         }
@@ -212,7 +207,7 @@ public class HexUnit : MonoBehaviour
         b = location.Position; // We can simply use the destination here.
         c = b;
 
-        Grid.IncreaseVisibility(location, visionRange);
+        HexPathfinding.IncreaseVisibility(location, visionRange);
 
         for (; t < 1f; t += Time.deltaTime * travelSpeed)
         {
@@ -262,7 +257,7 @@ public class HexUnit : MonoBehaviour
 
     public void Die()
     {
-        if (location) Grid.DecreaseVisibility(location, visionRange);
+        if (location) HexPathfinding.DecreaseVisibility(location, visionRange);
 
         location.Unit = null;
         Destroy(gameObject);
