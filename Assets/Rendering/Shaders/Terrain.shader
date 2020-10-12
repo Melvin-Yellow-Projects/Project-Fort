@@ -18,7 +18,7 @@
 		#pragma multi_compile _ GRID_ON
 		#pragma multi_compile _ HEX_MAP_EDIT_MODE
 
-		#include "../HexCellData.cginc"
+		#include "HexCellData.cginc"
 
 		UNITY_DECLARE_TEX2DARRAY(_MainTex);
 

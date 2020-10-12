@@ -93,8 +93,14 @@ public class HexCell : MonoBehaviour
         {
             if (elevation == value) return;
 
+            int originalViewElevation = ViewElevation;
+
             // updates new cell position
             elevation = value;
+
+            // alert the cell's shader data that the view has changed
+            if (ViewElevation != originalViewElevation) ShaderData.ViewElevationChanged();
+
             RefreshPosition();
 
             // UNDONE: validation logic should go here for rivers, terrain, etc.
@@ -218,6 +224,15 @@ public class HexCell : MonoBehaviour
     }
 
     public bool IsExplored { get; private set; }
+
+    public int ViewElevation
+    {
+        get
+        {
+            return elevation;
+            //return elevation >= waterLevel ? elevation : waterLevel;
+        }
+    }
 
     #endregion
 
@@ -373,6 +388,15 @@ public class HexCell : MonoBehaviour
     {
         visibility -= 1;
         if (visibility == 0) ShaderData.RefreshVisibility(this);
+    }
+
+    public void ResetVisibility()
+    {
+        if (visibility > 0)
+        {
+            visibility = 0;
+            ShaderData.RefreshVisibility(this);
+        }
     }
 
     /// <summary>

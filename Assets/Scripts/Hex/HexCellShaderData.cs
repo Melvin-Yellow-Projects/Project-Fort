@@ -14,6 +14,7 @@
  **/
 
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// 
@@ -23,8 +24,23 @@ public class HexCellShaderData : MonoBehaviour
     /********** MARK: Private Variables **********/
     #region Private Variables
 
+    const float transitionSpeed = 255f;
+
     Texture2D cellTexture;
     Color32[] cellTextureData;
+
+    List<HexCell> transitioningCells = new List<HexCell>();
+
+    bool needsVisibilityReset;
+
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    public bool ImmediateMode { get; set; }
+
+    public HexGrid Grid { get; set; }
 
     #endregion
 
@@ -37,10 +53,25 @@ public class HexCellShaderData : MonoBehaviour
     /// </summary>
     protected void LateUpdate()
     {
+        if (needsVisibilityReset)
+        {
+            needsVisibilityReset = false;
+            Grid.ResetVisibility();
+        }
+
+        int delta = (int)(Time.deltaTime * transitionSpeed);
+        if (delta == 0) delta = 1;
+
+        for (int i = transitioningCells.Count; i > 0; i--)
+        {
+            if (!UpdateCellData(transitioningCells[i - 1], delta)) transitioningCells.RemoveAt(i - 1);
+        }
+
         // applies the data to the texture and pushes it to the GPU
         cellTexture.SetPixels32(cellTextureData);
         cellTexture.Apply();
-        enabled = false;
+
+        enabled = (transitioningCells.Count > 0);
 
         // "To actually apply the data to the texture and push it to the GPU, we have to invoke
         // Texture2D.SetPixels32 followed by Texture2D.Apply. Like we do with chunks, we're going
@@ -93,7 +124,55 @@ public class HexCellShaderData : MonoBehaviour
             }
         }
 
+        transitioningCells.Clear();
+
         // schedule update
+        enabled = true;
+    }
+
+    bool UpdateCellData(HexCell cell, int delta)
+    {
+        int index = cell.Index;
+        Color32 data = cellTextureData[index];
+        bool stillUpdating = false;
+
+        // explored data stored in g channel
+        if (cell.IsExplored && data.g < 255)
+        {
+            stillUpdating = true;
+
+            // Update cell data; Arithmatic operations don't work on bytes, they are always 
+            // converted to integers first. So the sum is an integer, which has to be cast to a byte
+            int t = data.g + delta;
+            data.g = (t >= 255) ? (byte)255 : (byte)t; // make sure there is no overflow
+        }
+
+        // visible data stored in r channel
+        if (cell.IsVisible)
+        {
+            if (data.r < 255)
+            {
+                stillUpdating = true;
+                int t = data.r + delta;
+                data.r = t >= 255 ? (byte)255 : (byte)t;
+            }
+        }
+        else if (data.r > 0)
+        {
+            stillUpdating = true;
+            int t = data.r - delta;
+            data.r = t < 0 ? (byte)0 : (byte)t;
+        }
+
+        if (!stillUpdating) data.b = 0;
+
+        cellTextureData[index] = data;
+        return stillUpdating;
+    }
+
+    public void ViewElevationChanged()
+    {
+        needsVisibilityReset = true;
         enabled = true;
     }
 
@@ -110,9 +189,19 @@ public class HexCellShaderData : MonoBehaviour
     {
         int index = cell.Index;
 
-        // convert 0-1 to bytes
-        cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0; // stored in r channel
-        cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0; // stored in g channel
+
+        if (ImmediateMode)
+        {
+            // convert 0-1 to bytes
+            cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0; // stored in r channel
+            cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0; // stored in g channel
+        }
+        else if (cellTextureData[index].b != 255) // blue channel flag if a cell is transitioning
+        {
+            cellTextureData[index].b = 255;
+            transitioningCells.Add(cell);
+        }
+
         enabled = true;
     }
 

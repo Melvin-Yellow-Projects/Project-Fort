@@ -44,6 +44,11 @@ public class HexUnit : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
+    /// <summary>
+    /// HACK: does HexUnit reeaaally need a reference to grid
+    /// </summary>
+    public HexGrid Grid { get; set; }
+
     public HexCell Location
     {
         get
@@ -84,10 +89,21 @@ public class HexUnit : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// HACK: does HexUnit reeaaally need a reference to grid
-    /// </summary>
-    public HexGrid Grid { get; set; }
+    public int Speed
+    {
+        get
+        {
+            return 24;
+        }
+    }
+
+    public int VisionRange
+    {
+        get
+        {
+            return 3;
+        }
+    }
 
     #endregion
 

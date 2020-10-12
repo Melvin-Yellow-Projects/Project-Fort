@@ -123,6 +123,8 @@ public class HexGrid : MonoBehaviour
 		HexUnit.unitPrefab = unitPrefab;
 		cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
+		cellShaderData.Grid = this;
+
 		CreateMap(cellCountX, cellCountZ);
 	}
 
@@ -131,11 +133,15 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	protected void OnEnable()
 	{
-		// this class serves as an intermediate for HexMetrics
-		HexMetrics.noiseSource = noiseSource;
-		//HexMetrics.InitializeHashGrid(seed);
-		HexUnit.unitPrefab = unitPrefab;
-		CreateMap(cellCountX, cellCountZ);
+		if (!HexMetrics.noiseSource)
+		{
+			// this class serves as an intermediate for HexMetrics
+			HexMetrics.noiseSource = noiseSource;
+			//HexMetrics.InitializeHashGrid(seed);
+			HexUnit.unitPrefab = unitPrefab;
+
+			ResetVisibility();
+		}
 	}
 
 	#endregion
@@ -535,6 +541,9 @@ public class HexGrid : MonoBehaviour
 		// invalid if edge between cells is a cliff
 		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
 
+        // invalid if cell is unexplored
+		if (!neighbor.IsExplored) return false;
+
 		// neighbor is a valid cell
 		return true;
 	}
@@ -589,6 +598,7 @@ public class HexGrid : MonoBehaviour
 	/// <summary>
 	/// TODO: comment GetVisibleCells
     /// HACK: this is also soooo close to Search
+    /// HACK: verify visibility calculations, will most likely need an update
 	/// </summary>
 	/// <param name="fromCell"></param>
 	/// <param name="range"></param>
@@ -607,19 +617,17 @@ public class HexGrid : MonoBehaviour
 			searchFrontier.Clear();
 		}
 
+		range += fromCell.ViewElevation;
 		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.Distance = 0;
 		searchFrontier.Enqueue(fromCell);
+
+		HexCoordinates fromCoordinates = fromCell.coordinates;
 		while (searchFrontier.Count > 0)
 		{
 			HexCell current = searchFrontier.Dequeue();
 			current.SearchPhase += 1;
 			visibleCells.Add(current);
-			//			if (current == toCell) {
-			//				return true;
-			//			}
-
-			//			int currentTurn = (current.Distance - 1) / speed;
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
 			{
@@ -631,25 +639,20 @@ public class HexGrid : MonoBehaviour
 				{
 					continue;
 				}
-				//				…
-				//				int moveCost;
-				//				…
 
 				int distance = current.Distance + 1;
-				if (distance > range)
+
+				// adds view elevation to dist calc; TODO: verify this line
+				if (distance + neighbor.ViewElevation > range ||
+					distance > fromCoordinates.DistanceTo(neighbor.coordinates)) 
 				{
 					continue;
 				}
-				//				int turn = (distance - 1) / speed;
-				//				if (turn > currentTurn) {
-				//					distance = turn * speed + moveCost;
-				//				}
 
 				if (neighbor.SearchPhase < searchFrontierPhase)
 				{
 					neighbor.SearchPhase = searchFrontierPhase;
 					neighbor.Distance = distance;
-					//					neighbor.PathFrom = current;
 					neighbor.SearchHeuristic = 0;
 					searchFrontier.Enqueue(neighbor);
 				}
@@ -657,7 +660,6 @@ public class HexGrid : MonoBehaviour
 				{
 					int oldPriority = neighbor.SearchPriority;
 					neighbor.Distance = distance;
-					//					neighbor.PathFrom = current;
 					searchFrontier.Change(neighbor, oldPriority);
 				}
 			}
@@ -729,6 +731,20 @@ public class HexGrid : MonoBehaviour
 		return path;
 	}
 
+	public void ResetVisibility()
+	{
+		for (int i = 0; i < cells.Length; i++)
+		{
+			cells[i].ResetVisibility();
+		}
+
+		for (int i = 0; i < units.Count; i++)
+		{
+			HexUnit unit = units[i];
+			IncreaseVisibility(unit.Location, unit.VisionRange);
+		}
+	}
+
 	/// <summary>
 	/// TODO: comment save
 	/// </summary>
@@ -773,6 +789,9 @@ public class HexGrid : MonoBehaviour
 			if (!CreateMap(x, z)) return;
 		}
 
+		bool originalImmediateMode = cellShaderData.ImmediateMode;
+		cellShaderData.ImmediateMode = true;
+
 		for (int i = 0; i < cells.Length; i++)
 		{
 			cells[i].Load(reader, header);
@@ -790,6 +809,8 @@ public class HexGrid : MonoBehaviour
 				HexUnit.Load(reader, this);
 			}
 		}
+
+		cellShaderData.ImmediateMode = originalImmediateMode;
 	}
 
 	#endregion

@@ -62,7 +62,7 @@ List of objectives to complete
 		- [x] Catlike Coding Hex Map, Units
 		- [x] Catlike Coding Hex Map, Animating Movement
 		- [x] Catlike Coding Hex Map, Fog of War
-		- [ ] Catlike Coding Hex Map, Exploration
+		- [x] Catlike Coding Hex Map, Exploration
 		- [ ] Catlike Coding Hex Map, Advanced Sight
 	- Other
 		- [x] organize README.md
@@ -77,7 +77,7 @@ List of future objectives to complete
 - **Week 3 (October 12, 2020): xxx**
 	- *add next set of deliverables*
 
-- **Week 4 (October 19, 2020): xxx**
+- **Week 4 (October 19, 2020): Break Week**
 	- *add next set of deliverables*
 
 - **Week 5 (October 26, 2020): xxx**
