@@ -74,6 +74,7 @@ List of objectives to complete
 		- [ ] hot seat
 	- Quality of Life
 		- [x] refactor pathfinding logic from hex grid into new class
+		- [x] get relative bridge direction from a point within a cell
 		- [ ] comment existing code
 		- [ ] refactor existing code
 		- [ ] comprehend shader code

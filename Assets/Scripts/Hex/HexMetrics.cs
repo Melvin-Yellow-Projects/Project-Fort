@@ -199,42 +199,40 @@ public static class HexMetrics
         return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
     }
 
-    public static HexDirection GetEdgeDirection(Vector3 localPoint)
+
+    /// <summary>
+    /// Gets the hex direction given a point inside of the hex cell; essentially this returns which
+    /// triangle the point is in; for a diagram see the link: http://bit.ly/HexRelativeDirection
+    /// </summary>
+    /// <param name="localPoint">a point inside of a hex cell</param>
+    /// <returns>relative hex direction that is in the general vicinity of the point</returns>
+    public static HexDirection GetRelativeDirection(Vector3 localPoint)
     {
-        if (localPoint.x > corners[0].x) // east
+        // check if point is east or west given the x coordinate
+        if (localPoint.x > corners[0].x) 
         {
-            if (Vector3.Cross(localPoint, corners[1]).y > 0) // northeast
+            // checks if point is above or below the Northeast region and then East region
+            if (Vector3.Cross(localPoint, corners[1]).y > 0)
             {
                 return HexDirection.NE;
             }
             else
             {
-                if (Vector3.Cross(localPoint, corners[2]).y > 0) // northeast
-                {
-                    return HexDirection.E;
-                }
-                else
-                {
-                    return HexDirection.SE;
-                }
+                if (Vector3.Cross(localPoint, corners[2]).y > 0) return HexDirection.E;
+                else return HexDirection.SE;
             }
         }
-        else // west
+        else 
         {
-            if (Vector3.Cross(localPoint, corners[3]).y > 0) // southwest
+            // checks if point is above or below the Northwest region and then West region
+            if (Vector3.Cross(localPoint, corners[5]).y < 0)
             {
-                return HexDirection.SW;
+                return HexDirection.NW;
             }
             else
             {
-                if (Vector3.Cross(localPoint, corners[4]).y > 0) // southeast
-                {
-                    return HexDirection.E;
-                }
-                else
-                {
-                    return HexDirection.SE;
-                }
+                if (Vector3.Cross(localPoint, corners[4]).y < 0) return HexDirection.W;
+                else return HexDirection.SW;
             }
         }
     }

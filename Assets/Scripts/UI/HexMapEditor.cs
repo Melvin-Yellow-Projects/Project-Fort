@@ -98,7 +98,7 @@ public class HexMapEditor : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.I))
             {
-                hexGrid.GetEdgeMidpoint(Camera.main.ScreenPointToRay(Input.mousePosition));
+                hexGrid.GetRelativeBridgePoint(Camera.main.ScreenPointToRay(Input.mousePosition));
             }
         }
         //previousCell = null;

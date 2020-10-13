@@ -354,7 +354,7 @@ public class HexGrid : MonoBehaviour
 		return null;
 	}
 
-    public Vector3 GetEdgeMidpoint(Vector3 position)
+    public Vector3 GetRelativeBridgePoint(Vector3 position)
     {
         // gets the relative local position
         Vector3 localPosition = transform.InverseTransformPoint(position);
@@ -367,9 +367,9 @@ public class HexGrid : MonoBehaviour
 
         HexCell cell = cells[index];
 
-        HexDirection midpointDirection = HexMetrics.GetEdgeDirection(position - cell.Position);
+        HexDirection direction = HexMetrics.GetRelativeDirection(position - cell.Position);
 
-        _testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(midpointDirection);
+        _testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(direction);
 
         _testmidpoint = cells[index].Position;
         //_testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(HexDirection.NE);
@@ -408,7 +408,7 @@ public class HexGrid : MonoBehaviour
 	/// TODO: comment GetEdgeMidpoint and touch up vars
 	/// </summary>
 	/// <returns></returns>
-	public Vector3 GetEdgeMidpoint(Ray inputRay)
+	public Vector3 GetRelativeBridgePoint(Ray inputRay)
     {
         RaycastHit hit;
 
@@ -418,7 +418,7 @@ public class HexGrid : MonoBehaviour
             // draw line for 1 second
             Debug.DrawLine(inputRay.origin, hit.point, Color.blue, 1f);
 
-            return GetEdgeMidpoint(hit.point);
+            return GetRelativeBridgePoint(hit.point);
         }
 
         // nothing was found
