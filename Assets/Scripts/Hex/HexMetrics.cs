@@ -63,7 +63,7 @@ public static class HexMetrics
     /// <summary>
     /// strength of hex grid vertex noise; max displacement will equal [2 * (value ** 2)] ** 0.5
     /// </summary>
-    public const float cellPerturbStrength = 4f;
+    public const float cellPerturbStrength = 0;
 
     /// <summary>
     /// strength of hex grid elevation noise; this should be relatively related to a vertical
@@ -197,6 +197,46 @@ public static class HexMetrics
         // multiplying by blendFactor causes overlap (opposed to just averaging the vectors) this is
         // done to reduce triangulation
         return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
+    }
+
+    public static HexDirection GetEdgeDirection(Vector3 localPoint)
+    {
+        if (localPoint.x > corners[0].x) // east
+        {
+            if (Vector3.Cross(localPoint, corners[1]).y > 0) // northeast
+            {
+                return HexDirection.NE;
+            }
+            else
+            {
+                if (Vector3.Cross(localPoint, corners[2]).y > 0) // northeast
+                {
+                    return HexDirection.E;
+                }
+                else
+                {
+                    return HexDirection.SE;
+                }
+            }
+        }
+        else // west
+        {
+            if (Vector3.Cross(localPoint, corners[3]).y > 0) // southwest
+            {
+                return HexDirection.SW;
+            }
+            else
+            {
+                if (Vector3.Cross(localPoint, corners[4]).y > 0) // southeast
+                {
+                    return HexDirection.E;
+                }
+                else
+                {
+                    return HexDirection.SE;
+                }
+            }
+        }
     }
 
     /// <summary>

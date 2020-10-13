@@ -365,14 +365,20 @@ public class HexGrid : MonoBehaviour
         // get a cell's index from the coordinates
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
+        HexCell cell = cells[index];
+
+        HexDirection midpointDirection = HexMetrics.GetEdgeDirection(position - cell.Position);
+
+        _testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(midpointDirection);
+
         _testmidpoint = cells[index].Position;
-        _testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(HexDirection.NE);
+        //_testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(HexDirection.NE);
         _testleftpoint = cells[index].Position + HexMetrics.GetFirstCorner(HexDirection.NE);
         _testrightpoint = cells[index].Position + HexMetrics.GetSecondCorner(HexDirection.NE);
         _testHeight = new Vector3(0, 1f, 0);
 
         // return edge midpoint
-        return cells[index].Position; 
+        return _testmidpoint2; 
     }
 
     Vector3 _testmidpoint = new Vector3();
