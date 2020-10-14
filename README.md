@@ -60,21 +60,38 @@ List of objectives to complete
 		
 - **Week 3 (October 12, 2020): xxx**
 	- Game Design
+		- [x] rotation as movement cost
+		- [ ] hex curser inputs
 		- [ ] turns and rounds
 		- [ ] economy		
 		- [ ] cell queue combat flow
 	- Gameplay
-		- [ ] hex curser
+		- hex curser
+			- [ ] arrow points from a start to an end point
+			- [ ] can gray out if not selected
+			- [ ] can gray out a section of the path
+			- [ ] supports overlapping, curser can go backwards ontop of itself
+			- [ ] Bézier implementation
+			- [ ] multiple cursers can exist simultaneously and yet still comprehensively
+		- new pathfinding
+			- [x] get relative bridge direction from a point within a cell
+			- [ ] rotation now is added to the movement cost
+			- [ ] pathfinding display debugger is readded
+		- travel queue
+			- [ ] cells and rotations can be added to a travel queue 1 at a time
+			- [ ] left click for selection, right click for execution
+			- [ ] hold shift to activate travel queue, otherwise A* is used
+			- [ ] unit must remember path until it is allowed to forget 
+			- [ ] mouse over cell edge can change a unit's direction in A* mode
 		- [ ] play mode and editor mode revamp
-		- [ ] mouse over cell edge can change a unit's direction
-		- [ ] 1 player with correct movement inputs
-		- [ ] move submission button
+		- [ ] move submission
+			- [ ] moves are stored by units until a button is pressed
+			- [ ] pieces on the same cell will abruptly stop eachother's paths
 		- [ ] basic piece combat
-		- [ ] unit ability UI
-		- [ ] hot seat
+			- [ ] combat animation
+			- [ ] dust effect
 	- Quality of Life
 		- [x] refactor pathfinding logic from hex grid into new class
-		- [x] get relative bridge direction from a point within a cell
 		- [ ] comment existing code
 		- [ ] refactor existing code
 		- [ ] comprehend shader code
@@ -104,12 +121,14 @@ List of future objectives to complete
 		- [ ] cell queue combat flow
 	- Gameplay
 		- [ ] launch screen
+		- [ ] hot seat
 		- [ ] water cells 
 		- [ ] variant map shapes
 		- [ ] rivers edges
 		- [ ] rock edges 
 		- [ ] unit abilities
-		- [ ] unit ability UI
+			- [ ] ability UI
+			- [ ] left click to execute ability
 	- Graphics
 		- [ ] ability descriptions (like a modal view descriptor seen for card games)
 	- Sound
