@@ -10,18 +10,25 @@
  *      here: https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial 
  *      series: Hex Map; this file has been updated it to better fit this project
  **/
-
+ 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class HexPathfinding
+public class HexPathfinding : MonoBehaviour
 {
-	/********** MARK: Private Variables **********/
-	#region Private Variables
+    /********** MARK: Private Variables **********/
+    #region Private Variables
 
-	// priority queue data structure
-	static HexCellPriorityQueue searchFrontier;
+    /// <summary>
+    /// singleton instance of this class
+    /// </summary>
+    static HexPathfinding instance;
+
+    /// <summary>
+    /// priority queue data structure
+    /// </summary>
+    static HexCellPriorityQueue searchFrontier;
 
 	/// <summary>
 	/// TODO: comment var; HACK: im certain this variable isn't needed, but it might speed up
@@ -36,40 +43,46 @@ public static class HexPathfinding
 
 	static HexCell currentPathTo;
 
-	static bool currentPathExists;
+    #endregion
 
-	#endregion
+    /********** MARK: Properties **********/
+    #region Properties
 
-	/********** MARK: Properties **********/
-	#region Properties
+    /// <summary>
+    /// TODO: comment HasPath prop
+    /// </summary>
+    public static bool HasPath { get; private set; }
 
-	/// <summary>
-	/// TODO: comment HasPath prop
-	/// </summary>
-	public static bool HasPath
-	{
-		get
-		{
-			return currentPathExists;
-		}
-	}
+    #endregion
 
-	#endregion
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
 
-	/********** MARK: Class Functions **********/
-	#region Class Functions
+    /// <summary>
+    /// Unity Method; Awake() is called before Start() upon GameObject creation
+    /// </summary>
+    private void Awake()
+    {
+        instance = this;
+        HexPathfinding.SayHi();
+    }
 
-	/// <summary>
-	/// TODO: comment Breadth-First Search function
-	/// HACK: this function is mega long
-	/// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
-	/// not necessary to do so... but it might make future features or debugging easier
-	/// </summary>
-	/// <param name="fromCell"></param>
-	/// <param name="toCell"></param>
-	/// <param name="speed"></param>
-	/// <returns></returns>
-	private static bool Search(HexCell fromCell, HexCell toCell, int speed)
+    #endregion
+
+    /********** MARK: Class Functions **********/
+    #region Class Functions
+
+    /// <summary>
+    /// TODO: comment Breadth-First Search function
+    /// HACK: this function is mega long
+    /// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
+    /// not necessary to do so... but it might make future features or debugging easier
+    /// </summary>
+    /// <param name="fromCell"></param>
+    /// <param name="toCell"></param>
+    /// <param name="speed"></param>
+    /// <returns></returns>
+    private static bool Search(HexCell fromCell, HexCell toCell, int speed)
 	{
 		searchFrontierPhase += 2; // initialize new search frontier phase
 
@@ -300,7 +313,7 @@ public static class HexPathfinding
 		ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
-		currentPathExists = Search(fromCell, toCell, speed);
+		HasPath = Search(fromCell, toCell, speed);
 		ShowPath(speed);
 	}
 
@@ -311,7 +324,7 @@ public static class HexPathfinding
 	/// <param name="speed"></param>
 	private static void ShowPath(int speed)
 	{
-		if (currentPathExists)
+		if (HasPath)
 		{
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom)
@@ -331,7 +344,7 @@ public static class HexPathfinding
 	/// </summary>
 	public static void ClearPath()
 	{
-		if (currentPathExists)
+		if (HasPath)
 		{
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom)
@@ -341,7 +354,7 @@ public static class HexPathfinding
 				current = current.PathFrom;
 			}
 			current.DisableHighlight();
-			currentPathExists = false;
+			HasPath = false;
 		}
 		else if (currentPathFrom)
 		{
@@ -354,7 +367,7 @@ public static class HexPathfinding
 	public static List<HexCell> GetPath()
 	{
 		// return if there is no path
-		if (!currentPathExists) return null;
+		if (!HasPath) return null;
 
 		// initialize path HACK: this should just be a list since there will be multiple paths
 		List<HexCell> path = ListPool<HexCell>.Get();
@@ -368,8 +381,19 @@ public static class HexPathfinding
 		path.Add(currentPathFrom); // since the path is in reverse order...
 		path.Reverse(); // let's reverse it so it's easier to work with
 
-		return path;
-	}
+        return path;
+    }
+
+    private static void SayHi()
+    {
+        instance.StartCoroutine(DisplayPath());
+    }
+
+    private static IEnumerator DisplayPath()
+    {
+        Debug.Log("hi");
+        yield return null;
+    }
 
 	#endregion
 

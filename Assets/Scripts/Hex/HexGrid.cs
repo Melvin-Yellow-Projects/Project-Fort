@@ -365,43 +365,11 @@ public class HexGrid : MonoBehaviour
         // get a cell's index from the coordinates
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
-        HexCell cell = cells[index];
-
-        HexDirection direction = HexMetrics.GetRelativeDirection(position - cell.Position);
-
-        _testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(direction);
-
-        _testmidpoint = cells[index].Position;
-        //_testmidpoint2 = cells[index].Position + HexMetrics.GetBridge(HexDirection.NE);
-        _testleftpoint = cells[index].Position + HexMetrics.GetFirstCorner(HexDirection.NE);
-        _testrightpoint = cells[index].Position + HexMetrics.GetSecondCorner(HexDirection.NE);
-        _testHeight = new Vector3(0, 1f, 0);
+        // get relative direction
+        HexDirection direction = HexMetrics.GetRelativeDirection(position - cells[index].Position);
 
         // return edge midpoint
-        return _testmidpoint2; 
-    }
-
-    Vector3 _testmidpoint = new Vector3();
-    Vector3 _testmidpoint2 = new Vector3();
-    Vector3 _testleftpoint = new Vector3();
-    Vector3 _testrightpoint = new Vector3();
-    Vector3 _testHeight = new Vector3();
-
-    protected void OnDrawGizmos()
-    {
-        // change Gizmos color
-        Gizmos.color = Color.white;
-
-        // draw a gizmo where the location was 
-        Gizmos.DrawSphere(_testmidpoint, 1.5f);
-
-        // change Gizmos color
-        Gizmos.color = Color.blue;
-
-        // draw a gizmo where the location was 
-        Gizmos.DrawSphere(_testmidpoint2, 1.5f);
-
-        Gizmos.DrawLine(_testleftpoint + _testHeight, _testrightpoint + _testHeight);
+        return cells[index].Position + HexMetrics.GetBridge(direction);
     }
 
     /// <summary>
