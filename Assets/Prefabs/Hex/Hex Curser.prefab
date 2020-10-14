@@ -126,8 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a49a2caaf5964ae69dad5adcd0cea5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  headPosition: {x: 0, y: 0, z: 0}
-  tailPosition: {x: 0, y: 0, z: 0}
   curserHead: {fileID: 1065123664437712620}
   curserBody: {fileID: 4394867178137507195}
 --- !u!1 &4394867178137507195

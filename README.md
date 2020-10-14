@@ -67,12 +67,13 @@ List of objectives to complete
 		- [ ] cell queue combat flow
 	- Gameplay
 		- hex curser
-			- [ ] arrow points from a start to an end point
+			- [x] arrow points from a start to an end point
 			- [ ] can gray out if not selected
 			- [ ] can gray out a section of the path
 			- [ ] supports overlapping, curser can go backwards ontop of itself
 			- [ ] Bézier implementation
 			- [ ] multiple cursers can exist simultaneously and yet still comprehensively
+			- [x] animation
 		- new pathfinding
 			- [x] get relative bridge direction from a point within a cell
 			- [ ] rotation now is added to the movement cost

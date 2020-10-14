@@ -14,14 +14,17 @@ using UnityEngine;
 
 public class HexCurser : MonoBehaviour
 {
+    /********** MARK: Public Variables **********/
+    #region Public Variables
 
-    public Vector3 headPosition;
+    public static HexCurser prefab = null;
 
-    public Vector3 tailPosition;
+    #endregion
 
     /********** MARK: Private Variables **********/
     #region Private Variables
 
+    /* Cached References */
     [Header("Cached References")]
     [Tooltip("head GameObject of the hex curser")]
     [SerializeField] GameObject curserHead = null;
@@ -29,65 +32,154 @@ public class HexCurser : MonoBehaviour
     [Tooltip("body GameObject of the hex curser")]
     [SerializeField] GameObject curserBody = null;
 
-    List<GameObject> nodes = new List<GameObject>();
+    List<GameObject> bodies = new List<GameObject>();
+    List<float> interpolators = new List<float>();
+
+    List<Vector3> points = new List<Vector3>();
+
+    // frequency
+
+    float speed = 1f;
 
     #endregion
 
-    /********** MARK: Unity Functions **********/
-    #region Unity Functions
+    /********** MARK: Properties **********/
+    #region Properties
 
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
-    protected void Awake()
+    public Vector3 HeadPoint
     {
-        SpawnCurserNodes();
-
-        headPosition = new Vector3(60, 0, 0);
-        tailPosition = new Vector3(0, 0, 0);
+        get
+        {
+            return points[points.Count - 1];
+        }
+        set
+        {
+            value.y = 0;
+            points[points.Count - 1] = value;
+        }
     }
+
+    private Vector3 PenultimatePoint
+    {
+        get
+        {
+            return points[points.Count - 2];
+        }
+    }
+
+    public Vector3 TailPoint
+    {
+        get
+        {
+            return points[0];
+        }
+        set
+        {
+            points[0] = value;
+        }
+    }
+
+    #endregion
+
+    /********** MARK: Initialization Functions **********/
+    #region Initialization Functions
+
+    public static HexCurser Initialize(Vector3 tail, Vector3 head)
+    {
+        HexCurser curser = Instantiate<HexCurser>(prefab);
+
+        curser.points.Add(tail);
+
+        curser.points.Add(head);
+
+        curser.CreateBody();
+
+        return curser;
+    }
+
+    protected void CreateBody()
+    {
+        for (int i = 0; i < 10; i++) // HACK: hardcoded body count
+        {
+            GameObject body = Instantiate<GameObject>(curserBody, transform);
+            body.transform.eulerAngles = new Vector3(90, 0, 0);
+            body.SetActive(true);
+            bodies.Add(body);
+            interpolators.Add(0.1f * i);
+        }
+    }
+
+    #endregion
+
+    /********** MARK: Update Functions **********/
+    #region Update Functions
 
     /// <summary>
     /// Unity Method; Update() is called once per frame
     /// </summary>
     protected void Update()
     {
-        SetBodyPosition();
+        UpdateHead();
 
-        curserHead.transform.position = headPosition;
-        SetHeadRotation();
+        UpdateBodies();
+    }
+
+    protected void UpdateHead()
+    {
+        // set position
+        curserHead.transform.position = HeadPoint;
+
+        // set rotation
+        curserHead.transform.rotation = Quaternion.LookRotation(HeadPoint - PenultimatePoint);
+        Vector3 eulerAngles = curserHead.transform.eulerAngles;
+        eulerAngles.x = 90;
+        curserHead.transform.eulerAngles = eulerAngles;
+    }
+
+    protected void UpdateBodies()
+    {
+        for (int i = 0; i < bodies.Count; i++)
+        {
+            //float t = i / (float)bodies.Count;
+            //Vector3 pos = Vector3.Lerp(TailPosition, HeadPosition, t);
+            //bodies[i].transform.position = pos;
+
+            bodies[i].transform.position = GetBodyPosition(interpolators[i]);
+            interpolators[i] += Time.deltaTime * speed;
+
+            if (interpolators[i] >= 1) interpolators[i] = 0;
+        }
     }
 
     #endregion
 
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /********** MARK: Other Functions **********/
+    #region Other Functions
 
-    protected void SpawnCurserNodes()
+    public void AddPoint(Vector3 point)
     {
-        for (int i = 0; i < 10; i++) // HACK: hardcoded body count
-        {
-            GameObject node = Instantiate<GameObject>(curserBody, transform);
-            node.transform.eulerAngles = new Vector3(90, 0, 0);
-            node.SetActive(true);
-            nodes.Add(node);
-        }
+        points.Add(point);
     }
 
-    protected void SetBodyPosition()
+    private Vector3 GetBodyPosition(float interpolator)
     {
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            float t = i / (float)nodes.Count;
-            Vector3 pos = Vector3.Lerp(tailPosition, headPosition, t);
-            nodes[i].transform.position = pos;
-        }
-    }
+        float count = points.Count - 1;
 
-    protected void SetHeadRotation()
-    {
-        curserHead.transform.rotation = Quaternion.LookRotation(headPosition - tailPosition);
-        curserHead.transform.eulerAngles += new Vector3(90, 0, 0);
+        interpolator = Mathf.Clamp(interpolator, 0.001f, 0.999f);
+
+        // calculate index
+        int index = (int)(count * interpolator);
+        float t1 = index / count;
+        float t2 = (index + 1) / count;
+
+        // normalization
+        float t = (interpolator - t1) / (t2 - t1);
+
+        // calculate points
+        Vector3 a = points[index];
+        Vector3 b = points[index + 1];
+
+        return Vector3.Lerp(a, b, t);
     }
 
     #endregion
