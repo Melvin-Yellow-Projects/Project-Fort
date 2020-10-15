@@ -62,7 +62,11 @@ public class DebugCurserController : MonoBehaviour
     private void HandleInput()
     {
         // left click, new curser
-        if (Input.GetMouseButtonDown(0)) currentCurser = HexCurser.Initialize(new Vector3(), point);
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (currentCurser) currentCurser.IsSelected = false;
+            currentCurser = HexCurser.Initialize(new Vector3(), point);
+        }
 
         // right click, add point
         if (Input.GetMouseButtonDown(1) && currentCurser) currentCurser.AddPoint(point);

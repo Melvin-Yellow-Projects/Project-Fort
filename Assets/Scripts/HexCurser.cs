@@ -41,10 +41,16 @@ public class HexCurser : MonoBehaviour
 
     float speed = 1f;
 
+    float alpha = 1f;
+
+    int collisionIndex = -1;
+
+    int count = 0;
+
     #endregion
 
-    /********** MARK: Properties **********/
-    #region Properties
+    /********** MARK: Public Properties **********/
+    #region Public Properties
 
     public Vector3 HeadPoint
     {
@@ -59,14 +65,6 @@ public class HexCurser : MonoBehaviour
         }
     }
 
-    private Vector3 PenultimatePoint
-    {
-        get
-        {
-            return points[points.Count - 2];
-        }
-    }
-
     public Vector3 TailPoint
     {
         get
@@ -76,6 +74,55 @@ public class HexCurser : MonoBehaviour
         set
         {
             points[0] = value;
+        }
+    }
+
+    public bool IsSelected
+    {
+        set
+        {
+            alpha = (value) ? 1f : (100f / 255f); 
+        }
+    }
+
+    public int CollisionIndex
+    {
+        get
+        {
+            return collisionIndex;
+        }
+        set
+        {
+            collisionIndex = Mathf.Clamp(value, -1, points.Count - 1);
+        }
+    }
+
+    #endregion
+
+    /********** MARK: Private Properties **********/
+    #region Private Properties
+
+    private Vector3 PenultimatePoint
+    {
+        get
+        {
+            return points[points.Count - 2];
+        }
+    }
+
+    private Color DefaultColor
+    {
+        get
+        {
+            return new Color(150f / 255f, 0, 0, alpha);
+        }
+    }
+
+    private Color ErrorColor
+    {
+        get
+        {
+            return new Color(150f / 255f, 150f / 255f, 150f / 255f, alpha);
         }
     }
 
@@ -92,14 +139,15 @@ public class HexCurser : MonoBehaviour
 
         curser.points.Add(head);
 
-        curser.CreateBody();
+        curser.CreateBodies();
 
         return curser;
     }
 
-    protected void CreateBody()
+    protected void CreateBodies()
     {
-        for (int i = 0; i < 10; i++) // HACK: hardcoded body count
+        int newCount = count + 10;
+        for (int i = count; i < newCount; i++) // HACK: hardcoded body count
         {
             GameObject body = Instantiate<GameObject>(curserBody, transform);
             body.transform.eulerAngles = new Vector3(90, 0, 0);
@@ -107,6 +155,8 @@ public class HexCurser : MonoBehaviour
             bodies.Add(body);
             interpolators.Add(0.1f * i);
         }
+
+        count = newCount;
     }
 
     #endregion
@@ -134,20 +184,28 @@ public class HexCurser : MonoBehaviour
         Vector3 eulerAngles = curserHead.transform.eulerAngles;
         eulerAngles.x = 90;
         curserHead.transform.eulerAngles = eulerAngles;
+
+        // set color
+        if (collisionIndex == -1) curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
+        else curserHead.GetComponent<SpriteRenderer>().color = ErrorColor;
     }
 
     protected void UpdateBodies()
     {
         for (int i = 0; i < bodies.Count; i++)
         {
-            //float t = i / (float)bodies.Count;
-            //Vector3 pos = Vector3.Lerp(TailPosition, HeadPosition, t);
-            //bodies[i].transform.position = pos;
+            // set color
+            if (collisionIndex == -1) bodies[i].GetComponent<SpriteRenderer>().color = DefaultColor;
+            else bodies[i].GetComponent<SpriteRenderer>().color = ErrorColor;
 
-            bodies[i].transform.position = GetBodyPosition(interpolators[i]);
-            interpolators[i] += Time.deltaTime * speed;
+            // set position
+            bodies[i].transform.position = GetBodyPosition(i);
 
-            if (interpolators[i] >= 1) interpolators[i] = 0;
+            // update interpolator
+            interpolators[i] += Time.deltaTime;
+
+            // reset a body's interpolator if greater than 1
+            if (interpolators[i] >= 1) interpolators[i] = 0; 
         }
     }
 
@@ -159,27 +217,40 @@ public class HexCurser : MonoBehaviour
     public void AddPoint(Vector3 point)
     {
         points.Add(point);
+        //CreateBodies();
     }
 
-    private Vector3 GetBodyPosition(float interpolator)
+    private Vector3 GetBodyPosition(int interpolatorIndex)
     {
-        float count = points.Count - 1;
+        float interpolator = interpolators[interpolatorIndex];
 
-        interpolator = Mathf.Clamp(interpolator, 0.001f, 0.999f);
+        // get point index from interpolator
+        int pointIndex = InterpolatorToIndex(interpolator);
 
-        // calculate index
-        int index = (int)(count * interpolator);
-        float t1 = index / count;
-        float t2 = (index + 1) / count;
+        // min index interpolator
+        float tMin = IndexToInterpolator(pointIndex);
 
-        // normalization
-        float t = (interpolator - t1) / (t2 - t1);
+        // max index interpolator
+        float tMax = IndexToInterpolator(pointIndex + 1);
+
+        // normalize interpolator with the max and min index range
+        float t = GeneralUtilities.Normalization(interpolator, tMin, tMax);
 
         // calculate points
-        Vector3 a = points[index];
-        Vector3 b = points[index + 1];
+        Vector3 a = points[pointIndex];
+        Vector3 b = points[pointIndex + 1];
 
         return Vector3.Lerp(a, b, t);
+    }
+
+    private float IndexToInterpolator(int index)
+    {
+        return index / (float)(points.Count - 1);
+    }
+
+    private int InterpolatorToIndex(float interpolator)
+    {
+        return (int)((points.Count - 1) * interpolator);
     }
 
     #endregion
