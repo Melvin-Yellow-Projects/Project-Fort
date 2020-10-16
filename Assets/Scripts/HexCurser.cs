@@ -39,7 +39,7 @@ public class HexCurser : MonoBehaviour
 
     // frequency
 
-    float speed = 1f;
+    float speed = 10f;
 
     float alpha = 1f;
 
@@ -202,7 +202,7 @@ public class HexCurser : MonoBehaviour
             bodies[i].transform.position = GetBodyPosition(i);
 
             // update interpolator
-            interpolators[i] += Time.deltaTime * speed;
+            //interpolators[i] += Time.deltaTime * speed;
 
             // reset a body's interpolator if greater than 1
             if (interpolators[i] >= 1) interpolators[i] = 0; 
@@ -240,7 +240,11 @@ public class HexCurser : MonoBehaviour
         Vector3 a = points[pointIndex];
         Vector3 b = points[pointIndex + 1];
 
-        return Vector3.Lerp(a, b, t);
+        Vector3 interpolation = Vector3.Lerp(a, b, t);
+
+        interpolators[interpolatorIndex] += Time.deltaTime * speed / (b - interpolation).magnitude;
+
+        return interpolation;
     }
 
     private float IndexToInterpolator(int index)
