@@ -72,6 +72,17 @@ public class HexPathfinding : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    // TODO: comment FindPath
+    public static void FindPath(HexCell fromCell, HexCell toCell, HexUnit unit)
+    {
+        ClearPath();
+        currentPathFrom = fromCell;
+        currentPathTo = toCell;
+        fromCell.PathFrom = null; 
+        HasPath = Search(fromCell, toCell, unit);
+        ShowPath(unit.Speed);
+    }
+
     /// <summary>
     /// TODO: comment Breadth-First Search function
     /// HACK: this function is mega long
@@ -80,9 +91,9 @@ public class HexPathfinding : MonoBehaviour
     /// </summary>
     /// <param name="fromCell"></param>
     /// <param name="toCell"></param>
-    /// <param name="speed"></param>
+    /// <param name="unit"></param>
     /// <returns></returns>
-    private static bool Search(HexCell fromCell, HexCell toCell, int speed)
+    private static bool Search(HexCell fromCell, HexCell toCell, HexUnit unit)
 	{
 		searchFrontierPhase += 2; // initialize new search frontier phase
 
@@ -108,7 +119,7 @@ public class HexPathfinding : MonoBehaviour
 				return true;
 			}
 
-			int currentTurn = (current.Distance - 1) / speed;
+			int currentTurn = (current.Distance - 1) / unit.Speed;
 
 			// search all neighbors of the current cell
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -118,15 +129,15 @@ public class HexPathfinding : MonoBehaviour
 				if (IsValidCellForSearch(current, neighbor))
 				{
 					// if they are valid, calculate distance and add them to the queue
-					int moveCost = GetMoveCostCalculation(current, neighbor);
+					int moveCost = GetMoveCostCalculation(current, neighbor, unit);
 
 					// distance is calculated from move cost
 					int distance = current.Distance + moveCost;
-					int turn = (distance - 1) / speed;
+					int turn = (distance - 1) / unit.Speed;
 
 					// this adjusts the distance if there is left over movement
 					// TODO: is this the system we want?
-					if (turn > currentTurn) distance = turn * speed + moveCost;
+					if (turn > currentTurn) distance = turn * unit.Speed + moveCost;
 
 					// adding a new cell that hasn't been updated
 					if (neighbor.SearchPhase < searchFrontierPhase)
@@ -163,12 +174,11 @@ public class HexPathfinding : MonoBehaviour
 	/// <param name="current"></param>
 	/// <param name="neighbor"></param>
 	/// <returns></returns>
-	private static int GetMoveCostCalculation(HexCell current, HexCell neighbor)
+	private static int GetMoveCostCalculation(HexCell current, HexCell neighbor, HexUnit unit)
 	{
 		// starting move cost
 		int moveCost = 0;
 
-		//if (current.HasRoadThroughEdge(d)) // roads
 		if (current.TerrainTypeIndex == 1) // if grass 
 		{
 			moveCost += 1;
@@ -176,14 +186,23 @@ public class HexPathfinding : MonoBehaviour
 		else
 		{
 			HexEdgeType edgeType = current.GetEdgeType(neighbor);
-			moveCost += (edgeType == HexEdgeType.Flat) ? 5 : 10;
-
-			// if there is special terrain features
-			//distance += neighbor.UrbanLevel + neighbor.FarmLevel +
-			//			neighbor.PlantLevel;
+			moveCost += (edgeType == HexEdgeType.Flat) ? 2 : 3;
 		}
 
-		return moveCost;
+        /* flank rotation calculation */
+
+        // current unit direction
+        HexDirection inDirection; 
+        if (current.PathFrom) inDirection = HexMetrics.GetDirection(current.PathFrom, current);
+        else inDirection = current.Unit.Direction;
+
+        // next unit direction
+        HexDirection outDirection; 
+        outDirection = HexMetrics.GetDirection(current, neighbor);
+
+        if (HexMetrics.IsFlank(inDirection, outDirection)) moveCost += 1;
+
+        return moveCost;
 	}
 
 	/// <summary>
@@ -215,8 +234,7 @@ public class HexPathfinding : MonoBehaviour
 		// neighbor is a valid cell
 		return true;
 	}
-
-
+    
 	/// <summary>
 	/// TODO: comment GetVisibleCells
 	/// HACK: this is also soooo close to Search
@@ -305,16 +323,6 @@ public class HexPathfinding : MonoBehaviour
 			cells[i].DecreaseVisibility();
 		}
 		ListPool<HexCell>.Add(cells);
-	}
-
-	// TODO: comment FindPath
-	public static void FindPath(HexCell fromCell, HexCell toCell, int speed)
-	{
-		ClearPath();
-		currentPathFrom = fromCell;
-		currentPathTo = toCell;
-		HasPath = Search(fromCell, toCell, speed);
-		ShowPath(speed);
 	}
 
 	/// <summary>

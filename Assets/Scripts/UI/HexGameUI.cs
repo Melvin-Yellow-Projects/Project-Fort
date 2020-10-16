@@ -89,7 +89,7 @@ public class HexGameUI : MonoBehaviour
         {
             if (currentCell && selectedUnit.IsValidDestination(currentCell))
             {
-                HexPathfinding.FindPath(selectedUnit.Location, currentCell, 24);
+                HexPathfinding.FindPath(selectedUnit.Location, currentCell, selectedUnit);
             }
             else
             {

@@ -202,7 +202,7 @@ public class HexCurser : MonoBehaviour
             bodies[i].transform.position = GetBodyPosition(i);
 
             // update interpolator
-            interpolators[i] += Time.deltaTime;
+            interpolators[i] += Time.deltaTime * speed;
 
             // reset a body's interpolator if greater than 1
             if (interpolators[i] >= 1) interpolators[i] = 0; 

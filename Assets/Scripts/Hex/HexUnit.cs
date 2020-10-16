@@ -84,11 +84,19 @@ public class HexUnit : MonoBehaviour
         }
     }
 
+    public HexDirection Direction
+    {
+        get
+        {
+            return HexMetrics.AngleToDirection(orientation);
+        }
+    }
+
     public int Speed
     {
         get
         {
-            return 24;
+            return 4;
         }
     }
 
