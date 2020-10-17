@@ -199,6 +199,12 @@ public static class HexMetrics
         return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
     }
 
+    // HACK: idk man this is probably not what i want
+    public static Vector3 GetBridge2(HexDirection direction)
+    {
+        return (corners[(int)direction] + corners[(int)direction + 1]);
+    }
+
     /// <summary>
     /// Converts an angle to a hex direction; HACK: this does not cover angles outside the range of
     /// 360 degrees

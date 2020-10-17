@@ -332,6 +332,10 @@ public class HexGrid : MonoBehaviour
 		return cells[index];
 	}
 
+    public HexCell GetCell()
+    {
+        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+    }
 
 	/// <summary>
 	/// TODO: comment GetCell and touch up vars

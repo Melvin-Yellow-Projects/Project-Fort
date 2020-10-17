@@ -234,6 +234,13 @@ public class HexUnit : MonoBehaviour
         pathToTravel = null;
     }
 
+    public void LookAt(HexDirection direction)
+    {
+        // HACK: yea dis is hacky, coroutine needs to probably be stopped first
+        Vector3 localPoint = HexMetrics.GetBridge(direction);
+        StartCoroutine(LookAt(location.Position + localPoint));
+    }
+
     IEnumerator LookAt(Vector3 point)
     {
         // locks the y dimension

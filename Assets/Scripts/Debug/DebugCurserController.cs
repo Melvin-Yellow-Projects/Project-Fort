@@ -41,6 +41,7 @@ public class DebugCurserController : MonoBehaviour
     protected void Awake()
     {
         HexCurser.prefab = prefab;
+        HexCurser.DrawLine(new Vector3(), new Vector3(10, 0, 0), Color.blue, 2f);
     }
 
     /// <summary>

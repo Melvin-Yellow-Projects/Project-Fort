@@ -257,6 +257,26 @@ public class HexCurser : MonoBehaviour
         return (int)((points.Count - 1) * interpolator);
     }
 
+    public static void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
+    {
+        float lineWidth = 10f;
+
+        GameObject myLine = new GameObject();
+        myLine.transform.position = start;
+        myLine.AddComponent<LineRenderer>();
+        LineRenderer lr = myLine.GetComponent<LineRenderer>();
+        lr.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        //lr.SetColors(color, color);
+        lr.startColor = color;
+        lr.endColor = color;
+        //lr.SetWidth(0.1f, 0.1f);
+        lr.startWidth = lineWidth * 0.5f;
+        lr.endWidth = lineWidth;
+        lr.SetPosition(0, start);
+        lr.SetPosition(1, end);
+        GameObject.Destroy(myLine, duration);
+    }
+
     #endregion
 
 }

@@ -115,21 +115,11 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     protected void HandleInput()
     {
-        HexCell currentCell = GetCellUnderCursor();
+        HexCell currentCell = hexGrid.GetCell();
         if (currentCell)
         {
             EditCells(currentCell);
         }
-    }
-
-    /// <summary>
-    /// TODO: comment GetCellUnderCursor
-    /// </summary>
-    /// <returns></returns>
-    HexCell GetCellUnderCursor()
-    {
-        // Ray for camera to mouse position in world space
-        return hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
     }
 
     /// <summary>
@@ -279,7 +269,7 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     void CreateUnit()
     {
-        HexCell cell = GetCellUnderCursor();
+        HexCell cell = hexGrid.GetCell();
         if (cell && !cell.Unit) // if the cell exists and the cell does not have a unit...
         {
             hexGrid.AddUnit(Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f));
@@ -291,7 +281,7 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     void DestroyUnit()
     {
-        HexCell cell = GetCellUnderCursor();
+        HexCell cell = hexGrid.GetCell();
         if (cell && cell.Unit) // if the cell exists and the cell does have a unit...
         {
             hexGrid.RemoveUnit(cell.Unit);

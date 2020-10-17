@@ -31,6 +31,8 @@ public class HexGameUI : MonoBehaviour
 
     HexUnit selectedUnit;
 
+    HexDirection selectedDirection;
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -63,30 +65,25 @@ public class HexGameUI : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    bool UpdateCurrentCell()
-    {
-        HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-
-        if (cell != currentCell)
-        {
-            currentCell = cell;
-            return true;
-        }
-        return false;
-    }
-
     void DoSelection()
     {
         HexPathfinding.ClearPath();
-        UpdateCurrentCell();
+
+        // update current cell
+        HexCell cell = grid.GetCell();
+        if (cell != currentCell) currentCell = cell;
 
         if (currentCell) selectedUnit = currentCell.Unit;
     }
 
     void DoPathfinding()
     {
-        if (UpdateCurrentCell())
+        HexCell cell = grid.GetCell();
+
+        // get new path
+        if (cell != currentCell)
         {
+            currentCell = cell;
             if (currentCell && selectedUnit.IsValidDestination(currentCell))
             {
                 HexPathfinding.FindPath(selectedUnit.Location, currentCell, selectedUnit);
@@ -96,6 +93,15 @@ public class HexGameUI : MonoBehaviour
                 HexPathfinding.ClearPath();
             }
         }
+        else if (cell == currentCell) // get end path direction
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Vector3 point = grid.GetRelativeBridgePoint(ray);
+            point = cell.transform.InverseTransformPoint(point);
+            HexMetrics.GetRelativeDirection(point);
+
+            selectedDirection = HexMetrics.GetRelativeDirection(point);
+        }
     }
 
     void DoMove()
@@ -104,6 +110,12 @@ public class HexGameUI : MonoBehaviour
         {
             selectedUnit.Travel(HexPathfinding.GetPath());
             HexPathfinding.ClearPath();
+
+            Debug.Log(selectedDirection);
+        }
+        else
+        {
+            selectedUnit.LookAt(selectedDirection);
         }
     }
 
