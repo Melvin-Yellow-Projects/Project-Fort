@@ -272,7 +272,7 @@ public class HexMapEditor : MonoBehaviour
         HexCell cell = hexGrid.GetCell();
         if (cell && !cell.Unit) // if the cell exists and the cell does not have a unit...
         {
-            hexGrid.AddUnit(Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f));
+            hexGrid.AddUnit(Instantiate(HexUnit.prefab), cell, Random.Range(0f, 360f));
         }
     }
 

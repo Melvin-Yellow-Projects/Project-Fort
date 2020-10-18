@@ -21,11 +21,6 @@ public class DebugCurserController : MonoBehaviour
     /********** MARK: Private Variables **********/
     #region Private Variables
 
-    /* Cached References */
-    [Header("Cached References")]
-    [Tooltip("hex curser prefab reference")]
-    [SerializeField] HexCurser prefab = null;
-
     HexCurser currentCurser = null;
 
     Vector3 point;
@@ -34,15 +29,6 @@ public class DebugCurserController : MonoBehaviour
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
-
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
-    protected void Awake()
-    {
-        HexCurser.prefab = prefab;
-        HexCurser.DrawLine(new Vector3(), new Vector3(10, 0, 0), Color.blue, 2f);
-    }
 
     /// <summary>
     /// Unity Method; Update() is called once per frame

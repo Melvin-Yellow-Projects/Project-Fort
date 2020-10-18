@@ -28,20 +28,14 @@ public class HexGrid : MonoBehaviour
 
 	/* Cached References */
 	[Header("Cached References")]
-	[Tooltip("reference to the HexCell prefab")]
+	[Tooltip("reference to the HexCell prefab")] // TODO: move this to initializer and make a static hexcell function
 	public HexCell cellPrefab;
 
-	[Tooltip("reference to the HexCell Label prefab")]
-	public Text cellLabelPrefab;
+	[Tooltip("reference to the HexCell Label prefab")] // TODO: move this to initializer and make a static hexcell function
+    public Text cellLabelPrefab;
 
 	[Tooltip("reference to the HexGridChunk prefab")]
 	public HexGridChunk chunkPrefab;
-
-	[Tooltip("noise source for Hex Metrics")]
-	public Texture2D noiseSource;
-
-	[Tooltip("reference to the hex unit prefab")]
-    public HexUnit unitPrefab;
 
 	/* Settings */
 	[Header("Settings")]
@@ -84,9 +78,6 @@ public class HexGrid : MonoBehaviour
     /// </summary>
     protected void Awake()
 	{
-		// Set HexMetrics's noise
-		HexMetrics.noiseSource = noiseSource;
-		HexUnit.unitPrefab = unitPrefab;
 		cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
 		cellShaderData.Grid = this;
@@ -99,15 +90,8 @@ public class HexGrid : MonoBehaviour
 	/// </summary>
 	protected void OnEnable()
 	{
-		if (!HexMetrics.noiseSource)
-		{
-			// this class serves as an intermediate for HexMetrics
-			HexMetrics.noiseSource = noiseSource;
-			//HexMetrics.InitializeHashGrid(seed);
-			HexUnit.unitPrefab = unitPrefab;
-
-			ResetVisibility();
-		}
+        //HexMetrics.InitializeHashGrid(seed);
+        ResetVisibility();
 	}
 
 	#endregion

@@ -3699,6 +3699,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 897981683}
+  - component: {fileID: 897981684}
   - component: {fileID: 897981682}
   m_Layer: 0
   m_Name: Systems Manager
@@ -3733,6 +3734,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &897981684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897981681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de39a309b2637e4ebeb812ef7d3d752, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hexCurserPrefab: {fileID: 6044708383268903625, guid: 1251d2526ff8746989407f2a412c63a7,
+    type: 3}
+  hexCurserMaterial: {fileID: 2100000, guid: 0e59f5247002dda4d886a577339ce773, type: 2}
+  noiseSource: {fileID: 2800000, guid: 1e50e6ea9fe0e4d769145f832958c457, type: 3}
+  hexUnitPrefab: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+    type: 3}
 --- !u!1 &905917166
 GameObject:
   m_ObjectHideFlags: 0
@@ -5644,9 +5663,6 @@ MonoBehaviour:
   cellLabelPrefab: {fileID: 5281438768665992024, guid: 45d41606c3b2544888eb3f8d6564f1f3,
     type: 3}
   chunkPrefab: {fileID: 8047540563214710014, guid: abdb84c07d29c48fdbd50fbc8ac049dc,
-    type: 3}
-  noiseSource: {fileID: 2800000, guid: 1e50e6ea9fe0e4d769145f832958c457, type: 3}
-  unitPrefab: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
     type: 3}
   cellCountX: 20
   cellCountZ: 15

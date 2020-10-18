@@ -19,6 +19,8 @@ public class HexCurser : MonoBehaviour
 
     public static HexCurser prefab = null;
 
+    public static Material material = null;
+
     #endregion
 
     /********** MARK: Private Variables **********/
@@ -29,23 +31,17 @@ public class HexCurser : MonoBehaviour
     [Tooltip("head GameObject of the hex curser")]
     [SerializeField] GameObject curserHead = null;
 
-    [Tooltip("body GameObject of the hex curser")]
-    [SerializeField] GameObject curserBody = null;
-
-    List<GameObject> bodies = new List<GameObject>();
-    List<float> interpolators = new List<float>();
+    Transform bodyTransform;
 
     List<Vector3> points = new List<Vector3>();
 
-    // frequency
-
-    float speed = 10f;
-
     float alpha = 1f;
 
-    int collisionIndex = -1;
+    //int collisionIndex = -1;
 
-    int count = 0;
+    /* Configurables */
+    float lineWidth = 1f;
+    float deltaT = 0.1f;
 
     #endregion
 
@@ -62,18 +58,7 @@ public class HexCurser : MonoBehaviour
         {
             value.y = 0;
             points[points.Count - 1] = value;
-        }
-    }
-
-    public Vector3 TailPoint
-    {
-        get
-        {
-            return points[0];
-        }
-        set
-        {
-            points[0] = value;
+            Refresh();
         }
     }
 
@@ -81,21 +66,21 @@ public class HexCurser : MonoBehaviour
     {
         set
         {
-            alpha = (value) ? 1f : (100f / 255f); 
+            alpha = (value) ? 1f : (100f / 255f);
         }
     }
 
-    public int CollisionIndex
-    {
-        get
-        {
-            return collisionIndex;
-        }
-        set
-        {
-            collisionIndex = Mathf.Clamp(value, -1, points.Count - 1);
-        }
-    }
+    //public int CollisionIndex
+    //{
+    //    get
+    //    {
+    //        return collisionIndex;
+    //    }
+    //    set
+    //    {
+    //        collisionIndex = Mathf.Clamp(value, -1, points.Count - 1);
+    //    }
+    //}
 
     #endregion
 
@@ -107,6 +92,18 @@ public class HexCurser : MonoBehaviour
         get
         {
             return points[points.Count - 2];
+        }
+    }
+
+    private Vector3 TailPoint
+    {
+        get
+        {
+            return points[0];
+        }
+        set
+        {
+            points[0] = value;
         }
     }
 
@@ -133,30 +130,17 @@ public class HexCurser : MonoBehaviour
 
     public static HexCurser Initialize(Vector3 tail, Vector3 head)
     {
+        if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
+
         HexCurser curser = Instantiate<HexCurser>(prefab);
 
         curser.points.Add(tail);
 
         curser.points.Add(head);
 
-        curser.CreateBodies();
+        curser.bodyTransform = curser.transform.Find("Body");
 
         return curser;
-    }
-
-    protected void CreateBodies()
-    {
-        int newCount = count + 10;
-        for (int i = count; i < newCount; i++) // HACK: hardcoded body count
-        {
-            GameObject body = Instantiate<GameObject>(curserBody, transform);
-            body.transform.eulerAngles = new Vector3(90, 0, 0);
-            body.SetActive(true);
-            bodies.Add(body);
-            interpolators.Add(0.1f * i);
-        }
-
-        count = newCount;
     }
 
     #endregion
@@ -169,9 +153,10 @@ public class HexCurser : MonoBehaviour
     /// </summary>
     protected void Update()
     {
+        ClearBody();
         UpdateHead();
-
-        UpdateBodies();
+        UpdateBody();
+        enabled = false;
     }
 
     protected void UpdateHead()
@@ -186,26 +171,17 @@ public class HexCurser : MonoBehaviour
         curserHead.transform.eulerAngles = eulerAngles;
 
         // set color
-        if (collisionIndex == -1) curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
-        else curserHead.GetComponent<SpriteRenderer>().color = ErrorColor;
+        curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
+        //if (collisionIndex == -1) curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
+        //else curserHead.GetComponent<SpriteRenderer>().color = ErrorColor;
     }
 
-    protected void UpdateBodies()
+    protected void UpdateBody()
     {
-        for (int i = 0; i < bodies.Count; i++)
+
+        for (int i = 0; i < points.Count - 1; i++)
         {
-            // set color
-            if (collisionIndex == -1) bodies[i].GetComponent<SpriteRenderer>().color = DefaultColor;
-            else bodies[i].GetComponent<SpriteRenderer>().color = ErrorColor;
-
-            // set position
-            bodies[i].transform.position = GetBodyPosition(i);
-
-            // update interpolator
-            //interpolators[i] += Time.deltaTime * speed;
-
-            // reset a body's interpolator if greater than 1
-            if (interpolators[i] >= 1) interpolators[i] = 0; 
+            DrawLine(points[i], points[i + 1]);
         }
     }
 
@@ -217,64 +193,53 @@ public class HexCurser : MonoBehaviour
     public void AddPoint(Vector3 point)
     {
         points.Add(point);
-        //CreateBodies();
     }
 
-    private Vector3 GetBodyPosition(int interpolatorIndex)
+    // HACK: this might now work
+    public void RemovePoint(Vector3 point)
     {
-        float interpolator = interpolators[interpolatorIndex];
-
-        // get point index from interpolator
-        int pointIndex = InterpolatorToIndex(interpolator);
-
-        // min index interpolator
-        float tMin = IndexToInterpolator(pointIndex);
-
-        // max index interpolator
-        float tMax = IndexToInterpolator(pointIndex + 1);
-
-        // normalize interpolator with the max and min index range
-        float t = GeneralUtilities.Normalization(interpolator, tMin, tMax);
-
-        // calculate points
-        Vector3 a = points[pointIndex];
-        Vector3 b = points[pointIndex + 1];
-
-        Vector3 interpolation = Vector3.Lerp(a, b, t);
-
-        interpolators[interpolatorIndex] += Time.deltaTime * speed / (b - interpolation).magnitude;
-
-        return interpolation;
+        for (int i = 0; i < points.Count; i++)
+        {
+            if (point.Equals(points[i]))
+            {
+                points.RemoveAt(i);
+                return;
+            }
+        }
     }
 
-    private float IndexToInterpolator(int index)
+    public void DrawLine(Vector3 start, Vector3 end)
     {
-        return index / (float)(points.Count - 1);
-    }
-
-    private int InterpolatorToIndex(float interpolator)
-    {
-        return (int)((points.Count - 1) * interpolator);
-    }
-
-    public static void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
-    {
-        float lineWidth = 10f;
-
         GameObject myLine = new GameObject();
+
+        myLine.transform.parent = bodyTransform;
+
         myLine.transform.position = start;
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
-        lr.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        //lr.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        lr.material = material;
         //lr.SetColors(color, color);
-        lr.startColor = color;
-        lr.endColor = color;
+        //lr.startColor = DefaultColor;
+        //lr.endColor = DefaultColor;
         //lr.SetWidth(0.1f, 0.1f);
-        lr.startWidth = lineWidth * 0.5f;
+        lr.startWidth = lineWidth;
         lr.endWidth = lineWidth;
         lr.SetPosition(0, start);
         lr.SetPosition(1, end);
-        GameObject.Destroy(myLine, duration);
+    }
+
+    private void ClearBody()
+    {
+        foreach (Transform child in bodyTransform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    private void Refresh()
+    {
+        enabled = true;
     }
 
     #endregion

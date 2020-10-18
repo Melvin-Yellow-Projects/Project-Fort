@@ -79,6 +79,7 @@ public class HexGameUI : MonoBehaviour
     void DoPathfinding()
     {
         HexCell cell = grid.GetCell();
+        if (!cell) return;
 
         // get new path
         if (cell != currentCell)

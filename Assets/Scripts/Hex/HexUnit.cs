@@ -29,7 +29,7 @@ public class HexUnit : MonoBehaviour
     const float rotationSpeed = 180f;
     const int visionRange = 3;
 
-    public static HexUnit unitPrefab;
+    public static HexUnit prefab;
 
     HexCell location; // HACK: i really don't like this name
     HexCell currentTravelLocation;
@@ -289,7 +289,7 @@ public class HexUnit : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        grid.AddUnit(Instantiate(unitPrefab), grid.GetCell(coordinates), orientation);
+        grid.AddUnit(Instantiate(prefab), grid.GetCell(coordinates), orientation);
     }
 
     #endregion
