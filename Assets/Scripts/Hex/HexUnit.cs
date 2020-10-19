@@ -36,8 +36,7 @@ public class HexUnit : MonoBehaviour
 
     float orientation;
 
-    List<HexCell> pathToTravel;
-
+    HexPath path;
 
     #endregion
 
@@ -66,8 +65,7 @@ public class HexUnit : MonoBehaviour
             transform.localPosition = value.Position;
         }
     }
-
-
+    
     /// <summary>
     /// A unit's rotation around the Y axis, in degrees
     /// </summary>
@@ -107,6 +105,27 @@ public class HexUnit : MonoBehaviour
             return 3;
         }
     }
+    
+    public bool HasPath
+    {
+        get
+        {
+            return (path != null);
+        }
+    }
+
+    public HexPath Path
+    {
+        get
+        {
+            return path;
+        }
+        set
+        {
+            if (HasPath) path.Clear();
+            path = value;
+        }
+    }
 
     #endregion
 
@@ -132,8 +151,8 @@ public class HexUnit : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /********** MARK: Pathing Functions **********/
+    #region Pathing Functions
 
     /// <summary>
     /// 
@@ -150,20 +169,17 @@ public class HexUnit : MonoBehaviour
 
         return isValid;
     }
-
-    public void ValidateLocation()
+    
+    public void Travel()
     {
-        transform.localPosition = location.Position;
-    }
+        if (!HasPath) return; // TODO: maybe continue to change dir
 
-    public void Travel(List<HexCell> path)
-    {
         location.Unit = null;
-        location = path[path.Count - 1];
+        location = path.EndCell; // HACK: this line will not work in the future
         location.Unit = this;
-        pathToTravel = path;
         StopAllCoroutines();
-        StartCoroutine(TravelPath());
+        StartCoroutine(TravelPath(path));
+        // TODO: clear path after travel
     }
 
     /// <summary>
@@ -171,29 +187,31 @@ public class HexUnit : MonoBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
-    IEnumerator TravelPath()
+    IEnumerator TravelPath(HexPath travelPath)
     {
-        Vector3 a, b, c = pathToTravel[0].Position;
+        Vector3 a, b, c = travelPath[0].Position;
+
+        List<int> l = new List<int>();
 
         // perform lookat
-        yield return LookAt(pathToTravel[1].Position);
+        yield return LookAt(travelPath[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
         HexPathfinding.DecreaseVisibility(
-            currentTravelLocation ? currentTravelLocation : pathToTravel[0],
+            currentTravelLocation ? currentTravelLocation : travelPath[0],
             visionRange
         );
 
         float t = Time.deltaTime * travelSpeed;
-        for (int i = 1; i < pathToTravel.Count; i++)
+        for (int i = 1; i < travelPath.Length; i++)
         {
-            currentTravelLocation = pathToTravel[i]; // prevents teleportation
+            currentTravelLocation = travelPath[i]; // prevents teleportation
 
             a = c;
-            b = pathToTravel[i - 1].Position;
+            b = travelPath[i - 1].Position;
             c = (b + currentTravelLocation.Position) * 0.5f;
 
-            HexPathfinding.IncreaseVisibility(pathToTravel[i], visionRange);
+            HexPathfinding.IncreaseVisibility(travelPath[i], visionRange);
 
             for (; t < 1f; t += Time.deltaTime * travelSpeed)
             {
@@ -204,7 +222,7 @@ public class HexUnit : MonoBehaviour
                 yield return null;
             }
 
-            HexPathfinding.DecreaseVisibility(pathToTravel[i], visionRange);
+            HexPathfinding.DecreaseVisibility(travelPath[i], visionRange);
 
             t -= 1f;
         }
@@ -229,9 +247,8 @@ public class HexUnit : MonoBehaviour
         transform.localPosition = location.Position;
         orientation = transform.localRotation.eulerAngles.y;
 
-        // we're done with the list so it can be dispatched
-        ListPool<HexCell>.Add(pathToTravel);
-        pathToTravel = null;
+        // we're done with the path so it can be dispatched
+        Path = null;
     }
 
     public void LookAt(HexDirection direction)
@@ -244,7 +261,7 @@ public class HexUnit : MonoBehaviour
     IEnumerator LookAt(Vector3 point)
     {
         // locks the y dimension
-        point.y = transform.localPosition.y; 
+        point.y = transform.localPosition.y;
 
         Quaternion fromRotation = transform.localRotation;
         Quaternion toRotation = Quaternion.LookRotation(point - transform.localPosition);
@@ -270,6 +287,16 @@ public class HexUnit : MonoBehaviour
 
     }
 
+    #endregion
+
+    /********** MARK: Class Functions **********/
+    #region Class Functions
+        
+    public void ValidateLocation()
+    {
+        transform.localPosition = location.Position;
+    }
+    
     public void Die()
     {
         if (location) HexPathfinding.DecreaseVisibility(location, visionRange);

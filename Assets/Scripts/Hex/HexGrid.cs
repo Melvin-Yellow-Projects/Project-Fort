@@ -101,7 +101,6 @@ public class HexGrid : MonoBehaviour
 
 	public bool CreateMap(int x, int z)
 	{
-		HexPathfinding.ClearPath();
 		ClearUnits();
 
 		// destroy previous cells and chunks
@@ -404,11 +403,21 @@ public class HexGrid : MonoBehaviour
 		unit.Die();
 	}
 
+    public void ClearPaths()
+    {
+        for (int i = 0; i < units.Count; i++)
+        {
+            units[i].Path = null;
+        }
+    }
+
 	void ClearUnits()
 	{
 		for (int i = 0; i < units.Count; i++)
 		{
-			units[i].Die();
+            units[i].Path = null;
+
+            units[i].Die();
 		}
 		units.Clear();
 	}
@@ -454,7 +463,6 @@ public class HexGrid : MonoBehaviour
 	/// <param name="reader"></param>
 	public void Load(BinaryReader reader, int header)
 	{
-		HexPathfinding.ClearPath();
 		ClearUnits();
 
 		int x = 20, z = 15;

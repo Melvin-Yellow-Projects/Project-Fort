@@ -35,24 +35,7 @@ public class HexPathfinding : MonoBehaviour
 	/// computation
 	/// </summary>
 	static int searchFrontierPhase;
-
-	/// <summary>
-	/// TODO: rename these vars, start and end
-	/// </summary>
-	static HexCell currentPathFrom;
-
-	static HexCell currentPathTo;
-
-    #endregion
-
-    /********** MARK: Properties **********/
-    #region Properties
-
-    /// <summary>
-    /// TODO: comment HasPath prop
-    /// </summary>
-    public static bool HasPath { get; private set; }
-
+    
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -73,14 +56,10 @@ public class HexPathfinding : MonoBehaviour
     #region Class Functions
 
     // TODO: comment FindPath
-    public static void FindPath(HexCell fromCell, HexCell toCell, HexUnit unit)
+    public static HexPath FindPath(HexCell startCell, HexCell endCell, HexUnit unit)
     {
-        ClearPath();
-        currentPathFrom = fromCell;
-        currentPathTo = toCell;
-        fromCell.PathFrom = null; 
-        HasPath = Search(fromCell, toCell, unit);
-        ShowPath(unit.Speed);
+        startCell.PathFrom = null; 
+        return Search(startCell, endCell, unit);
     }
 
     /// <summary>
@@ -93,7 +72,7 @@ public class HexPathfinding : MonoBehaviour
     /// <param name="toCell"></param>
     /// <param name="unit"></param>
     /// <returns></returns>
-    private static bool Search(HexCell fromCell, HexCell toCell, HexUnit unit)
+    private static HexPath Search(HexCell startCell, HexCell endCell, HexUnit unit)
 	{
 		searchFrontierPhase += 2; // initialize new search frontier phase
 
@@ -101,10 +80,10 @@ public class HexPathfinding : MonoBehaviour
 		if (searchFrontier == null) searchFrontier = new HexCellPriorityQueue();
 		else searchFrontier.Clear();
 
-		// add the starting cell to the queue
-		fromCell.SearchPhase = searchFrontierPhase;
-		fromCell.Distance = 0;
-		searchFrontier.Enqueue(fromCell);
+        // add the starting cell to the queue
+        startCell.SearchPhase = searchFrontierPhase;
+        startCell.Distance = 0;
+		searchFrontier.Enqueue(startCell);
 
 		// as long as there is something in the queue, keep searching
 		while (searchFrontier.Count > 0)
@@ -114,9 +93,9 @@ public class HexPathfinding : MonoBehaviour
 			current.SearchPhase += 1;
 
 			// check if we've found the target cell
-			if (current == toCell)
+			if (current == endCell)
 			{
-				return true;
+                return new HexPath(startCell, endCell);
 			}
 
 			int currentTurn = (current.Distance - 1) / unit.Speed;
@@ -149,7 +128,7 @@ public class HexPathfinding : MonoBehaviour
 
 						// because our lowest distance cost is 1, heuristic is just the DistanceTo()
 						neighbor.SearchHeuristic =
-							neighbor.coordinates.DistanceTo(toCell.coordinates);
+							neighbor.coordinates.DistanceTo(endCell.coordinates);
 
 						searchFrontier.Enqueue(neighbor);
 					}
@@ -164,7 +143,7 @@ public class HexPathfinding : MonoBehaviour
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/// <summary>
@@ -324,73 +303,6 @@ public class HexPathfinding : MonoBehaviour
 		}
 		ListPool<HexCell>.Add(cells);
 	}
-
-	/// <summary>
-	/// TODO: comment ShowPath
-	/// HACK: show path and clear path can be compressed into one function
-	/// </summary>
-	/// <param name="speed"></param>
-	private static void ShowPath(int speed)
-	{
-		if (HasPath)
-		{
-			HexCell current = currentPathTo;
-			while (current != currentPathFrom)
-			{
-				int turn = (current.Distance - 1) / speed;
-				current.SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-				current.EnableHighlight(Color.white);
-				current = current.PathFrom;
-			}
-		}
-		currentPathFrom.EnableHighlight(Color.blue);
-		currentPathTo.EnableHighlight(Color.red);
-	}
-
-	/// <summary>
-	/// TODO: comment ClearPath
-	/// </summary>
-	public static void ClearPath()
-	{
-		if (HasPath)
-		{
-			HexCell current = currentPathTo;
-			while (current != currentPathFrom)
-			{
-				current.SetLabel(null);
-				current.DisableHighlight();
-				current = current.PathFrom;
-			}
-			current.DisableHighlight();
-			HasPath = false;
-		}
-		else if (currentPathFrom)
-		{
-			currentPathFrom.DisableHighlight();
-			currentPathTo.DisableHighlight();
-		}
-		currentPathFrom = currentPathTo = null;
-	}
-
-	public static List<HexCell> GetPath()
-	{
-		// return if there is no path
-		if (!HasPath) return null;
-
-		// initialize path HACK: this should just be a list since there will be multiple paths
-		List<HexCell> path = ListPool<HexCell>.Get();
-
-		// fill path
-		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom)
-		{
-			path.Add(c);
-		}
-
-		path.Add(currentPathFrom); // since the path is in reverse order...
-		path.Reverse(); // let's reverse it so it's easier to work with
-
-        return path;
-    }
 
     private static void SayHi()
     {

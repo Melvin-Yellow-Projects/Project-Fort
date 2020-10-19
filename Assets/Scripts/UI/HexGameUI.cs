@@ -67,14 +67,14 @@ public class HexGameUI : MonoBehaviour
 
     void DoSelection()
     {
-        HexPathfinding.ClearPath();
-
         // update current cell
         HexCell cell = grid.GetCell();
         if (cell != currentCell) currentCell = cell;
 
         if (currentCell) selectedUnit = currentCell.Unit;
     }
+
+    //HexPath path;
 
     void DoPathfinding()
     {
@@ -85,13 +85,13 @@ public class HexGameUI : MonoBehaviour
         if (cell != currentCell)
         {
             currentCell = cell;
-            if (currentCell && selectedUnit.IsValidDestination(currentCell))
+            if (selectedUnit.IsValidDestination(currentCell))
             {
-                HexPathfinding.FindPath(selectedUnit.Location, currentCell, selectedUnit);
-            }
-            else
-            {
-                HexPathfinding.ClearPath();
+                HexPath path = HexPathfinding.FindPath(selectedUnit.Location, currentCell, selectedUnit);
+                selectedUnit.Path = path;
+                if (selectedUnit.HasPath) selectedUnit.Path.Show(selectedUnit.Speed);
+
+                //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
             }
         }
         else if (cell == currentCell) // get end path direction
@@ -107,10 +107,9 @@ public class HexGameUI : MonoBehaviour
 
     void DoMove()
     {
-        if (HexPathfinding.HasPath)
+        if (selectedUnit.HasPath)
         {
-            selectedUnit.Travel(HexPathfinding.GetPath());
-            HexPathfinding.ClearPath();
+            selectedUnit.Travel();
 
             Debug.Log(selectedDirection);
         }

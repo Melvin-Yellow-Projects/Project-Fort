@@ -128,17 +128,33 @@ public class HexCurser : MonoBehaviour
     /********** MARK: Initialization Functions **********/
     #region Initialization Functions
 
+    public static HexCurser Initialize(List<Vector3> data)
+    {
+        if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
+
+        HexCurser curser = Instantiate<HexCurser>(prefab);
+
+        curser.bodyTransform = curser.transform.Find("Body");
+
+        for (int i = 0; i < data.Count; i++)
+        {
+            curser.points.Add(data[i]);
+        }
+
+        return curser;
+    }
+
     public static HexCurser Initialize(Vector3 tail, Vector3 head)
     {
         if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
 
         HexCurser curser = Instantiate<HexCurser>(prefab);
 
+        curser.bodyTransform = curser.transform.Find("Body");
+
         curser.points.Add(tail);
 
         curser.points.Add(head);
-
-        curser.bodyTransform = curser.transform.Find("Body");
 
         return curser;
     }
@@ -240,6 +256,11 @@ public class HexCurser : MonoBehaviour
     private void Refresh()
     {
         enabled = true;
+    }
+
+    public void DestroyCurser()
+    {
+        Destroy(gameObject);
     }
 
     #endregion

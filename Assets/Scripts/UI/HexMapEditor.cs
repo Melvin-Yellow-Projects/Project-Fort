@@ -151,7 +151,7 @@ public class HexMapEditor : MonoBehaviour
         FindObjectOfType<HexGameUI>().enabled = !toggle;
 
         // clear paths existing on the hex grid
-        HexPathfinding.ClearPath();
+        hexGrid.ClearPaths();
 
         // toggle map visibility when in edit mode by setting a global shader keyword
         if (toggle) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
