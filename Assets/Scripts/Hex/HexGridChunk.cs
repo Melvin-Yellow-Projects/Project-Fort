@@ -127,7 +127,7 @@ public class HexGridChunk : MonoBehaviour
         Vector3 center = cell.Position;
 
         // gets the iterior hex cell's vertices for a direction (builds a triangle in a direction)
-        EdgeVertices e = new EdgeVertices(
+        HexEdgeVertices e = new HexEdgeVertices(
             center + HexMetrics.GetFirstSolidCorner(direction),
             center + HexMetrics.GetSecondSolidCorner(direction)
         );
@@ -145,7 +145,7 @@ public class HexGridChunk : MonoBehaviour
     /// <param name="direction">direction to bridge</param>
     /// <param name="cell">starting cell</param>
     /// <param name="e1">edge vertice of starting cell</param>
-    protected void TriangulateConnection(HexDirection direction, HexCell cell, EdgeVertices e1)
+    protected void TriangulateConnection(HexDirection direction, HexCell cell, HexEdgeVertices e1)
     {
         // get the neighbor for the given direction
         HexCell neighbor = cell.GetNeighbor(direction);
@@ -159,7 +159,7 @@ public class HexGridChunk : MonoBehaviour
             // set elevation of bridge 
             bridge.y = neighbor.Position.y - cell.Position.y;
 
-            EdgeVertices e2 = new EdgeVertices(
+            HexEdgeVertices e2 = new HexEdgeVertices(
                 e1.v1 + bridge,
                 e1.v4 + bridge
             );
@@ -223,14 +223,14 @@ public class HexGridChunk : MonoBehaviour
     /// <param name="end">ending cell's edge vertices</param>
     /// <param name="endCell">ending cell</param>
     protected void TriangulateEdgeTerraces(
-        EdgeVertices begin, HexCell beginCell,
-        EdgeVertices end, HexCell endCell
+        HexEdgeVertices begin, HexCell beginCell,
+        HexEdgeVertices end, HexCell endCell
     )
     {
         for (int i = 0; i < HexMetrics.terraceSteps; i++)
         {
-            EdgeVertices e1 = EdgeVertices.TerraceLerp(begin, end, i);
-            EdgeVertices e2 = EdgeVertices.TerraceLerp(begin, end, i + 1);
+            HexEdgeVertices e1 = HexEdgeVertices.TerraceLerp(begin, end, i);
+            HexEdgeVertices e2 = HexEdgeVertices.TerraceLerp(begin, end, i + 1);
 
             Color w1 = HexMetrics.TerraceLerp(weights1, weights2, i);
             Color w2 = HexMetrics.TerraceLerp(weights1, weights2, i + 1);
@@ -463,7 +463,7 @@ public class HexGridChunk : MonoBehaviour
         terrain.AddTriangleCellData(indices, w2, leftWeights, boundaryWeights);
     }
 
-    void TriangulateEdgeFan(Vector3 center, EdgeVertices edge, float index)
+    void TriangulateEdgeFan(Vector3 center, HexEdgeVertices edge, float index)
     {
         terrain.AddTriangle(center, edge.v1, edge.v2);
         terrain.AddTriangle(center, edge.v2, edge.v3);
@@ -479,8 +479,8 @@ public class HexGridChunk : MonoBehaviour
     }
 
     void TriangulateEdgeStrip(
-        EdgeVertices e1, Color w1, float index1,
-        EdgeVertices e2, Color w2, float index2
+        HexEdgeVertices e1, Color w1, float index1,
+        HexEdgeVertices e2, Color w2, float index2
     )
     {
         terrain.AddQuad(e1.v1, e1.v2, e2.v1, e2.v2);

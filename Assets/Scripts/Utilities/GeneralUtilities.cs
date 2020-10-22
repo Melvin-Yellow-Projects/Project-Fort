@@ -8,4 +8,9 @@ public static class GeneralUtilities
     {
         return (value - min) / (max - min);
     }
+
+    public static void LogMonoBehaviour(GameObject gameObject)
+    {
+        Debug.LogWarning("Logging " + gameObject.name);
+    }
 }

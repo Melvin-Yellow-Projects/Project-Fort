@@ -28,11 +28,12 @@ public class HexUnit : MonoBehaviour
     const float travelSpeed = 4f; 
     const float rotationSpeed = 180f;
     const int visionRange = 3;
+    const int movesPerStep = 1;
 
     public static HexUnit prefab;
 
-    HexCell location; // HACK: i really don't like this name
-    HexCell currentTravelLocation;
+    HexCell myCell; 
+    HexCell currentTravelCell; // HACK: i really don't like this name
 
     float orientation;
 
@@ -43,23 +44,23 @@ public class HexUnit : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    public HexCell Location
+    public HexCell MyCell
     {
         get
         {
-            return location;
+            return myCell;
         }
         set
         {
-            // if there is a previous location...
-            if (location) 
+            // if there is a previous cell...
+            if (myCell) 
             {
-                HexPathfinding.DecreaseVisibility(location, visionRange);
-                location.Unit = null;
+                HexPathfinding.DecreaseVisibility(myCell, visionRange);
+                myCell.Unit = null;
             }
 
             // update for new location
-            location = value;
+            myCell = value;
             value.Unit = this; // sets this hex cell's unit to this one
             HexPathfinding.IncreaseVisibility(value, visionRange);
             transform.localPosition = value.Position;
@@ -94,7 +95,7 @@ public class HexUnit : MonoBehaviour
     {
         get
         {
-            return 4;
+            return (int)travelSpeed;
         }
     }
 
@@ -102,7 +103,7 @@ public class HexUnit : MonoBehaviour
     {
         get
         {
-            return 3;
+            return visionRange;
         }
     }
     
@@ -137,14 +138,14 @@ public class HexUnit : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        if (location) // prevents failure during recompile
+        if (myCell) // prevents failure during recompile
         {
-            transform.localPosition = location.Position;
-            if (currentTravelLocation)
+            transform.localPosition = myCell.Position;
+            if (currentTravelCell)
             {
-                HexPathfinding.IncreaseVisibility(location, visionRange);
-                HexPathfinding.DecreaseVisibility(currentTravelLocation, visionRange);
-                currentTravelLocation = null;
+                HexPathfinding.IncreaseVisibility(myCell, visionRange);
+                HexPathfinding.DecreaseVisibility(currentTravelCell, visionRange);
+                currentTravelCell = null;
             }
         }
     }
@@ -174,9 +175,9 @@ public class HexUnit : MonoBehaviour
     {
         if (!HasPath) return; // TODO: maybe continue to change dir
 
-        location.Unit = null;
-        location = path.EndCell; // HACK: this line will not work in the future
-        location.Unit = this;
+        myCell.Unit = null;
+        myCell = path.EndCell; // HACK: this line will not work in the future
+        myCell.Unit = this;
         StopAllCoroutines();
         StartCoroutine(TravelPath(path));
         // TODO: clear path after travel
@@ -198,18 +199,18 @@ public class HexUnit : MonoBehaviour
 
         // decrease vision HACK: this ? shenanigans is confusing
         HexPathfinding.DecreaseVisibility(
-            currentTravelLocation ? currentTravelLocation : travelPath[0],
+            currentTravelCell ? currentTravelCell : travelPath[0],
             visionRange
         );
 
         float t = Time.deltaTime * travelSpeed;
         for (int i = 1; i < travelPath.Length; i++)
         {
-            currentTravelLocation = travelPath[i]; // prevents teleportation
+            currentTravelCell = travelPath[i]; // prevents teleportation
 
             a = c;
             b = travelPath[i - 1].Position;
-            c = (b + currentTravelLocation.Position) * 0.5f;
+            c = (b + currentTravelCell.Position) * 0.5f;
 
             HexPathfinding.IncreaseVisibility(travelPath[i], visionRange);
 
@@ -226,14 +227,14 @@ public class HexUnit : MonoBehaviour
 
             t -= 1f;
         }
-        currentTravelLocation = null;
+        currentTravelCell = null;
 
         // arriving at the center if the last cell
         a = c;
-        b = location.Position; // We can simply use the destination here.
+        b = myCell.Position; // We can simply use the destination here.
         c = b;
 
-        HexPathfinding.IncreaseVisibility(location, visionRange);
+        HexPathfinding.IncreaseVisibility(myCell, visionRange);
 
         for (; t < 1f; t += Time.deltaTime * travelSpeed)
         {
@@ -244,7 +245,7 @@ public class HexUnit : MonoBehaviour
             yield return null;
         }
 
-        transform.localPosition = location.Position;
+        transform.localPosition = myCell.Position;
         orientation = transform.localRotation.eulerAngles.y;
 
         // we're done with the path so it can be dispatched
@@ -255,7 +256,7 @@ public class HexUnit : MonoBehaviour
     {
         // HACK: yea dis is hacky, coroutine needs to probably be stopped first
         Vector3 localPoint = HexMetrics.GetBridge(direction);
-        StartCoroutine(LookAt(location.Position + localPoint));
+        StartCoroutine(LookAt(myCell.Position + localPoint));
     }
 
     IEnumerator LookAt(Vector3 point)
@@ -294,20 +295,20 @@ public class HexUnit : MonoBehaviour
         
     public void ValidateLocation()
     {
-        transform.localPosition = location.Position;
+        transform.localPosition = myCell.Position;
     }
     
     public void Die()
     {
-        if (location) HexPathfinding.DecreaseVisibility(location, visionRange);
+        if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
 
-        location.Unit = null;
+        myCell.Unit = null;
         Destroy(gameObject);
     }
 
     public void Save(BinaryWriter writer)
     {
-        location.coordinates.Save(writer);
+        myCell.coordinates.Save(writer);
         writer.Write(orientation);
     }
 

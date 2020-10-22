@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: EdgeVertices.cs
+ * File Name: HexEdgeVertices.cs
  * Description: Struct that divides a hex triangle's edge into multiple points
  * 
  * Authors: Catlike Coding, Will Lacey
@@ -18,7 +18,7 @@ using UnityEngine;
 /// <summary>
 /// Struct that creates and tracks additional vertices along a hex triangle edge
 /// </summary>
-public struct EdgeVertices
+public struct HexEdgeVertices
 {
 	/********** MARK: Variables **********/
 	#region Variables
@@ -32,7 +32,7 @@ public struct EdgeVertices
     /// </summary>
     /// <param name="corner1">left outer hex corner</param>
     /// <param name="corner2">right outer hex corner</param>
-    public EdgeVertices(Vector3 corner1, Vector3 corner2)
+    public HexEdgeVertices(Vector3 corner1, Vector3 corner2)
 	{
 		v1 = corner1;
 		v2 = Vector3.Lerp(corner1, corner2, 1f / 3f);
@@ -47,9 +47,9 @@ public struct EdgeVertices
     /// <param name="b">second hex edge vertices</param>
     /// <param name="step">terrace step to interpolate the vertices to</param>
     /// <returns>a new EdgeVertices struct</returns>
-    public static EdgeVertices TerraceLerp(EdgeVertices a, EdgeVertices b, int step)
+    public static HexEdgeVertices TerraceLerp(HexEdgeVertices a, HexEdgeVertices b, int step)
 	{
-		EdgeVertices result;
+		HexEdgeVertices result;
 		result.v1 = HexMetrics.TerraceLerp(a.v1, b.v1, step);
 		result.v2 = HexMetrics.TerraceLerp(a.v2, b.v2, step);
 		result.v3 = HexMetrics.TerraceLerp(a.v3, b.v3, step);

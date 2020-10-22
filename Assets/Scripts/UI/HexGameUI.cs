@@ -87,7 +87,7 @@ public class HexGameUI : MonoBehaviour
             currentCell = cell;
             if (selectedUnit.IsValidDestination(currentCell))
             {
-                HexPath path = HexPathfinding.FindPath(selectedUnit.Location, currentCell, selectedUnit);
+                HexPath path = HexPathfinding.FindPath(selectedUnit.MyCell, currentCell, selectedUnit);
                 selectedUnit.Path = path;
                 if (selectedUnit.HasPath) selectedUnit.Path.Show(selectedUnit.Speed);
 

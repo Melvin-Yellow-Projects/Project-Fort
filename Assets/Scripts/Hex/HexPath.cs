@@ -5,9 +5,10 @@
  * Authors: Will Lacey
  * Date Created: October 18, 2020
  * 
- * Additional Comments: 
+ * Additional Comments:
+ *      HACK: this class creates a lot of instances, and then deletes them very fast
  **/
- 
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -119,7 +120,7 @@ public class HexPath
         startCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser == null) curser = HexCurser.Initialize(points);
+        if (curser == null) curser = HexCurser.Initialize(points); 
     }
 
     /// <summary>
@@ -149,10 +150,12 @@ public class HexPath
     {
         string str = "Path: ";
 
-        for (int i = 0; i < cells.Count; i++)
+        for (int i = 0; i < cells.Count - 1; i++)
         {
-            str += cells[i].Index + ", ";
+            str += cells[i].Index + " -> ";
         }
+
+        str += cells[cells.Count - 1].Index;
 
         Debug.LogWarning(str);
     }

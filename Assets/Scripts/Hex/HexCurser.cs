@@ -141,6 +141,8 @@ public class HexCurser : MonoBehaviour
             curser.points.Add(data[i]);
         }
 
+        curser.UpdateHead();
+
         return curser;
     }
 

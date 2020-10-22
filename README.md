@@ -58,41 +58,38 @@ List of objectives to complete
 		- [x] organize README.md
 		- [x] emails 
 		
-- **Week 3 (October 12, 2020): xxx**
+- **Week 3 (October 12, 2020): Slow Start**
 	- Game Design
 		- [x] rotation as movement cost
-		- [ ] hex curser inputs
-		- [ ] turns and rounds
-		- [ ] economy		
-		- [ ] cell queue combat flow
 	- Gameplay
 		- hex curser
 			- [x] arrow points from a start to an end point
-			- [ ] can gray out if not selected
+			- [x] can gray out if not selected
+			- [x] animation
+		- new pathfinding
+			- [x] get relative bridge direction from a point within a cell
+			- [x] rotation now is added to the movement cost
+		- [x] can change direction
+	- Quality of Life
+		- [x] refactor pathfinding logic from hex grid into new class
+
+- **Week 4 (October 19, 2020): xxx**
+	- Game Play 
+		- hex curser
 			- [ ] can gray out a section of the path
 			- [ ] supports overlapping, curser can go backwards ontop of itself
 			- [ ] Bézier implementation
 			- [ ] multiple cursers can exist simultaneously and yet still comprehensively
-			- [x] animation
-		- new pathfinding
-			- [x] get relative bridge direction from a point within a cell
-			- [ ] rotation now is added to the movement cost
-			- [ ] pathfinding display debugger is readded
+		- move submission
+			- [x] moves are stored by units until a button is pressed
+			- [ ] pieces on the same cell will abruptly stop eachother's paths
 		- travel queue
 			- [ ] cells and rotations can be added to a travel queue 1 at a time
 			- [ ] left click for selection, right click for execution
 			- [ ] hold shift to activate travel queue, otherwise A* is used
 			- [ ] unit must remember path until it is allowed to forget 
 			- [ ] mouse over cell edge can change a unit's direction in A* mode
-		- [ ] play mode and editor mode revamp
-		- [ ] move submission
-			- [ ] moves are stored by units until a button is pressed
-			- [ ] pieces on the same cell will abruptly stop eachother's paths
-		- [ ] basic piece combat
-			- [ ] combat animation
-			- [ ] dust effect
 	- Quality of Life
-		- [x] refactor pathfinding logic from hex grid into new class
 		- [ ] comment existing code
 		- [ ] refactor existing code
 		- [ ] comprehend shader code
@@ -103,8 +100,7 @@ List of objectives to complete
 
 ### Future Dates & Features
 List of future objectives to complete
-
-- **Week 4 (October 19, 2020): Break Week**
+- **Week 5 (October 26, 2020): Break Week**
 	- *add next set of deliverables*
 	- finish lima with multiplayer
 	- fountain asset
@@ -114,11 +110,12 @@ List of future objectives to complete
 	- blender
 	- 3D animation rigging
 
-- **Week 5 (October 26, 2020): xxx**
-	- *add next set of deliverables*
-
 - **Features**
 	- Game Design
+		- [ ] cell queue combat flow
+		- [ ] hex curser inputs
+		- [ ] turns and rounds
+		- [ ] economy		
 		- [ ] cell queue combat flow
 	- Gameplay
 		- [ ] launch screen
@@ -130,12 +127,16 @@ List of future objectives to complete
 		- [ ] unit abilities
 			- [ ] ability UI
 			- [ ] left click to execute ability
+		- [ ] basic piece combat
+			- [ ] combat animation
+			- [ ] dust effect
 	- Graphics
 		- [ ] ability descriptions (like a modal view descriptor seen for card games)
 	- Sound
 		- [ ] drum for piece movement
 	- Quality of Life
 		- [ ] parameterize number of edge vertices
+		- [ ] pathfinding display debugger is readded
 	- Tutorials
 		- [ ] Blender
 		- [ ] Spine weights
