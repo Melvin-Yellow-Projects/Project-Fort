@@ -39,6 +39,8 @@ public class HexUnit : MonoBehaviour
 
     HexPath path;
 
+    float t = 0; // interpolator
+
     #endregion
 
     /********** MARK: Properties **********/
@@ -130,28 +132,6 @@ public class HexUnit : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Unity Functions **********/
-    #region Unity Functions
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    void OnEnable()
-    {
-        if (myCell) // prevents failure during recompile
-        {
-            transform.localPosition = myCell.Position;
-            if (currentTravelCell)
-            {
-                HexPathfinding.IncreaseVisibility(myCell, visionRange);
-                HexPathfinding.DecreaseVisibility(currentTravelCell, visionRange);
-                currentTravelCell = null;
-            }
-        }
-    }
-
-    #endregion
-
     /********** MARK: Pathing Functions **********/
     #region Pathing Functions
 
@@ -183,6 +163,31 @@ public class HexUnit : MonoBehaviour
         // TODO: clear path after travel
     }
 
+    public void Action(int step)
+    {
+        if (!HasPath) return;
+
+        for (int i = 0; i < 0; i++)
+        {
+            //path.GetNextAction();
+            // if rotation, rotate
+            // if move, move
+        }
+
+        // for i < step
+
+            // perform 1 action step from path
+            // build route list
+
+        // using route list, move unit through the route
+
+        // update my myCell, orientation, position
+
+        // did we complete the path?
+            // if so clear HasPath
+
+    }
+
     /// <summary>
     /// TODO: comment this; apparently a unit's velocity will slow down when changing directions,
     /// why?
@@ -192,18 +197,15 @@ public class HexUnit : MonoBehaviour
     {
         Vector3 a, b, c = travelPath[0].Position;
 
-        List<int> l = new List<int>();
-
         // perform lookat
         yield return LookAt(travelPath[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
-        HexPathfinding.DecreaseVisibility(
-            currentTravelCell ? currentTravelCell : travelPath[0],
-            visionRange
-        );
+        HexPathfinding.DecreaseVisibility(travelPath[0], visionRange);
 
-        float t = Time.deltaTime * travelSpeed;
+        // initialize the interpolator
+        t = Time.deltaTime * travelSpeed; 
+
         for (int i = 1; i < travelPath.Length; i++)
         {
             currentTravelCell = travelPath[i]; // prevents teleportation
@@ -214,18 +216,9 @@ public class HexUnit : MonoBehaviour
 
             HexPathfinding.IncreaseVisibility(travelPath[i], visionRange);
 
-            for (; t < 1f; t += Time.deltaTime * travelSpeed)
-            {
-                transform.localPosition = Bezier.GetPoint(a, b, c, t);
-                Vector3 d = Bezier.GetDerivative(a, b, c, t);
-                d.y = 0f;
-                transform.localRotation = Quaternion.LookRotation(d);
-                yield return null;
-            }
+            yield return Route(a, b, c);
 
             HexPathfinding.DecreaseVisibility(travelPath[i], visionRange);
-
-            t -= 1f;
         }
         currentTravelCell = null;
 
@@ -236,6 +229,17 @@ public class HexUnit : MonoBehaviour
 
         HexPathfinding.IncreaseVisibility(myCell, visionRange);
 
+        yield return Route(a, b, c);
+
+        transform.localPosition = myCell.Position;
+        orientation = transform.localRotation.eulerAngles.y;
+
+        // we're done with the path so it can be dispatched
+        Path = null;
+    }
+
+    private IEnumerator Route(Vector3 a, Vector3 b, Vector3 c)
+    {
         for (; t < 1f; t += Time.deltaTime * travelSpeed)
         {
             transform.localPosition = Bezier.GetPoint(a, b, c, t);
@@ -244,12 +248,7 @@ public class HexUnit : MonoBehaviour
             transform.localRotation = Quaternion.LookRotation(d);
             yield return null;
         }
-
-        transform.localPosition = myCell.Position;
-        orientation = transform.localRotation.eulerAngles.y;
-
-        // we're done with the path so it can be dispatched
-        Path = null;
+        t -= 1f;
     }
 
     public void LookAt(HexDirection direction)

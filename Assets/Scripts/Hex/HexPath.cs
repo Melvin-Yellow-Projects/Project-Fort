@@ -19,12 +19,6 @@ public class HexPath
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
-    /// <summary>
-    /// TODO: rename these vars, start and end
-    /// </summary>
-    HexCell startCell;
-
-    HexCell endCell;
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells;
@@ -48,7 +42,7 @@ public class HexPath
     {
         get
         {
-            return startCell;
+            return cells[0];
         }
     }
 
@@ -56,7 +50,7 @@ public class HexPath
     {
         get
         {
-            return endCell;
+            return cells[cells.Count - 1];
         }
     }
 
@@ -82,20 +76,22 @@ public class HexPath
 
     #endregion
 
+    /********** MARK: Constructor **********/
+    #region Constructor
+
     public HexPath(HexCell start, HexCell end)
     {
-        startCell = start;
-        endCell = end;
-
         cells = new List<HexCell>();
-        for (HexCell c = endCell; c != startCell; c = c.PathFrom)
+        for (HexCell c = end; c != start; c = c.PathFrom)
         {
             cells.Add(c);
         }
 
-        cells.Add(startCell); // since the path is in reverse order...
+        cells.Add(start); // since the path is in reverse order...
         cells.Reverse(); // let's reverse it so it's easier to work with
     }
+
+    #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
@@ -117,7 +113,7 @@ public class HexPath
 
             points.Add(cells[i].Position);
         }
-        startCell.EnableHighlight(Color.blue);
+        StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
         if (curser == null) curser = HexCurser.Initialize(points); 
