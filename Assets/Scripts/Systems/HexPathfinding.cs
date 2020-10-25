@@ -56,10 +56,11 @@ public class HexPathfinding : MonoBehaviour
     #region Class Functions
 
     // TODO: comment FindPath
-    public static HexPath FindPath(HexCell startCell, HexCell endCell, HexUnit unit)
+    public static HexPath FindPath(
+        HexUnit unit, HexCell startCell, HexCell endCell, HexDirection endDirection)
     {
         startCell.PathFrom = null; 
-        return Search(startCell, endCell, unit);
+        return Search(unit, startCell, endCell, endDirection);
     }
 
     /// <summary>
@@ -72,7 +73,8 @@ public class HexPathfinding : MonoBehaviour
     /// <param name="toCell"></param>
     /// <param name="unit"></param>
     /// <returns></returns>
-    private static HexPath Search(HexCell startCell, HexCell endCell, HexUnit unit)
+    private static HexPath Search(
+        HexUnit unit, HexCell startCell, HexCell endCell, HexDirection endDirection)
 	{
 		searchFrontierPhase += 2; // initialize new search frontier phase
 
@@ -93,10 +95,7 @@ public class HexPathfinding : MonoBehaviour
 			current.SearchPhase += 1;
 
 			// check if we've found the target cell
-			if (current == endCell)
-			{
-                return new HexPath(startCell, endCell);
-			}
+			if (current == endCell) return new HexPath(unit, startCell, endCell, endDirection);
 
 			int currentTurn = (current.Distance - 1) / unit.Speed;
 
@@ -110,8 +109,9 @@ public class HexPathfinding : MonoBehaviour
 					// if they are valid, calculate distance and add them to the queue
 					int moveCost = GetMoveCostCalculation(current, neighbor, unit);
 
-					// distance is calculated from move cost
-					int distance = current.Distance + moveCost;
+                    // distance is calculated from move cost; TODO: i think if distance is a float,
+                    // you can give a slight penalty for changing directions, making straighter
+                    int distance = current.Distance + moveCost; 
 					int turn = (distance - 1) / unit.Speed;
 
 					// this adjusts the distance if there is left over movement
@@ -173,7 +173,7 @@ public class HexPathfinding : MonoBehaviour
         // current unit direction
         HexDirection inDirection; 
         if (current.PathFrom) inDirection = HexMetrics.GetDirection(current.PathFrom, current);
-        else inDirection = current.Unit.Direction;
+        else inDirection = current.Unit.Direction; // HACK: cant this just be unit.Direction?
 
         // next unit direction
         HexDirection outDirection; 

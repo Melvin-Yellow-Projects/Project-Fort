@@ -156,35 +156,50 @@ public class HexUnit : MonoBehaviour
         if (!HasPath) return; // TODO: maybe continue to change dir
 
         myCell.Unit = null;
-        myCell = path.EndCell; // HACK: this line will not work in the future
+        myCell = path.Cells[path.Cells.Count - 1]; // HACK: this line will not work in the future
         myCell.Unit = this;
         StopAllCoroutines();
         StartCoroutine(TravelPath(path));
         // TODO: clear path after travel
     }
 
-    public void Action(int step)
+    public void TravelStep(int numberOfSteps)
     {
         if (!HasPath) return;
 
-        for (int i = 0; i < 0; i++)
+        for (int i = 0; i < path.NumberOfPathActions && i < numberOfSteps; i++)
         {
-            //path.GetNextAction();
-            // if rotation, rotate
-            // if move, move
+            path.PathActions[i].LogPathAction();
+
+            HexPathAction action = path.PathActions[i];
+
+            if (action.ActionType == HexActionType.Move)
+            {
+                Vector3 a = action.StartCell.Position;
+                Vector3 b = action.EndCell.Position;
+                Vector3 c = b;
+
+                StartCoroutine(Route(a, b, c));
+            }
+            else
+            {
+                LookAt(action.EndDirection);
+            }
+
+            path.RemovePathAction();
         }
 
         // for i < step
 
-            // perform 1 action step from path
-            // build route list
+        // perform 1 action step from path
+        // build route list
 
         // using route list, move unit through the route
 
         // update my myCell, orientation, position
 
         // did we complete the path?
-            // if so clear HasPath
+        // if so clear HasPath
 
     }
 
@@ -195,30 +210,30 @@ public class HexUnit : MonoBehaviour
     /// <returns></returns>
     IEnumerator TravelPath(HexPath travelPath)
     {
-        Vector3 a, b, c = travelPath[0].Position;
+        Vector3 a, b, c = travelPath.Cells[0].Position;
 
         // perform lookat
-        yield return LookAt(travelPath[1].Position);
+        yield return LookAt(travelPath.Cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
-        HexPathfinding.DecreaseVisibility(travelPath[0], visionRange);
+        HexPathfinding.DecreaseVisibility(travelPath.Cells[0], visionRange);
 
         // initialize the interpolator
         t = Time.deltaTime * travelSpeed; 
 
-        for (int i = 1; i < travelPath.Length; i++)
+        for (int i = 1; i < travelPath.NumberOfCells; i++)
         {
-            currentTravelCell = travelPath[i]; // prevents teleportation
+            currentTravelCell = travelPath.Cells[i]; // prevents teleportation
 
             a = c;
-            b = travelPath[i - 1].Position;
+            b = travelPath.Cells[i - 1].Position;
             c = (b + currentTravelCell.Position) * 0.5f;
 
-            HexPathfinding.IncreaseVisibility(travelPath[i], visionRange);
+            HexPathfinding.IncreaseVisibility(travelPath.Cells[i], visionRange);
 
             yield return Route(a, b, c);
 
-            HexPathfinding.DecreaseVisibility(travelPath[i], visionRange);
+            HexPathfinding.DecreaseVisibility(travelPath.Cells[i], visionRange);
         }
         currentTravelCell = null;
 

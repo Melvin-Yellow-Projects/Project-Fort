@@ -41,7 +41,7 @@ public class HexCurser : MonoBehaviour
 
     /* Configurables */
     float lineWidth = 1f;
-    float deltaT = 0.1f;
+    //float deltaT = 0.1f;
 
     #endregion
 

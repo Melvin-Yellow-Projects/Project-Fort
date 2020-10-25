@@ -18,8 +18,15 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    /********** MARK: Scene Functions **********/
-    #region Scene Functions
+    /********** MARK: Private Variables **********/
+    #region Private Variables
+
+    int numberOfSteps = 1;
+
+    #endregion
+
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
     public void ExecuteMoves()
     {
@@ -27,14 +34,14 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < grid.units.Count; i++)
         {
             HexUnit unit = grid.units[i];
-            unit.Travel();
+            unit.TravelStep(numberOfSteps);
         }
     }
 
     #endregion
 
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /********** MARK: Scene Functions **********/
+    #region Scene Functions
 
     /// <summary>
     ///     Loads a scene by name

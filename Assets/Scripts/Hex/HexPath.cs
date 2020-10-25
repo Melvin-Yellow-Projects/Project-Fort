@@ -25,12 +25,16 @@ public class HexPath
 
     HexCurser curser;
 
+    HexUnit unit;
+
+    List<HexPathAction> pathActions;
+
     #endregion
 
-    /********** MARK: Properties **********/
-    #region Properties
+    /********** MARK: Public Properties **********/
+    #region Public Properties
 
-    public int Length
+    public int NumberOfCells
     {
         get
         {
@@ -38,48 +42,37 @@ public class HexPath
         }
     }
 
-    public HexCell StartCell
+    public List<HexCell> Cells
     {
         get
         {
-            return cells[0];
+            return cells;
         }
     }
 
-    public HexCell EndCell
+    public int NumberOfPathActions
     {
         get
         {
-            return cells[cells.Count - 1];
+            return pathActions.Count;
         }
     }
 
-    public HexCell this[int i]
+    public List<HexPathAction> PathActions
     {
         get
         {
-            return cells[i];
-        }
-        set
-        {
-            cells[i] = value;
+            return pathActions;
         }
     }
-
-    //public HexUnit Unit
-    //{
-    //    get
-    //    {
-    //        return Unit;
-    //    }
-    //}
 
     #endregion
 
     /********** MARK: Constructor **********/
     #region Constructor
 
-    public HexPath(HexCell start, HexCell end)
+    // HACK: this can probably be optimized
+    public HexPath(HexUnit unit, HexCell start, HexCell end, HexDirection endDirection)
     {
         cells = new List<HexCell>();
         for (HexCell c = end; c != start; c = c.PathFrom)
@@ -89,12 +82,44 @@ public class HexPath
 
         cells.Add(start); // since the path is in reverse order...
         cells.Reverse(); // let's reverse it so it's easier to work with
+
+        this.unit = unit;
+
+        // initialization
+        pathActions = new List<HexPathAction>();
+        HexCell inCell, outCell = cells[0];
+        HexDirection inDir, outDir = unit.Direction; 
+
+        // PathAction calculations
+        for (int i = 1; i < cells.Count; i++)
+        {
+            inCell = outCell;
+            outCell = cells[i];
+            inDir = outDir;
+            outDir = HexMetrics.GetDirection(inCell, outCell);
+
+            if (HexMetrics.IsFlank(inDir, outDir))
+            {
+                pathActions.Add(new HexPathAction(inCell, inDir, outDir));
+            }
+            pathActions.Add(new HexPathAction(inCell, outCell, outDir));
+        }
+
+        if (HexMetrics.IsFlank(outDir, endDirection))
+        {
+            pathActions.Add(new HexPathAction(outCell, outDir, endDirection));
+        }
     }
 
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
+
+    public void RemovePathAction()
+    {
+        pathActions.RemoveAt(0);
+    }
 
     /// <summary>
     /// TODO: comment ShowPath
@@ -113,7 +138,7 @@ public class HexPath
 
             points.Add(cells[i].Position);
         }
-        StartCell.EnableHighlight(Color.blue);
+        cells[0].EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
         if (curser == null) curser = HexCurser.Initialize(points); 
