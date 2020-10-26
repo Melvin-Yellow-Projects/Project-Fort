@@ -311,7 +311,7 @@ public class HexPathfinding : MonoBehaviour
 
     private static IEnumerator DisplayPath()
     {
-        Debug.Log("hi");
+        Debug.Log("PathFinding Display Path IEnumerator Checking In");
         yield return null;
     }
 

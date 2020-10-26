@@ -94,7 +94,8 @@ public class HexGameUI : MonoBehaviour
                 //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
             }
         }
-        else if (cell == currentCell) // get end path direction
+
+        if (cell == currentCell) // get end path direction
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             Vector3 point = grid.GetRelativeBridgePoint(ray);
@@ -107,16 +108,16 @@ public class HexGameUI : MonoBehaviour
 
     void DoMove()
     {
-        if (selectedUnit.HasPath)
-        {
-            selectedUnit.Travel();
+        //if (selectedUnit.HasPath)
+        //{
+        //    selectedUnit.Travel();
 
-            Debug.Log(selectedDirection);
-        }
-        else
-        {
-            selectedUnit.LookAt(selectedDirection);
-        }
+        //    Debug.Log(selectedDirection);
+        //}
+        //else
+        //{
+        //    selectedUnit.LookAt(selectedDirection);
+        //}
     }
 
     #endregion

@@ -87,6 +87,10 @@ public class HexUnit : MonoBehaviour
 
     public HexDirection Direction
     {
+        set
+        {
+            Orientation = HexMetrics.DirectionToAngle(value);
+        }
         get
         {
             return HexMetrics.AngleToDirection(orientation);
@@ -135,56 +139,22 @@ public class HexUnit : MonoBehaviour
     /********** MARK: Pathing Functions **********/
     #region Pathing Functions
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="cell"></param>
-    /// <returns></returns>
-    public bool IsValidDestination(HexCell cell)
-    {
-        bool isValid = true;
-
-        isValid &= !cell.Unit; // cell does not already have a unit
-
-        //isValid &= !cell.IsUnderwater; // cell is not underwater
-
-        return isValid;
-    }
-    
-    public void Travel()
-    {
-        if (!HasPath) return; // TODO: maybe continue to change dir
-
-        myCell.Unit = null;
-        myCell = path.Cells[path.Cells.Count - 1]; // HACK: this line will not work in the future
-        myCell.Unit = this;
-        StopAllCoroutines();
-        StartCoroutine(TravelPath(path));
-        // TODO: clear path after travel
-    }
-
-    public void TravelStep(int numberOfSteps)
+    public void Move(int numberOfSteps)
     {
         if (!HasPath) return;
 
-        for (int i = 0; i < path.NumberOfPathActions && i < numberOfSteps; i++)
+        for (int i = 0; i < path.Length && i < numberOfSteps; i++)
         {
-            path.PathActions[i].LogPathAction();
+            //path.PathActions[i].LogPathAction();
 
             HexPathAction action = path.PathActions[i];
 
             if (action.ActionType == HexActionType.Move)
             {
-                Vector3 a = action.StartCell.Position;
-                Vector3 b = action.EndCell.Position;
-                Vector3 c = b;
+                Route(action.StartCell, action.EndCell);
+            }
 
-                StartCoroutine(Route(a, b, c));
-            }
-            else
-            {
-                LookAt(action.EndDirection);
-            }
+            Direction = action.EndDirection;
 
             path.RemovePathAction();
         }
@@ -203,105 +173,40 @@ public class HexUnit : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// TODO: comment this; apparently a unit's velocity will slow down when changing directions,
-    /// why?
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator TravelPath(HexPath travelPath)
+    public void Route(HexCell start, HexCell end)
     {
-        Vector3 a, b, c = travelPath.Cells[0].Position;
+        // update cell data
+        start.Unit = null;
+        end.Unit = this;
+        myCell = end;
 
-        // perform lookat
-        yield return LookAt(travelPath.Cells[1].Position);
-
-        // decrease vision HACK: this ? shenanigans is confusing
-        HexPathfinding.DecreaseVisibility(travelPath.Cells[0], visionRange);
-
-        // initialize the interpolator
-        t = Time.deltaTime * travelSpeed; 
-
-        for (int i = 1; i < travelPath.NumberOfCells; i++)
-        {
-            currentTravelCell = travelPath.Cells[i]; // prevents teleportation
-
-            a = c;
-            b = travelPath.Cells[i - 1].Position;
-            c = (b + currentTravelCell.Position) * 0.5f;
-
-            HexPathfinding.IncreaseVisibility(travelPath.Cells[i], visionRange);
-
-            yield return Route(a, b, c);
-
-            HexPathfinding.DecreaseVisibility(travelPath.Cells[i], visionRange);
-        }
-        currentTravelCell = null;
-
-        // arriving at the center if the last cell
-        a = c;
-        b = myCell.Position; // We can simply use the destination here.
-        c = b;
-
-        HexPathfinding.IncreaseVisibility(myCell, visionRange);
-
-        yield return Route(a, b, c);
+        HexPathfinding.DecreaseVisibility(start, visionRange);
+        HexPathfinding.IncreaseVisibility(end, visionRange);
 
         transform.localPosition = myCell.Position;
-        orientation = transform.localRotation.eulerAngles.y;
-
-        // we're done with the path so it can be dispatched
-        Path = null;
     }
 
-    private IEnumerator Route(Vector3 a, Vector3 b, Vector3 c)
+    private IEnumerator Route()
     {
-        for (; t < 1f; t += Time.deltaTime * travelSpeed)
-        {
-            transform.localPosition = Bezier.GetPoint(a, b, c, t);
-            Vector3 d = Bezier.GetDerivative(a, b, c, t);
-            d.y = 0f;
-            transform.localRotation = Quaternion.LookRotation(d);
-            yield return null;
-        }
-        t -= 1f;
+        yield return null;
     }
 
-    public void LookAt(HexDirection direction)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
+    public bool IsValidDestination(HexCell cell)
     {
-        // HACK: yea dis is hacky, coroutine needs to probably be stopped first
-        Vector3 localPoint = HexMetrics.GetBridge(direction);
-        StartCoroutine(LookAt(myCell.Position + localPoint));
+        bool isValid = true;
+
+        isValid &= !cell.Unit; // cell does not already have a unit
+
+        //isValid &= !cell.IsUnderwater; // cell is not underwater
+
+        return isValid;
     }
-
-    IEnumerator LookAt(Vector3 point)
-    {
-        // locks the y dimension
-        point.y = transform.localPosition.y;
-
-        Quaternion fromRotation = transform.localRotation;
-        Quaternion toRotation = Quaternion.LookRotation(point - transform.localPosition);
-
-        float angle = Quaternion.Angle(fromRotation, toRotation);
-
-        if (angle > 0f)
-        {
-            // normalizes the speed so that it's always the same regardless of angle; "To ensure a
-            // uniform angular speed, we have to slow down our interpolation as the rotation angle
-            // increases."
-            float speed = rotationSpeed / angle;
-
-            for (float t = Time.deltaTime * speed; t < 1f; t += Time.deltaTime * speed)
-            {
-                transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
-                yield return null;
-            }
-        }
-
-        transform.LookAt(point);
-        orientation = transform.localRotation.eulerAngles.y;
-
-    }
-
+   
     #endregion
 
     /********** MARK: Class Functions **********/
@@ -338,6 +243,117 @@ public class HexUnit : MonoBehaviour
 
     /********** MARK: Debug **********/
     #region Debug
+
+    //public void Travel()
+    //{
+    //    if (!HasPath) return; // TODO: maybe continue to change dir
+
+    //    myCell.Unit = null;
+    //    myCell = path.Cells[path.Cells.Count - 1]; // HACK: this line will not work in the future
+    //    myCell.Unit = this;
+    //    StopAllCoroutines();
+    //    StartCoroutine(TravelPath(path));
+    //    // TODO: clear path after travel
+    //}
+
+    ///// <summary>
+    ///// TODO: comment this; apparently a unit's velocity will slow down when changing directions,
+    ///// why?
+    ///// </summary>
+    ///// <returns></returns>
+    //IEnumerator TravelPath(HexPath travelPath)
+    //{
+    //    Vector3 a, b, c = travelPath.Cells[0].Position;
+
+    //    // perform lookat
+    //    yield return LookAt(travelPath.Cells[1].Position);
+
+    //    // decrease vision HACK: this ? shenanigans is confusing
+    //    HexPathfinding.DecreaseVisibility(travelPath.Cells[0], visionRange);
+
+    //    // initialize the interpolator
+    //    t = Time.deltaTime * travelSpeed;
+
+    //    for (int i = 1; i < travelPath.NumberOfCells; i++)
+    //    {
+    //        currentTravelCell = travelPath.Cells[i]; // prevents teleportation
+
+    //        a = c;
+    //        b = travelPath.Cells[i - 1].Position;
+    //        c = (b + currentTravelCell.Position) * 0.5f;
+
+    //        HexPathfinding.IncreaseVisibility(travelPath.Cells[i], visionRange);
+
+    //        yield return Route(a, b, c);
+
+    //        HexPathfinding.DecreaseVisibility(travelPath.Cells[i], visionRange);
+    //    }
+    //    currentTravelCell = null;
+
+    //    // arriving at the center if the last cell
+    //    a = c;
+    //    b = myCell.Position; // We can simply use the destination here.
+    //    c = b;
+
+    //    HexPathfinding.IncreaseVisibility(myCell, visionRange);
+
+    //    yield return Route(a, b, c);
+
+    //    transform.localPosition = myCell.Position;
+    //    orientation = transform.localRotation.eulerAngles.y;
+
+    //    // we're done with the path so it can be dispatched
+    //    Path = null;
+    //}
+
+    //private IEnumerator Route(Vector3 a, Vector3 b, Vector3 c)
+    //{
+    //    for (; t < 1f; t += Time.deltaTime * travelSpeed)
+    //    {
+    //        transform.localPosition = Bezier.GetPoint(a, b, c, t);
+    //        Vector3 d = Bezier.GetDerivative(a, b, c, t);
+    //        d.y = 0f;
+    //        transform.localRotation = Quaternion.LookRotation(d);
+    //        yield return null;
+    //    }
+    //    t -= 1f;
+    //}
+
+    //public void LookAt(HexDirection direction)
+    //{
+    //    // HACK: yea dis is hacky, coroutine needs to probably be stopped first
+    //    Vector3 localPoint = HexMetrics.GetBridge(direction);
+    //    StartCoroutine(LookAt(myCell.Position + localPoint));
+    //}
+
+    //IEnumerator LookAt(Vector3 point)
+    //{
+    //    // locks the y dimension
+    //    point.y = transform.localPosition.y;
+
+    //    Quaternion fromRotation = transform.localRotation;
+    //    Quaternion toRotation = Quaternion.LookRotation(point - transform.localPosition);
+
+    //    float angle = Quaternion.Angle(fromRotation, toRotation);
+
+    //    if (angle > 0f)
+    //    {
+    //        // normalizes the speed so that it's always the same regardless of angle; "To ensure a
+    //        // uniform angular speed, we have to slow down our interpolation as the rotation angle
+    //        // increases."
+    //        float speed = rotationSpeed / angle;
+
+    //        for (float t = Time.deltaTime * speed; t < 1f; t += Time.deltaTime * speed)
+    //        {
+    //            transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
+    //            yield return null;
+    //        }
+    //    }
+
+    //    transform.LookAt(point);
+    //    orientation = transform.localRotation.eulerAngles.y;
+
+    //}
 
     ///// <summary>
     ///// Unity Method; Gizmos are drawn only when the object is selected; Gizmos are not pickable;

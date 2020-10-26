@@ -216,6 +216,11 @@ public static class HexMetrics
         return (HexDirection)(Mathf.RoundToInt((Mathf.Abs(angle) - 30f) / 60f));
     }
 
+    public static float DirectionToAngle(HexDirection direction)
+    {
+        return ((float) direction) * 60f + 30f;
+    }
+
     /// <summary>
     /// Gets the direction between two cells; assumes they are neighbors
     /// </summary>

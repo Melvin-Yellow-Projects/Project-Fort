@@ -26,7 +26,7 @@ public class HexPathAction
 
     public HexDirection StartDirection { private set; get; }
 
-    public HexDirection EndDirection { private set; get; }
+    public HexDirection EndDirection { set; get; }
 
     public HexActionType ActionType { private set; get; }
 
@@ -35,15 +35,12 @@ public class HexPathAction
     /********** MARK: Constructor **********/
     #region Constructor
 
-    public HexPathAction(HexCell c, HexDirection d1, HexDirection d2)
-    {
-        StartCell = c;
-        EndCell = c;
-        StartDirection = d1;
-        EndDirection = d2;
-        ActionType = HexActionType.Rotation;
-    }
-
+    /// <summary>
+    /// Move Constructor
+    /// </summary>
+    /// <param name="c1"></param>
+    /// <param name="c2"></param>
+    /// <param name="d"></param>
     public HexPathAction(HexCell c1, HexCell c2, HexDirection d)
     {
         StartCell = c1;
@@ -51,6 +48,21 @@ public class HexPathAction
         StartDirection = d;
         EndDirection = d;
         ActionType = HexActionType.Move;
+    }
+
+    /// <summary>
+    /// Rotation Constructor
+    /// </summary>
+    /// <param name="c"></param>
+    /// <param name="d1"></param>
+    /// <param name="d2"></param>
+    public HexPathAction(HexCell c, HexDirection d1, HexDirection d2)
+    {
+        StartCell = c;
+        EndCell = c;
+        StartDirection = d1;
+        EndDirection = d2;
+        ActionType = HexActionType.Rotation;
     }
 
     #endregion

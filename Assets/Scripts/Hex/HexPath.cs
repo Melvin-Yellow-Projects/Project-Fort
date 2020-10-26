@@ -34,23 +34,7 @@ public class HexPath
     /********** MARK: Public Properties **********/
     #region Public Properties
 
-    public int NumberOfCells
-    {
-        get
-        {
-            return cells.Count;
-        }
-    }
-
-    public List<HexCell> Cells
-    {
-        get
-        {
-            return cells;
-        }
-    }
-
-    public int NumberOfPathActions
+    public int Length
     {
         get
         {
@@ -63,6 +47,14 @@ public class HexPath
         get
         {
             return pathActions;
+        }
+    }
+
+    public HexPathAction this[int i]
+    {
+        get
+        {
+            return pathActions[i];
         }
     }
 
@@ -105,10 +97,10 @@ public class HexPath
             pathActions.Add(new HexPathAction(inCell, outCell, outDir));
         }
 
-        if (HexMetrics.IsFlank(outDir, endDirection))
-        {
-            pathActions.Add(new HexPathAction(outCell, outDir, endDirection));
-        }
+        //if (outDir != endDirection)
+        //{
+        //    pathActions.Add(new HexPathAction(outCell, outDir, endDirection));
+        //}
     }
 
     #endregion
