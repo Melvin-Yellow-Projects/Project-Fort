@@ -128,7 +128,7 @@ public class HexCurser : MonoBehaviour
     /********** MARK: Initialization Functions **********/
     #region Initialization Functions
 
-    public static HexCurser Initialize(List<Vector3> data)
+    public static HexCurser Initialize(List<Vector3> points)
     {
         if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
 
@@ -136,12 +136,10 @@ public class HexCurser : MonoBehaviour
 
         curser.bodyTransform = curser.transform.Find("Body");
 
-        for (int i = 0; i < data.Count; i++)
-        {
-            curser.points.Add(data[i]);
-        }
+        curser.points = points;
 
-        curser.UpdateHead();
+        // TODO: i think this line is so the first frame doesn't incorrectly display the head?
+        curser.UpdateHead(); 
 
         return curser;
     }
@@ -159,6 +157,15 @@ public class HexCurser : MonoBehaviour
         curser.points.Add(head);
 
         return curser;
+    }
+
+    public void Redraw(List<Vector3> points)
+    {
+        this.points.Clear();
+
+        this.points = points;
+
+        Refresh();
     }
 
     #endregion
@@ -216,14 +223,7 @@ public class HexCurser : MonoBehaviour
     // HACK: this might now work
     public void RemovePoint(Vector3 point)
     {
-        for (int i = 0; i < points.Count; i++)
-        {
-            if (point.Equals(points[i]))
-            {
-                points.RemoveAt(i);
-                return;
-            }
-        }
+        points.Remove(point);
     }
 
     public void DrawLine(Vector3 start, Vector3 end)

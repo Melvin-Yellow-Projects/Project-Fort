@@ -35,6 +35,8 @@ public class HexPathfinding : MonoBehaviour
 	/// computation
 	/// </summary>
 	static int searchFrontierPhase;
+
+    static HexPath manualPath;
     
     #endregion
 
@@ -54,6 +56,41 @@ public class HexPathfinding : MonoBehaviour
 
     /********** MARK: Class Functions **********/
     #region Class Functions
+
+    public static HexPath BuildPath(HexUnit unit, HexCell nextCell, HexDirection newNextDirection)
+    {
+        // local var initialization
+        HexPath path = (unit.HasPath) ? unit.Path : new HexPath(unit); // BUG: must be a new instance of path
+        HexCell currentCell = (unit.HasPath) ? unit.Path.LastAction.EndCell : unit.MyCell;
+        HexDirection currentDirection = (unit.HasPath) ? 
+            path.LastAction.EndDirection : unit.Direction;
+        HexPathAction action;
+
+        if (currentCell == nextCell)
+        {
+            Debug.Log("new rotation... unless same rotation");
+            //HexPathAction action = new HexPathAction(currentCell, currentDirection, newNextDirection);
+        }
+        else
+        {
+            bool isValid = false;
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                if (currentCell.GetNeighbor(d) == nextCell)
+                {
+                    isValid = true;
+                    
+                    Debug.Log("new move...rotation will be backwards");
+
+                    action = new HexPathAction(currentCell, nextCell, d);
+                    path.AddPathAction(action);
+                }
+            }
+            if (!isValid) Debug.LogError("Failed to find new move");
+        }
+        
+        return path; // an existing path, plus the new cell or rotation
+    }
 
     // TODO: comment FindPath
     public static HexPath FindPath(
@@ -160,12 +197,12 @@ public class HexPathfinding : MonoBehaviour
 
 		if (current.TerrainTypeIndex == 1) // if grass 
 		{
-			moveCost += 1;
+			moveCost += 10;
 		}
 		else
 		{
 			HexEdgeType edgeType = current.GetEdgeType(neighbor);
-			moveCost += (edgeType == HexEdgeType.Flat) ? 2 : 3;
+			moveCost += (edgeType == HexEdgeType.Flat) ? 20 : 30;
 		}
 
         /* flank rotation calculation */
@@ -179,7 +216,9 @@ public class HexPathfinding : MonoBehaviour
         HexDirection outDirection; 
         outDirection = HexMetrics.GetDirection(current, neighbor);
 
-        if (HexMetrics.IsFlank(inDirection, outDirection)) moveCost += 1;
+        if (HexMetrics.IsFlank(inDirection, outDirection)) moveCost += 10;
+        else if (inDirection == outDirection) moveCost += 1; // straight penalty for aesthetic
+        // TODO: Verify line above ^^^
 
         return moveCost;
 	}

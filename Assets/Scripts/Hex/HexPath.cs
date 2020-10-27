@@ -21,13 +21,13 @@ public class HexPath
     #region Private Variables
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
-    List<HexCell> cells;
+    List<HexCell> cells = new List<HexCell>();
 
     HexCurser curser;
 
     HexUnit unit;
 
-    List<HexPathAction> pathActions;
+    List<HexPathAction> pathActions = new List<HexPathAction>();
 
     #endregion
 
@@ -50,23 +50,35 @@ public class HexPath
         }
     }
 
-    public HexPathAction this[int i]
+    public HexPathAction LastAction
     {
         get
         {
-            return pathActions[i];
+            return pathActions[pathActions.Count - 1];
         }
     }
+    
+    //public HexPathAction this[int i]
+    //{
+    //    get
+    //    {
+    //        return pathActions[i];
+    //    }
+    //}
 
     #endregion
 
     /********** MARK: Constructor **********/
     #region Constructor
 
+    public HexPath(HexUnit unit)
+    {
+        this.unit = unit;
+    }
+
     // HACK: this can probably be optimized
     public HexPath(HexUnit unit, HexCell start, HexCell end, HexDirection endDirection)
     {
-        cells = new List<HexCell>();
         for (HexCell c = end; c != start; c = c.PathFrom)
         {
             cells.Add(c);
@@ -78,7 +90,6 @@ public class HexPath
         this.unit = unit;
 
         // initialization
-        pathActions = new List<HexPathAction>();
         HexCell inCell, outCell = cells[0];
         HexDirection inDir, outDir = unit.Direction; 
 
@@ -108,6 +119,11 @@ public class HexPath
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    public void AddPathAction(HexPathAction action)
+    {
+        pathActions.Add(action);
+    }
+
     public void RemovePathAction()
     {
         pathActions.RemoveAt(0);
@@ -118,22 +134,34 @@ public class HexPath
     /// HACK: show path and clear path can be compressed into one function
     /// </summary>
     /// <param name="speed"></param>
-    public void Show(int speed)
+    public void Show()
     {
         List<Vector3> points = new List<Vector3>();
 
-        for (int i = 0; i < cells.Count; i++)
+        //for (int i = 0; i < cells.Count; i++)
+        //{
+        //    int turn = (int) (cells[i].Distance - 1) / speed;
+        //    //cells[i].SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
+        //    //cells[i].EnableHighlight(Color.white);
+
+        //    points.Add(cells[i].Position);
+        //}
+        //cells[0].EnableHighlight(Color.blue);
+        ////endCell.EnableHighlight(Color.red);
+
+        //if (curser == null) curser = HexCurser.Initialize(points); 
+
+        HexPathAction action = pathActions[0];
+        points.Add(action.StartCell.Position);
+
+        for (int i = 0; i < Length; i++)
         {
-            int turn = (cells[i].Distance - 1) / speed;
-            //cells[i].SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-            //cells[i].EnableHighlight(Color.white);
-
-            points.Add(cells[i].Position);
+            action = pathActions[i];
+            points.Add(action.EndCell.Position);
         }
-        cells[0].EnableHighlight(Color.blue);
-        //endCell.EnableHighlight(Color.red);
 
-        if (curser == null) curser = HexCurser.Initialize(points); 
+        if (curser == null) curser = HexCurser.Initialize(points);
+        else curser.Redraw(points);
     }
 
     /// <summary>

@@ -202,6 +202,8 @@ public class HexUnit : MonoBehaviour
 
         isValid &= !cell.Unit; // cell does not already have a unit
 
+        isValid &= cell.IsExplored;
+
         //isValid &= !cell.IsUnderwater; // cell is not underwater
 
         return isValid;

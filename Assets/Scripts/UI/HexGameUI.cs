@@ -27,18 +27,17 @@ public class HexGameUI : MonoBehaviour
     [Tooltip("instance reference to the HexGrid in the scene")]
     public HexGrid grid;
 
-    HexCell currentCell;
-
     HexUnit selectedUnit;
 
-    HexDirection selectedDirection;
+    HexCell currentCell;
+    HexDirection currentDirection;
 
     #endregion
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    protected void Update()
+    protected void Update() // TODO: this could probably be OnDrag() or some variant of it
     {
         if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
         {
@@ -50,7 +49,7 @@ public class HexGameUI : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(1)) //right click
                 {
-                    DoMove();
+                    //DoMove();
                 }
                 else
                 {
@@ -81,43 +80,74 @@ public class HexGameUI : MonoBehaviour
         HexCell cell = grid.GetCell();
         if (!cell) return;
 
-        // get new path
-        if (cell != currentCell)
+        HexDirection direction = GetDirection(); // HACK: assumes valid cell
+
+        if (Input.GetKey("left shift"))
         {
-            currentCell = cell;
-            if (selectedUnit.IsValidDestination(currentCell))
+            if (cell != currentCell || direction != currentDirection)
             {
-                HexPath path = HexPathfinding.FindPath(selectedUnit, selectedUnit.MyCell, currentCell, HexDirection.E);
-                selectedUnit.Path = path;
-                if (selectedUnit.HasPath) selectedUnit.Path.Show(selectedUnit.Speed);
+                if (selectedUnit.IsValidDestination(cell))
+                {
+                    currentCell = cell;
+                    currentDirection = direction;
+                    
+                    HexPath path = HexPathfinding.BuildPath(selectedUnit, cell, direction);
+                    if (path != null)
+                    {
+                        //selectedUnit.Path = path; // BUG: does not work for creating paths for unit
+                        selectedUnit.Path.Show();
+                    }
+                }
+            }
+        }
+
+        // get new path
+        else if (cell != currentCell)
+        {
+            if (selectedUnit.IsValidDestination(cell))
+            {
+                currentCell = cell;
+
+                HexPath path = HexPathfinding.FindPath(selectedUnit, selectedUnit.MyCell, cell, HexDirection.E);
+                if (path != null)
+                {
+                    selectedUnit.Path = path;
+                    selectedUnit.Path.Show();
+                }
 
                 //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
             }
         }
 
-        if (cell == currentCell) // get end path direction
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Vector3 point = grid.GetRelativeBridgePoint(ray);
-            point = cell.transform.InverseTransformPoint(point);
-            HexMetrics.GetRelativeDirection(point);
-
-            selectedDirection = HexMetrics.GetRelativeDirection(point);
-        }
+        //if (cell == currentCell) // get end path direction
+        //{
+        //    SetHexDirection(cell);
+        //}
     }
 
-    void DoMove()
-    {
-        //if (selectedUnit.HasPath)
-        //{
-        //    selectedUnit.Travel();
+    //void DoMove()
+    //{
+    //    if (selectedUnit.HasPath)
+    //    {
+    //        selectedUnit.Travel();
 
-        //    Debug.Log(selectedDirection);
-        //}
-        //else
-        //{
-        //    selectedUnit.LookAt(selectedDirection);
-        //}
+    //        Debug.Log(selectedDirection);
+    //    }
+    //    else
+    //    {
+    //        selectedUnit.LookAt(selectedDirection);
+    //    }
+    //}
+
+    // HACK: the ray could probably be a var inside of Grid
+    HexDirection GetDirection()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); 
+        Vector3 point = grid.GetRelativeBridgePoint(ray);
+        point = grid.GetCell().transform.InverseTransformPoint(point); // assumes cell is valid
+        HexMetrics.GetRelativeDirection(point);
+
+        return HexMetrics.GetRelativeDirection(point);
     }
 
     #endregion
