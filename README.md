@@ -73,7 +73,7 @@ List of objectives to complete
 	- Quality of Life
 		- [x] refactor pathfinding logic from hex grid into new class
 
-- **Week 4 (October 19, 2020): xxx**
+- **Week 4 (October 26, 2020): xxx**
 	- Game Play 
 		- hex curser
 			- [ ] can gray out a section of the path
