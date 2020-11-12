@@ -76,6 +76,7 @@ List of objectives to complete
 - **Week 4 (November 9, 2020): xxx**
 
 	- Version 1.0 **..sort this later**
+		- [ ] can pick up an invisible instance of the piece when creating a path
 		- [ ] hexpath without A* / build path with just direct mouse selection
 		- [ ] pieces cannot travel through eachother
 		- [ ] ally collisions ends moves? or does a piece randomly wait
