@@ -73,7 +73,32 @@ List of objectives to complete
 	- Quality of Life
 		- [x] refactor pathfinding logic from hex grid into new class
 
-- **Week 4 (October 26, 2020): xxx**
+- **Week 4 (November 9, 2020): xxx**
+
+	- Version 1.0 **..sort this later**
+		- [ ] hexpath without A* / build path with just direct mouse selection
+		- [ ] pieces cannot travel through eachother
+		- [ ] ally collisions ends moves? or does a piece randomly wait
+		- [ ] moving pieces kill enemies
+		- [ ] single player base/fort 
+		- different game modes
+			- [ ] turn-based
+			- [ ] simultaneous turns
+			- [ ] real-time
+		- unit variety
+			- [ ] Pikeman
+			- [ ] Crusader/Horse
+			- [ ] Pirate
+			- [ ] Wall
+		- unit mechancis
+			- [ ] horses cannot move onto a square with a Pikeman
+			- [ ] crusader has extra movement
+			- [ ] walls cannot be killed unless pirate
+			- [ ] walls move with priority
+			- [ ] walls can be cursed
+			- [ ] walls can not be cursed
+		- [ ] server client relationship
+
 	- Game Play 
 		- hex curser
 			- [ ] can gray out a section of the path
@@ -94,7 +119,6 @@ List of objectives to complete
 		- [ ] refactor existing code
 		- [ ] comprehend shader code
 	- Other
-		- [ ] create a 1 second video collection starting from october 1st
 		- [ ] resume 1 second a day videos
 		
 
@@ -151,5 +175,6 @@ List of future objectives to complete
 		- [ ] Steam page
 		- [ ] Discord
 		- [ ] website
+		- [ ] create a 1 second video collection starting from November 1st
 		- [ ] *pending requirements*
 
