@@ -244,36 +244,36 @@ public static class HexMetrics
     /// </summary>
     /// <param name="localPoint">a point inside of a hex cell</param>
     /// <returns>relative hex direction that is in the general vicinity of the point</returns>
-    public static HexDirection GetRelativeDirection(Vector3 localPoint)
-    {
-        // check if point is east or west given the x coordinate
-        if (localPoint.x > corners[0].x) 
-        {
-            // checks if point is above or below the Northeast region and then East region
-            if (Vector3.Cross(localPoint, corners[1]).y > 0)
-            {
-                return HexDirection.NE;
-            }
-            else
-            {
-                if (Vector3.Cross(localPoint, corners[2]).y > 0) return HexDirection.E;
-                else return HexDirection.SE;
-            }
-        }
-        else 
-        {
-            // checks if point is above or below the Northwest region and then West region
-            if (Vector3.Cross(localPoint, corners[5]).y < 0)
-            {
-                return HexDirection.NW;
-            }
-            else
-            {
-                if (Vector3.Cross(localPoint, corners[4]).y < 0) return HexDirection.W;
-                else return HexDirection.SW;
-            }
-        }
-    }
+    //public static HexDirection GetRelativeDirection(Vector3 localPoint)
+    //{
+    //    // check if point is east or west given the x coordinate
+    //    if (localPoint.x > corners[0].x) 
+    //    {
+    //        // checks if point is above or below the Northeast region and then East region
+    //        if (Vector3.Cross(localPoint, corners[1]).y > 0)
+    //        {
+    //            return HexDirection.NE;
+    //        }
+    //        else
+    //        {
+    //            if (Vector3.Cross(localPoint, corners[2]).y > 0) return HexDirection.E;
+    //            else return HexDirection.SE;
+    //        }
+    //    }
+    //    else 
+    //    {
+    //        // checks if point is above or below the Northwest region and then West region
+    //        if (Vector3.Cross(localPoint, corners[5]).y < 0)
+    //        {
+    //            return HexDirection.NW;
+    //        }
+    //        else
+    //        {
+    //            if (Vector3.Cross(localPoint, corners[4]).y < 0) return HexDirection.W;
+    //            else return HexDirection.SW;
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// 

@@ -275,6 +275,21 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
+    /// Checks to see if a given cell is a neighbor of this cell
+    /// </summary>
+    /// <param name="cell">potential neighboring cell</param>
+    /// <returns>whether or not given cell is a neighbor</returns>
+    public bool IsNeighbor(HexCell cell)
+    {
+        // search all neighbors of the current cell
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+        {
+            if (cell == GetNeighbor(d)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Gets the HexEdgeType in the given direction, assumes the HexCell has a neighbor; UNDONE:
     /// handle null pointer exception
     /// </summary>

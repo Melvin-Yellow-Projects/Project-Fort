@@ -342,44 +342,46 @@ public class HexGrid : MonoBehaviour
         return null;
     }
 
-    public Vector3 GetRelativeBridgePoint(Vector3 position)
-    {
-        // gets the relative local position
-        Vector3 localPosition = transform.InverseTransformPoint(position);
+    #region Get Relative Bridge Point
+    //   public Vector3 GetRelativeBridgePoint(Vector3 position)
+    //   {
+    //       // gets the relative local position
+    //       Vector3 localPosition = transform.InverseTransformPoint(position);
 
-        // converts local position into HexCoordinates 
-        HexCoordinates coordinates = HexCoordinates.FromPosition(localPosition);
+    //       // converts local position into HexCoordinates 
+    //       HexCoordinates coordinates = HexCoordinates.FromPosition(localPosition);
 
-        // get a cell's index from the coordinates
-        int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
+    //       // get a cell's index from the coordinates
+    //       int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
-        // get relative direction
-        HexDirection direction = HexMetrics.GetRelativeDirection(position - cells[index].Position);
+    //       // get relative direction
+    //       HexDirection direction = HexMetrics.GetRelativeDirection(position - cells[index].Position);
 
-        // return edge midpoint
-        return cells[index].Position + HexMetrics.GetBridge(direction);
-    }
+    //       // return edge midpoint
+    //       return cells[index].Position + HexMetrics.GetBridge(direction);
+    //   }
 
-    /// <summary>
-	/// TODO: comment GetEdgeMidpoint and touch up vars
-	/// </summary>
-	/// <returns></returns>
-	public Vector3 GetRelativeBridgePoint(Ray inputRay)
-    {
-        RaycastHit hit;
+    //   /// <summary>
+    ///// TODO: comment GetEdgeMidpoint and touch up vars
+    ///// </summary>
+    ///// <returns></returns>
+    //public Vector3 GetRelativeBridgePoint(Ray inputRay)
+    //   {
+    //       RaycastHit hit;
 
-        // did we hit anything? then return that HexCell
-        if (Physics.Raycast(inputRay, out hit))
-        {
-            // draw line for 1 second
-            Debug.DrawLine(inputRay.origin, hit.point, Color.blue, 1f);
+    //       // did we hit anything? then return that HexCell
+    //       if (Physics.Raycast(inputRay, out hit))
+    //       {
+    //           // draw line for 1 second
+    //           Debug.DrawLine(inputRay.origin, hit.point, Color.blue, 1f);
 
-            return GetRelativeBridgePoint(hit.point);
-        }
+    //           return GetRelativeBridgePoint(hit.point);
+    //       }
 
-        // nothing was found
-        return new Vector3(); // HACK: idk if this works dawg
-    }
+    //       // nothing was found
+    //       return new Vector3(); // HACK: idk if this works dawg
+    //   }
+    #endregion
 
     // TODO: comment SetCellLabel
     public void SetCellLabel(int index)

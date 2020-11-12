@@ -70,12 +70,48 @@ public class HexGameUI : MonoBehaviour
         HexCell cell = grid.GetCell();
         if (cell != currentCell) currentCell = cell;
 
-        if (currentCell) selectedUnit = currentCell.Unit;
+        if (currentCell)
+        {
+            selectedUnit = currentCell.Unit;
+            //selectedUnit.clearpath
+
+        }
     }
 
-    //HexPath path;
-
     void DoPathfinding()
+    {
+        HexCell cell = grid.GetCell();
+        if (!cell) return;
+
+        if (selectedUnit.HasPath)
+        {
+            
+        }
+        else
+        {
+            selectedUnit.InitializePath();
+        }
+    }
+
+    #endregion
+
+    #region Debug Functions
+
+    //void DoMove()
+    //{
+    //    if (selectedUnit.HasPath)
+    //    {
+    //        selectedUnit.Travel();
+
+    //        Debug.Log(selectedDirection);
+    //    }
+    //    else
+    //    {
+    //        selectedUnit.LookAt(selectedDirection);
+    //    }
+    //}
+
+    void DoPathfinding2()
     {
         HexCell cell = grid.GetCell();
         if (!cell) return;
@@ -90,7 +126,7 @@ public class HexGameUI : MonoBehaviour
                 {
                     currentCell = cell;
                     currentDirection = direction;
-                    
+
                     HexPath path = HexPathfinding.BuildPath(selectedUnit, cell, direction);
                     if (path != null)
                     {
@@ -125,30 +161,18 @@ public class HexGameUI : MonoBehaviour
         //}
     }
 
-    //void DoMove()
-    //{
-    //    if (selectedUnit.HasPath)
-    //    {
-    //        selectedUnit.Travel();
-
-    //        Debug.Log(selectedDirection);
-    //    }
-    //    else
-    //    {
-    //        selectedUnit.LookAt(selectedDirection);
-    //    }
-    //}
-
     // HACK: the ray could probably be a var inside of Grid
     HexDirection GetDirection()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); 
-        Vector3 point = grid.GetRelativeBridgePoint(ray);
-        point = grid.GetCell().transform.InverseTransformPoint(point); // assumes cell is valid
-        HexMetrics.GetRelativeDirection(point);
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //Vector3 point = grid.GetRelativeBridgePoint(ray);
+        //point = grid.GetCell().transform.InverseTransformPoint(point); // assumes cell is valid
+        //HexMetrics.GetRelativeDirection(point);
 
-        return HexMetrics.GetRelativeDirection(point);
+        //return HexMetrics.GetRelativeDirection(point);
+        return HexDirection.E;
     }
 
     #endregion
+
 }

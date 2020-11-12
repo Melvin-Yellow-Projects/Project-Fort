@@ -57,7 +57,7 @@ public class HexPath
             return pathActions[pathActions.Count - 1];
         }
     }
-    
+
     //public HexPathAction this[int i]
     //{
     //    get
@@ -68,11 +68,24 @@ public class HexPath
 
     #endregion
 
+    /********** MARK: Private Properties **********/
+    #region Private Properties
+
+    HexCell LastCell
+    {
+        get
+        {
+            //if (cells.Count == 0) return null;
+            return cells[cells.Count - 1];
+        }
+    }
+
     /********** MARK: Constructor **********/
     #region Constructor
 
     public HexPath(HexUnit unit)
     {
+        cells.Add(unit.MyCell);
         this.unit = unit;
     }
 
@@ -118,6 +131,12 @@ public class HexPath
 
     /********** MARK: Class Functions **********/
     #region Class Functions
+
+    public void AddCellToPath(HexCell cell)
+    {
+        if (LastCell.IsNeighbor(cell)) Debug.Log("yes, neighbor");
+        Debug.Log("no, neighbor");
+    }
 
     public void AddPathAction(HexPathAction action)
     {

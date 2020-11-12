@@ -37,7 +37,7 @@ public class HexUnit : MonoBehaviour
 
     float orientation;
 
-    HexPath path;
+    HexPath path = new Path(this);
 
     float t = 0; // interpolator
 
@@ -207,6 +207,13 @@ public class HexUnit : MonoBehaviour
         //isValid &= !cell.IsUnderwater; // cell is not underwater
 
         return isValid;
+    }
+
+    public void InitializePath()
+    {
+        if (HasPath) return;
+
+        path = new HexPath(this);
     }
    
     #endregion
