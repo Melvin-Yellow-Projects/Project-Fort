@@ -108,6 +108,7 @@ List of objectives to complete
 		- [ ] archer
 		- [ ] crusader can jump pieces
 		- [ ] forts spawn units 
+		- [ ] piece model updates
 
 	- Game Play 
 		- hex curser
