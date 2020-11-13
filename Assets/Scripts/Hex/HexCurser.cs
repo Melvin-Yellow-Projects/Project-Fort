@@ -35,9 +35,15 @@ public class HexCurser : MonoBehaviour
 
     List<Vector3> points = new List<Vector3>();
 
-    float errorColor = 0f;
+    // HACK: this will always be tints of red
+    //float color = (150f / 255f);
+    float color = 1f;
 
-    float alpha = 1f;
+    float errorColor = 0f;
+    
+    float maxAlpha = 0.5f;
+    float minAlpha = 0.2f;
+    float alpha = 0; // set to max alpha in init func
 
     //int collisionIndex = -1;
 
@@ -68,7 +74,7 @@ public class HexCurser : MonoBehaviour
     {
         set
         {
-            alpha = (value) ? 1f : (100f / 255f);
+            alpha = (value) ? maxAlpha : minAlpha;
         }
     }
 
@@ -76,7 +82,7 @@ public class HexCurser : MonoBehaviour
     {
         set
         {
-            errorColor = (value) ? (150f / 255f) : 0;
+            errorColor = (value) ? color : 0;
         }
     }
 
@@ -121,7 +127,7 @@ public class HexCurser : MonoBehaviour
     {
         get
         {
-            return new Color(150f / 255f, errorColor, errorColor, alpha);
+            return new Color(color, errorColor, errorColor, alpha);
         }
     }
     #endregion
@@ -138,6 +144,8 @@ public class HexCurser : MonoBehaviour
         curser.bodyTransform = curser.transform.Find("Body");
 
         curser.points = points;
+
+        curser.alpha = curser.maxAlpha;
 
         // TODO: i think this line is so the first frame doesn't incorrectly display the head?
         curser.UpdateHead();
@@ -237,11 +245,11 @@ public class HexCurser : MonoBehaviour
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
         //lr.material = new Material(Shader.Find("Particles/Standard Unlit"));
-        material.color = Color;
+        //material.color = Color;
         lr.material = material;
         //lr.SetColors(Color, Color);
-        //lr.startColor = Color;
-        //lr.endColor = Color;
+        lr.startColor = Color;
+        lr.endColor = Color;
         //lr.SetWidth(0.1f, 0.1f);
         lr.startWidth = lineWidth;
         lr.endWidth = lineWidth;

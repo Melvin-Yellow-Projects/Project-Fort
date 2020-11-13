@@ -140,6 +140,15 @@ public class HexPath
         //if (curser) curser.HasError = (HexPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
     }
 
+    public void RemoveTailCells(int numberToRemove)
+    {
+        if (numberToRemove > cells.Count) Debug.LogError("Removing more cells than in Path!");
+
+        for (int i = 0; i < numberToRemove; i++) cells.RemoveAt(0);
+
+        if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell does not equal Unit's cell!");
+    }
+
     /// <summary>
     /// TODO: comment ShowPath
     /// HACK: show path and clear path can be compressed into one function
@@ -169,6 +178,8 @@ public class HexPath
 
         if (curser == null) curser = HexCurser.Initialize(points);
         else curser.Redraw(points);
+
+        curser.IsSelected = unit.IsSelected;
     }
 
     ///// <summary>

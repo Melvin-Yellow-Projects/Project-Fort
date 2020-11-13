@@ -37,6 +37,8 @@ public class HexUnit : MonoBehaviour
 
     float orientation;
 
+    bool isSelected = false;
+
     #endregion
 
     /********** MARK: Properties **********/
@@ -107,6 +109,22 @@ public class HexUnit : MonoBehaviour
 
     public HexPath Path { get; private set; }
 
+    public bool IsSelected
+    {
+        get
+        {
+            return isSelected;
+        }
+        set
+        {
+            if (value != isSelected)
+            {
+                isSelected = value;
+                Path.Show(); // updates path HACK: kinda sloppy
+            }
+        }
+    }
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -150,15 +168,39 @@ public class HexUnit : MonoBehaviour
     //    return isValid;
     //}
     
-    public void Move()
+    public void Move(int numberOfSteps)
     {
         if (!Path.HasPath) return; // TODO: maybe continue to change dir
 
+        List<HexCell> cells = new List<HexCell>();
+
+        cells.Add(Path[0]);
+        for (int i = 1; i < Path.Length && i <= numberOfSteps; i++)
+        {
+            cells.Add(Path[i]);
+        }
+
+        Route(cells);
+    }
+
+    private void Route(List<HexCell> cells)
+    {
+        if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
+
+        if (cells[cells.Count - 1].Unit != null) return;
+
         myCell.Unit = null;
-        myCell = Path.EndCell; // HACK: this line will not work in the future
+        myCell = cells[cells.Count - 1]; 
         myCell.Unit = this;
         StopAllCoroutines();
-        StartCoroutine(Route());
+        StartCoroutine(Route(cells, false));
+
+        // remove path cells
+        Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
+
+        // redraw path curser
+        Path.Show();
+
         // TODO: clear path after travel
     }
 
@@ -167,31 +209,31 @@ public class HexUnit : MonoBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
-    IEnumerator Route()
+    private IEnumerator Route(List<HexCell> cells, bool dummy)
     {
-        Vector3 a, b, c = Path[0].Position;
+        Vector3 a, b, c = cells[0].Position;
 
         List<int> l = new List<int>();
 
         // perform lookat
-        yield return LookAt(Path[1].Position);
+        yield return LookAt(cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
         HexPathfinding.DecreaseVisibility(
-            currentTravelCell ? currentTravelCell : Path[0],
+            currentTravelCell ? currentTravelCell : cells[0],
             visionRange
         );
 
         float t = Time.deltaTime * travelSpeed;
-        for (int i = 1; i < Path.Length; i++)
+        for (int i = 1; i < cells.Count; i++)
         {
-            currentTravelCell = Path[i]; // prevents teleportation
+            currentTravelCell = cells[i]; // prevents teleportation
 
             a = c;
-            b = Path[i - 1].Position;
+            b = cells[i - 1].Position;
             c = (b + currentTravelCell.Position) * 0.5f;
 
-            HexPathfinding.IncreaseVisibility(Path[i], visionRange);
+            HexPathfinding.IncreaseVisibility(cells[i], visionRange);
 
             for (; t < 1f; t += Time.deltaTime * travelSpeed)
             {
@@ -202,7 +244,7 @@ public class HexUnit : MonoBehaviour
                 yield return null;
             }
 
-            HexPathfinding.DecreaseVisibility(Path[i], visionRange);
+            HexPathfinding.DecreaseVisibility(cells[i], visionRange);
 
             t -= 1f;
         }
@@ -226,9 +268,6 @@ public class HexUnit : MonoBehaviour
 
         transform.localPosition = myCell.Position;
         orientation = transform.localRotation.eulerAngles.y;
-
-        // we're done with the path so it can be dispatched
-        Path.Clear();
     }
 
     public void LookAt(HexDirection direction)

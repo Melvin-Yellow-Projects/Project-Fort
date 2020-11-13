@@ -33,6 +33,8 @@ public class HexGameUI : MonoBehaviour
 
     HexDirection selectedDirection;
 
+    bool hasCurrentCellUpdated = false;
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -42,15 +44,17 @@ public class HexGameUI : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
         {
+            hasCurrentCellUpdated = UpdateCurrentCell();
+
             if (Input.GetMouseButtonDown(0)) // HACK: hardcoded input / left click
-            { 
+            {
                 DoSelection();
             }
             else if (selectedUnit)
             {
                 if (Input.GetMouseButtonDown(1)) //right click
                 {
-                    DoMove();
+                    //DoMove();
                 }
                 else
                 {
@@ -65,58 +69,71 @@ public class HexGameUI : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    bool UpdateCurrentCell()
+    {
+        HexCell cell = grid.GetCell();
+        if (cell != currentCell)
+        {
+            if (currentCell) currentCell.DisableHighlight();
+            if (cell) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+
+            currentCell = cell;
+            return true; // whether or not current cell has updated
+        }
+        return false;
+    }
+
     void DoSelection()
     {
-        // update current cell
-        HexCell cell = grid.GetCell();
-        if (cell != currentCell) currentCell = cell;
-
         if (currentCell)
         {
+            if (selectedUnit) selectedUnit.IsSelected = false;
+
             selectedUnit = currentCell.Unit;
-            if (selectedUnit) selectedUnit.Path.Clear();
+
+            if (selectedUnit)
+            {
+                selectedUnit.Path.Clear();
+                selectedUnit.IsSelected = true;
+            }
         }
     }
 
     void DoPathfinding()
     {
-        HexCell cell = grid.GetCell();
-        if (!cell) return;
-
-        if (cell == currentCell) return;
-        currentCell = cell;
+        if (!hasCurrentCellUpdated && currentCell != null) return;
 
         if (Input.GetKey("left shift"))
         {
             // can backtrack
-            selectedUnit.Path.AddCellToPath(cell, canBackTrack: true);
+            selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: true);
         }
         else
         {
             // can't backtrack
-            selectedUnit.Path.AddCellToPath(cell, canBackTrack: false);
+            selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: false);
         }
 
         selectedUnit.Path.Show();
     }
 
-    void DoMove()
-    {
-        if (selectedUnit.Path.HasPath)
-        {
-            selectedUnit.Move();
-
-            Debug.Log(selectedDirection);
-        }
-        else
-        {
-            selectedUnit.LookAt(selectedDirection);
-        }
-    }
-
     #endregion
 
     #region Debug Functions
+
+    //void DoMove()
+    //{
+    //    if (selectedUnit.Path.HasPath)
+    //    {
+    //        selectedUnit.Move();
+
+    //        Debug.Log(selectedDirection);
+    //    }
+    //    else
+    //    {
+    //        selectedUnit.LookAt(selectedDirection);
+    //    }
+    //}
 
     //void DoPathfinding()
     //{
