@@ -20,19 +20,37 @@ public class HexPath
     /********** MARK: Private Variables **********/
     #region Private Variables
 
+    HexUnit unit;
+
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells = new List<HexCell>();
 
     HexCurser curser;
 
-    HexUnit unit;
-
     List<HexPathAction> pathActions = new List<HexPathAction>();
+
+    int moveCost = 0;
 
     #endregion
 
     /********** MARK: Public Properties **********/
     #region Public Properties
+
+    public HexCell StartCell
+    {
+        get
+        {
+            return unit.MyCell;
+        }
+    }
+
+    public HexCell EndCell
+    {
+        get
+        {
+            return cells[cells.Count - 1];
+        }
+    }
 
     public int Length
     {
@@ -58,6 +76,8 @@ public class HexPath
         }
     }
 
+    public bool HasPath { get; private set; } = false;
+
     //public HexPathAction this[int i]
     //{
     //    get
@@ -67,25 +87,12 @@ public class HexPath
     //}
 
     #endregion
-
-    /********** MARK: Private Properties **********/
-    #region Private Properties
-
-    HexCell LastCell
-    {
-        get
-        {
-            //if (cells.Count == 0) return null;
-            return cells[cells.Count - 1];
-        }
-    }
-
+        
     /********** MARK: Constructor **********/
     #region Constructor
 
     public HexPath(HexUnit unit)
     {
-        cells.Add(unit.MyCell);
         this.unit = unit;
     }
 
@@ -132,12 +139,28 @@ public class HexPath
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void AddCellToPath(HexCell cell)
+    public void AddCellToPath(HexCell cell, bool canBacktrack)
     {
-        if (LastCell.IsNeighbor(cell)) Debug.Log("yes, neighbor");
-        Debug.Log("no, neighbor");
-    }
+        // initialize new path
+        if (cells.Count == 0) cells.Add(unit.MyCell);
+        
+        if (EndCell.IsNeighbor(cell) && (!cells.Contains(cell) || canBacktrack))
+        {
+            //moveCost += HexPathfinding.GetMoveCostCalculation(EndCell, cell, unit);
+            cells.Add(cell);
+            //Debug.Log($"adding cell to path, {moveCost}");
 
+            HexPathfinding.ExpandPath(unit, cell);
+        }
+        else
+        {
+            Debug.Log("Using A* to determine path");
+
+            // use A*
+            // gray out path if it is too far
+        }
+    }
+    
     public void AddPathAction(HexPathAction action)
     {
         pathActions.Add(action);
@@ -199,6 +222,14 @@ public class HexPath
     {
         Hide();
         if (curser != null) curser.DestroyCurser();
+
+        moveCost = 0;
+
+        cells.Clear();
+
+        pathActions.Clear();
+
+        HasPath = false;
     }
 
     #endregion

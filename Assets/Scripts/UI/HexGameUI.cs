@@ -73,8 +73,7 @@ public class HexGameUI : MonoBehaviour
         if (currentCell)
         {
             selectedUnit = currentCell.Unit;
-            //selectedUnit.clearpath
-
+            if (selectedUnit) selectedUnit.Path.Clear();
         }
     }
 
@@ -83,13 +82,20 @@ public class HexGameUI : MonoBehaviour
         HexCell cell = grid.GetCell();
         if (!cell) return;
 
-        if (selectedUnit.HasPath)
+        if (Input.GetButtonDown("Rotate Unit")) Debug.Log($"Rotating Piece {Input.GetAxis("Rotate Unit")}");
+
+        if (cell == currentCell) return;
+        currentCell = cell;
+
+        if (Input.GetKey("left shift"))
         {
-            
+            // can backtrack
+            selectedUnit.Path.AddCellToPath(cell, canBacktrack: true);
         }
         else
         {
-            selectedUnit.InitializePath();
+            // can't backtrack
+            selectedUnit.Path.AddCellToPath(cell, canBacktrack: false);
         }
     }
 
@@ -111,55 +117,55 @@ public class HexGameUI : MonoBehaviour
     //    }
     //}
 
-    void DoPathfinding2()
-    {
-        HexCell cell = grid.GetCell();
-        if (!cell) return;
+    //void DoPathfinding2()
+    //{
+    //    HexCell cell = grid.GetCell();
+    //    if (!cell) return;
 
-        HexDirection direction = GetDirection(); // HACK: assumes valid cell
+    //    HexDirection direction = GetDirection(); // HACK: assumes valid cell
 
-        if (Input.GetKey("left shift"))
-        {
-            if (cell != currentCell || direction != currentDirection)
-            {
-                if (selectedUnit.IsValidDestination(cell))
-                {
-                    currentCell = cell;
-                    currentDirection = direction;
+    //    if (Input.GetKey("left shift"))
+    //    {
+    //        if (cell != currentCell || direction != currentDirection)
+    //        {
+    //            if (selectedUnit.IsValidDestination(cell))
+    //            {
+    //                currentCell = cell;
+    //                currentDirection = direction;
 
-                    HexPath path = HexPathfinding.BuildPath(selectedUnit, cell, direction);
-                    if (path != null)
-                    {
-                        //selectedUnit.Path = path; // BUG: does not work for creating paths for unit
-                        selectedUnit.Path.Show();
-                    }
-                }
-            }
-        }
+    //                HexPath path = HexPathfinding.BuildPath(selectedUnit, cell, direction);
+    //                if (path != null)
+    //                {
+    //                    //selectedUnit.Path = path; // BUG: does not work for creating paths for unit
+    //                    selectedUnit.Path.Show();
+    //                }
+    //            }
+    //        }
+    //    }
 
-        // get new path
-        else if (cell != currentCell)
-        {
-            if (selectedUnit.IsValidDestination(cell))
-            {
-                currentCell = cell;
+    //    // get new path
+    //    else if (cell != currentCell)
+    //    {
+    //        if (selectedUnit.IsValidDestination(cell))
+    //        {
+    //            currentCell = cell;
 
-                HexPath path = HexPathfinding.FindPath(selectedUnit, selectedUnit.MyCell, cell, HexDirection.E);
-                if (path != null)
-                {
-                    selectedUnit.Path = path;
-                    selectedUnit.Path.Show();
-                }
+    //            HexPath path = HexPathfinding.FindPath(selectedUnit, selectedUnit.MyCell, cell, HexDirection.E);
+    //            if (path != null)
+    //            {
+    //                selectedUnit.Path = path;
+    //                selectedUnit.Path.Show();
+    //            }
 
-                //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
-            }
-        }
+    //            //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
+    //        }
+    //    }
 
-        //if (cell == currentCell) // get end path direction
-        //{
-        //    SetHexDirection(cell);
-        //}
-    }
+    //    //if (cell == currentCell) // get end path direction
+    //    //{
+    //    //    SetHexDirection(cell);
+    //    //}
+    //}
 
     // HACK: the ray could probably be a var inside of Grid
     HexDirection GetDirection()

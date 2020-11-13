@@ -57,39 +57,17 @@ public class HexPathfinding : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public static HexPath BuildPath(HexUnit unit, HexCell nextCell, HexDirection newNextDirection)
+    public static bool ExpandPath(HexUnit unit, HexCell cell)
     {
-        // local var initialization
-        HexPath path = (unit.HasPath) ? unit.Path : new HexPath(unit); // BUG: must be a new instance of path
-        HexCell currentCell = (unit.HasPath) ? unit.Path.LastAction.EndCell : unit.MyCell;
-        HexDirection currentDirection = (unit.HasPath) ? 
-            path.LastAction.EndDirection : unit.Direction;
-        HexPathAction action;
+        HexPath path = unit.Path;
+        if (!path.EndCell.IsNeighbor(cell)) return false;
 
-        if (currentCell == nextCell)
-        {
-            Debug.Log("new rotation... unless same rotation");
-            //HexPathAction action = new HexPathAction(currentCell, currentDirection, newNextDirection);
-        }
-        else
-        {
-            bool isValid = false;
-            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-            {
-                if (currentCell.GetNeighbor(d) == nextCell)
-                {
-                    isValid = true;
-                    
-                    Debug.Log("new move...rotation will be backwards");
+        // check if bridge between cells is passable
 
-                    action = new HexPathAction(currentCell, nextCell, d);
-                    path.AddPathAction(action);
-                }
-            }
-            if (!isValid) Debug.LogError("Failed to find new move");
-        }
-        
-        return path; // an existing path, plus the new cell or rotation
+        //HexPathAction action = new HexPathAction(path.EndCell, cell)
+
+
+        return true;
     }
 
     // TODO: comment FindPath
@@ -210,7 +188,7 @@ public class HexPathfinding : MonoBehaviour
         // current unit direction
         HexDirection inDirection; 
         if (current.PathFrom) inDirection = HexMetrics.GetDirection(current.PathFrom, current);
-        else inDirection = current.Unit.Direction; // HACK: cant this just be unit.Direction?
+        else inDirection = unit.Direction; 
 
         // next unit direction
         HexDirection outDirection; 

@@ -37,10 +37,6 @@ public class HexUnit : MonoBehaviour
 
     float orientation;
 
-    HexPath path = new Path(this);
-
-    float t = 0; // interpolator
-
     #endregion
 
     /********** MARK: Properties **********/
@@ -112,26 +108,17 @@ public class HexUnit : MonoBehaviour
             return visionRange;
         }
     }
-    
-    public bool HasPath
-    {
-        get
-        {
-            return (path != null);
-        }
-    }
 
-    public HexPath Path
+    public HexPath Path { get; private set; }
+
+    #endregion
+
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
+
+    private void Awake()
     {
-        get
-        {
-            return path;
-        }
-        set
-        {
-            if (HasPath) path.Clear();
-            path = value;
-        }
+        Path = new HexPath(this);
     }
 
     #endregion
@@ -141,13 +128,13 @@ public class HexUnit : MonoBehaviour
 
     public void Move(int numberOfSteps)
     {
-        if (!HasPath) return;
+        if (!Path.HasPath) return;
 
-        for (int i = 0; i < path.Length && i < numberOfSteps; i++)
+        for (int i = 0; i < Path.Length && i < numberOfSteps; i++)
         {
             //path.PathActions[i].LogPathAction();
 
-            HexPathAction action = path.PathActions[i];
+            HexPathAction action = Path.PathActions[i];
 
             if (action.ActionType == HexActionType.Move)
             {
@@ -156,7 +143,7 @@ public class HexUnit : MonoBehaviour
 
             Direction = action.EndDirection;
 
-            path.RemovePathAction();
+            Path.RemovePathAction();
         }
 
         // for i < step
@@ -207,13 +194,6 @@ public class HexUnit : MonoBehaviour
         //isValid &= !cell.IsUnderwater; // cell is not underwater
 
         return isValid;
-    }
-
-    public void InitializePath()
-    {
-        if (HasPath) return;
-
-        path = new HexPath(this);
     }
    
     #endregion

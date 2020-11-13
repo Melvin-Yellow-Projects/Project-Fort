@@ -410,7 +410,7 @@ public class HexGrid : MonoBehaviour
     {
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Path = null;
+            units[i].Path.Clear();
         }
     }
 
@@ -418,7 +418,7 @@ public class HexGrid : MonoBehaviour
     {
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Path = null;
+            units[i].Path.Clear();
 
             units[i].Die();
         }
