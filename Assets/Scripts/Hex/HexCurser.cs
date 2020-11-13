@@ -35,13 +35,15 @@ public class HexCurser : MonoBehaviour
 
     List<Vector3> points = new List<Vector3>();
 
+    float errorColor = 0f;
+
     float alpha = 1f;
 
     //int collisionIndex = -1;
 
     /* Configurables */
     float lineWidth = 1f;
-    float deltaT = 0.1f;
+    //float deltaT = 0.1f;
 
     #endregion
 
@@ -67,6 +69,14 @@ public class HexCurser : MonoBehaviour
         set
         {
             alpha = (value) ? 1f : (100f / 255f);
+        }
+    }
+
+    public bool HasError
+    {
+        set
+        {
+            errorColor = (value) ? (150f / 255f) : 0;
         }
     }
 
@@ -107,28 +117,19 @@ public class HexCurser : MonoBehaviour
         }
     }
 
-    private Color DefaultColor
+    private Color Color
     {
         get
         {
-            return new Color(150f / 255f, 0, 0, alpha);
+            return new Color(150f / 255f, errorColor, errorColor, alpha);
         }
     }
-
-    private Color ErrorColor
-    {
-        get
-        {
-            return new Color(150f / 255f, 150f / 255f, 150f / 255f, alpha);
-        }
-    }
-
     #endregion
 
     /********** MARK: Initialization Functions **********/
     #region Initialization Functions
 
-    public static HexCurser Initialize(List<Vector3> data)
+    public static HexCurser Initialize(List<Vector3> points)
     {
         if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
 
@@ -136,11 +137,9 @@ public class HexCurser : MonoBehaviour
 
         curser.bodyTransform = curser.transform.Find("Body");
 
-        for (int i = 0; i < data.Count; i++)
-        {
-            curser.points.Add(data[i]);
-        }
+        curser.points = points;
 
+        // TODO: i think this line is so the first frame doesn't incorrectly display the head?
         curser.UpdateHead();
 
         return curser;
@@ -159,6 +158,15 @@ public class HexCurser : MonoBehaviour
         curser.points.Add(head);
 
         return curser;
+    }
+
+    public void Redraw(List<Vector3> points)
+    {
+        this.points.Clear();
+
+        this.points = points;
+
+        Refresh();
     }
 
     #endregion
@@ -189,7 +197,7 @@ public class HexCurser : MonoBehaviour
         curserHead.transform.eulerAngles = eulerAngles;
 
         // set color
-        curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
+        curserHead.GetComponent<SpriteRenderer>().color = Color;
         //if (collisionIndex == -1) curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
         //else curserHead.GetComponent<SpriteRenderer>().color = ErrorColor;
     }
@@ -216,14 +224,7 @@ public class HexCurser : MonoBehaviour
     // HACK: this might now work
     public void RemovePoint(Vector3 point)
     {
-        for (int i = 0; i < points.Count; i++)
-        {
-            if (point.Equals(points[i]))
-            {
-                points.RemoveAt(i);
-                return;
-            }
-        }
+        points.Remove(point);
     }
 
     public void DrawLine(Vector3 start, Vector3 end)
@@ -236,10 +237,11 @@ public class HexCurser : MonoBehaviour
         myLine.AddComponent<LineRenderer>();
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
         //lr.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        material.color = Color;
         lr.material = material;
-        //lr.SetColors(color, color);
-        //lr.startColor = DefaultColor;
-        //lr.endColor = DefaultColor;
+        //lr.SetColors(Color, Color);
+        //lr.startColor = Color;
+        //lr.endColor = Color;
         //lr.SetWidth(0.1f, 0.1f);
         lr.startWidth = lineWidth;
         lr.endWidth = lineWidth;

@@ -71,45 +71,40 @@ public class HexGameUI : MonoBehaviour
         HexCell cell = grid.GetCell();
         if (cell != currentCell) currentCell = cell;
 
-        if (currentCell) selectedUnit = currentCell.Unit;
+        if (currentCell)
+        {
+            selectedUnit = currentCell.Unit;
+            if (selectedUnit) selectedUnit.Path.Clear();
+        }
     }
-
-    //HexPath path;
 
     void DoPathfinding()
     {
         HexCell cell = grid.GetCell();
         if (!cell) return;
 
-        // get new path
-        if (cell != currentCell)
-        {
-            currentCell = cell;
-            if (selectedUnit.IsValidDestination(currentCell))
-            {
-                HexPath path = HexPathfinding.FindPath(selectedUnit.MyCell, currentCell, selectedUnit);
-                selectedUnit.Path = path;
-                if (selectedUnit.HasPath) selectedUnit.Path.Show(selectedUnit.Speed);
+        if (cell == currentCell) return;
+        currentCell = cell;
 
-                //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
-            }
-        }
-        else if (cell == currentCell) // get end path direction
+        if (Input.GetKey("left shift"))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Vector3 point = grid.GetRelativeBridgePoint(ray);
-            point = cell.transform.InverseTransformPoint(point);
-            HexMetrics.GetRelativeDirection(point);
-
-            selectedDirection = HexMetrics.GetRelativeDirection(point);
+            // can backtrack
+            selectedUnit.Path.AddCellToPath(cell, canBackTrack: true);
         }
+        else
+        {
+            // can't backtrack
+            selectedUnit.Path.AddCellToPath(cell, canBackTrack: false);
+        }
+
+        selectedUnit.Path.Show();
     }
 
     void DoMove()
     {
-        if (selectedUnit.HasPath)
+        if (selectedUnit.Path.HasPath)
         {
-            selectedUnit.Travel();
+            selectedUnit.Move();
 
             Debug.Log(selectedDirection);
         }
@@ -118,6 +113,30 @@ public class HexGameUI : MonoBehaviour
             selectedUnit.LookAt(selectedDirection);
         }
     }
+
+    #endregion
+
+    #region Debug Functions
+
+    //void DoPathfinding()
+    //{
+    //    HexCell cell = grid.GetCell();
+    //    if (!cell) return;
+
+    //    // get new path
+    //    if (cell != currentCell)
+    //    {
+    //        currentCell = cell;
+    //        if (selectedUnit.IsValidDestination(currentCell))
+    //        {
+    //            HexPath path = HexPathfinding.FindPath(selectedUnit.MyCell, currentCell, selectedUnit);
+    //            selectedUnit.Path = path;
+    //            if (selectedUnit.Path.HasPath) selectedUnit.Path.Show(selectedUnit.Speed);
+
+    //            //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
+    //        }
+    //    }
+    //}
 
     #endregion
 }

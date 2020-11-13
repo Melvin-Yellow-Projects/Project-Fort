@@ -19,22 +19,20 @@ public class HexPath
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
-    /// <summary>
-    /// TODO: rename these vars, start and end
-    /// </summary>
-    HexCell startCell;
 
-    HexCell endCell;
+    HexUnit unit;
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
-    List<HexCell> cells;
+    List<HexCell> cells = new List<HexCell>();
 
     HexCurser curser;
 
+    int moveCost = 0;
+
     #endregion
 
-    /********** MARK: Properties **********/
-    #region Properties
+    /********** MARK: Public Properties **********/
+    #region Public Properties
 
     public int Length
     {
@@ -44,19 +42,11 @@ public class HexPath
         }
     }
 
-    public HexCell StartCell
+    public bool HasPath
     {
         get
         {
-            return startCell;
-        }
-    }
-
-    public HexCell EndCell
-    {
-        get
-        {
-            return endCell;
+            return (cells.Count > 1);
         }
     }
 
@@ -72,73 +62,136 @@ public class HexPath
         }
     }
 
-    //public HexUnit Unit
-    //{
-    //    get
-    //    {
-    //        return Unit;
-    //    }
-    //}
+    #endregion
+
+    /********** MARK: Private Properties **********/
+    #region Private Properties
+
+    private HexCell StartCell
+    {
+        get
+        {
+            return unit.MyCell;
+        }
+    }
+
+    // HACK: this is a temp fix on behalf of pathfinding
+    public HexCell EndCell
+    {
+        get
+        {
+            return cells[cells.Count - 1];
+        }
+    }
 
     #endregion
 
-    public HexPath(HexCell start, HexCell end)
+    /********** MARK: Constructors **********/
+    #region Constructor
+
+    public HexPath(HexUnit unit)
     {
-        startCell = start;
-        endCell = end;
-
-        cells = new List<HexCell>();
-        for (HexCell c = endCell; c != startCell; c = c.PathFrom)
-        {
-            cells.Add(c);
-        }
-
-        cells.Add(startCell); // since the path is in reverse order...
-        cells.Reverse(); // let's reverse it so it's easier to work with
+        this.unit = unit;
     }
+
+    #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
+
+    public void AddCellToPath(HexCell cell, bool canBackTrack)
+    {
+        // initialize if new path
+        if (cells.Count == 0) cells.Add(unit.MyCell);
+
+        bool manualPath = false;
+        if (!cells.Contains(cell) || canBackTrack)
+        {
+            if(HexPathfinding.CanAddCellToPath(unit, cell))
+            {
+                cells.Add(cell);
+
+                if (HexPathfinding.GetMoveCostCalculation(cells) <= unit.Speed)
+                {
+                    manualPath = true;
+                    return;
+                }
+            }
+        }
+
+        cells.Clear();
+        cells = HexPathfinding.FindPath(unit, StartCell, cell);
+
+        if (curser) curser.HasError = (HexPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
+
+        //// HACK: this is mega confusing
+        //if (!HexPathfinding.CanAddCellToPath(unit, cell) || (cells.Contains(cell) && !canBackTrack))
+        //{
+        //    Debug.Log("Using A* to determine path");
+        //    cells.Clear();
+        //    cells = HexPathfinding.FindPath(unit, StartCell, cell);
+        //    // gray out path if it is too far
+        //}
+        //else
+        //{
+        //    cells.Add(cell);
+        //}
+
+        //if (curser) curser.HasError = (HexPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
+    }
 
     /// <summary>
     /// TODO: comment ShowPath
     /// HACK: show path and clear path can be compressed into one function
     /// </summary>
     /// <param name="speed"></param>
-    public void Show(int speed)
+    public void Show()
     {
+        if (!HasPath)
+        {
+            if (curser != null) curser.DestroyCurser();
+            return;
+            
+        }
+
         List<Vector3> points = new List<Vector3>();
 
         for (int i = 0; i < cells.Count; i++)
         {
-            int turn = (cells[i].Distance - 1) / speed;
+            //int turn = (cells[i].Distance - 1) / unit.Speed;
             //cells[i].SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
             //cells[i].EnableHighlight(Color.white);
 
             points.Add(cells[i].Position);
         }
-        startCell.EnableHighlight(Color.blue);
+        //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser == null) curser = HexCurser.Initialize(points); 
+        if (curser == null) curser = HexCurser.Initialize(points);
+        else curser.Redraw(points);
     }
 
-    /// <summary>
-    /// TODO: comment ClearPath
-    /// </summary>
-    public void Hide()
-    {
-        for (int i = 0; i < cells.Count; i++)
-        {
-            //cells[i].SetLabel(null);
-            cells[i].DisableHighlight();
-        }
-    }
+    ///// <summary>
+    ///// TODO: comment ClearPath
+    ///// </summary>
+    //public void Hide()
+    //{
+    //    // TODO: this is just wrong boy
+    //    for (int i = 0; i < cells.Count; i++)
+    //    {
+    //        //cells[i].SetLabel(null);
+    //        cells[i].DisableHighlight();
+    //    }
+    //}
 
     public void Clear()
     {
-        Hide();
+        //Hide();
         if (curser != null) curser.DestroyCurser();
+
+        moveCost = 0;
+
+        cells.Clear();
     }
 
     #endregion

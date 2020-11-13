@@ -55,24 +55,36 @@ public class HexPathfinding : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    // TODO: comment FindPath
-    public static HexPath FindPath(HexCell startCell, HexCell endCell, HexUnit unit)
+    public static bool CanAddCellToPath(HexUnit unit, HexCell cell)
     {
-        startCell.PathFrom = null; 
-        return Search(startCell, endCell, unit);
+		HexPath path = unit.Path;
+		if (!path.EndCell.IsNeighbor(cell)) return false;
+
+		if (!IsValidCellForSearch(unit, path.EndCell, cell, isUsingQueue: false)) return false;
+
+		if (!IsValidEdgeForSearch(unit, path.EndCell, cell)) return false;
+
+		return true;
     }
 
-    /// <summary>
-    /// TODO: comment Breadth-First Search function
-    /// HACK: this function is mega long
-    /// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
-    /// not necessary to do so... but it might make future features or debugging easier
-    /// </summary>
-    /// <param name="fromCell"></param>
-    /// <param name="toCell"></param>
-    /// <param name="unit"></param>
-    /// <returns></returns>
-    private static HexPath Search(HexCell startCell, HexCell endCell, HexUnit unit)
+    // TODO: comment FindPath
+    public static List<HexCell> FindPath(HexUnit unit, HexCell startCell, HexCell endCell)
+    {
+        startCell.PathFrom = null; 
+        return Search(unit, startCell, endCell);
+    }
+
+	/// <summary>
+	/// TODO: comment Breadth-First Search function
+	/// HACK: this function is mega long
+	/// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
+	/// not necessary to do so... but it might make future features or debugging easier
+	/// </summary>
+	/// <param name="unit"></param>
+	/// <param name="fromCell"></param>
+	/// <param name="toCell"></param>
+	/// <returns></returns>
+	private static List<HexCell> Search(HexUnit unit, HexCell startCell, HexCell endCell)
 	{
 		searchFrontierPhase += 2; // initialize new search frontier phase
 
@@ -95,7 +107,7 @@ public class HexPathfinding : MonoBehaviour
 			// check if we've found the target cell
 			if (current == endCell)
 			{
-                return new HexPath(startCell, endCell);
+                return GetPathCells(startCell, endCell);
 			}
 
 			int currentTurn = (current.Distance - 1) / unit.Speed;
@@ -105,10 +117,11 @@ public class HexPathfinding : MonoBehaviour
 			{
 				// check if the neighbors are valid cells to search
 				HexCell neighbor = current.GetNeighbor(d);
-				if (IsValidCellForSearch(current, neighbor))
+				if (IsValidCellForSearch(unit, current, neighbor, isUsingQueue: true) &&
+                    IsValidEdgeForSearch(unit, current, neighbor))
 				{
 					// if they are valid, calculate distance and add them to the queue
-					int moveCost = GetMoveCostCalculation(current, neighbor, unit);
+					int moveCost = GetMoveCostCalculation(current, neighbor);
 
 					// distance is calculated from move cost
 					int distance = current.Distance + moveCost;
@@ -143,7 +156,53 @@ public class HexPathfinding : MonoBehaviour
 				}
 			}
 		}
-		return null;
+		return new List<HexCell>();
+	}
+
+	private static List<HexCell> GetPathCells(HexCell startCell, HexCell endCell)
+    {
+		List<HexCell> cells = new List<HexCell>();
+
+		for (HexCell c = endCell; c != startCell; c = c.PathFrom) cells.Add(c);
+
+		cells.Add(startCell); // since the path is in reverse order...
+		cells.Reverse(); // let's reverse it so it's easier to work with
+
+		return cells;
+	}
+
+	/// <summary>
+	/// todo: comment IsValidCellForSearch; UNDONE: add rivers and water
+	/// </summary>
+	/// <param name="current"></param>
+	/// <param name="neighbor"></param>
+	/// <returns></returns>
+	private static bool IsValidCellForSearch(HexUnit unit, HexCell current, HexCell neighbor,
+		bool isUsingQueue)
+	{
+		// invalid if neighbor is null or if the cell is already out of the queue
+		if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase)) return false;
+
+		// if a Unit exists on this cell
+		if (neighbor.Unit) return false; // TODO: check unit type
+
+		// invalid if cell is unexplored
+		if (!neighbor.IsExplored) return false;
+
+		// neighbor is a valid cell
+		return true;
+	}
+
+	private static bool IsValidEdgeForSearch(HexUnit unit, HexCell current, HexCell neighbor)
+	{
+		// invalid if there is a river inbetween
+		//if (current.GetEdgeType(neighbor) == river) return false;
+
+		// invalid if edge between cells is a cliff
+		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
+
+		// neighbor is a valid cell
+		return true;
 	}
 
 	/// <summary>
@@ -153,7 +212,7 @@ public class HexPathfinding : MonoBehaviour
 	/// <param name="current"></param>
 	/// <param name="neighbor"></param>
 	/// <returns></returns>
-	private static int GetMoveCostCalculation(HexCell current, HexCell neighbor, HexUnit unit)
+	public static int GetMoveCostCalculation(HexCell current, HexCell neighbor)
 	{
 		// starting move cost
 		int moveCost = 0;
@@ -168,52 +227,25 @@ public class HexPathfinding : MonoBehaviour
 			moveCost += (edgeType == HexEdgeType.Flat) ? 2 : 3;
 		}
 
-        /* flank rotation calculation */
-
-        // current unit direction
-        HexDirection inDirection; 
-        if (current.PathFrom) inDirection = HexMetrics.GetDirection(current.PathFrom, current);
-        else inDirection = current.Unit.Direction;
-
-        // next unit direction
-        HexDirection outDirection; 
-        outDirection = HexMetrics.GetDirection(current, neighbor);
-
-        if (HexMetrics.IsFlank(inDirection, outDirection)) moveCost += 1;
-
         return moveCost;
 	}
 
-	/// <summary>
-	/// todo: comment IsValidCellForSearch; UNDONE: add rivers and water
-	/// </summary>
-	/// <param name="current"></param>
-	/// <param name="neighbor"></param>
-	/// <returns></returns>
-	private static bool IsValidCellForSearch(HexCell current, HexCell neighbor)
-	{
-		// invalid if neighbor is null or if the cell is already out of the queue
-		if (neighbor == null || neighbor.SearchPhase > searchFrontierPhase) return false;
+    // HACK: this might be a bit expensive
+    public static int GetMoveCostCalculation(List<HexCell> cells)
+    {
+		int moveCost = 0;
 
-		// invalid if cell is underwater
-		//if (neighbor.IsUnderwater) return false;
+        for (int i = 0; i < cells.Count - 1; i++)
+        {
+			HexCell current = cells[i];
+			HexCell neighbor = cells[i + 1];
 
-		// if a Unit exists on this cell
-		if (neighbor.Unit) return false; // TODO: check unit type
+			moveCost += GetMoveCostCalculation(current, neighbor);
 
-		// invalid if there is a river inbetween
-		//if (current.GetEdgeType(neighbor) == river) return false;
+		}
+		return moveCost;
+    }
 
-		// invalid if edge between cells is a cliff
-		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
-
-		// invalid if cell is unexplored
-		if (!neighbor.IsExplored) return false;
-
-		// neighbor is a valid cell
-		return true;
-	}
-    
 	/// <summary>
 	/// TODO: comment GetVisibleCells
 	/// HACK: this is also soooo close to Search
@@ -311,7 +343,7 @@ public class HexPathfinding : MonoBehaviour
 
     private static IEnumerator DisplayPath()
     {
-        Debug.Log("hi");
+        Debug.Log("HexPathfinding DisplayPath() IEnumerator Checking In");
         yield return null;
     }
 

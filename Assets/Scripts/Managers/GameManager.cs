@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < grid.units.Count; i++)
         {
             HexUnit unit = grid.units[i];
-            unit.Travel();
+            unit.Move();
         }
     }
 

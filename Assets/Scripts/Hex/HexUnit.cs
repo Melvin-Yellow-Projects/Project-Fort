@@ -37,8 +37,6 @@ public class HexUnit : MonoBehaviour
 
     float orientation;
 
-    HexPath path;
-
     #endregion
 
     /********** MARK: Properties **********/
@@ -106,27 +104,8 @@ public class HexUnit : MonoBehaviour
             return visionRange;
         }
     }
-    
-    public bool HasPath
-    {
-        get
-        {
-            return (path != null);
-        }
-    }
 
-    public HexPath Path
-    {
-        get
-        {
-            return path;
-        }
-        set
-        {
-            if (HasPath) path.Clear();
-            path = value;
-        }
-    }
+    public HexPath Path { get; private set; }
 
     #endregion
 
@@ -136,7 +115,7 @@ public class HexUnit : MonoBehaviour
     /// <summary>
     /// Unity Method; This function is called when the object becomes enabled and active
     /// </summary>
-    void OnEnable()
+    private void OnEnable()
     {
         if (myCell) // prevents failure during recompile
         {
@@ -150,36 +129,36 @@ public class HexUnit : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        Path = new HexPath(this);
+    }
+
     #endregion
 
     /********** MARK: Pathing Functions **********/
     #region Pathing Functions
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="cell"></param>
-    /// <returns></returns>
-    public bool IsValidDestination(HexCell cell)
-    {
-        bool isValid = true;
+    //public bool IsValidDestination(HexCell cell)
+    //{
+    //    bool isValid = true;
 
-        isValid &= !cell.Unit; // cell does not already have a unit
+    //    isValid &= !cell.Unit; // cell does not already have a unit
 
-        //isValid &= !cell.IsUnderwater; // cell is not underwater
+    //    //isValid &= !cell.IsUnderwater; // cell is not underwater
 
-        return isValid;
-    }
+    //    return isValid;
+    //}
     
-    public void Travel()
+    public void Move()
     {
-        if (!HasPath) return; // TODO: maybe continue to change dir
+        if (!Path.HasPath) return; // TODO: maybe continue to change dir
 
         myCell.Unit = null;
-        myCell = path.EndCell; // HACK: this line will not work in the future
+        myCell = Path.EndCell; // HACK: this line will not work in the future
         myCell.Unit = this;
         StopAllCoroutines();
-        StartCoroutine(TravelPath(path));
+        StartCoroutine(Route());
         // TODO: clear path after travel
     }
 
@@ -188,31 +167,31 @@ public class HexUnit : MonoBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
-    IEnumerator TravelPath(HexPath travelPath)
+    IEnumerator Route()
     {
-        Vector3 a, b, c = travelPath[0].Position;
+        Vector3 a, b, c = Path[0].Position;
 
         List<int> l = new List<int>();
 
         // perform lookat
-        yield return LookAt(travelPath[1].Position);
+        yield return LookAt(Path[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
         HexPathfinding.DecreaseVisibility(
-            currentTravelCell ? currentTravelCell : travelPath[0],
+            currentTravelCell ? currentTravelCell : Path[0],
             visionRange
         );
 
         float t = Time.deltaTime * travelSpeed;
-        for (int i = 1; i < travelPath.Length; i++)
+        for (int i = 1; i < Path.Length; i++)
         {
-            currentTravelCell = travelPath[i]; // prevents teleportation
+            currentTravelCell = Path[i]; // prevents teleportation
 
             a = c;
-            b = travelPath[i - 1].Position;
+            b = Path[i - 1].Position;
             c = (b + currentTravelCell.Position) * 0.5f;
 
-            HexPathfinding.IncreaseVisibility(travelPath[i], visionRange);
+            HexPathfinding.IncreaseVisibility(Path[i], visionRange);
 
             for (; t < 1f; t += Time.deltaTime * travelSpeed)
             {
@@ -223,7 +202,7 @@ public class HexUnit : MonoBehaviour
                 yield return null;
             }
 
-            HexPathfinding.DecreaseVisibility(travelPath[i], visionRange);
+            HexPathfinding.DecreaseVisibility(Path[i], visionRange);
 
             t -= 1f;
         }
@@ -249,7 +228,7 @@ public class HexUnit : MonoBehaviour
         orientation = transform.localRotation.eulerAngles.y;
 
         // we're done with the path so it can be dispatched
-        Path = null;
+        Path.Clear();
     }
 
     public void LookAt(HexDirection direction)
