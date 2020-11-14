@@ -82,7 +82,11 @@ List of objectives to complete
 		- [x] pieces cannot travel through eachother
 		- [x] ally collisions ends moves? or does a piece randomly wait
 		- [x] hexcell lights up when mouse is tracing over it
-		- [ ] main menu and alternate menu navigation
+		- [x] main menu and alternate menu navigation
+		- [x] systems menu (settings, quit)
+		- [x] popup menu
+		- [x] start scene passes map data to game scene
+		- [ ] player GameObject
 		- [ ] moving pieces kill enemies
 		- [ ] single player base/fort 
 		- different game modes and solid game manager
