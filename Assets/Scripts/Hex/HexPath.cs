@@ -198,7 +198,7 @@ public class HexPath
     public void Clear()
     {
         //Hide();
-        if (curser != null) curser.DestroyCurser();
+        if (curser != null) curser.DestroyCurser(); // TODO: i think there needs to be a hide function for the curser
 
         moveCost = 0;
 

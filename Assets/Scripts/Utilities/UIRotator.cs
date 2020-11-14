@@ -1,7 +1,7 @@
 ﻿/**
- * File Name: MouseRotator.cs
- * Description: This script simply rotates a GameObject about the yaw axis; it is
- *              meant to display things
+ * File Name: UIRotator.cs
+ * Description: This script simply rotates a UI element about the x and y axis; it is meant to give
+ *              a little bit of life to some UI
  * 
  * Authors: Will Lacey
  * Date Created: November 13, 2020
@@ -13,9 +13,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Rotates a GameObject about the yaw axis
+/// Intended to rotate a UI GameObject
 /// </summary>
-public class MouseRotator : MonoBehaviour
+public class UIRotator : MonoBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
