@@ -125,6 +125,8 @@ public class HexUnit : MonoBehaviour
         }
     }
 
+    public int Team { get; set; } = 0;
+
     #endregion
 
     /********** MARK: Unity Functions **********/
