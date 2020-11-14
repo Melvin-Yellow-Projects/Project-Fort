@@ -57,17 +57,8 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     protected void Awake()
     {
-        // turn off grid
         terrainMaterial.DisableKeyword("GRID_ON");
-    }
-
-    /// <summary>
-    /// Unity Method; Start() is called before the first frame update
-    /// </summary>
-    protected void Start()
-    {
-        // disable hex map editor
-        SetEditMode(false);
+        Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
     }
 
     /// <summary>
@@ -120,42 +111,6 @@ public class HexMapEditor : MonoBehaviour
         {
             EditCells(currentCell);
         }
-    }
-
-    /// <summary>
-    /// TODO: Comment this
-    /// </summary>
-    /// <param name="toggle"></param>
-	public void SetEditMode(bool toggle)
-    {
-        // toggle on editor mode
-        enabled = toggle;
-
-        // reset hexcell display
-        hexGrid.SetCellLabel(0); // turn off cells
-
-        // display the bottom panel when in edit mode
-        foreach (Transform panel in editorPanels)
-        {
-            panel.gameObject.SetActive(toggle);
-
-            // HACK: hardcoded string references, this could be expanded into its own class
-            if (panel.name == "Cell Label Panel")
-            {
-                // reset cell UI toggle in bottom panel
-                panel.Find("Cell Panel").Find("Toggle ---").GetComponent<Toggle>().isOn = true;
-            }
-        }
-
-        // toggle game UI
-        FindObjectOfType<HexGameUI>().enabled = !toggle;
-
-        // clear paths existing on the hex grid
-        hexGrid.ClearPaths();
-
-        // toggle map visibility when in edit mode by setting a global shader keyword
-        if (toggle) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
     }
 
     /// <summary>

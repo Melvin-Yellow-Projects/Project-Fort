@@ -40,6 +40,15 @@ public class HexGameUI : MonoBehaviour
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
+    /// <summary>
+    /// Unity Method; Awake() is called before Start() upon GameObject creation
+    /// </summary>
+    protected void Awake()
+    {
+        //terrainMaterial.DisableKeyword("GRID_ON");
+        Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+    }
+
     protected void Update()
     {
         if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI

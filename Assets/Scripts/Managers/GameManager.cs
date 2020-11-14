@@ -18,7 +18,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    /********** MARK: Scene Functions **********/
+    /********** MARK: Class Functions **********/
     #region Scene Functions
 
     public void ExecuteMoves()
@@ -35,35 +35,5 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
-    #region Class Functions
-
-    /// <summary>
-    ///     Loads a scene by name
-    /// </summary>
-    /// <param name="sceneName">name of the scene to be loaded</param>
-    public void LoadSceneByName(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-    }
-
-    /// <summary>
-    ///     Loads the next scene in the Build Settings Index
-    /// </summary>
-    public void LoadNextScene()
-    {
-        int CurrentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(CurrentSceneIndex + 1);
-    }
-
-    /// <summary>
-    ///     Quits the application and closes game
-    /// </summary>
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
-
-    #endregion
+    
 }

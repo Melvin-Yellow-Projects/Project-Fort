@@ -8,32 +8,57 @@
  * Additional Comments: 
  * 
  **/
-
-using System.Collections;
-using System.Collections.Generic;
+ 
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 
+/// </summary>
 public class SceneLoader : MonoBehaviour
 {
-    GameSession gameSession;
-
-    public void LoadNextScene()
-    {
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(currentSceneIndex + 1);
-    }
-
+    /// <summary>
+    /// Loads the starting scene
+    /// </summary>
     public void LoadStartScene()
     {
-        gameSession = FindObjectOfType<GameSession>();
-        if (gameSession != null)
-        {
-            gameSession.DestroyGameSession();
-        }
+        // TODO: does the start scene need a game session?
+        //GameSession gameSession = FindObjectOfType<GameSession>();
+        //if (gameSession) gameSession.DestroyGameSession();
+
         SceneManager.LoadScene(0);
     }
 
+    /// <summary>
+    /// Loads a scene by name
+    /// </summary>
+    /// <param name="sceneName">name of the scene to be loaded</param>
+    public void LoadSceneByName(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    /// <summary>
+    /// Loads a scene by name
+    /// </summary>
+    /// <param name="sceneName">name of the scene to be loaded</param>
+    public static void LoadSceneByName(string sceneName, bool dummy)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    /// <summary>
+    /// Loads the next scene in the Build Settings Index
+    /// </summary>
+    public void LoadNextScene()
+    {
+        int CurrentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(CurrentSceneIndex + 1);
+    }
+    
+    /// <summary>
+    /// Quits Game
+    /// </summary>
     public void QuitGame()
     {
         Application.Quit();

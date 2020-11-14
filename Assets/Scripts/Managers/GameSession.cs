@@ -13,6 +13,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.IO;
 
 public class GameSession : MonoBehaviour
 {
@@ -21,6 +23,14 @@ public class GameSession : MonoBehaviour
 
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] private float gameSpeed = 1f;
+
+    #endregion
+
+    /********** MARK: Public Properties **********/
+    # region Public Properties
+
+    public static BinaryReader BinaryReaderBuffer { get; set; }
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -31,18 +41,24 @@ public class GameSession : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        int gameStatusCount = FindObjectsOfType<GameSession>().Length;
-        if (gameStatusCount > 1)
-        {
-            gameObject.SetActive(false);
-            DestroyGameSession();
-            GameSession gameSession = FindObjectOfType<GameSession>();
-            gameSession.gameSpeed = gameSpeed;
-        }
-        else
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+        // HACK: this logic is for keeping the game session alive across scenes
+        //int gameStatusCount = FindObjectsOfType<GameSession>().Length;
+        //if (gameStatusCount > 1)
+        //{
+        //    gameObject.SetActive(false);
+        //    DestroyGameSession();
+
+        //    GameSession gameSession = FindObjectOfType<GameSession>();
+        //    gameSession.gameSpeed = gameSpeed;
+
+        //    LoadMapFromReader();
+        //}
+        //else
+        //{
+        //    DontDestroyOnLoad(gameObject);
+        //}
+
+        LoadMapFromReader();
     }
 
     /// <summary>
@@ -57,6 +73,16 @@ public class GameSession : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    private void LoadMapFromReader()
+    {
+        if (BinaryReaderBuffer == null) return;
+
+        SaveLoadMenu.LoadMapFromReader(BinaryReaderBuffer);
+
+        BinaryReaderBuffer.Close();
+        BinaryReaderBuffer = null;
+    }
+
     /// <summary>
     ///     Destroys GameObject containing Game Session Class
     /// </summary>
@@ -64,5 +90,6 @@ public class GameSession : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
     #endregion
 }
