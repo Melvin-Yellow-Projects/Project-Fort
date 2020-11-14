@@ -126,6 +126,20 @@ public class SaveLoadMenu : MonoBehaviour
         Close();
     }
 
+    public void LoadInNextScene()
+    {
+        string path = GetSelectedPath();
+
+        // if the path is empty, exit
+        if (path == null) return;
+
+        // if the path is invalid, exit
+        if (!IsPathValid(path)) return;
+
+        // add load function to action for next scene
+        //Load(path);
+    }
+
     public void SelectItem(string name)
     {
         nameInput.text = name;
@@ -195,11 +209,7 @@ public class SaveLoadMenu : MonoBehaviour
 	public void Load(string path)
     {
         // check to see if the path exists
-        if (!File.Exists(path))
-        {
-            Debug.LogError("File does not exist " + path);
-            return;
-        }
+        if (!IsPathValid(path)) return;
 
         // creates a file stream object encapsulated within the BinaryReader; the using block then
         // defines where this object will exist
@@ -217,6 +227,17 @@ public class SaveLoadMenu : MonoBehaviour
                 Debug.LogWarning("Unknown map format " + header);
             }
         }
+    }
+
+    private bool IsPathValid(string path)
+    {
+        if (!File.Exists(path))
+        {
+            Debug.LogError("Path/File does not exist " + path);
+            return false;
+        }
+
+        return true;
     }
 
     public void Delete()
