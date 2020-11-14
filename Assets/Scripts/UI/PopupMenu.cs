@@ -21,6 +21,12 @@ public class PopupMenu : MonoBehaviour
 {
     [SerializeField] Text descriptionText = null;
 
+    public void Open()
+    {
+        gameObject.SetActive(true);
+        HexMapCamera.Locked = true;
+    }
+
     public void Open(string description)
     {
         gameObject.SetActive(true);

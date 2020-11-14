@@ -19,7 +19,14 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     /********** MARK: Class Functions **********/
-    #region Scene Functions
+    #region Class Functions
+
+    
+
+    #endregion
+
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
     public void ExecuteMoves()
     {

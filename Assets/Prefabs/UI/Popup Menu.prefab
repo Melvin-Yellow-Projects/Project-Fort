@@ -232,7 +232,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: This is an example paragraph of what the text might look like on this menu.
+  m_Text: What is this Burger King? You can't have it your way here, buddy. (This
+    feature is not yet implemented)
 --- !u!1 &5820976602868708826
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,7 +535,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5820976604184783356
 RectTransform:
   m_ObjectHideFlags: 0
