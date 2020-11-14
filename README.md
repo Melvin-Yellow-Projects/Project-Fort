@@ -182,6 +182,7 @@ List of future objectives to complete
 		- [ ] Shaders & Materials II
 		- [ ] Mirror Multiplayer
 	- Other
+		- [ ] Trello
 		- [ ] multiplayer test project
 		- [ ] Reddit Page
 		- [ ] Instagram
