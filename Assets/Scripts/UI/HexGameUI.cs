@@ -75,7 +75,7 @@ public class HexGameUI : MonoBehaviour
         if (cell != currentCell)
         {
             if (currentCell) currentCell.DisableHighlight();
-            if (cell) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+            if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
 
             currentCell = cell;
             return true; // whether or not current cell has updated

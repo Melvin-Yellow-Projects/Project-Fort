@@ -42,8 +42,8 @@ public class HexMapCamera : MonoBehaviour
 	{
 		set
 		{
-			instance.enabled = !value;
-		}
+            if (instance) instance.enabled = !value;
+        }
 	}
 
 	void Awake()
