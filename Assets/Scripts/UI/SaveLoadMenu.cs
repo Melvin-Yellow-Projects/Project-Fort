@@ -49,20 +49,10 @@ public class SaveLoadMenu : MonoBehaviour
     /// </summary>
     bool saveMode;
 
-    private HexGrid hexGrid;
-
     #endregion
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
-
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
-    protected void Awake()
-    {
-        hexGrid = FindObjectOfType<HexGrid>(); // assumes one hex grid in scene
-    }
 
     /// <summary>
     /// Unity Method; Update() is called once per frame
@@ -126,7 +116,7 @@ public class SaveLoadMenu : MonoBehaviour
         Close();
     }
 
-    public void LoadInNextScene()
+    public void PrepareReaderForNextScene(string nextSceneName)
     {
         string path = GetSelectedPath();
 
@@ -136,8 +126,10 @@ public class SaveLoadMenu : MonoBehaviour
         // if the path is invalid, exit
         if (!IsPathValid(path)) return;
 
-        // add load function to action for next scene
-        //Load(path);
+        BinaryReader reader = new BinaryReader(File.OpenRead(path));
+        GameSession.BinaryReaderBuffer = reader;
+
+        SceneLoader.LoadSceneByName(nextSceneName, false);
     }
 
     public void SelectItem(string name)
@@ -199,7 +191,7 @@ public class SaveLoadMenu : MonoBehaviour
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
             writer.Write(mapFileVersion);
-            hexGrid.Save(writer);
+            FindObjectOfType<HexGrid>().Save(writer);
         }
     }
 
@@ -215,17 +207,22 @@ public class SaveLoadMenu : MonoBehaviour
         // defines where this object will exist
         using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
         {
-            int header = reader.ReadInt32();
-            if (header <= mapFileVersion)
-            {
-                hexGrid.Load(reader, header);
+            LoadMapFromReader(reader);
+        }
+    }
 
-                HexMapCamera.ValidatePosition();
-            }
-            else
-            {
-                Debug.LogWarning("Unknown map format " + header);
-            }
+    public static void LoadMapFromReader(BinaryReader reader)
+    {
+        int header = reader.ReadInt32();
+        if (header <= mapFileVersion)
+        {
+            FindObjectOfType<HexGrid>().Load(reader, header);
+
+            HexMapCamera.ValidatePosition();
+        }
+        else
+        {
+            Debug.LogWarning("Unknown map format " + header);
         }
     }
 
