@@ -82,6 +82,7 @@ List of objectives to complete
 		- [x] pieces cannot travel through eachother
 		- [x] ally collisions ends moves? or does a piece randomly wait
 		- [x] hexcell lights up when mouse is tracing over it
+		- [ ] main menu and alternate menu navigation
 		- [ ] moving pieces kill enemies
 		- [ ] single player base/fort 
 		- different game modes and solid game manager
@@ -94,7 +95,8 @@ List of objectives to complete
 			- [ ] Pirate
 			- [ ] Wall
 		- unit mechancis
-			- [ ] horses cannot move onto a square with a Pikeman
+			- [ ] move cell, edge, etc. validation functions into unit class
+ 			- [ ] horses cannot move onto a square with a Pikeman
 			- [ ] crusader has extra movement
 			- [ ] walls cannot be killed unless pirate
 			- [ ] walls move with priority
@@ -109,6 +111,7 @@ List of objectives to complete
 		- [ ] crusader can jump pieces
 		- [ ] forts spawn units 
 		- [ ] piece model updates
+		- [ ] water
 
 	- Game Play 
 		- hex curser
