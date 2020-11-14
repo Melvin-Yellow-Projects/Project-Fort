@@ -73,30 +73,22 @@ public class GameSession : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    private void LoadMapFromReader()
+    {
+        if (BinaryReaderBuffer == null) return;
+
+        SaveLoadMenu.LoadMapFromReader(BinaryReaderBuffer);
+
+        BinaryReaderBuffer.Close();
+        BinaryReaderBuffer = null;
+    }
+
     /// <summary>
     ///     Destroys GameObject containing Game Session Class
     /// </summary>
     public void DestroyGameSession()
     {
         Destroy(gameObject);
-    }
-
-    private void LoadMapFromReader()
-    {
-        Debug.Log("LoadMapFromReader() is called");
-
-        if (BinaryReaderBuffer == null) return;
-
-        Debug.Log("BinaryReaderBuffer is not null");
-
-        SaveLoadMenu.LoadMapFromReader(BinaryReaderBuffer);
-
-        Debug.Log("SaveLoadMenu.LoadMapFromReader() is called");
-
-        BinaryReaderBuffer.Close();
-        BinaryReaderBuffer = null;
-
-        Debug.Log("LoadMapFromReader() is returning");
     }
 
     #endregion
