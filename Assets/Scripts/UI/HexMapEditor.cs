@@ -75,7 +75,7 @@ public class HexMapEditor : MonoBehaviour
                 HandleInput();
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.U))
+            if (Input.GetKeyDown(KeyCode.U) || Input.GetKeyDown(KeyCode.I))
             {
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
@@ -83,13 +83,10 @@ public class HexMapEditor : MonoBehaviour
                 }
                 else
                 {
-                    CreateUnit();
+                    if (Input.GetKeyDown(KeyCode.U)) CreateUnit(true);
+                    else CreateUnit(false);
                 }
                 return;
-            }
-            if (Input.GetKeyDown(KeyCode.I)) // Debugger
-            {
-                Debug.Log("Debugger");
             }
         }
         //previousCell = null;
@@ -222,12 +219,14 @@ public class HexMapEditor : MonoBehaviour
     /// <summary>
     /// TODO: comment func CreateUnit
     /// </summary>
-    void CreateUnit()
+    void CreateUnit(bool team)
     {
         HexCell cell = hexGrid.GetCell();
         if (cell && !cell.Unit) // if the cell exists and the cell does not have a unit...
         {
-            hexGrid.AddUnit(Instantiate(HexUnit.prefab), cell, Random.Range(0f, 360f));
+            HexUnit unit = Instantiate(HexUnit.prefab);
+            unit.Team = (team) ? 0 : 1;
+            hexGrid.AddUnit(unit, cell, Random.Range(0f, 360f));
         }
     }
 

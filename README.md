@@ -90,14 +90,16 @@ List of objectives to complete
 		- [ ] moving pieces kill enemies
 		- [ ] single player base/fort 
 		- different game modes and solid game manager
+			- [x] turn clock/timer
+			- [x] simultaneous turns
+			- [x] real-time
 			- [ ] turn-based
-			- [ ] simultaneous turns
-			- [ ] real-time
+			- [ ] game mode class?
 		- unit variety
-			- [ ] Pikeman
-			- [ ] Crusader/Horse
-			- [ ] Pirate
-			- [ ] Wall
+			- [ ] pikeman
+			- [ ] knight
+			- [ ] pirate
+			- [ ] wall
 		- unit mechancis
 			- [ ] move cell, edge, etc. validation functions into unit class
  			- [ ] horses cannot move onto a square with a Pikeman
@@ -106,16 +108,18 @@ List of objectives to complete
 			- [ ] walls move with priority
 			- [ ] walls can be cursed
 			- [ ] walls can not be cursed
+		- [ ] some built in maps or simply be able to transfer map over client
 		- [ ] server client relationship
-		- [ ] stable refactoring; code fixes; and comments
 
 	- Version 1.0 Stretch Goals
+		- [ ] stable refactoring; code fixes; and comments
 		- [ ] can pick up an invisible instance of the piece when creating a path
 		- [ ] archer
-		- [ ] crusader can jump pieces
+		- [ ] knight can jump pieces
 		- [ ] forts spawn units 
 		- [ ] piece model updates
 		- [ ] water
+		- [ ] sounds
 
 	- Game Play 
 		- hex curser

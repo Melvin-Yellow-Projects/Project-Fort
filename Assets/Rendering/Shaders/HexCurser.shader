@@ -9,7 +9,7 @@
 
 	SubShader
 	{
-		Tags { "Queue" = "Transparent + 10" }
+		Tags { "Queue" = "Transparent+10" }
 
 		CGPROGRAM
 		#pragma surface surf Lambert

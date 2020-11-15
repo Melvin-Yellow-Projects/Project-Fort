@@ -458,7 +458,7 @@ public class HexGrid : MonoBehaviour
             int unitCount = reader.ReadInt32();
             for (int i = 0; i < unitCount; i++)
             {
-                HexUnit.Load(reader, this);
+                HexUnit.Load(reader, header, this);
             }
         }
 

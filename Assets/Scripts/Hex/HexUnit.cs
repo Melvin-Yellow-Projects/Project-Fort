@@ -39,6 +39,8 @@ public class HexUnit : MonoBehaviour
 
     bool isSelected = false;
 
+    int team = 0;
+
     #endregion
 
     /********** MARK: Properties **********/
@@ -125,7 +127,22 @@ public class HexUnit : MonoBehaviour
         }
     }
 
-    public int Team { get; set; } = 0;
+    public bool IsAttacking { get; private set; }
+
+    public int Team
+    {
+        get
+        {
+            return team;
+        }
+
+        set
+        {
+            team = value;
+            if (team == 0) GetComponentInChildren<Renderer>().material.color = Color.blue;
+            else GetComponentInChildren<Renderer>().material.color = Color.red;
+        }
+    }
 
     #endregion
 
@@ -189,7 +206,13 @@ public class HexUnit : MonoBehaviour
     {
         if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
 
-        if (cells[cells.Count - 1].Unit != null) return;
+        // does new cell have a unit?
+        HexUnit unit = cells[cells.Count - 1].Unit;
+        if (unit != null)
+        {
+            if (unit.team == team) return; // cannot move onto friendly cell
+            unit.GetComponent<Death>().Die();
+        }
 
         myCell.Unit = null;
         myCell = cells[cells.Count - 1]; 
@@ -330,14 +353,18 @@ public class HexUnit : MonoBehaviour
     {
         myCell.coordinates.Save(writer);
         writer.Write(orientation);
+        writer.Write((byte)team);
     }
 
-    public static void Load(BinaryReader reader, HexGrid grid)
+    public static void Load(BinaryReader reader, int header, HexGrid grid)
     {
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        grid.AddUnit(Instantiate(prefab), grid.GetCell(coordinates), orientation);
+        HexUnit unit = Instantiate(prefab);
+        if (header >= 4) unit.Team = reader.ReadByte();
+
+        grid.AddUnit(unit, grid.GetCell(coordinates), orientation);
     }
 
     #endregion

@@ -184,7 +184,7 @@ public class HexPathfinding : MonoBehaviour
 		if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase)) return false;
 
 		// if a Unit exists on this cell
-		if (neighbor.Unit) return false; // TODO: check unit type
+		if (neighbor.Unit && neighbor.Unit.Team == unit.Team) return false; // TODO: check unit type
 
 		// invalid if cell is unexplored
 		if (!neighbor.IsExplored) return false;

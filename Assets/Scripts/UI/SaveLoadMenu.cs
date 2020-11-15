@@ -42,7 +42,7 @@ public class SaveLoadMenu : MonoBehaviour
     /// <summary>
     /// current map save/load version
     /// </summary>
-    const int mapFileVersion = 3;
+    const int mapFileVersion = 4;
 
     /// <summary>
     /// determines if the user is either saving or loading

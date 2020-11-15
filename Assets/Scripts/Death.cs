@@ -9,7 +9,8 @@ public class Death : MonoBehaviour
 
     [SerializeField] [Range(0, 1f)] float maxJitter = 0.2f;
 
-    [SerializeField] [Range(0, 5f)] float fallSpeed = 0.5f;
+    //[SerializeField] [Range(0, 5f)] float fallSpeed = 0.5f;
+    [SerializeField] [Range(0, 5f)] float fallSpeed = 5f;
 
     [SerializeField] [Range(0, 5f)] float timeToSurvive = 3f;
 
@@ -20,9 +21,9 @@ public class Death : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    private void Update()
+    public void Die()
     {
-        if (Input.GetKey("space")) StartCoroutine(DeathAnim());
+        StartCoroutine(DeathAnim());
     }
 
     private IEnumerator DeathAnim()
@@ -51,6 +52,11 @@ public class Death : MonoBehaviour
 
     /********** MARK: Debug Functions **********/
     #region Debug Functions
+
+    //private void Update()
+    //{
+    //    if (Input.GetKey("space")) Die();
+    //}
 
     //private void StopDeath()
     //{
