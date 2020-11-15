@@ -112,6 +112,7 @@ List of objectives to complete
 			- [ ] turn-based
 			- [ ] hot seat
 			- [ ] game mode class?
+			- [ ] steps, moves, rounds, wave
 		- unit variety
 			- [ ] refactor cell, edge, attack validation functions into unit class
 			- [ ] pikeman
@@ -126,8 +127,6 @@ List of objectives to complete
 			- [ ] walls move with priority
 			- [ ] walls can be cursed
 			- [ ] walls can not be cursed
-		- [ ] some built in maps or simply be able to transfer map over client
-		- [ ] server client relationship
 	- Graphics
 		- [x] hexcell lights up when mouse is tracing over it
 		- [x] death animation
@@ -139,19 +138,27 @@ List of objectives to complete
 
 - **Week 5 (November 16, 2020): Version 1.0 Multiplayer and Build**
 	- Gameplay
+		- [ ] server client relationship
+		- [ ] some built in maps or simply be able to transfer map over client
 		- [ ] water cells
 		- [ ] archer
 		- [ ] forts spawn units 
+		- [ ] rivers edges
+		- [ ] Day / Night Cycle
 	- Graphics
 		- [ ] piece model updates
 		- [ ] can pick up an invisible instance of the piece when creating a path
 		- [ ] water graphics
+		- [ ] sun/moon counter
+		- [ ] UI to show how much movement is left above the piece
 	- Sound
 		- [ ] sounds
 		- [ ] drum for piece movement
 	- Quality of Life
 		- [ ] refactoring
 		- [ ] comments
+	- Other
+		- [ ] create a 1 second video collection starting from November 1st
 
 
 ### Future Dates & Features
@@ -177,7 +184,6 @@ List of future objectives to complete
 		- [ ] cell queue combat flow
 	- Gameplay
 		- [ ] variant map shapes
-		- [ ] rivers edges
 		- [ ] rock edges 
 		- unit abilities
 			- [ ] ability UI
@@ -212,5 +218,4 @@ List of future objectives to complete
 		- [ ] Steam page
 		- [ ] Discord
 		- [ ] website
-		- [ ] create a 1 second video collection starting from November 1st
 		- [ ] *pending requirements*
