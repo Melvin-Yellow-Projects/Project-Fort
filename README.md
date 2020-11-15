@@ -65,7 +65,7 @@ List of objectives to complete
 		- hex curser
 			- [x] arrow points from a start to an end point
 			- [x] can gray out if not selected
-			- [x] animation
+			- [x] multiple cursers can exist simultaneously
 		- new pathfinding
 			- [x] get relative bridge direction from a point within a cell
 			- [x] rotation now is added to the movement cost
@@ -73,122 +73,136 @@ List of objectives to complete
 	- Quality of Life
 		- [x] refactor pathfinding logic from hex grid into new class
 
-- **Week 4 (November 9, 2020): xxx**
-
-	- Version 1.0 **..sort this later**
-		- [x] remove rotation as movement cost 😔
-		- [x] remove direction as a gameplay factor 😔
-		- [x] hexpath without A* / build path with just direct mouse selection
-		- [x] pieces cannot travel through eachother
-		- [x] ally collisions ends moves? or does a piece randomly wait
-		- [x] hexcell lights up when mouse is tracing over it
-		- [x] main menu and alternate menu navigation
-		- [x] systems menu (settings, quit)
-		- [x] popup menu
-		- [x] start scene passes map data to game scene
-		- [ ] player GameObject
-		- [ ] moving pieces kill enemies
-		- [ ] single player base/fort 
+- **Week 4 (November 9, 2020): Version 1.0 Functionality**
+	- Game Design
+		- [x] hex curser inputs
+		- [ ] turns and rounds
+		- [ ] what unit mechanics are essential to implement?
+	- Gameplay
+		- pathfinding and path-building
+			- [x] manual path building with direct mouse selection
+			- [x] if manual path is too large, A* is used
+			- [x] shift allows a unit to retrace cells; otherwise, retracing starts A*
+			- [x] unit must remember path until it is allowed to forget 
+			- [x] curser indicates if there is an error or if it is selected
+			- [x] pieces cannot travel through eachother
+		- [x] moves are stored by units until a button is pressed
+		- [x] ally collisions causes a random piece to wait
+		- main menu and scene navigation
+			- [x] main menu
+			- [x] complete navigation loop
+			- [x] systems menu (settings, quit, more information)
+			- [x] popup menu
+			- [x] start scene passes map data to game scene
+		- player GameObject
+			- [ ] refactor HexGameUI script into player
+			- [ ] left click for selection, right click for execution
+			- [ ] has a list of owned units
+			- [ ] cannot use enemy units
+			- [ ] cannot see enemy units and their field of view
+			- [ ] team data, color data 
+			- [ ] list of base/forts
+		- combat
+			- [x] moving pieces kill enemies
+			- [ ] multiple moving pieces trade eachother off
 		- different game modes and solid game manager
 			- [x] turn clock/timer
 			- [x] simultaneous turns
 			- [x] real-time
 			- [ ] turn-based
+			- [ ] hot seat
 			- [ ] game mode class?
 		- unit variety
+			- [ ] refactor cell, edge, attack validation functions into unit class
 			- [ ] pikeman
 			- [ ] knight
 			- [ ] pirate
 			- [ ] wall
 		- unit mechancis
-			- [ ] move cell, edge, etc. validation functions into unit class
- 			- [ ] horses cannot move onto a square with a Pikeman
-			- [ ] crusader has extra movement
+			- [ ] knight can jump pieces
+ 			- [ ] knight cannot move onto a square with a Pikeman
+			- [ ] knight has extra movement
 			- [ ] walls cannot be killed unless pirate
 			- [ ] walls move with priority
 			- [ ] walls can be cursed
 			- [ ] walls can not be cursed
 		- [ ] some built in maps or simply be able to transfer map over client
 		- [ ] server client relationship
-
-	- Version 1.0 Stretch Goals
-		- [ ] stable refactoring; code fixes; and comments
-		- [ ] can pick up an invisible instance of the piece when creating a path
-		- [ ] archer
-		- [ ] knight can jump pieces
-		- [ ] forts spawn units 
-		- [ ] piece model updates
-		- [ ] water
-		- [ ] sounds
-
-	- Game Play 
-		- hex curser
-			- [ ] can gray out a section of the path
-			- [ ] supports overlapping, curser can go backwards ontop of itself
-			- [ ] Bézier implementation
-			- [ ] multiple cursers can exist simultaneously and yet still comprehensively
-		- move submission
-			- [x] moves are stored by units until a button is pressed
-			- [ ] pieces on the same cell will abruptly stop eachother's paths
-		- travel queue
-			- [ ] cells and rotations can be added to a travel queue 1 at a time
-			- [ ] left click for selection, right click for execution
-			- [ ] hold shift to activate travel queue, otherwise A* is used
-			- [ ] unit must remember path until it is allowed to forget 
-			- [ ] mouse over cell edge can change a unit's direction in A* mode
-	- Quality of Life
-		- [ ] comment existing code
-		- [ ] refactor existing code
-		- [ ] comprehend shader code
+	- Graphics
+		- [x] hexcell lights up when mouse is tracing over it
+		- [x] death animation
+	- Debugging
+		- [x] remove rotation as movement cost 😔
+		- [x] remove direction as a gameplay factor 😔
 	- Other
 		- [ ] resume 1 second a day videos
-		
+
+- **Week 5 (November 16, 2020): Version 1.0 Multiplayer and Build**
+	- Gameplay
+		- [ ] water cells
+		- [ ] archer
+		- [ ] forts spawn units 
+	- Graphics
+		- [ ] piece model updates
+		- [ ] can pick up an invisible instance of the piece when creating a path
+		- [ ] water graphics
+	- Sound
+		- [ ] sounds
+		- [ ] drum for piece movement
+	- Quality of Life
+		- [ ] refactoring
+		- [ ] comments
+
 
 ### Future Dates & Features
 List of future objectives to complete
-- **Week 5 (October 26, 2020): Break Week**
+
+- **Week 6 (November 23, 2020): xxx**
 	- *add next set of deliverables*
-	- finish lima with multiplayer
-	- fountain asset
-	- movement dust asset
-	- fire flies
-	- campfire scene
-	- blender
-	- 3D animation rigging
 
 - **Features**
-	- Game Design
-		- [ ] cell queue combat flow
-		- [ ] hex curser inputs
-		- [ ] turns and rounds
-		- [ ] economy		
-		- [ ] cell queue combat flow
-	- Gameplay
-		- [ ] launch screen
-		- [ ] hot seat
-		- [ ] water cells 
-		- [ ] variant map shapes
-		- [ ] rivers edges
-		- [ ] rock edges 
-		- [ ] unit abilities
-			- [ ] ability UI
-			- [ ] left click to execute ability
-		- [ ] basic piece combat
-			- [ ] combat animation
-			- [ ] dust effect
-	- Graphics
-		- [ ] ability descriptions (like a modal view descriptor seen for card games)
-	- Sound
-		- [ ] drum for piece movement
-	- Quality of Life
-		- [ ] parameterize number of edge vertices
-		- [ ] pathfinding display debugger is readded
 	- Tutorials
 		- [ ] Blender
+		- [ ] 3D animation rigging
 		- [ ] Spine weights
 		- [ ] Spine UI assets
 		- [ ] Shaders & Materials II
 		- [ ] Mirror Multiplayer
+		- [ ] fire flies
+		- [ ] campfire scene
+		- [ ] fountain asset
+		- [ ] finish lima with multiplayer
+	- Game Design
+		- [ ] economy		
+		- [ ] cell queue combat flow
+	- Gameplay
+		- [ ] variant map shapes
+		- [ ] rivers edges
+		- [ ] rock edges 
+		- unit abilities
+			- [ ] ability UI
+			- [ ] left click to execute ability
+		- [ ] cells and rotations can be added to a travel queue 1 at a time
+		- [ ] mousing over cell edge can change a unit's direction in A* mode
+	- Graphics
+		- [ ] ability descriptions (like a modal view descriptor seen for card games)
+		- hex curser details
+			- [ ] can gray out a section of the path
+			- [ ] supports overlapping, curser can go backwards ontop of itself cohesively
+			- [ ] Bézier implementation
+			- [ ] animation
+		- basic piece combat
+			- [ ] combat animation
+			- [ ] dust effect
+			- [ ] movement dust asset
+	- Sound
+		- *pending requirements*
+	- Quality of Life
+		- [ ] comprehend shader code
+		- [ ] parameterize number of edge vertices
+		- [ ] pathfinding display debugger is readded
+	- Debugging
+		- [ ] HexCurser has an error with HasError flag if it is spawned in A* range
 	- Other
 		- [ ] Trello
 		- [ ] multiplayer test project
