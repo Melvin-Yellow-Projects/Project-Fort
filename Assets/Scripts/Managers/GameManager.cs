@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetTimer()
     {
-        timeOfNextMove = Time.time + timeToMove;
+        timeOfNextMove += timeToMove;
     }
 
     #endregion
