@@ -2535,7 +2535,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: The "New Map" feature is not yet  playable. If you would
+          m_StringArgument: The "New Map" feature is not yet playable. If you would
             like to create a new map, please select the Map Editor.
           m_BoolArgument: 1
         m_CallState: 2
