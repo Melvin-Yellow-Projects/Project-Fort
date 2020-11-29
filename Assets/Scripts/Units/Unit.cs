@@ -146,9 +146,7 @@ public class Unit : MonoBehaviour
             }
         }
     }
-
-    public bool IsAttacking { get; private set; }
-
+    
     public int Team
     {
         get
@@ -229,7 +227,7 @@ public class Unit : MonoBehaviour
             cells.Add(Path[i]);
         }
 
-        Route(cells);
+        Route(cells); // HACK: path is referenced anyway in routue, why not just combine methods?
     }
 
     private void Route(List<HexCell> cells)
@@ -241,7 +239,7 @@ public class Unit : MonoBehaviour
         if (unit != null)
         {
             if (unit.team == team) return; // cannot move onto friendly cell
-            unit.GetComponent<Death>().Die();
+            unit.Die(isPlayingAnimation : true);
         }
 
         myCell.MyUnit = null;
@@ -371,12 +369,15 @@ public class Unit : MonoBehaviour
         transform.localPosition = myCell.Position;
     }
     
-    public void Die()
+    public void Die(bool isPlayingAnimation = false)
     {
         if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
 
         myCell.MyUnit = null;
-        Destroy(gameObject);
+        FindObjectOfType<HexGrid>().units.Remove(this); // HACK: this can definitely be better
+
+        if (isPlayingAnimation) GetComponent<Death>().Die();
+        else Destroy(gameObject);
     }
 
     /// <summary>

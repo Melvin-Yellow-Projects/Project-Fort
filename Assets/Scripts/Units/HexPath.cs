@@ -50,6 +50,8 @@ public class HexPath
         }
     }
 
+    public bool IsNextStepValid { get; set; } = false;
+
     public HexCell this[int i]
     {
         get

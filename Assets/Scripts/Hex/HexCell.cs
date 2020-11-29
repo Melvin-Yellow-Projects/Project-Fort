@@ -55,11 +55,13 @@ public class HexCell : MonoBehaviour
     /// <summary>
     /// a cell's terrain type; this variable also initializes the terrain type for the map
     /// </summary>
-    private int terrainTypeIndex;
+    int terrainTypeIndex;
 
     int visibility;
 
     bool explored;
+
+    List<Unit> myUnitQueue = new List<Unit>(); 
 
     #endregion
 
@@ -209,6 +211,14 @@ public class HexCell : MonoBehaviour
     /// </summary>
     public Unit MyUnit { get; set; }
 
+    public List<Unit> MyUnitQueue
+    {
+        get
+        {
+            return myUnitQueue;
+        }
+    }
+    
     /// <summary>
     /// TODO: comment ShaderData
     /// </summary>
@@ -457,6 +467,50 @@ public class HexCell : MonoBehaviour
         ShaderData.RefreshVisibility(this);
 
         RefreshPosition();
+    }
+
+    #endregion
+
+    #region Unit Functions
+    
+    public bool AddUnitToCell(Unit newUnit)
+    {
+        if (MyUnit.Team == newUnit.Team) return false;
+        
+        foreach (Unit unit in myUnitQueue)
+        {
+            if (unit.Team == newUnit.Team) return false;
+
+            //if (MyUnit.blocksthisunit(newUnit)) return false; // if unit is blocked by existing unit, reject
+
+        }
+
+        myUnitQueue.Add(newUnit);
+
+        // if unit is friendly, reject
+
+        // if unit is blocked by existing unit, reject
+
+        // if unit can fight another unit, combat
+
+        return true;
+    }
+
+    public void ClearUnitsFromCell()
+    {
+        if (myUnitQueue.Count > 0 && MyUnit)
+        {
+            MyUnit.Die(); // kill sedentary unit 
+            MyUnit = null;
+        }
+
+        foreach (Unit unit in myUnitQueue)
+        {
+            if (myUnitQueue.Count > 1) unit.Die();
+            else MyUnit = unit;
+        }
+
+        myUnitQueue.Clear();
     }
 
     #endregion
