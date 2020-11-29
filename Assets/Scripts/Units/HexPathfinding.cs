@@ -62,7 +62,7 @@ public class HexPathfinding : MonoBehaviour
 
 		if (!IsValidCellForSearch(unit, path.EndCell, cell, isUsingQueue: false)) return false;
 
-		if (!IsValidEdgeForSearch(unit, path.EndCell, cell)) return false;
+		if (!unit.IsValidEdgeForPath(path.EndCell, cell)) return false;
 
 		return true;
     }
@@ -118,7 +118,7 @@ public class HexPathfinding : MonoBehaviour
 				// check if the neighbors are valid cells to search
 				HexCell neighbor = current.GetNeighbor(d);
 				if (IsValidCellForSearch(unit, current, neighbor, isUsingQueue: true) &&
-                    IsValidEdgeForSearch(unit, current, neighbor))
+                    unit.IsValidEdgeForPath(current, neighbor))
 				{
 					// if they are valid, calculate distance and add them to the queue
 					int moveCost = GetMoveCostCalculation(current, neighbor);
@@ -183,26 +183,7 @@ public class HexPathfinding : MonoBehaviour
 		// invalid if neighbor is null or if the cell is already out of the queue
 		if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase)) return false;
 
-		// if a Unit exists on this cell
-		if (neighbor.Unit && neighbor.Unit.Team == unit.Team) return false; // TODO: check unit type
-
-		// invalid if cell is unexplored
-		if (!neighbor.IsExplored) return false;
-
-		// neighbor is a valid cell
-		return true;
-	}
-
-	private static bool IsValidEdgeForSearch(Unit unit, HexCell current, HexCell neighbor)
-	{
-		// invalid if there is a river inbetween
-		//if (current.GetEdgeType(neighbor) == river) return false;
-
-		// invalid if edge between cells is a cliff
-		if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
-
-		// neighbor is a valid cell
-		return true;
+        return unit.IsValidCellForPath(current, neighbor);
 	}
 
 	/// <summary>

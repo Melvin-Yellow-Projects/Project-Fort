@@ -222,7 +222,7 @@ public class HexMapEditor : MonoBehaviour
     void CreateUnit(bool team)
     {
         HexCell cell = hexGrid.GetCell();
-        if (cell && !cell.Unit) // if the cell exists and the cell does not have a unit...
+        if (cell && !cell.MyUnit) // if the cell exists and the cell does not have a unit...
         {
             Unit unit = Instantiate(Unit.prefab);
             unit.Team = (team) ? 0 : 1;
@@ -236,9 +236,9 @@ public class HexMapEditor : MonoBehaviour
     void DestroyUnit()
     {
         HexCell cell = hexGrid.GetCell();
-        if (cell && cell.Unit) // if the cell exists and the cell does have a unit...
+        if (cell && cell.MyUnit) // if the cell exists and the cell does have a unit...
         {
-            hexGrid.RemoveUnit(cell.Unit);
+            hexGrid.RemoveUnit(cell.MyUnit);
         }
     }
 

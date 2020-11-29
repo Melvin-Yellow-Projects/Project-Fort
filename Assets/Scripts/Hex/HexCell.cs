@@ -207,7 +207,7 @@ public class HexCell : MonoBehaviour
     /// <summary>
     /// TODO: comment Unit
     /// </summary>
-    public Unit Unit { get; set; }
+    public Unit MyUnit { get; set; }
 
     /// <summary>
     /// TODO: comment ShaderData
@@ -329,7 +329,7 @@ public class HexCell : MonoBehaviour
             }
 
             // refresh unit location
-            if (Unit) Unit.ValidateLocation();
+            if (MyUnit) MyUnit.ValidateLocation();
         }
     }
 

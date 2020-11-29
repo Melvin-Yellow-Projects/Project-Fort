@@ -76,12 +76,12 @@ public class Unit : MonoBehaviour
             if (myCell) 
             {
                 HexPathfinding.DecreaseVisibility(myCell, visionRange);
-                myCell.Unit = null;
+                myCell.MyUnit = null;
             }
 
             // update for new location
             myCell = value;
-            value.Unit = this; // sets this hex cell's unit to this one
+            value.MyUnit = this; // sets this hex cell's unit to this one
             HexPathfinding.IncreaseVisibility(value, visionRange);
             transform.localPosition = value.Position;
         }
@@ -237,16 +237,16 @@ public class Unit : MonoBehaviour
         if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
 
         // does new cell have a unit?
-        Unit unit = cells[cells.Count - 1].Unit;
+        Unit unit = cells[cells.Count - 1].MyUnit;
         if (unit != null)
         {
             if (unit.team == team) return; // cannot move onto friendly cell
             unit.GetComponent<Death>().Die();
         }
 
-        myCell.Unit = null;
+        myCell.MyUnit = null;
         myCell = cells[cells.Count - 1]; 
-        myCell.Unit = this;
+        myCell.MyUnit = this;
         StopAllCoroutines();
         StartCoroutine(Route(cells, false));
 
@@ -375,7 +375,7 @@ public class Unit : MonoBehaviour
     {
         if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
 
-        myCell.Unit = null;
+        myCell.MyUnit = null;
         Destroy(gameObject);
     }
 
@@ -399,6 +399,35 @@ public class Unit : MonoBehaviour
         if (header >= 4) unit.Team = reader.ReadByte();
 
         grid.AddUnit(unit, grid.GetCell(coordinates), orientation);
+    }
+
+    #endregion
+
+    /********** MARK: Pathing **********/
+    #region Pathing
+
+    public bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
+    {
+        // invalid if there is a river inbetween
+        //if (current.GetEdgeType(neighbor) == river) return false;
+
+        // invalid if edge between cells is a cliff
+        if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
+
+        // neighbor is a valid cell
+        return true;
+    }
+
+    public bool IsValidCellForPath(HexCell current, HexCell neighbor)
+    {
+        // if a Unit exists on this cell
+        if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
+
+        // invalid if cell is unexplored
+        if (!neighbor.IsExplored) return false;
+
+        // neighbor is a valid cell
+        return true;
     }
 
     #endregion

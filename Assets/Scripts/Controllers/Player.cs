@@ -117,7 +117,7 @@ public class Player : MonoBehaviour
         {
             if (selectedUnit) selectedUnit.IsSelected = false;
 
-            selectedUnit = currentCell.Unit;
+            selectedUnit = currentCell.MyUnit;
 
             if (selectedUnit)
             {
