@@ -16,12 +16,12 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public class DebugCurserController : MonoBehaviour
+public class DebugCursorController : MonoBehaviour
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
 
-    HexCurser currentCurser = null;
+    HexCursor currentCurser = null;
 
     Vector3 point;
 
@@ -52,7 +52,7 @@ public class DebugCurserController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             if (currentCurser) currentCurser.IsSelected = false;
-            currentCurser = HexCurser.Initialize(new Vector3(), point);
+            currentCurser = HexCursor.Initialize(new Vector3(), point);
         }
 
         // right click, add point

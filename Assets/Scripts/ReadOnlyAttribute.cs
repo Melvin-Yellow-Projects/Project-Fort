@@ -9,6 +9,7 @@
  * Additional Comments:
  *      UNDONE: force serialization with the ReadOnly PropertyAttribute
  *      UNDONE: add the ability to comment the variable
+ *      TODO: figure out how to put this script in the Editor folder
  **/
 
 using UnityEngine;

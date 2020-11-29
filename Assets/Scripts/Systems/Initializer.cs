@@ -22,9 +22,9 @@ public class Initializer : MonoBehaviour
     /********** MARK: Public Variables **********/
     #region Public Variables
 
-    [Header("HexCurser")]
-    [Tooltip("hex curser prefab reference")]
-    [SerializeField] HexCurser hexCurserPrefab = null;
+    [Header("HexCursor")]
+    [Tooltip("hex cursor prefab reference")]
+    [SerializeField] HexCursor hexCursorPrefab = null;
     [Tooltip("hex curser material reference")]
     [SerializeField] Material hexCurserMaterial = null;
 
@@ -34,7 +34,7 @@ public class Initializer : MonoBehaviour
 
     [Header("HexUnit")]
     [Tooltip("reference to the hex unit prefab")]
-    public HexUnit hexUnitPrefab;
+    public Unit unitPrefab;
 
     #endregion
 
@@ -47,14 +47,14 @@ public class Initializer : MonoBehaviour
     protected void Awake()
     {
         // HexCurser
-        if (hexCurserPrefab) HexCurser.prefab = hexCurserPrefab;
-        if (hexCurserMaterial) HexCurser.material = hexCurserMaterial;
+        if (hexCursorPrefab) HexCursor.prefab = hexCursorPrefab;
+        if (hexCurserMaterial) HexCursor.material = hexCurserMaterial;
 
         // HexMetrics
         if (noiseSource) HexMetrics.noiseSource = noiseSource;
 
-        // HexUnit
-        if (hexUnitPrefab) HexUnit.prefab = hexUnitPrefab;
+        // Unit
+        if (unitPrefab) Unit.prefab = unitPrefab;
     }
 
     /// <summary>
@@ -62,15 +62,15 @@ public class Initializer : MonoBehaviour
     /// </summary>
     protected void OnEnable()
     {
-        // HexCurser
-        if (hexCurserPrefab && !HexCurser.prefab) HexCurser.prefab = hexCurserPrefab;
-        if (hexCurserMaterial && !HexCurser.material) HexCurser.material = hexCurserMaterial;
+        // HexCursor
+        if (hexCursorPrefab && !HexCursor.prefab) HexCursor.prefab = hexCursorPrefab;
+        if (hexCurserMaterial && !HexCursor.material) HexCursor.material = hexCurserMaterial;
 
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
-        // HexUnit
-        if (hexUnitPrefab && !HexUnit.prefab) HexUnit.prefab = hexUnitPrefab;
+        // Unit
+        if (unitPrefab && !Unit.prefab) Unit.prefab = unitPrefab;
     }
 
     #endregion

@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         HexGrid grid = FindObjectOfType<HexGrid>();
         for(int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
         {
-            HexUnit unit = grid.units[i];
+            Unit unit = grid.units[i];
             unit.Move(1); // FIXME: correct number of steps
         }
 

@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: HexCurser.cs
+ * File Name: HexCursor.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -12,12 +12,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexCurser : MonoBehaviour
+public class HexCursor : MonoBehaviour
 {
     /********** MARK: Public Variables **********/
     #region Public Variables
 
-    public static HexCurser prefab = null;
+    public static HexCursor prefab = null;
 
     public static Material material = null;
 
@@ -135,11 +135,11 @@ public class HexCurser : MonoBehaviour
     /********** MARK: Initialization Functions **********/
     #region Initialization Functions
 
-    public static HexCurser Initialize(List<Vector3> points)
+    public static HexCursor Initialize(List<Vector3> points)
     {
         if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
 
-        HexCurser curser = Instantiate<HexCurser>(prefab);
+        HexCursor curser = Instantiate<HexCursor>(prefab);
 
         curser.bodyTransform = curser.transform.Find("Body");
 
@@ -153,11 +153,11 @@ public class HexCurser : MonoBehaviour
         return curser;
     }
 
-    public static HexCurser Initialize(Vector3 tail, Vector3 head)
+    public static HexCursor Initialize(Vector3 tail, Vector3 head)
     {
         if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
 
-        HexCurser curser = Instantiate<HexCurser>(prefab);
+        HexCursor curser = Instantiate<HexCursor>(prefab);
 
         curser.bodyTransform = curser.transform.Find("Body");
 

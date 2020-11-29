@@ -20,12 +20,12 @@ public class HexPath
     /********** MARK: Private Variables **********/
     #region Private Variables
 
-    HexUnit unit;
+    Unit unit;
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells = new List<HexCell>();
 
-    HexCurser curser;
+    HexCursor curser;
 
     int moveCost = 0;
 
@@ -89,7 +89,7 @@ public class HexPath
     /********** MARK: Constructors **********/
     #region Constructor
 
-    public HexPath(HexUnit unit)
+    public HexPath(Unit unit)
     {
         this.unit = unit;
     }
@@ -176,7 +176,7 @@ public class HexPath
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser == null) curser = HexCurser.Initialize(points);
+        if (curser == null) curser = HexCursor.Initialize(points);
         else curser.Redraw(points);
 
         curser.IsSelected = unit.IsSelected;

@@ -27,9 +27,8 @@ using UnityEngine;
 /// </summary>
 public static class Bezier
 {
-
-    /********** MARK: Variables **********/
-    #region Variables
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
     /// <summary>
     /// Gets a point on a quadratic Bézier curve; see link for more details

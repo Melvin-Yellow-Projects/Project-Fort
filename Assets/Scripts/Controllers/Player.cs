@@ -11,13 +11,14 @@
  *      Hex Map; this file has been updated it to better fit this project
  **/
 
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
 /// TODO: comment class
 /// </summary>
-public class HexGameUI : MonoBehaviour
+public class Player : MonoBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
@@ -25,15 +26,24 @@ public class HexGameUI : MonoBehaviour
     /* Cached References */
     [Header("Cached References")]
     [Tooltip("instance reference to the HexGrid in the scene")]
-    public HexGrid grid;
+    public HexGrid grid; // HACK: remove this variable from Player
 
     HexCell currentCell;
 
-    HexUnit selectedUnit;
+    Unit selectedUnit;
 
     HexDirection selectedDirection;
 
     bool hasCurrentCellUpdated = false;
+
+    List<Unit> myUnits = new List<Unit>();
+
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    public int Team { get; set; } = 0;
 
     #endregion
 
@@ -47,6 +57,15 @@ public class HexGameUI : MonoBehaviour
     {
         //terrainMaterial.DisableKeyword("GRID_ON");
         Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+
+        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Unit.OnUnitDepawned += HandleOnUnitDepawned;
+    }
+
+    private void OnDestroy()
+    {
+        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
     }
 
     protected void Update()
@@ -102,8 +121,15 @@ public class HexGameUI : MonoBehaviour
 
             if (selectedUnit)
             {
-                selectedUnit.Path.Clear();
-                selectedUnit.IsSelected = true;
+                if (selectedUnit.Team == Team)
+                {
+                    selectedUnit.Path.Clear();
+                    selectedUnit.IsSelected = true;
+                }
+                else
+                {
+                    selectedUnit = null;
+                }
             }
         }
     }
@@ -128,41 +154,18 @@ public class HexGameUI : MonoBehaviour
 
     #endregion
 
-    #region Debug Functions
+    /********** MARK: Class Handler Functions **********/
+    #region Class Functions
 
-    //void DoMove()
-    //{
-    //    if (selectedUnit.Path.HasPath)
-    //    {
-    //        selectedUnit.Move();
+    private void HandleOnUnitSpawned(Unit unit)
+    {
+        if (unit.Team == Team) myUnits.Add(unit);
+    }
 
-    //        Debug.Log(selectedDirection);
-    //    }
-    //    else
-    //    {
-    //        selectedUnit.LookAt(selectedDirection);
-    //    }
-    //}
-
-    //void DoPathfinding()
-    //{
-    //    HexCell cell = grid.GetCell();
-    //    if (!cell) return;
-
-    //    // get new path
-    //    if (cell != currentCell)
-    //    {
-    //        currentCell = cell;
-    //        if (selectedUnit.IsValidDestination(currentCell))
-    //        {
-    //            HexPath path = HexPathfinding.FindPath(selectedUnit.MyCell, currentCell, selectedUnit);
-    //            selectedUnit.Path = path;
-    //            if (selectedUnit.Path.HasPath) selectedUnit.Path.Show(selectedUnit.Speed);
-
-    //            //if (selectedUnit.HasPath) selectedUnit.Path.LogPath();
-    //        }
-    //    }
-    //}
+    private void HandleOnUnitDepawned(Unit unit)
+    {
+        myUnits.Remove(unit);
+    }
 
     #endregion
 }

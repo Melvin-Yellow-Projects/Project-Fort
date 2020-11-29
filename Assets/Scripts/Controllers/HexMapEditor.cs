@@ -224,7 +224,7 @@ public class HexMapEditor : MonoBehaviour
         HexCell cell = hexGrid.GetCell();
         if (cell && !cell.Unit) // if the cell exists and the cell does not have a unit...
         {
-            HexUnit unit = Instantiate(HexUnit.prefab);
+            Unit unit = Instantiate(Unit.prefab);
             unit.Team = (team) ? 0 : 1;
             hexGrid.AddUnit(unit, cell, Random.Range(0f, 360f));
         }

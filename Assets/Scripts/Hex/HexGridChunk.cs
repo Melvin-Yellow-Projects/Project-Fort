@@ -126,7 +126,7 @@ public class HexGridChunk : MonoBehaviour
         // gets the local position of the cell
         Vector3 center = cell.Position;
 
-        // gets the iterior hex cell's vertices for a direction (builds a triangle in a direction)
+        // gets the interior hex cell's vertices for a direction (builds a triangle in a direction)
         HexEdgeVertices e = new HexEdgeVertices(
             center + HexMetrics.GetFirstSolidCorner(direction),
             center + HexMetrics.GetSecondSolidCorner(direction)

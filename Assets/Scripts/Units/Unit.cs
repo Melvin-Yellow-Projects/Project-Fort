@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: HexUnit.cs
+ * File Name: Unit.cs
  * Description: Script for managing a hex unit
  * 
  * Authors: Catlike Coding, Will Lacey
@@ -15,11 +15,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 /// <summary>
 /// a unit that is able to interact with a hex map 
 /// </summary>
-public class HexUnit : MonoBehaviour
+public class Unit : MonoBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
@@ -30,7 +31,7 @@ public class HexUnit : MonoBehaviour
     const int visionRange = 3;
     const int movesPerStep = 1;
 
-    public static HexUnit prefab;
+    public static Unit prefab;
 
     HexCell myCell; 
     HexCell currentTravelCell; // HACK: i really don't like this name
@@ -40,6 +41,23 @@ public class HexUnit : MonoBehaviour
     bool isSelected = false;
 
     int team = 0;
+
+    #endregion
+
+    /********** MARK: Class Events **********/
+    #region Class Events
+
+    /// <summary>
+    /// Event for when a unit is spawned, called in the Start Method
+    /// </summary>
+    /// <subscriber name="HandleOnUnitSpawned">Player Class</subscriber>
+    public static event Action<Unit> OnUnitSpawned;
+
+    /// <summary>
+    /// Event for when a unit is despawned, called in the OnDestroy Method
+    /// </summary>
+    /// <subscriber name="HandleOnUnitDepawned">Player Class</subscriber>
+    public static event Action<Unit> OnUnitDepawned;
 
     #endregion
 
@@ -111,6 +129,8 @@ public class HexUnit : MonoBehaviour
 
     public HexPath Path { get; private set; }
 
+    //public bool HasRealPath { get; set; }
+
     public bool IsSelected
     {
         get
@@ -171,6 +191,16 @@ public class HexUnit : MonoBehaviour
         Path = new HexPath(this);
     }
 
+    private void Start()
+    {
+        OnUnitSpawned?.Invoke(this);
+    }
+
+    private void OnDestroy()
+    {
+        OnUnitDepawned?.Invoke(this);
+    }
+
     #endregion
 
     /********** MARK: Pathing Functions **********/
@@ -186,7 +216,7 @@ public class HexUnit : MonoBehaviour
 
     //    return isValid;
     //}
-    
+
     public void Move(int numberOfSteps)
     {
         if (!Path.HasPath) return; // TODO: maybe continue to change dir
@@ -207,7 +237,7 @@ public class HexUnit : MonoBehaviour
         if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
 
         // does new cell have a unit?
-        HexUnit unit = cells[cells.Count - 1].Unit;
+        Unit unit = cells[cells.Count - 1].Unit;
         if (unit != null)
         {
             if (unit.team == team) return; // cannot move onto friendly cell
@@ -349,6 +379,10 @@ public class HexUnit : MonoBehaviour
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="writer"></param>
     public void Save(BinaryWriter writer)
     {
         myCell.coordinates.Save(writer);
@@ -361,7 +395,7 @@ public class HexUnit : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        HexUnit unit = Instantiate(prefab);
+        Unit unit = Instantiate(prefab);
         if (header >= 4) unit.Team = reader.ReadByte();
 
         grid.AddUnit(unit, grid.GetCell(coordinates), orientation);

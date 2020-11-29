@@ -46,7 +46,7 @@ public class HexGrid : MonoBehaviour
     public int cellCountZ = 15;
 
     /* Variables */
-    public List<HexUnit> units = new List<HexUnit>(); // hACK: should not be public 
+    public List<Unit> units = new List<Unit>(); // hACK: should not be public 
 
     #endregion
 
@@ -351,7 +351,7 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    public void AddUnit(HexUnit unit, HexCell location, float orientation)
+    public void AddUnit(Unit unit, HexCell location, float orientation)
     {
         units.Add(unit);
         unit.transform.SetParent(transform, false); // HACK: parent the unit to the hex grid... hmm
@@ -359,7 +359,7 @@ public class HexGrid : MonoBehaviour
         unit.Orientation = orientation;
     }
 
-    public void RemoveUnit(HexUnit unit)
+    public void RemoveUnit(Unit unit)
     {
         units.Remove(unit);
         unit.Die();
@@ -393,7 +393,7 @@ public class HexGrid : MonoBehaviour
 
         for (int i = 0; i < units.Count; i++)
         {
-            HexUnit unit = units[i];
+            Unit unit = units[i];
             HexPathfinding.IncreaseVisibility(unit.MyCell, unit.VisionRange);
         }
     }
@@ -458,7 +458,7 @@ public class HexGrid : MonoBehaviour
             int unitCount = reader.ReadInt32();
             for (int i = 0; i < unitCount; i++)
             {
-                HexUnit.Load(reader, header, this);
+                Unit.Load(reader, header, this);
             }
         }
 

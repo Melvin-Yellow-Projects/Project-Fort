@@ -207,7 +207,7 @@ public class HexCell : MonoBehaviour
     /// <summary>
     /// TODO: comment Unit
     /// </summary>
-    public HexUnit Unit { get; set; }
+    public Unit Unit { get; set; }
 
     /// <summary>
     /// TODO: comment ShaderData
