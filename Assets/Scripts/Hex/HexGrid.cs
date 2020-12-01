@@ -53,6 +53,8 @@ public class HexGrid : MonoBehaviour
     /********** MARK: Private Variables **********/
     #region Private Variables
 
+    public static HexGrid singleton = null;
+
     /// <summary>
     /// number of chunk columns
     /// </summary>
@@ -71,12 +73,22 @@ public class HexGrid : MonoBehaviour
 
     #endregion
 
+    /********** MARK: Public Properties **********/
+    #region Public Properties
+
+    public static HexGrid Singleton
+    {
+        get
+        {
+            return singleton;
+        }
+    }
+
+    #endregion
+
     /********** MARK: Unity Functions **********/
     #region Unity Functions
-
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
+        
     protected void Awake()
     {
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
@@ -84,6 +96,8 @@ public class HexGrid : MonoBehaviour
         cellShaderData.Grid = this;
 
         CreateMap(cellCountX, cellCountZ);
+
+        singleton = this;
     }
 
     /// <summary>
@@ -93,6 +107,13 @@ public class HexGrid : MonoBehaviour
     {
         //HexMetrics.InitializeHashGrid(seed);
         ResetVisibility();
+
+        singleton = this;
+    }
+
+    protected void OnDestroy()
+    {
+        singleton = null;
     }
 
     #endregion

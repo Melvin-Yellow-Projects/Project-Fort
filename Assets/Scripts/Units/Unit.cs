@@ -203,31 +203,25 @@ public class Unit : MonoBehaviour
 
     /********** MARK: Pathing Functions **********/
     #region Pathing Functions
+        
+    public void PrepareNextMove()
+    {
 
-    //public bool IsValidDestination(HexCell cell)
-    //{
-    //    bool isValid = true;
+    }
 
-    //    isValid &= !cell.Unit; // cell does not already have a unit
-
-    //    //isValid &= !cell.IsUnderwater; // cell is not underwater
-
-    //    return isValid;
-    //}
-
-    public void Move(int numberOfSteps)
+    public void ExecuteNextMove()
     {
         if (!Path.HasPath) return; // TODO: maybe continue to change dir
 
         List<HexCell> cells = new List<HexCell>();
 
         cells.Add(Path[0]);
-        for (int i = 1; i < Path.Length && i <= numberOfSteps; i++)
+        for (int i = 1; i < Path.Length; i++)
         {
             cells.Add(Path[i]);
         }
 
-        Route(cells); // HACK: path is referenced anyway in routue, why not just combine methods?
+        Route(cells); // HACK: path is referenced anyway en route, why not just combine methods?
     }
 
     private void Route(List<HexCell> cells)
@@ -374,7 +368,7 @@ public class Unit : MonoBehaviour
         if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
 
         myCell.MyUnit = null;
-        FindObjectOfType<HexGrid>().units.Remove(this); // HACK: this can definitely be better
+        HexGrid.Singleton.units.Remove(this); // HACK: this can definitely be better
 
         if (isPlayingAnimation) GetComponent<Death>().Die();
         else Destroy(gameObject);
@@ -426,6 +420,8 @@ public class Unit : MonoBehaviour
 
         // invalid if cell is unexplored
         if (!neighbor.IsExplored) return false;
+
+        //isValid &= !cell.IsUnderwater; // cell is not underwater
 
         // neighbor is a valid cell
         return true;

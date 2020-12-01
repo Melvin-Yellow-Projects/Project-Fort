@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
     {
         if (Time.time > timeOfNextMove)
         {
-            ExecuteMoves(isResettingTimer:true);
+            MoveUnits(isResettingTimer:true);
         }
 
         // HACK: 0000 pads the buffer for the first few frames
@@ -58,16 +58,21 @@ public class GameManager : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void ExecuteMoves(bool isResettingTimer)
+    public void MoveUnits(bool isResettingTimer)
     {
-        // each player submits their moves
-        //  
+        HexGrid grid = HexGrid.Singleton;
 
-        HexGrid grid = FindObjectOfType<HexGrid>();
-        for(int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
+        // each player submits their moves
+        for (int i = 0; i < grid.units.Count; i++)
         {
             Unit unit = grid.units[i];
-            unit.Move(1); // FIXME: correct number of steps
+            unit.PrepareNextMove();
+        }
+
+        for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
+        {
+            Unit unit = grid.units[i];
+            unit.ExecuteNextMove(); // FIXME: correct number of steps
         }
 
         if (isResettingTimer) ResetTimer();
