@@ -104,7 +104,7 @@ List of objectives to complete
 			- [ ] list of base/forts
 		- combat
 			- [x] moving pieces kill enemies
-			- [ ] multiple moving pieces trade eachother off
+			- [x] multiple moving pieces trade eachother off
 		- different game modes and solid game manager
 			- [x] turn clock/timer
 			- [x] simultaneous turns

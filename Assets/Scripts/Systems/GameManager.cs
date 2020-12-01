@@ -71,29 +71,42 @@ public class GameManager : MonoBehaviour
 
     public void MoveUnits(bool isResettingTimer)
     {
-        HexGrid grid = HexGrid.Singleton;
-
-        // each player submits their moves
-        for (int i = 0; i < grid.units.Count; i++)
-        {
-            Unit unit = grid.units[i];
-            unit.PrepareNextMove();
-        }
-
-        OnUnitCombat?.Invoke();
-
-        for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
-        {
-            Unit unit = grid.units[i];
-            unit.ExecuteNextMove(); // FIXME: correct number of steps
-        }
+        StartCoroutine(MoveUnits(8));
 
         if (isResettingTimer) ResetTimer();
     }
 
+    private IEnumerator MoveUnits(int numberOfSteps)
+    {
+        HexGrid grid = HexGrid.Singleton;
+
+        for (int stepCount = 0; stepCount < numberOfSteps; stepCount++)
+        {
+
+            // each player submits their moves
+            for (int i = 0; i < grid.units.Count; i++)
+            {
+                Unit unit = grid.units[i];
+                unit.PrepareNextMove();
+            }
+
+            OnUnitCombat?.Invoke();
+
+            for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
+            {
+                Unit unit = grid.units[i];
+                unit.ExecuteNextMove(); // FIXME: correct number of steps
+            }
+
+            yield return new WaitForSeconds(0.8f); // HACK: hardcoded
+
+        }
+    }
+
     private void ResetTimer()
     {
-        timeOfNextMove += timeToMove;
+        //timeOfNextMove += timeToMove;
+        timeOfNextMove = timeToMove + Time.time;
     }
 
     #endregion

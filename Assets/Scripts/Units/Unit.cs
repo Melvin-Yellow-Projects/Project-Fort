@@ -129,8 +129,6 @@ public class Unit : MonoBehaviour
 
     public HexPath Path { get; private set; }
 
-    //public bool HasRealPath { get; set; }
-
     public bool IsSelected
     {
         get
@@ -161,6 +159,8 @@ public class Unit : MonoBehaviour
             else GetComponentInChildren<Renderer>().material.color = Color.red;
         }
     }
+
+    public bool HasMove { get; set; }
 
     #endregion
 
@@ -274,6 +274,7 @@ public class Unit : MonoBehaviour
         StartCoroutine(Route(cells));
 
         // remove path cells
+        myCell.MyUnit = null;
         myCell = Path[1];
         Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
 
