@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
     {
         if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
         {
-            hasCurrentCellUpdated = UpdateCurrentCell();
+            UpdateCurrentCell();
 
             if (Input.GetMouseButtonDown(0)) // HACK: hardcoded input / left click
             {
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    bool UpdateCurrentCell()
+    void UpdateCurrentCell()
     {
         HexCell cell = grid.GetCell();
         if (cell != currentCell)
@@ -106,9 +106,12 @@ public class Player : MonoBehaviour
             if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
 
             currentCell = cell;
-            return true; // whether or not current cell has updated
+            hasCurrentCellUpdated = true; // whether or not current cell has updated
         }
-        return false;
+        else
+        {
+            hasCurrentCellUpdated = false;
+        }
     }
 
     void DoSelection()
@@ -136,7 +139,7 @@ public class Player : MonoBehaviour
 
     void DoPathfinding()
     {
-        if (!hasCurrentCellUpdated && currentCell != null) return;
+        if (!hasCurrentCellUpdated || currentCell == null) return;
 
         if (Input.GetKey("left shift"))
         {
@@ -146,6 +149,7 @@ public class Player : MonoBehaviour
         else
         {
             // can't backtrack
+            Debug.Log("currentCell:" + currentCell.name);
             selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: false);
         }
 

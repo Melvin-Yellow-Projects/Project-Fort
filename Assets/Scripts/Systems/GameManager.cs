@@ -11,7 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System;
 using TMPro;
 
 /// <summary>
@@ -27,6 +27,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] float timeToMove = 10f;
 
     private float timeOfNextMove = 0f;
+
+    #endregion
+
+    /********** MARK: Class Events **********/
+    #region Class Events
+
+    /// <summary>
+    /// Event for executing unit combat
+    /// </summary>
+    /// <subscriber name="HandleOnUnitCombat">HexCell Class, subs when unit enters cell</subscriber>
+    public static event Action OnUnitCombat;
 
     #endregion
 
@@ -68,6 +79,8 @@ public class GameManager : MonoBehaviour
             Unit unit = grid.units[i];
             unit.PrepareNextMove();
         }
+
+        OnUnitCombat?.Invoke();
 
         for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
         {

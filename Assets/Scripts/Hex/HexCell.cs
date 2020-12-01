@@ -471,15 +471,16 @@ public class HexCell : MonoBehaviour
 
     #endregion
 
+    /********** MARK: Unit Functions **********/
     #region Unit Functions
-    
-    public bool AddUnitToCell(Unit newUnit)
+
+    public void AddUnitToCell(Unit newUnit)
     {
-        if (MyUnit.Team == newUnit.Team) return false;
+        if (MyUnit && MyUnit.Team == newUnit.Team) return; // if there's a friendly unit already there
         
         foreach (Unit unit in myUnitQueue)
         {
-            if (unit.Team == newUnit.Team) return false;
+            if (unit.Team == newUnit.Team) return; // if there's a friendly unit arriving 
 
             //if (MyUnit.blocksthisunit(newUnit)) return false; // if unit is blocked by existing unit, reject
 
@@ -487,30 +488,33 @@ public class HexCell : MonoBehaviour
 
         myUnitQueue.Add(newUnit);
 
-        // if unit is friendly, reject
+        newUnit.Path.IsNextStepValid = true;
 
-        // if unit is blocked by existing unit, reject
-
-        // if unit can fight another unit, combat
-
-        return true;
+        if (myUnitQueue.Count == 1) GameManager.OnUnitCombat += HandleStartUnitCombat;
     }
 
-    public void ClearUnitsFromCell()
+    #endregion
+
+    /********** MARK: Class Handler Functions **********/
+    #region Class Functions
+
+    private void HandleStartUnitCombat()
     {
-        if (myUnitQueue.Count > 0 && MyUnit)
+        if (MyUnit)
         {
-            MyUnit.Die(); // kill sedentary unit 
+            MyUnit.Die(isPlayingAnimation: true); // kill sedentary unit 
             MyUnit = null;
         }
 
         foreach (Unit unit in myUnitQueue)
         {
-            if (myUnitQueue.Count > 1) unit.Die();
+            if (myUnitQueue.Count > 1) unit.Die(isPlayingAnimation: true);
             else MyUnit = unit;
         }
 
         myUnitQueue.Clear();
+
+        GameManager.OnUnitCombat -= HandleStartUnitCombat;
     }
 
     #endregion

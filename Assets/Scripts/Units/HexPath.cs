@@ -52,6 +52,30 @@ public class HexPath
 
     public bool IsNextStepValid { get; set; } = false;
 
+    public List<HexCell> Cells // HACK: this could be simplified with the variable cells
+    {
+        get
+        {
+            return cells;
+        }
+    }
+
+    public HexCell StartCell
+    {
+        get
+        {
+            return unit.MyCell;
+        }
+    }
+
+    public HexCell EndCell
+    {
+        get
+        {
+            return cells[cells.Count - 1];
+        }
+    }
+
     public HexCell this[int i]
     {
         get
@@ -61,28 +85,6 @@ public class HexPath
         set
         {
             cells[i] = value;
-        }
-    }
-
-    #endregion
-
-    /********** MARK: Private Properties **********/
-    #region Private Properties
-
-    private HexCell StartCell
-    {
-        get
-        {
-            return unit.MyCell;
-        }
-    }
-
-    // HACK: this is a temp fix on behalf of pathfinding
-    public HexCell EndCell
-    {
-        get
-        {
-            return cells[cells.Count - 1];
         }
     }
 

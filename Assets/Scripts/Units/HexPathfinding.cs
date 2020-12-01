@@ -70,8 +70,9 @@ public class HexPathfinding : MonoBehaviour
     // TODO: comment FindPath
     public static List<HexCell> FindPath(Unit unit, HexCell startCell, HexCell endCell)
     {
-        startCell.PathFrom = null; 
-        return Search(unit, startCell, endCell);
+        startCell.PathFrom = null;
+
+		return Search(unit, startCell, endCell);
     }
 
 	/// <summary>

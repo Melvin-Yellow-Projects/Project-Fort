@@ -62,10 +62,10 @@ List of objectives to complete
 	- Game Design
 		- [x] rotation as movement cost
 	- Gameplay
-		- hex curser
+		- hex cursor
 			- [x] arrow points from a start to an end point
 			- [x] can gray out if not selected
-			- [x] multiple cursers can exist simultaneously
+			- [x] multiple cursors can exist simultaneously
 		- new pathfinding
 			- [x] get relative bridge direction from a point within a cell
 			- [x] rotation now is added to the movement cost
@@ -75,7 +75,7 @@ List of objectives to complete
 
 - **Week 4 (November 9, 2020): Version 1.0 Functionality**
 	- Game Design
-		- [x] hex curser inputs
+		- [x] hex cursor inputs
 		- [ ] turns and rounds
 		- [ ] what unit mechanics are essential to implement?
 	- Gameplay
@@ -84,7 +84,7 @@ List of objectives to complete
 			- [x] if manual path is too large, A* is used
 			- [x] shift allows a unit to retrace cells; otherwise, retracing starts A*
 			- [x] unit must remember path until it is allowed to forget 
-			- [x] curser indicates if there is an error or if it is selected
+			- [x] cursor indicates if there is an error or if it is selected
 			- [x] pieces cannot travel through eachother
 		- [x] moves are stored by units until a button is pressed
 		- [x] ally collisions causes a random piece to wait
@@ -95,10 +95,10 @@ List of objectives to complete
 			- [x] popup menu
 			- [x] start scene passes map data to game scene
 		- player GameObject
-			- [ ] refactor HexGameUI script into player
+			- [x] refactor HexGameUI script into player
 			- [ ] left click for selection, right click for execution
-			- [ ] has a list of owned units
-			- [ ] cannot use enemy units
+			- [x] has a list of owned units
+			- [x] cannot use enemy units
 			- [ ] cannot see enemy units and their field of view
 			- [ ] team data, color data 
 			- [ ] list of base/forts
@@ -112,9 +112,9 @@ List of objectives to complete
 			- [ ] turn-based
 			- [ ] hot seat
 			- [ ] game mode class?
-			- [ ] steps, moves, rounds, wave
+			- [ ] steps, moves, rounds, wave/turn/epoch
 		- unit variety
-			- [ ] refactor cell, edge, attack validation functions into unit class
+			- [x] refactor cell, edge, attack validation functions into unit class
 			- [ ] pikeman
 			- [ ] knight
 			- [ ] pirate
@@ -136,7 +136,7 @@ List of objectives to complete
 	- Other
 		- [ ] resume 1 second a day videos
 
-- **Week 5 (November 16, 2020): Version 1.0 Multiplayer and Build**
+- **Week 5 (November 30, 2020): Version 1.0 Multiplayer and Build**
 	- Gameplay
 		- [ ] server client relationship
 		- [ ] some built in maps or simply be able to transfer map over client
@@ -164,7 +164,7 @@ List of objectives to complete
 ### Future Dates & Features
 List of future objectives to complete
 
-- **Week 6 (November 23, 2020): xxx**
+- **Week 6 (December 7, 2020): xxx**
 	- *add next set of deliverables*
 
 - **Features**
@@ -174,9 +174,8 @@ List of future objectives to complete
 		- [ ] Spine weights
 		- [ ] Spine UI assets
 		- [ ] Shaders & Materials II
-		- [ ] Mirror Multiplayer
-		- [ ] fire flies
-		- [ ] campfire scene
+		- [ ] fire flies particle effect
+		- [ ] campfire asset/scene
 		- [ ] fountain asset
 		- [ ] finish lima with multiplayer
 	- Game Design
@@ -192,9 +191,9 @@ List of future objectives to complete
 		- [ ] mousing over cell edge can change a unit's direction in A* mode
 	- Graphics
 		- [ ] ability descriptions (like a modal view descriptor seen for card games)
-		- hex curser details
+		- hex cursor details
 			- [ ] can gray out a section of the path
-			- [ ] supports overlapping, curser can go backwards ontop of itself cohesively
+			- [ ] supports overlapping, cursor can go backwards ontop of itself cohesively
 			- [ ] Bézier implementation
 			- [ ] animation
 		- basic piece combat
@@ -208,10 +207,9 @@ List of future objectives to complete
 		- [ ] parameterize number of edge vertices
 		- [ ] pathfinding display debugger is readded
 	- Debugging
-		- [ ] HexCurser has an error with HasError flag if it is spawned in A* range
+		- [ ] HexCursor has an error with HasError flag if it is spawned in A* range
 	- Other
 		- [ ] Trello
-		- [ ] multiplayer test project
 		- [ ] Reddit Page
 		- [ ] Instagram
 		- [ ] Twitter

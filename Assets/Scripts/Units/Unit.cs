@@ -201,54 +201,84 @@ public class Unit : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Pathing Functions **********/
-    #region Pathing Functions
+    /********** MARK: Class Functions **********/
+    #region Class Functions
         
+    public void ValidateLocation()
+    {
+        transform.localPosition = myCell.Position;
+    }
+    
+    public void Die(bool isPlayingAnimation = false)
+    {
+        if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
+
+        myCell.MyUnit = null;
+        HexGrid.Singleton.units.Remove(this); // HACK: this can definitely be better
+
+        Path.Clear();
+
+        if (isPlayingAnimation) GetComponent<Death>().Die();
+        else Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="writer"></param>
+    public void Save(BinaryWriter writer)
+    {
+        myCell.coordinates.Save(writer);
+        writer.Write(orientation);
+        writer.Write((byte)team);
+    }
+
+    public static void Load(BinaryReader reader, int header, HexGrid grid)
+    {
+        HexCoordinates coordinates = HexCoordinates.Load(reader);
+        float orientation = reader.ReadSingle();
+
+        Unit unit = Instantiate(prefab);
+        if (header >= 4) unit.Team = reader.ReadByte();
+
+        grid.AddUnit(unit, grid.GetCell(coordinates), orientation);
+    }
+
+    #endregion
+
+    /********** MARK: Pathing **********/
+    #region Pathing
+
     public void PrepareNextMove()
     {
+        if (!Path.HasPath) return; // TODO: maybe continue to change dir
 
+        Path.IsNextStepValid = false;
+
+        // add unit to the next cell's unit queue
+        Path[1].AddUnitToCell(this);
     }
 
     public void ExecuteNextMove()
     {
-        if (!Path.HasPath) return; // TODO: maybe continue to change dir
+        if (!Path.HasPath || !Path.IsNextStepValid) return; // TODO: maybe continue to change dir
 
         List<HexCell> cells = new List<HexCell>();
 
         cells.Add(Path[0]);
-        for (int i = 1; i < Path.Length; i++)
-        {
-            cells.Add(Path[i]);
-        }
+        cells.Add(Path[1]);
 
-        Route(cells); // HACK: path is referenced anyway en route, why not just combine methods?
-    }
-
-    private void Route(List<HexCell> cells)
-    {
         if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
 
-        // does new cell have a unit?
-        Unit unit = cells[cells.Count - 1].MyUnit;
-        if (unit != null)
-        {
-            if (unit.team == team) return; // cannot move onto friendly cell
-            unit.Die(isPlayingAnimation : true);
-        }
-
-        myCell.MyUnit = null;
-        myCell = cells[cells.Count - 1]; 
-        myCell.MyUnit = this;
         StopAllCoroutines();
-        StartCoroutine(Route(cells, false));
+        StartCoroutine(Route(cells));
 
         // remove path cells
+        myCell = Path[1];
         Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
 
         // redraw path curser
         Path.Show();
-
-        // TODO: clear path after travel
     }
 
     /// <summary>
@@ -256,7 +286,7 @@ public class Unit : MonoBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
-    private IEnumerator Route(List<HexCell> cells, bool dummy)
+    private IEnumerator Route(List<HexCell> cells)
     {
         Vector3 a, b, c = cells[0].Position;
 
@@ -352,54 +382,6 @@ public class Unit : MonoBehaviour
         orientation = transform.localRotation.eulerAngles.y;
 
     }
-
-    #endregion
-
-    /********** MARK: Class Functions **********/
-    #region Class Functions
-        
-    public void ValidateLocation()
-    {
-        transform.localPosition = myCell.Position;
-    }
-    
-    public void Die(bool isPlayingAnimation = false)
-    {
-        if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
-
-        myCell.MyUnit = null;
-        HexGrid.Singleton.units.Remove(this); // HACK: this can definitely be better
-
-        if (isPlayingAnimation) GetComponent<Death>().Die();
-        else Destroy(gameObject);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="writer"></param>
-    public void Save(BinaryWriter writer)
-    {
-        myCell.coordinates.Save(writer);
-        writer.Write(orientation);
-        writer.Write((byte)team);
-    }
-
-    public static void Load(BinaryReader reader, int header, HexGrid grid)
-    {
-        HexCoordinates coordinates = HexCoordinates.Load(reader);
-        float orientation = reader.ReadSingle();
-
-        Unit unit = Instantiate(prefab);
-        if (header >= 4) unit.Team = reader.ReadByte();
-
-        grid.AddUnit(unit, grid.GetCell(coordinates), orientation);
-    }
-
-    #endregion
-
-    /********** MARK: Pathing **********/
-    #region Pathing
 
     public bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
     {
