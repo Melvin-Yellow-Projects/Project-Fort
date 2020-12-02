@@ -57,11 +57,13 @@ public class GameManager : MonoBehaviour
     {
         if (Time.time > timeOfNextMove)
         {
-            MoveUnits(isResettingTimer:true);
+            //MoveUnits(isResettingTimer:true);
+            MoveUnits();
+            enabled = false;
         }
 
         // HACK: 0000 pads the buffer for the first few frames
-        moveTimerText.text = $"{timeOfNextMove - Time.time}0000".Substring(0, 3);
+        moveTimerText.text = $"{Math.Max(timeOfNextMove - Time.time, 0)}0000".Substring(0, 3);
     }
 
     #endregion
@@ -69,11 +71,10 @@ public class GameManager : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void MoveUnits(bool isResettingTimer)
+    public void MoveUnits()
     {
+        StopAllCoroutines();
         StartCoroutine(MoveUnits(8));
-
-        if (isResettingTimer) ResetTimer();
     }
 
     private IEnumerator MoveUnits(int numberOfSteps)
@@ -101,12 +102,15 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.4f); // HACK: hardcoded
 
         }
+
+        ResetTimer();
     }
 
     private void ResetTimer()
     {
         //timeOfNextMove += timeToMove;
         timeOfNextMove = timeToMove + Time.time;
+        enabled = true;
     }
 
     #endregion

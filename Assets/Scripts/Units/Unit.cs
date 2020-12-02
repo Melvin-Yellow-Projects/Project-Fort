@@ -115,7 +115,7 @@ public class Unit : MonoBehaviour
     {
         get
         {
-            return (int)travelSpeed;
+            return (int) 8; // HACK: hardcoded
         }
     }
 
@@ -155,8 +155,13 @@ public class Unit : MonoBehaviour
         set
         {
             team = value;
-            if (team == 0) GetComponentInChildren<Renderer>().material.color = Color.blue;
-            else GetComponentInChildren<Renderer>().material.color = Color.red;
+
+            Color color = (team == 0) ? Color.blue : Color.red;
+
+            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+            {
+                renderer.material.color = color;
+            }
         }
     }
 

@@ -96,9 +96,9 @@ List of objectives to complete
 			- [x] start scene passes map data to game scene
 		- player GameObject
 			- [x] refactor HexGameUI script into player
-			- [ ] left click for selection, right click for execution
 			- [x] has a list of owned units
 			- [x] cannot use enemy units
+			- [ ] left click for selection, right click for execution
 			- [ ] cannot see enemy units and their field of view
 			- [ ] team data, color data 
 			- [ ] list of base/forts
@@ -146,7 +146,7 @@ List of objectives to complete
 		- [ ] rivers edges
 		- [ ] Day / Night Cycle
 	- Graphics
-		- [ ] piece model updates
+		- [x] piece model updates
 		- [ ] can pick up an invisible instance of the piece when creating a path
 		- [ ] water graphics
 		- [ ] sun/moon counter

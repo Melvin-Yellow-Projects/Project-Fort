@@ -1165,7 +1165,7 @@ MonoBehaviour:
       - m_Target: {fileID: 897981685}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: MoveUnits
-        m_Mode: 6
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
