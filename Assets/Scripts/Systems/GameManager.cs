@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
                 unit.ExecuteNextMove(); // FIXME: correct number of steps
             }
 
-            yield return new WaitForSeconds(0.8f); // HACK: hardcoded
+            yield return new WaitForSeconds(0.4f); // HACK: hardcoded
 
         }
     }

@@ -26,8 +26,8 @@ public class Unit : MonoBehaviour
     #region Variables
 
     // HACK: this needs to be configurable
-    const float travelSpeed = 4f; 
-    const float rotationSpeed = 180f;
+    const float travelSpeed = 8f; 
+    const float rotationSpeed = 360f;
     const int visionRange = 3;
     const int movesPerStep = 1;
 
