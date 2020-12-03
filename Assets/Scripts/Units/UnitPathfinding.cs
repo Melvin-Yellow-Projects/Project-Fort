@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: HexPathfinding.cs
+ * File Name: UnitPathfinding.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -9,13 +9,15 @@
  *      This file is an extension of HexGrid.cs. The original version of this file can be found 
  *      here: https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial 
  *      series: Hex Map; this file has been updated it to better fit this project
+ *      
+ *      Previously known as HexPathfinding.cs
  **/
- 
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexPathfinding : MonoBehaviour
+public class UnitPathfinding : MonoBehaviour
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
@@ -23,7 +25,7 @@ public class HexPathfinding : MonoBehaviour
     /// <summary>
     /// singleton instance of this class
     /// </summary>
-    static HexPathfinding instance;
+    static UnitPathfinding instance;
 
     /// <summary>
     /// priority queue data structure
@@ -47,7 +49,7 @@ public class HexPathfinding : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        HexPathfinding.SayHi();
+        UnitPathfinding.SayHi();
     }
 
     #endregion
@@ -57,7 +59,7 @@ public class HexPathfinding : MonoBehaviour
 
     public static bool CanAddCellToPath(Unit unit, HexCell cell)
     {
-		HexPath path = unit.Path;
+		UnitPath path = unit.Path;
 		if (!path.EndCell.IsNeighbor(cell)) return false;
 
 		if (!IsValidCellForSearch(unit, path.EndCell, cell, isUsingQueue: false)) return false;

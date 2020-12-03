@@ -75,14 +75,14 @@ public class Unit : MonoBehaviour
             // if there is a previous cell...
             if (myCell) 
             {
-                HexPathfinding.DecreaseVisibility(myCell, visionRange);
+                UnitPathfinding.DecreaseVisibility(myCell, visionRange);
                 myCell.MyUnit = null;
             }
 
             // update for new location
             myCell = value;
             value.MyUnit = this; // sets this hex cell's unit to this one
-            HexPathfinding.IncreaseVisibility(value, visionRange);
+            UnitPathfinding.IncreaseVisibility(value, visionRange);
             transform.localPosition = value.Position;
         }
     }
@@ -127,7 +127,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public HexPath Path { get; private set; }
+    public UnitPath Path { get; private set; }
 
     public bool IsSelected
     {
@@ -182,8 +182,8 @@ public class Unit : MonoBehaviour
             transform.localPosition = myCell.Position;
             if (currentTravelCell)
             {
-                HexPathfinding.IncreaseVisibility(myCell, visionRange);
-                HexPathfinding.DecreaseVisibility(currentTravelCell, visionRange);
+                UnitPathfinding.IncreaseVisibility(myCell, visionRange);
+                UnitPathfinding.DecreaseVisibility(currentTravelCell, visionRange);
                 currentTravelCell = null;
             }
         }
@@ -191,7 +191,7 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-        Path = new HexPath(this);
+        Path = new UnitPath(this);
     }
 
     private void Start()
@@ -216,7 +216,7 @@ public class Unit : MonoBehaviour
     
     public void Die(bool isPlayingAnimation = false)
     {
-        if (myCell) HexPathfinding.DecreaseVisibility(myCell, visionRange);
+        if (myCell) UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
         myCell.MyUnit = null;
         HexGrid.Singleton.units.Remove(this); // HACK: this can definitely be better
@@ -302,7 +302,7 @@ public class Unit : MonoBehaviour
         yield return LookAt(cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
-        HexPathfinding.DecreaseVisibility(
+        UnitPathfinding.DecreaseVisibility(
             currentTravelCell ? currentTravelCell : cells[0],
             visionRange
         );
@@ -316,7 +316,7 @@ public class Unit : MonoBehaviour
             b = cells[i - 1].Position;
             c = (b + currentTravelCell.Position) * 0.5f;
 
-            HexPathfinding.IncreaseVisibility(cells[i], visionRange);
+            UnitPathfinding.IncreaseVisibility(cells[i], visionRange);
 
             for (; t < 1f; t += Time.deltaTime * travelSpeed)
             {
@@ -327,7 +327,7 @@ public class Unit : MonoBehaviour
                 yield return null;
             }
 
-            HexPathfinding.DecreaseVisibility(cells[i], visionRange);
+            UnitPathfinding.DecreaseVisibility(cells[i], visionRange);
 
             t -= 1f;
         }
@@ -338,7 +338,7 @@ public class Unit : MonoBehaviour
         b = myCell.Position; // We can simply use the destination here.
         c = b;
 
-        HexPathfinding.IncreaseVisibility(myCell, visionRange);
+        UnitPathfinding.IncreaseVisibility(myCell, visionRange);
 
         for (; t < 1f; t += Time.deltaTime * travelSpeed)
         {

@@ -24,7 +24,7 @@ public class Initializer : MonoBehaviour
 
     [Header("HexCursor")]
     [Tooltip("hex cursor prefab reference")]
-    [SerializeField] HexCursor hexCursorPrefab = null;
+    [SerializeField] UnitCursor hexCursorPrefab = null;
     [Tooltip("hex curser material reference")]
     [SerializeField] Material hexCurserMaterial = null;
 
@@ -47,8 +47,8 @@ public class Initializer : MonoBehaviour
     protected void Awake()
     {
         // HexCurser
-        if (hexCursorPrefab) HexCursor.prefab = hexCursorPrefab;
-        if (hexCurserMaterial) HexCursor.material = hexCurserMaterial;
+        if (hexCursorPrefab) UnitCursor.prefab = hexCursorPrefab;
+        if (hexCurserMaterial) UnitCursor.material = hexCurserMaterial;
 
         // HexMetrics
         if (noiseSource) HexMetrics.noiseSource = noiseSource;
@@ -63,8 +63,8 @@ public class Initializer : MonoBehaviour
     protected void OnEnable()
     {
         // HexCursor
-        if (hexCursorPrefab && !HexCursor.prefab) HexCursor.prefab = hexCursorPrefab;
-        if (hexCurserMaterial && !HexCursor.material) HexCursor.material = hexCurserMaterial;
+        if (hexCursorPrefab && !UnitCursor.prefab) UnitCursor.prefab = hexCursorPrefab;
+        if (hexCurserMaterial && !UnitCursor.material) UnitCursor.material = hexCurserMaterial;
 
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;

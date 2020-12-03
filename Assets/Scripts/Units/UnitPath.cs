@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: HexPath.cs
+ * File Name: UnitPath.cs
  * Description: TODO: write this
  * 
  * Authors: Will Lacey
@@ -7,6 +7,8 @@
  * 
  * Additional Comments:
  *      HACK: this class creates a lot of instances, and then deletes them very fast
+ *      
+ *      Previously known as HexPath.cs
  **/
 
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-public class HexPath
+public class UnitPath
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
@@ -25,7 +27,7 @@ public class HexPath
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells = new List<HexCell>();
 
-    HexCursor curser;
+    UnitCursor curser;
 
     int moveCost = 0;
 
@@ -93,7 +95,7 @@ public class HexPath
     /********** MARK: Constructors **********/
     #region Constructor
 
-    public HexPath(Unit unit)
+    public UnitPath(Unit unit)
     {
         this.unit = unit;
     }
@@ -111,11 +113,11 @@ public class HexPath
         bool manualPath = false;
         if (!cells.Contains(cell) || canBackTrack)
         {
-            if(HexPathfinding.CanAddCellToPath(unit, cell))
+            if(UnitPathfinding.CanAddCellToPath(unit, cell))
             {
                 cells.Add(cell);
 
-                if (HexPathfinding.GetMoveCostCalculation(cells) <= unit.Speed)
+                if (UnitPathfinding.GetMoveCostCalculation(cells) <= unit.Speed)
                 {
                     manualPath = true;
                     return;
@@ -124,9 +126,9 @@ public class HexPath
         }
 
         cells.Clear();
-        cells = HexPathfinding.FindPath(unit, StartCell, cell);
+        cells = UnitPathfinding.FindPath(unit, StartCell, cell);
 
-        if (curser) curser.HasError = (HexPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
+        if (curser) curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
 
         //// HACK: this is mega confusing
         //if (!HexPathfinding.CanAddCellToPath(unit, cell) || (cells.Contains(cell) && !canBackTrack))
@@ -180,7 +182,7 @@ public class HexPath
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser == null) curser = HexCursor.Initialize(points);
+        if (curser == null) curser = UnitCursor.Initialize(points);
         else curser.Redraw(points);
 
         curser.IsSelected = unit.IsSelected;
