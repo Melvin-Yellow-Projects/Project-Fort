@@ -415,7 +415,7 @@ public class HexGrid : MonoBehaviour
         for (int i = 0; i < units.Count; i++)
         {
             Unit unit = units[i];
-            HexPathfinding.IncreaseVisibility(unit.MyCell, unit.VisionRange);
+            UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.VisionRange);
         }
     }
 
