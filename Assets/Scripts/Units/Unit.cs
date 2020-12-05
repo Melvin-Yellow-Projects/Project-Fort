@@ -144,6 +144,8 @@ public class Unit : MonoBehaviour
             }
         }
     }
+
+    public bool HasAction { get; set; }
     
     public int Team
     {
@@ -164,8 +166,6 @@ public class Unit : MonoBehaviour
             }
         }
     }
-
-    public bool HasMove { get; set; }
 
     #endregion
 

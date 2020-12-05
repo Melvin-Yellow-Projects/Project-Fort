@@ -14,6 +14,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+
 
 /// <summary>
 /// TODO: comment class
@@ -38,6 +40,8 @@ public class Player : MonoBehaviour
 
     List<Unit> myUnits = new List<Unit>();
 
+    Controls controls;
+
     #endregion
 
     /********** MARK: Properties **********/
@@ -60,35 +64,36 @@ public class Player : MonoBehaviour
 
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
+
+        //GameManager.OnUnitCombat += DeselectUnit;
+
+        controls = new Controls();
+
+        controls.Player.Selection.performed += DoSelection;
+        //controls.Player.Selection.canceled += DoSelection;
+
+        controls.Player.Command.performed += DoCommand;
+        //controls.Player.Command.canceled += DoCommand;
+
+        controls.Enable();
     }
 
     private void OnDestroy()
     {
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+
+        //GameManager.OnUnitCombat -= DeselectUnit;
     }
 
     protected void Update()
     {
+        // HACK: is this still needed?
+
         if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
         {
             UpdateCurrentCell();
-
-            if (Input.GetMouseButtonDown(0)) // HACK: hardcoded input / left click
-            {
-                DoSelection();
-            }
-            else if (selectedUnit)
-            {
-                if (Input.GetMouseButtonDown(1)) //right click
-                {
-                    //DoMove();
-                }
-                else
-                {
-                    DoPathfinding();
-                }
-            }
+            if (selectedUnit) DoPathfinding();
         }
     }
 
@@ -97,7 +102,7 @@ public class Player : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    void UpdateCurrentCell()
+    private void UpdateCurrentCell()
     {
         HexCell cell = grid.GetCell();
         if (cell != currentCell)
@@ -114,30 +119,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void DoSelection()
-    {
-        if (currentCell)
-        {
-            if (selectedUnit) selectedUnit.IsSelected = false;
-
-            selectedUnit = currentCell.MyUnit;
-
-            if (selectedUnit)
-            {
-                if (selectedUnit.Team == Team)
-                {
-                    selectedUnit.Path.Clear();
-                    selectedUnit.IsSelected = true;
-                }
-                else
-                {
-                    selectedUnit = null;
-                }
-            }
-        }
-    }
-
-    void DoPathfinding()
+    private void DoPathfinding()
     {
         if (!hasCurrentCellUpdated || currentCell == null) return;
 
@@ -149,17 +131,58 @@ public class Player : MonoBehaviour
         else
         {
             // can't backtrack
-            Debug.Log("currentCell:" + currentCell.name);
             selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: false);
         }
 
         selectedUnit.Path.Show();
     }
 
+    private void SelectUnit(Unit unit)
+    {
+        selectedUnit = unit;
+        selectedUnit.IsSelected = true;
+    }
+
+    private void DeselectUnit(bool isClearingPath = false)
+    {
+        if (selectedUnit)
+        {
+            if (isClearingPath) selectedUnit.Path.Clear();
+            selectedUnit.IsSelected = false;
+            selectedUnit = null;
+        }
+    }
+
     #endregion
 
-    /********** MARK: Class Handler Functions **********/
-    #region Class Functions
+    /********** MARK: Input Functions **********/
+    #region Input Functions
+
+    private void DoSelection(InputAction.CallbackContext ctx)
+    {
+        if (currentCell)
+        {
+            DeselectUnit(isClearingPath: true);
+
+            Unit unit = currentCell.MyUnit;
+
+            if (unit && unit.Team == Team) SelectUnit(unit);
+        }
+    }
+
+    private void DoCommand(InputAction.CallbackContext ctx)
+    {
+        if (currentCell && selectedUnit)
+        {
+            //selectedUnit.hasrealpath = true;
+            DeselectUnit();
+        }
+    }
+
+    #endregion
+
+    /********** MARK: Handler Functions **********/
+    #region Handler Functions
 
     private void HandleOnUnitSpawned(Unit unit)
     {
