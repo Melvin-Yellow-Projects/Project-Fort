@@ -34,10 +34,22 @@ public class GameManager : MonoBehaviour
     #region Class Events
 
     /// <summary>
-    /// Event for executing unit combat
+    /// Event for when unit moves have started
     /// </summary>
-    /// <subscriber name="HandleOnUnitCombat">HexCell Class, subs when unit enters cell</subscriber>
+    /// <subscriber class="Player">disables controls when units are moving</subscriber>
+    public static event Action OnStartMoveUnits;
+
+    /// <summary>
+    /// Event for starting/executing unit combat
+    /// </summary>
+    /// <subscriber class="HexCell">subs when unit enters a cell, later handles combat</subscriber>
     public static event Action OnUnitCombat;
+
+    /// <summary>
+    /// Event for when unit moves have finished
+    /// </summary>
+    /// <subscriber class="Player">enables controls when units are moving</subscriber>
+    public static event Action OnStopMoveUnits; 
 
     #endregion
 
@@ -59,11 +71,12 @@ public class GameManager : MonoBehaviour
         {
             //MoveUnits(isResettingTimer:true);
             MoveUnits();
-            enabled = false;
         }
-
-        // HACK: 0000 pads the buffer for the first few frames
-        moveTimerText.text = $"{Math.Max(timeOfNextMove - Time.time, 0)}0000".Substring(0, 3);
+        else
+        {
+            // HACK: 0000 pads the buffer for the first few frames
+            moveTimerText.text = $"{Math.Max(timeOfNextMove - Time.time, 0)}0000".Substring(0, 3);
+        }
     }
 
     #endregion
@@ -73,17 +86,21 @@ public class GameManager : MonoBehaviour
 
     public void MoveUnits()
     {
+        enabled = false;
+        moveTimerText.text = "Executing Turn";
+
         StopAllCoroutines();
         StartCoroutine(MoveUnits(8));
     }
 
-    private IEnumerator MoveUnits(int numberOfSteps)
+    private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over three times
     {
+        OnStartMoveUnits?.Invoke();
+
         HexGrid grid = HexGrid.Singleton;
 
         for (int stepCount = 0; stepCount < numberOfSteps; stepCount++)
         {
-
             // each player submits their moves
             for (int i = 0; i < grid.units.Count; i++)
             {
@@ -91,7 +108,7 @@ public class GameManager : MonoBehaviour
                 unit.PrepareNextMove();
             }
 
-            OnUnitCombat?.Invoke();
+            OnUnitCombat?.Invoke(); 
 
             for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
             {
@@ -103,7 +120,15 @@ public class GameManager : MonoBehaviour
 
         }
 
+        for (int i = 0; i < grid.units.Count; i++)
+        {
+            Unit unit = grid.units[i];
+            unit.NewRound();
+        }
+
         ResetTimer();
+
+        OnStopMoveUnits?.Invoke();
     }
 
     private void ResetTimer()

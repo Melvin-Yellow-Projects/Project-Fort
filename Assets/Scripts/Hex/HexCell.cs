@@ -490,7 +490,7 @@ public class HexCell : MonoBehaviour
 
         newUnit.Path.IsNextStepValid = true;
 
-        if (myUnitQueue.Count == 1) GameManager.OnUnitCombat += HandleStartUnitCombat;
+        if (myUnitQueue.Count == 1) GameManager.OnUnitCombat += HandleOnUnitCombat;
     }
 
     #endregion
@@ -498,7 +498,7 @@ public class HexCell : MonoBehaviour
     /********** MARK: Class Handler Functions **********/
     #region Class Functions
 
-    private void HandleStartUnitCombat()
+    private void HandleOnUnitCombat()
     {
         if (MyUnit)
         {
@@ -514,7 +514,7 @@ public class HexCell : MonoBehaviour
 
         myUnitQueue.Clear();
 
-        GameManager.OnUnitCombat -= HandleStartUnitCombat;
+        GameManager.OnUnitCombat -= HandleOnUnitCombat;
     }
 
     #endregion

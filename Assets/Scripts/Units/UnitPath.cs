@@ -117,7 +117,7 @@ public class UnitPath
             {
                 cells.Add(cell);
 
-                if (UnitPathfinding.GetMoveCostCalculation(cells) <= unit.Speed)
+                if (UnitPathfinding.GetMoveCostCalculation(cells) <= unit.MaxMovement)
                 {
                     manualPath = true;
                     return;
@@ -128,7 +128,7 @@ public class UnitPath
         cells.Clear();
         cells = UnitPathfinding.FindPath(unit, StartCell, cell);
 
-        if (curser) curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
+        if (curser) curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.MaxMovement);
 
         //// HACK: this is mega confusing
         //if (!HexPathfinding.CanAddCellToPath(unit, cell) || (cells.Contains(cell) && !canBackTrack))

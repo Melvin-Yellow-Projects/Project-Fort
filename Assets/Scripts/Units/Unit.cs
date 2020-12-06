@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using TMPro;
 
 /// <summary>
 /// a unit that is able to interact with a hex map 
@@ -25,9 +26,14 @@ public class Unit : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
+    [SerializeField] GameObject movementDisplay = null;
+    [SerializeField] TMP_Text currentMovementText = null;
+
     // HACK: this needs to be configurable
     const float travelSpeed = 8f; 
     const float rotationSpeed = 360f;
+    int currentMovement = 8;
+    const int maxMovement = 8;
     const int visionRange = 3;
     const int movesPerStep = 1;
 
@@ -50,13 +56,13 @@ public class Unit : MonoBehaviour
     /// <summary>
     /// Event for when a unit is spawned, called in the Start Method
     /// </summary>
-    /// <subscriber name="HandleOnUnitSpawned">Player Class</subscriber>
+    /// <subscriber class="Player">adds unit to player's list of owned units</subscriber>
     public static event Action<Unit> OnUnitSpawned;
 
     /// <summary>
     /// Event for when a unit is despawned, called in the OnDestroy Method
     /// </summary>
-    /// <subscriber name="HandleOnUnitDepawned">Player Class</subscriber>
+    /// <subscriber class="Player">removes unit from player's list of owned units</subscriber>
     public static event Action<Unit> OnUnitDepawned;
 
     #endregion
@@ -111,11 +117,24 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public int Speed
+    public int CurrentMovement
     {
         get
         {
-            return (int) 8; // HACK: hardcoded
+            return currentMovement;
+        }
+        private set
+        {
+            currentMovement = Mathf.Clamp(value, 0, maxMovement);
+            currentMovementText.text = $"{currentMovement}";
+        }
+    }
+
+    public int MaxMovement
+    {
+        get
+        {
+            return maxMovement;
         }
     }
 
@@ -192,6 +211,8 @@ public class Unit : MonoBehaviour
     private void Awake()
     {
         Path = new UnitPath(this);
+        currentMovementText.text = $"{maxMovement}";
+        currentMovement = maxMovement;
     }
 
     private void Start()
@@ -249,6 +270,17 @@ public class Unit : MonoBehaviour
         grid.AddUnit(unit, grid.GetCell(coordinates), orientation);
     }
 
+    public void ToggleMovementDisplay()
+    {
+        movementDisplay.SetActive(!movementDisplay.activeSelf);
+    }
+
+    public void NewRound()
+    {
+        HasAction = false;
+        CurrentMovement = maxMovement;
+    }
+
     #endregion
 
     /********** MARK: Pathing **********/
@@ -256,7 +288,7 @@ public class Unit : MonoBehaviour
 
     public void PrepareNextMove()
     {
-        if (!Path.HasPath) return; // TODO: maybe continue to change dir
+        if (!Path.HasPath || !HasAction) return; // TODO: maybe continue to change dir
 
         Path.IsNextStepValid = false;
 
@@ -266,7 +298,7 @@ public class Unit : MonoBehaviour
 
     public void ExecuteNextMove()
     {
-        if (!Path.HasPath || !Path.IsNextStepValid) return; // TODO: maybe continue to change dir
+        if (!Path.HasPath || !Path.IsNextStepValid || !HasAction) return; // TODO: maybe continue to change dir
 
         List<HexCell> cells = new List<HexCell>();
 
@@ -282,6 +314,8 @@ public class Unit : MonoBehaviour
         myCell.MyUnit = null;
         myCell = Path[1];
         Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
+
+        CurrentMovement--;
 
         // redraw path curser
         Path.Show();

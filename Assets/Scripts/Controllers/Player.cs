@@ -65,15 +65,13 @@ public class Player : MonoBehaviour
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
-        //GameManager.OnUnitCombat += DeselectUnit;
+        GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
+        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
 
         controls = new Controls();
-
         controls.Player.Selection.performed += DoSelection;
-        //controls.Player.Selection.canceled += DoSelection;
 
         controls.Player.Command.performed += DoCommand;
-        //controls.Player.Command.canceled += DoCommand;
 
         controls.Enable();
     }
@@ -83,7 +81,8 @@ public class Player : MonoBehaviour
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
-        //GameManager.OnUnitCombat -= DeselectUnit;
+        GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
+        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
     }
 
     protected void Update()
@@ -140,17 +139,24 @@ public class Player : MonoBehaviour
     private void SelectUnit(Unit unit)
     {
         selectedUnit = unit;
+        selectedUnit.HasAction = false;
         selectedUnit.IsSelected = true;
+        selectedUnit.Path.Clear();
     }
 
-    private void DeselectUnit(bool isClearingPath = false)
+    private void DeselectUnit()
     {
         if (selectedUnit)
         {
-            if (isClearingPath) selectedUnit.Path.Clear();
             selectedUnit.IsSelected = false;
             selectedUnit = null;
         }
+    }
+
+    private void DeselectUnitAndClearItsPath()
+    {
+        if (selectedUnit) selectedUnit.Path.Clear();
+        DeselectUnit();
     }
 
     #endregion
@@ -162,7 +168,7 @@ public class Player : MonoBehaviour
     {
         if (currentCell)
         {
-            DeselectUnit(isClearingPath: true);
+            DeselectUnitAndClearItsPath();
 
             Unit unit = currentCell.MyUnit;
 
@@ -174,7 +180,7 @@ public class Player : MonoBehaviour
     {
         if (currentCell && selectedUnit)
         {
-            //selectedUnit.hasrealpath = true;
+            selectedUnit.HasAction = true;
             DeselectUnit();
         }
     }
@@ -186,12 +192,27 @@ public class Player : MonoBehaviour
 
     private void HandleOnUnitSpawned(Unit unit)
     {
-        if (unit.Team == Team) myUnits.Add(unit);
+        if (unit.Team == Team)
+        {
+            myUnits.Add(unit);
+            unit.ToggleMovementDisplay();
+        }
     }
 
     private void HandleOnUnitDepawned(Unit unit)
     {
         myUnits.Remove(unit);
+    }
+
+    private void HandleOnStartMoveUnits()
+    {
+        DeselectUnitAndClearItsPath();
+        controls.Disable();
+    }
+
+    private void HandleOnStopMoveUnits()
+    {
+        controls.Enable();
     }
 
     #endregion
