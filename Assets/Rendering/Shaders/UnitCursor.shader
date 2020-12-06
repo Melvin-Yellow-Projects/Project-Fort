@@ -1,4 +1,4 @@
-﻿Shader "Custom/HexCursor"
+﻿Shader "Custom/UnitCursor"
 {
 	Properties
 	{

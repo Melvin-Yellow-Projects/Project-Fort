@@ -213,6 +213,8 @@ public class Unit : MonoBehaviour
         Path = new UnitPath(this);
         currentMovementText.text = $"{maxMovement}";
         currentMovement = maxMovement;
+
+        GameManager.OnStartRound += HandleOnStartRound;
     }
 
     private void Start()
@@ -223,6 +225,8 @@ public class Unit : MonoBehaviour
     private void OnDestroy()
     {
         OnUnitDepawned?.Invoke(this);
+
+        GameManager.OnStartRound -= HandleOnStartRound;
     }
 
     #endregion
@@ -273,12 +277,6 @@ public class Unit : MonoBehaviour
     public void ToggleMovementDisplay()
     {
         movementDisplay.SetActive(!movementDisplay.activeSelf);
-    }
-
-    public void NewRound()
-    {
-        HasAction = false;
-        CurrentMovement = maxMovement;
     }
 
     #endregion
@@ -447,6 +445,17 @@ public class Unit : MonoBehaviour
 
         // neighbor is a valid cell
         return true;
+    }
+
+    #endregion
+
+    /********** MARK: Handle Functions **********/
+    #region Handle Functions
+
+    private void HandleOnStartRound()
+    {
+        HasAction = false;
+        CurrentMovement = maxMovement;
     }
 
     #endregion

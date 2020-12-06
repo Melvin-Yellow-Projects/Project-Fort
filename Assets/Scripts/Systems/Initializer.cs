@@ -22,19 +22,23 @@ public class Initializer : MonoBehaviour
     /********** MARK: Public Variables **********/
     #region Public Variables
 
-    [Header("HexCursor")]
-    [Tooltip("hex cursor prefab reference")]
-    [SerializeField] UnitCursor hexCursorPrefab = null;
-    [Tooltip("hex curser material reference")]
-    [SerializeField] Material hexCurserMaterial = null;
+    [Header("GameMode")]
+    [Tooltip("game mode settings load out")]
+    [SerializeField] GameMode gameModeSettings = null;
 
     [Header("HexMetrics")]
     [Tooltip("noise source for Hex Metrics")]
     public Texture2D noiseSource;
 
-    [Header("HexUnit")]
-    [Tooltip("reference to the hex unit prefab")]
+    [Header("Unit")]
+    [Tooltip("reference to the unit prefab")]
     public Unit unitPrefab;
+
+    [Header("UnitCursor")]
+    [Tooltip("unit cursor prefab reference")]
+    [SerializeField] UnitCursor unitCursorPrefab = null;
+    [Tooltip("unit cursor material reference")]
+    [SerializeField] Material unitCursorMaterial = null;
 
     #endregion
 
@@ -46,15 +50,18 @@ public class Initializer : MonoBehaviour
     /// </summary>
     protected void Awake()
     {
-        // HexCurser
-        if (hexCursorPrefab) UnitCursor.prefab = hexCursorPrefab;
-        if (hexCurserMaterial) UnitCursor.material = hexCurserMaterial;
+        // GameMode
+        if (gameModeSettings) GameMode.Singleton = gameModeSettings;
 
         // HexMetrics
         if (noiseSource) HexMetrics.noiseSource = noiseSource;
 
         // Unit
         if (unitPrefab) Unit.prefab = unitPrefab;
+
+        // UnitCursor
+        if (unitCursorPrefab) UnitCursor.prefab = unitCursorPrefab;
+        if (unitCursorMaterial) UnitCursor.material = unitCursorMaterial;
     }
 
     /// <summary>
@@ -62,15 +69,18 @@ public class Initializer : MonoBehaviour
     /// </summary>
     protected void OnEnable()
     {
-        // HexCursor
-        if (hexCursorPrefab && !UnitCursor.prefab) UnitCursor.prefab = hexCursorPrefab;
-        if (hexCurserMaterial && !UnitCursor.material) UnitCursor.material = hexCurserMaterial;
+        // GameMode
+        if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
         // Unit
         if (unitPrefab && !Unit.prefab) Unit.prefab = unitPrefab;
+
+        // UnitCursor
+        if (unitCursorPrefab && !UnitCursor.prefab) UnitCursor.prefab = unitCursorPrefab;
+        if (unitCursorMaterial && !UnitCursor.material) UnitCursor.material = unitCursorMaterial;
     }
 
     #endregion

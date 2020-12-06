@@ -24,14 +24,27 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] TMP_Text moveTimerText = null;
 
-    [SerializeField] float timeToMove = 10f;
+    float turnTimer = 0f;
 
-    private float timeOfNextMove = 0f;
+    int roundCount = 0;
+
+    int turnCount = 0;
 
     #endregion
 
     /********** MARK: Class Events **********/
     #region Class Events
+
+    /// <summary>
+    /// Event for when a new round has begun
+    /// </summary>
+    /// <subscriber class="Unit">refreshes unit's movement</subscriber>
+    public static event Action OnStartRound;
+
+    /// <summary>
+    /// Event for when a new turn has begun
+    /// </summary>
+    public static event Action OnStartTurn;
 
     /// <summary>
     /// Event for when unit moves have started
@@ -58,7 +71,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        timeOfNextMove = Time.time + timeToMove;
+        turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+    }
+
+    private void Start()
+    {
+        StartRound();
     }
 
     /// <summary>
@@ -67,16 +85,52 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void LateUpdate()
     {
-        if (Time.time > timeOfNextMove)
+        // if Timer is done...
+        if (Time.time > turnTimer)
         {
-            //MoveUnits(isResettingTimer:true);
-            MoveUnits();
+            PlayTurn();
         }
         else
         {
-            // HACK: 0000 pads the buffer for the first few frames
-            moveTimerText.text = $"{Math.Max(timeOfNextMove - Time.time, 0)}0000".Substring(0, 3);
+            // Update Timer
+            moveTimerText.text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
         }
+    }
+
+    #endregion
+
+    /********** MARK: Game Flow Functions **********/
+    #region Game Flow Functions
+
+    private void StartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
+    {
+        roundCount++;
+        turnCount = 0;
+
+        OnStartRound?.Invoke();
+
+        StartTurn();
+    }
+
+    private void StartTurn()
+    {
+        turnCount++;
+
+        OnStartTurn?.Invoke();
+
+        ResetTimer();
+        enabled = true;
+    }
+
+    private void PlayTurn()
+    {
+        MoveUnits();
+    }
+
+    private void StopTurn()
+    {
+        if (turnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
+        else StartTurn();
     }
 
     #endregion
@@ -84,7 +138,7 @@ public class GameManager : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void MoveUnits()
+    private void MoveUnits()
     {
         enabled = false;
         moveTimerText.text = "Executing Turn";
@@ -108,7 +162,7 @@ public class GameManager : MonoBehaviour
                 unit.PrepareNextMove();
             }
 
-            OnUnitCombat?.Invoke(); 
+            OnUnitCombat?.Invoke();
 
             for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
             {
@@ -120,24 +174,16 @@ public class GameManager : MonoBehaviour
 
         }
 
-        for (int i = 0; i < grid.units.Count; i++)
-        {
-            Unit unit = grid.units[i];
-            unit.NewRound();
-        }
-
-        ResetTimer();
-
         OnStopMoveUnits?.Invoke();
+
+        StopTurn();
     }
 
     private void ResetTimer()
     {
-        //timeOfNextMove += timeToMove;
-        timeOfNextMove = timeToMove + Time.time;
-        enabled = true;
+        //timeOfNextMove += GameMode.Singleton.TurnTimerLength;
+        turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
     }
 
     #endregion
-    
 }

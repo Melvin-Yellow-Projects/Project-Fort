@@ -29,7 +29,7 @@ public class UnitPath
 
     UnitCursor curser;
 
-    int moveCost = 0;
+    //int moveCost = 0;
 
     #endregion
 
@@ -206,7 +206,7 @@ public class UnitPath
         //Hide();
         if (curser != null) curser.DestroyCurser(); // TODO: i think there needs to be a hide function for the curser
 
-        moveCost = 0;
+        //moveCost = 0;
 
         cells.Clear();
     }
