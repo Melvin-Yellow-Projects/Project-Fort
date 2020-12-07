@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-
+using System;
 
 /// <summary>
 /// TODO: comment class
@@ -26,9 +26,6 @@ public class Player : MonoBehaviour
     #region Variables
 
     /* Cached References */
-    [Header("Cached References")]
-    [Tooltip("instance reference to the HexGrid in the scene")]
-    public HexGrid grid; // HACK: remove this variable from Player
 
     HexCell currentCell;
 
@@ -49,6 +46,19 @@ public class Player : MonoBehaviour
 
     public int Team { get; set; } = 0;
 
+    public int MoveCount { get; set; } = 1;
+
+    #endregion
+
+    /********** MARK: Class Events **********/
+    #region Class Events
+
+    /// <summary>
+    /// Event for when a command has been invoked or revoked
+    /// </summary>
+    /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
+    public static event Action OnCommandChange;
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -65,8 +75,13 @@ public class Player : MonoBehaviour
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
+        GameManager.OnStartTurn += HandleOnStartTurn;
         GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
+
+        // HACK: this should be done some other way
+        PlayerMenu menu = FindObjectOfType<PlayerMenu>();
+        menu.player = this;
 
         controls = new Controls();
         controls.Player.Selection.performed += DoSelection;
@@ -81,6 +96,7 @@ public class Player : MonoBehaviour
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
+        GameManager.OnStartTurn -= HandleOnStartTurn;
         GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
         GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
     }
@@ -103,7 +119,7 @@ public class Player : MonoBehaviour
 
     private void UpdateCurrentCell()
     {
-        HexCell cell = grid.GetCell();
+        HexCell cell = HexGrid.Singleton.GetCell();
         if (cell != currentCell)
         {
             if (currentCell) currentCell.DisableHighlight();
@@ -138,8 +154,18 @@ public class Player : MonoBehaviour
 
     private void SelectUnit(Unit unit)
     {
+        // if this unit does not belong to the player, exit
+        if (!myUnits.Contains(unit)) return;
+
+        if (!unit.CanMove) return;
+
         selectedUnit = unit;
-        selectedUnit.HasAction = false;
+        if (selectedUnit.HasAction)
+        {
+            selectedUnit.HasAction = false;
+            MoveCount--;
+            OnCommandChange?.Invoke();
+        }
         selectedUnit.IsSelected = true;
         selectedUnit.Path.Clear();
     }
@@ -170,25 +196,34 @@ public class Player : MonoBehaviour
         {
             DeselectUnitAndClearItsPath();
 
-            Unit unit = currentCell.MyUnit;
-
-            if (unit && unit.Team == Team) SelectUnit(unit);
+            SelectUnit(currentCell.MyUnit);
         }
     }
 
     private void DoCommand(InputAction.CallbackContext ctx)
     {
+        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+ 
         if (currentCell && selectedUnit)
         {
             selectedUnit.HasAction = true;
             DeselectUnit();
         }
+
+        MoveCount++;
+        OnCommandChange?.Invoke();
     }
 
     #endregion
 
     /********** MARK: Handler Functions **********/
     #region Handler Functions
+
+    private void HandleOnStartTurn()
+    {
+        MoveCount = 1;
+        OnCommandChange?.Invoke(); // HACK: there has to be a better way
+    }
 
     private void HandleOnUnitSpawned(Unit unit)
     {

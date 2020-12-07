@@ -26,10 +26,6 @@ public class GameManager : MonoBehaviour
 
     float turnTimer = 0f;
 
-    int roundCount = 0;
-
-    int turnCount = 0;
-
     #endregion
 
     /********** MARK: Class Events **********/
@@ -38,12 +34,14 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Event for when a new round has begun
     /// </summary>
+    /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
     /// <subscriber class="Unit">refreshes unit's movement</subscriber>
     public static event Action OnStartRound;
 
     /// <summary>
     /// Event for when a new turn has begun
     /// </summary>
+    /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
     public static event Action OnStartTurn;
 
     /// <summary>
@@ -62,7 +60,19 @@ public class GameManager : MonoBehaviour
     /// Event for when unit moves have finished
     /// </summary>
     /// <subscriber class="Player">enables controls when units are moving</subscriber>
-    public static event Action OnStopMoveUnits; 
+    /// <subscriber class="Unit">HACK: changes color of unit if it can still move</subscriber>
+    public static event Action OnStopMoveUnits;
+
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    public static GameManager Singleton { get; set; }
+
+    public int RoundCount { get; private set; } = 0;
+
+    public int TurnCount { get; private set; } = 0;
 
     #endregion
 
@@ -72,6 +82,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+        Singleton = this;
     }
 
     private void Start()
@@ -97,15 +108,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        Singleton = null;
+    }
+
     #endregion
 
     /********** MARK: Game Flow Functions **********/
     #region Game Flow Functions
 
-    private void StartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
+    public void StartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
     {
-        roundCount++;
-        turnCount = 0;
+        RoundCount++;
+        TurnCount = 0;
 
         OnStartRound?.Invoke();
 
@@ -114,7 +130,7 @@ public class GameManager : MonoBehaviour
 
     private void StartTurn()
     {
-        turnCount++;
+        TurnCount++;
 
         OnStartTurn?.Invoke();
 
@@ -122,14 +138,14 @@ public class GameManager : MonoBehaviour
         enabled = true;
     }
 
-    private void PlayTurn()
+    public void PlayTurn()
     {
         MoveUnits();
     }
 
     private void StopTurn()
     {
-        if (turnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
+        if (TurnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
         else StartTurn();
     }
 
@@ -147,7 +163,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(MoveUnits(8));
     }
 
-    private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over three times
+    private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over twice times
     {
         OnStartMoveUnits?.Invoke();
 

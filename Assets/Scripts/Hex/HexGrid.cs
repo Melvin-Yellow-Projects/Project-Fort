@@ -53,8 +53,6 @@ public class HexGrid : MonoBehaviour
     /********** MARK: Private Variables **********/
     #region Private Variables
 
-    public static HexGrid singleton = null;
-
     /// <summary>
     /// number of chunk columns
     /// </summary>
@@ -76,13 +74,7 @@ public class HexGrid : MonoBehaviour
     /********** MARK: Public Properties **********/
     #region Public Properties
 
-    public static HexGrid Singleton
-    {
-        get
-        {
-            return singleton;
-        }
-    }
+    public static HexGrid Singleton { get; set; }
 
     #endregion
 
@@ -97,7 +89,7 @@ public class HexGrid : MonoBehaviour
 
         CreateMap(cellCountX, cellCountZ);
 
-        singleton = this;
+        Singleton = this;
     }
 
     /// <summary>
@@ -108,12 +100,12 @@ public class HexGrid : MonoBehaviour
         //HexMetrics.InitializeHashGrid(seed);
         ResetVisibility();
 
-        singleton = this;
+        Singleton = this;
     }
 
     protected void OnDestroy()
     {
-        singleton = null;
+        Singleton = null;
     }
 
     #endregion

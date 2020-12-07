@@ -48,6 +48,8 @@ public class Unit : MonoBehaviour
 
     int team = 0;
 
+    Color myColor;
+
     #endregion
 
     /********** MARK: Class Events **********/
@@ -127,6 +129,8 @@ public class Unit : MonoBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
             currentMovementText.text = $"{currentMovement}";
+
+            RefreshColor();
         }
     }
 
@@ -165,7 +169,15 @@ public class Unit : MonoBehaviour
     }
 
     public bool HasAction { get; set; }
-    
+
+    public bool CanMove
+    {
+        get
+        {
+            return (currentMovement > 0);
+        }
+    }
+
     public int Team
     {
         get
@@ -177,12 +189,8 @@ public class Unit : MonoBehaviour
         {
             team = value;
 
-            Color color = (team == 0) ? Color.blue : Color.red;
-
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-            {
-                renderer.material.color = color;
-            }
+            myColor = (team == 0) ? Color.blue : Color.red;
+            RefreshColor();
         }
     }
 
@@ -215,6 +223,7 @@ public class Unit : MonoBehaviour
         currentMovement = maxMovement;
 
         GameManager.OnStartRound += HandleOnStartRound;
+        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
     }
 
     private void Start()
@@ -227,6 +236,7 @@ public class Unit : MonoBehaviour
         OnUnitDepawned?.Invoke(this);
 
         GameManager.OnStartRound -= HandleOnStartRound;
+        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
     }
 
     #endregion
@@ -277,6 +287,16 @@ public class Unit : MonoBehaviour
     public void ToggleMovementDisplay()
     {
         movementDisplay.SetActive(!movementDisplay.activeSelf);
+    }
+
+    private void RefreshColor()
+    {
+        float saturation = (CanMove) ? 1 : 0.35f; // HACK: Hardcoded saturation Value
+
+        foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+        {
+            renderer.material.color = myColor * saturation;
+        }
     }
 
     #endregion
@@ -456,6 +476,15 @@ public class Unit : MonoBehaviour
     {
         HasAction = false;
         CurrentMovement = maxMovement;
+        Path.Clear(); // HACK: this is in theory not needed
+    }
+
+    private void HandleOnStopMoveUnits()
+    {
+        if (currentMovement < maxMovement)
+        {
+            CurrentMovement = 0;
+        }
     }
 
     #endregion

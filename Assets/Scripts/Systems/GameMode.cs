@@ -1,4 +1,14 @@
-﻿using System.Collections;
+﻿/**
+ * File Name: GameMode.cs
+ * Description: Configuration script for handling the game mode settings
+ * 
+ * Authors: Will Lacey
+ * Date Created: December 6, 2020
+ * 
+ * Additional Comments: 
+ **/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,9 +27,13 @@ public class GameMode : ScriptableObject
 
     [SerializeField] int movesPerTurn = 5;
 
+    //[SerializeField] int minMovesPerTurn = 2;
+
     [SerializeField] float turnTimerLength = 10f;
 
     [SerializeField] bool isUsingTurnTimer = false;
+
+
 
     //[SerializeField] bool isHotseat = false;
 
@@ -41,6 +55,14 @@ public class GameMode : ScriptableObject
 
     public static GameMode Singleton { get; set; }
 
+    public float TurnTimerLength
+    {
+        get
+        {
+            return turnTimerLength;
+        }
+    }
+
     public int TurnsPerRound
     {
         get
@@ -49,11 +71,11 @@ public class GameMode : ScriptableObject
         }
     }
 
-    public float TurnTimerLength
+    public int MovesPerTurn
     {
         get
         {
-            return turnTimerLength;
+            return movesPerTurn;
         }
     }
 
