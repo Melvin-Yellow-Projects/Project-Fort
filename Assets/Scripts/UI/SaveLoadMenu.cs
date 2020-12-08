@@ -15,6 +15,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.IO;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// 
@@ -36,8 +37,8 @@ public class SaveLoadMenu : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Public Variables **********/
-    #region Public Variables
+    /********** MARK: Private Variables **********/
+    #region Private Variables
 
     /// <summary>
     /// current map save/load version
@@ -47,20 +48,25 @@ public class SaveLoadMenu : MonoBehaviour
     /// <summary>
     /// determines if the user is either saving or loading
     /// </summary>
-    bool saveMode;
+    int menuMode;
+
+    Controls controls;
 
     #endregion
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    /// <summary>
-    /// Unity Method; Update() is called once per frame
-    /// </summary>
-    protected void Update()
+    private void Awake()
     {
-        // HACK: these inputs are hardcoded, is that okay?
-        if (Input.GetKeyDown("return") || Input.GetKeyDown("enter")) Action();
+        controls = new Controls();
+        controls.General.Affirmation.performed += Action;
+        controls.Enable();
+    }
+
+    private void OnDestroy()
+    {
+        controls.General.Affirmation.performed -= Action;
     }
 
     #endregion
@@ -68,11 +74,11 @@ public class SaveLoadMenu : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void Open(bool saveMode)
+    public void Open(int menuMode)
 	{
-        this.saveMode = saveMode;
+        this.menuMode = menuMode;
 
-        if (saveMode)
+        if (menuMode == 0)
         {
             menuLabel.text = "Save Map";
             actionButtonLabel.text = "Save";
@@ -95,6 +101,11 @@ public class SaveLoadMenu : MonoBehaviour
 		HexMapCamera.Locked = false;
 	}
 
+    private void Action(InputAction.CallbackContext ctx)
+    {
+        Action();
+    }
+
     public void Action()
     {
         string path = GetSelectedPath();
@@ -103,20 +114,24 @@ public class SaveLoadMenu : MonoBehaviour
         if (path == null) return;
 
         // action depends on saveMode
-        if (saveMode)
+        if (menuMode == 0)
         {
             Save(path);
         }
-        else
+        else if (menuMode == 1)
         {
             Load(path);
+        }
+        else
+        {
+            PrepareReaderForNextScene("Game Scene");
         }
 
         // exit menu
         Close();
     }
 
-    public void PrepareReaderForNextScene(string nextSceneName)
+    private void PrepareReaderForNextScene(string nextSceneName)
     {
         string path = GetSelectedPath();
 

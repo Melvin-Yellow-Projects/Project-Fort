@@ -2,6 +2,33 @@
     "name": "Controls",
     "maps": [
         {
+            "name": "General",
+            "id": "18f87afc-c593-47e2-9e01-b0be5e43e884",
+            "actions": [
+                {
+                    "name": "Affirmation",
+                    "type": "Button",
+                    "id": "794d2499-7cbf-427c-9f92-22418f3c54b8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0c015171-f84c-4a5e-8432-eebe08c539ac",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Affirmation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "Player",
             "id": "4799735f-4a80-44bc-8262-ffedc7d78836",
             "actions": [

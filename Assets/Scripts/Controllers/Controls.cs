@@ -15,6 +15,33 @@ public class @Controls : IInputActionCollection, IDisposable
     ""name"": ""Controls"",
     ""maps"": [
         {
+            ""name"": ""General"",
+            ""id"": ""18f87afc-c593-47e2-9e01-b0be5e43e884"",
+            ""actions"": [
+                {
+                    ""name"": ""Affirmation"",
+                    ""type"": ""Button"",
+                    ""id"": ""794d2499-7cbf-427c-9f92-22418f3c54b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0c015171-f84c-4a5e-8432-eebe08c539ac"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Affirmation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""Player"",
             ""id"": ""4799735f-4a80-44bc-8262-ffedc7d78836"",
             ""actions"": [
@@ -69,6 +96,9 @@ public class @Controls : IInputActionCollection, IDisposable
         }
     ]
 }");
+        // General
+        m_General = asset.FindActionMap("General", throwIfNotFound: true);
+        m_General_Affirmation = m_General.FindAction("Affirmation", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Selection = m_Player.FindAction("Selection", throwIfNotFound: true);
@@ -119,6 +149,39 @@ public class @Controls : IInputActionCollection, IDisposable
         asset.Disable();
     }
 
+    // General
+    private readonly InputActionMap m_General;
+    private IGeneralActions m_GeneralActionsCallbackInterface;
+    private readonly InputAction m_General_Affirmation;
+    public struct GeneralActions
+    {
+        private @Controls m_Wrapper;
+        public GeneralActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Affirmation => m_Wrapper.m_General_Affirmation;
+        public InputActionMap Get() { return m_Wrapper.m_General; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GeneralActions set) { return set.Get(); }
+        public void SetCallbacks(IGeneralActions instance)
+        {
+            if (m_Wrapper.m_GeneralActionsCallbackInterface != null)
+            {
+                @Affirmation.started -= m_Wrapper.m_GeneralActionsCallbackInterface.OnAffirmation;
+                @Affirmation.performed -= m_Wrapper.m_GeneralActionsCallbackInterface.OnAffirmation;
+                @Affirmation.canceled -= m_Wrapper.m_GeneralActionsCallbackInterface.OnAffirmation;
+            }
+            m_Wrapper.m_GeneralActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Affirmation.started += instance.OnAffirmation;
+                @Affirmation.performed += instance.OnAffirmation;
+                @Affirmation.canceled += instance.OnAffirmation;
+            }
+        }
+    }
+    public GeneralActions @General => new GeneralActions(this);
+
     // Player
     private readonly InputActionMap m_Player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
@@ -167,6 +230,10 @@ public class @Controls : IInputActionCollection, IDisposable
             if (m_KeyboardMouseSchemeIndex == -1) m_KeyboardMouseSchemeIndex = asset.FindControlSchemeIndex("Keyboard & Mouse");
             return asset.controlSchemes[m_KeyboardMouseSchemeIndex];
         }
+    }
+    public interface IGeneralActions
+    {
+        void OnAffirmation(InputAction.CallbackContext context);
     }
     public interface IPlayerActions
     {

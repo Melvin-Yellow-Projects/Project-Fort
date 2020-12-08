@@ -202,7 +202,7 @@ public class Player : MonoBehaviour
 
     private void DoCommand(InputAction.CallbackContext ctx)
     {
-        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
  
         if (currentCell && selectedUnit)
         {
