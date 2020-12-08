@@ -14,6 +14,7 @@
  **/
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 ///     Operable hex map camera class
@@ -24,6 +25,10 @@ public class MapCamera : MonoBehaviour
 	#region Variables
 
 	Transform swivel, stick;
+
+	Vector2 moveDelta;
+	//float rotateDelta;
+	//float zoomDelta;
 
 	float zoom = 1f;
 
@@ -36,6 +41,8 @@ public class MapCamera : MonoBehaviour
 	public float rotationSpeed;
 
 	float rotationAngle;
+
+	Controls controls;
 
 	#endregion
 
@@ -61,6 +68,19 @@ public class MapCamera : MonoBehaviour
 	{
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
+
+		controls = new Controls();
+
+		controls.Camera.Move.performed += AdjustPosition;
+		controls.Camera.Move.canceled += AdjustPosition;
+
+		controls.Camera.Rotate.performed += AdjustRotation;
+		controls.Camera.Rotate.canceled += AdjustRotation;
+
+		controls.Camera.Zoom.performed += AdjustZoom;
+		controls.Camera.Zoom.canceled += AdjustZoom;
+
+		controls.Enable();
 	}
 
 	/// <summary>
@@ -74,23 +94,15 @@ public class MapCamera : MonoBehaviour
 	void Update()
 	{
 		float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
-		if (zoomDelta != 0f)
-		{
-			AdjustZoom(zoomDelta);
-		}
+		if (zoomDelta != 0f) AdjustZoom(zoomDelta);
 
 		float rotationDelta = Input.GetAxis("Rotation");
-		if (rotationDelta != 0f)
-		{
-			AdjustRotation(rotationDelta);
-		}
+		if (rotationDelta != 0f) AdjustRotation(rotationDelta);
 
 		float xDelta = Input.GetAxis("Horizontal");
-		float zDelta = Input.GetAxis("Vertical");
-		if (xDelta != 0f || zDelta != 0f)
-		{
-			AdjustPosition(xDelta, zDelta);
-		}
+        float zDelta = Input.GetAxis("Vertical");
+        if (xDelta != 0f || zDelta != 0f) AdjustPosition(xDelta, zDelta);
+		//if (moveDelta.x != 0f || moveDelta.y != 0f) AdjustPosition(moveDelta.x, moveDelta.y);
 	}
 
 	#endregion
@@ -98,18 +110,15 @@ public class MapCamera : MonoBehaviour
 	/********** MARK: Class Functions **********/
 	#region Class Functions
 
-	void AdjustRotation(float delta)
+	public static void ValidatePosition()
 	{
-		rotationAngle += delta * rotationSpeed * Time.deltaTime;
-		if (rotationAngle < 0f)
-		{
-			rotationAngle += 360f;
-		}
-		else if (rotationAngle >= 360f)
-		{
-			rotationAngle -= 360f;
-		}
-		transform.localRotation = Quaternion.Euler(0f, rotationAngle, 0f);
+		Singleton.AdjustPosition(0f, 0f);
+	}
+
+	void AdjustPosition(InputAction.CallbackContext ctx)
+    {
+		moveDelta = ctx.ReadValue<Vector2>();
+		//AdjustPosition(moveDelta.x, moveDelta.y);
 	}
 
 	void AdjustPosition(float xDelta, float zDelta)
@@ -141,6 +150,30 @@ public class MapCamera : MonoBehaviour
         return position;
 	}
 
+	void AdjustRotation(InputAction.CallbackContext ctx)
+	{
+		Debug.Log("Rotating Camera");
+	}
+
+	void AdjustRotation(float delta)
+	{
+		rotationAngle += delta * rotationSpeed * Time.deltaTime;
+		if (rotationAngle < 0f)
+		{
+			rotationAngle += 360f;
+		}
+		else if (rotationAngle >= 360f)
+		{
+			rotationAngle -= 360f;
+		}
+		transform.localRotation = Quaternion.Euler(0f, rotationAngle, 0f);
+	}
+
+	void AdjustZoom(InputAction.CallbackContext ctx)
+	{
+		Debug.Log("Zooming Camera");
+	}
+
 	void AdjustZoom(float delta)
 	{
 		zoom = Mathf.Clamp01(zoom + delta);
@@ -150,11 +183,6 @@ public class MapCamera : MonoBehaviour
 
 		float angle = Mathf.Lerp(swivelMinZoom, swivelMaxZoom, zoom);
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
-	}
-
-	public static void ValidatePosition()
-	{
-		Singleton.AdjustPosition(0f, 0f);
 	}
 
     #endregion
