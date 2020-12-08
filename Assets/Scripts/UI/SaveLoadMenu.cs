@@ -92,13 +92,13 @@ public class SaveLoadMenu : MonoBehaviour
         FillList(); // TODO: check what happens if this happens at the end
 
         gameObject.SetActive(true);
-		HexMapCamera.Locked = true;
+		MapCamera.Locked = true;
 	}
 
 	public void Close()
 	{
 		gameObject.SetActive(false);
-		HexMapCamera.Locked = false;
+		MapCamera.Locked = false;
 	}
 
     private void Action(InputAction.CallbackContext ctx)
@@ -233,7 +233,7 @@ public class SaveLoadMenu : MonoBehaviour
         {
             FindObjectOfType<HexGrid>().Load(reader, header);
 
-            HexMapCamera.ValidatePosition();
+            MapCamera.ValidatePosition();
         }
         else
         {

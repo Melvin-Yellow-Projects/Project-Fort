@@ -18,8 +18,11 @@ using UnityEngine;
 /// <summary>
 ///     Operable hex map camera class
 /// </summary>
-public class HexMapCamera : MonoBehaviour
+public class MapCamera : MonoBehaviour
 {
+	/********** MARK: Variables **********/
+	#region Variables
+
 	Transform swivel, stick;
 
 	float zoom = 1f;
@@ -34,17 +37,25 @@ public class HexMapCamera : MonoBehaviour
 
 	float rotationAngle;
 
-	public HexGrid grid;
+	#endregion
 
-	static HexMapCamera instance;
+	/********** MARK: Properties **********/
+	#region Properties
+
+	public static MapCamera Singleton { get; set; }
 
 	public static bool Locked
 	{
 		set
 		{
-            if (instance) instance.enabled = !value;
+            if (Singleton) Singleton.enabled = !value;
         }
 	}
+
+	#endregion
+
+	/********** MARK: Unity Functions **********/
+	#region Unity Functions
 
 	void Awake()
 	{
@@ -57,7 +68,7 @@ public class HexMapCamera : MonoBehaviour
 	/// </summary>
 	protected void OnEnable()
 	{
-		instance = this;
+		Singleton = this;
 	}
 
 	void Update()
@@ -81,6 +92,11 @@ public class HexMapCamera : MonoBehaviour
 			AdjustPosition(xDelta, zDelta);
 		}
 	}
+
+	#endregion
+
+	/********** MARK: Class Functions **********/
+	#region Class Functions
 
 	void AdjustRotation(float delta)
 	{
@@ -114,11 +130,11 @@ public class HexMapCamera : MonoBehaviour
 
 	Vector3 ClampPosition(Vector3 position)
 	{
-        float xMax = (grid.cellCountX * HexMetrics.chunkSizeX - 0.5f) *
+        float xMax = (HexGrid.Singleton.cellCountX * HexMetrics.chunkSizeX - 0.5f) *
             (2f * HexMetrics.innerRadius);
         position.x = Mathf.Clamp(position.x, 0f, xMax);
 
-        float zMax = (grid.cellCountZ * HexMetrics.chunkSizeZ - 1) *
+        float zMax = (HexGrid.Singleton.cellCountZ * HexMetrics.chunkSizeZ - 1) *
             (1.5f * HexMetrics.outerRadius);
         position.z = Mathf.Clamp(position.z, 0f, zMax);
 
@@ -138,6 +154,8 @@ public class HexMapCamera : MonoBehaviour
 
 	public static void ValidatePosition()
 	{
-		instance.AdjustPosition(0f, 0f);
+		Singleton.AdjustPosition(0f, 0f);
 	}
+
+    #endregion
 }

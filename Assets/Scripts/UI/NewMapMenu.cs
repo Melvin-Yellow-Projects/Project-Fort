@@ -44,19 +44,19 @@ public class NewMapMenu : MonoBehaviour
     public void Open()
     {
         gameObject.SetActive(true);
-        HexMapCamera.Locked = true;
+         MapCamera.Locked = true;
     }
 
     public void Close()
     {
         gameObject.SetActive(false);
-        HexMapCamera.Locked = false;
+         MapCamera.Locked = false;
     }
 
     void CreateMap(int x, int z)
     {
         hexGrid.CreateMap(x, z);
-        HexMapCamera.ValidatePosition();
+         MapCamera.ValidatePosition();
         Close();
     }
 

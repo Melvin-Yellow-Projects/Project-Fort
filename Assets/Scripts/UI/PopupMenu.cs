@@ -24,13 +24,13 @@ public class PopupMenu : MonoBehaviour
     public void Open()
     {
         gameObject.SetActive(true);
-        HexMapCamera.Locked = true;
+        MapCamera.Locked = true;
     }
 
     public void Open(string description)
     {
         gameObject.SetActive(true);
-        HexMapCamera.Locked = true;
+        MapCamera.Locked = true;
 
         descriptionText.text = description;
     }
@@ -38,6 +38,6 @@ public class PopupMenu : MonoBehaviour
     public void Close()
     {
         gameObject.SetActive(false);
-        HexMapCamera.Locked = false;
+        MapCamera.Locked = false;
     }
 }
