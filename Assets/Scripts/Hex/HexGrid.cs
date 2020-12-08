@@ -85,8 +85,6 @@ public class HexGrid : MonoBehaviour
     {
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
-        cellShaderData.Grid = this;
-
         CreateMap(cellCountX, cellCountZ);
 
         Singleton = this;

@@ -40,8 +40,6 @@ public class HexCellShaderData : MonoBehaviour
 
     public bool ImmediateMode { get; set; }
 
-    public HexGrid Grid { get; set; }
-
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -56,7 +54,7 @@ public class HexCellShaderData : MonoBehaviour
         if (needsVisibilityReset)
         {
             needsVisibilityReset = false;
-            Grid.ResetVisibility();
+            HexGrid.Singleton.ResetVisibility();
         }
 
         int delta = (int)(Time.deltaTime * transitionSpeed);
