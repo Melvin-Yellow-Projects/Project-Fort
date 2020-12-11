@@ -282,7 +282,7 @@ public class Unit : MonoBehaviour
         Unit unit = Instantiate(prefab);
         if (header >= 4) unit.Team = reader.ReadByte();
 
-        grid.AddUnit(unit, grid.GetCell(coordinates), orientation);
+        grid.LoadUnitOntoGrid(unit, grid.GetCell(coordinates), orientation);
     }
 
     public void ToggleMovementDisplay()

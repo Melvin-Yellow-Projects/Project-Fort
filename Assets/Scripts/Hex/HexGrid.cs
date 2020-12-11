@@ -362,16 +362,11 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    public void EditorAddUnit(Unit unit, HexCell location, float orientation)
+    public void LoadUnitOntoGrid(Unit unit, HexCell location, float orientation)
     {
         unit.transform.SetParent(transform, false); // HACK: parent the unit to the hex grid... hmm
         unit.MyCell = location;
         unit.Orientation = orientation;
-    }
-
-    public void EditorRemoveUnit(Unit unit)
-    {
-        unit.Die();
     }
 
     public void ClearPaths()

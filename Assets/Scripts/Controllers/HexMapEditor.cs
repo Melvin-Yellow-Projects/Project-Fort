@@ -223,7 +223,7 @@ public class HexMapEditor : MonoBehaviour
         {
             Unit unit = Instantiate(Unit.prefab);
             unit.Team = (team) ? 0 : 1;
-            HexGrid.Singleton.AddUnit(unit, cell, Random.Range(0f, 360f));
+            HexGrid.Singleton.LoadUnitOntoGrid(unit, cell, Random.Range(0f, 360f));
         }
     }
 
@@ -235,7 +235,7 @@ public class HexMapEditor : MonoBehaviour
         HexCell cell = HexGrid.Singleton.GetCell();
         if (cell && cell.MyUnit) // if the cell exists and the cell does have a unit...
         {
-            HexGrid.Singleton.RemoveUnit(cell.MyUnit);
+            cell.MyUnit.Die();
         }
     }
 
