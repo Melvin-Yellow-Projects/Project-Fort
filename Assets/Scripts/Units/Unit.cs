@@ -224,11 +224,13 @@ public class Unit : MonoBehaviour
 
         GameManager.OnStartRound += HandleOnStartRound;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
+
+        OnUnitSpawned?.Invoke(this);
     }
 
     private void Start()
     {
-        OnUnitSpawned?.Invoke(this);
+        //OnUnitSpawned?.Invoke(this);
     }
 
     private void OnDestroy()
@@ -254,7 +256,6 @@ public class Unit : MonoBehaviour
         if (myCell) UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
         myCell.MyUnit = null;
-        HexGrid.Singleton.units.Remove(this); // HACK: this can definitely be better
 
         Path.Clear();
 

@@ -362,17 +362,15 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    public void AddUnit(Unit unit, HexCell location, float orientation)
+    public void EditorAddUnit(Unit unit, HexCell location, float orientation)
     {
-        units.Add(unit);
         unit.transform.SetParent(transform, false); // HACK: parent the unit to the hex grid... hmm
         unit.MyCell = location;
         unit.Orientation = orientation;
     }
 
-    public void RemoveUnit(Unit unit)
+    public void EditorRemoveUnit(Unit unit)
     {
-        units.Remove(unit);
         unit.Die();
     }
 
@@ -478,46 +476,21 @@ public class HexGrid : MonoBehaviour
 
     #endregion
 
-    #region Debug Functions
+    /********** MARK: Handler Functions **********/
+    #region Handler Functions
 
- //   public Vector3 GetRelativeBridgePoint(Vector3 position)
- //   {
- //       // gets the relative local position
- //       Vector3 localPosition = transform.InverseTransformPoint(position);
+    private void HandleOnUnitSpawned(Unit unit)
+    {
+        // TODO: Server validation
 
- //       // converts local position into HexCoordinates 
- //       HexCoordinates coordinates = HexCoordinates.FromPosition(localPosition);
+        units.Add(unit);
+    }
 
- //       // get a cell's index from the coordinates
- //       int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
-
- //       // get relative direction
- //       HexDirection direction = HexMetrics.GetRelativeDirection(position - cells[index].Position);
-
- //       // return edge midpoint
- //       return cells[index].Position + HexMetrics.GetBridge(direction);
- //   }
-
- //   /// <summary>
-	///// TODO: comment GetEdgeMidpoint and touch up vars
-	///// </summary>
-	///// <returns></returns>
-	//public Vector3 GetRelativeBridgePoint(Ray inputRay)
- //   {
- //       RaycastHit hit;
-
- //       // did we hit anything? then return that HexCell
- //       if (Physics.Raycast(inputRay, out hit))
- //       {
- //           // draw line for 1 second
- //           Debug.DrawLine(inputRay.origin, hit.point, Color.blue, 1f);
-
- //           return GetRelativeBridgePoint(hit.point);
- //       }
-
- //       // nothing was found
- //       return new Vector3(); // HACK: idk if this works dawg
- //   }
+    private void HandleOnUnitDepawned(Unit unit)
+    {
+        units.Remove(unit);
+    }
 
     #endregion
+
 }

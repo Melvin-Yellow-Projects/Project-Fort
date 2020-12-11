@@ -44,7 +44,7 @@ public class NewMapMenu : MonoBehaviour
     public void Open()
     {
         gameObject.SetActive(true);
-         MapCamera.Locked = true;
+        MapCamera.Locked = true;
     }
 
     public void Close()
@@ -56,7 +56,7 @@ public class NewMapMenu : MonoBehaviour
     void CreateMap(int x, int z)
     {
         hexGrid.CreateMap(x, z);
-         MapCamera.ValidatePosition();
+        MapCamera.ValidatePosition();
         Close();
     }
 
