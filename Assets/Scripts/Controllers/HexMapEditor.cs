@@ -26,9 +26,6 @@ public class HexMapEditor : MonoBehaviour
 
     /* Cached References */
     [Header("Cached References")]
-    [Tooltip("instance reference to the HexGrid in the scene")]
-    public HexGrid hexGrid;
-
     [Tooltip("prefab reference to the HexGrid material")]
     public Material terrainMaterial;
 
@@ -103,7 +100,7 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     protected void HandleInput()
     {
-        HexCell currentCell = hexGrid.GetCell();
+        HexCell currentCell = HexGrid.Singleton.GetCell();
         if (currentCell)
         {
             EditCells(currentCell);
@@ -164,7 +161,7 @@ public class HexMapEditor : MonoBehaviour
         {
             for (int x = centerX - r; x <= centerX + brushSize; x++)
             {
-                EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+                EditCell(HexGrid.Singleton.GetCell(new HexCoordinates(x, z)));
             }
         }
 
@@ -173,7 +170,7 @@ public class HexMapEditor : MonoBehaviour
         {
             for (int x = centerX - brushSize; x <= centerX + r; x++)
             {
-                EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+                EditCell(HexGrid.Singleton.GetCell(new HexCoordinates(x, z)));
             }
         }
     }
@@ -211,9 +208,9 @@ public class HexMapEditor : MonoBehaviour
     public void UpdateCellUI(int index)
     {
         // stop navigation calculation
-        hexGrid.StopAllCoroutines();
+        HexGrid.Singleton.StopAllCoroutines();
 
-        hexGrid.SetCellLabel(index);
+        HexGrid.Singleton.SetCellLabel(index);
     }
 
     /// <summary>
@@ -221,12 +218,12 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     void CreateUnit(bool team)
     {
-        HexCell cell = hexGrid.GetCell();
+        HexCell cell = HexGrid.Singleton.GetCell();
         if (cell && !cell.MyUnit) // if the cell exists and the cell does not have a unit...
         {
             Unit unit = Instantiate(Unit.prefab);
             unit.Team = (team) ? 0 : 1;
-            hexGrid.AddUnit(unit, cell, Random.Range(0f, 360f));
+            HexGrid.Singleton.AddUnit(unit, cell, Random.Range(0f, 360f));
         }
     }
 
@@ -235,10 +232,10 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     void DestroyUnit()
     {
-        HexCell cell = hexGrid.GetCell();
+        HexCell cell = HexGrid.Singleton.GetCell();
         if (cell && cell.MyUnit) // if the cell exists and the cell does have a unit...
         {
-            hexGrid.RemoveUnit(cell.MyUnit);
+            HexGrid.Singleton.RemoveUnit(cell.MyUnit);
         }
     }
 
