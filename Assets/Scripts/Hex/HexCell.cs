@@ -107,7 +107,7 @@ public class HexCell : MonoBehaviour
 
             RefreshPosition();
 
-            // UNDONE: validation logic should go here for rivers, terrain, etc.
+            // TODO: validation logic should go here for rivers, terrain, etc.
 
             // refresh the cell's chunk
             Refresh();

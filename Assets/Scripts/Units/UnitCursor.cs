@@ -7,6 +7,8 @@
  * 
  * Additional Comments: 
  *      Previously known as HexCursor.cs
+ *      
+ *      FIXME: will flash red if it is initialized with error on frame 1
  **/
 
 using System.Collections;

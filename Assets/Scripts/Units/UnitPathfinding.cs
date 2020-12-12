@@ -191,7 +191,7 @@ public class UnitPathfinding : MonoBehaviour
 
     /// <summary>
     /// TODO: comment GetMoveCostCalculation; Should this be move cost or Distance calculation?
-    /// UNDONE: add rivers, water, edge type calculation, and other
+    /// TODO: add rivers, water, edge type calculation, and other
     /// </summary>
     /// <param name="current"></param>
     /// <param name="neighbor"></param>

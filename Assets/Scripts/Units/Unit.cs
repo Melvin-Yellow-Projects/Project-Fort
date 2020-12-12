@@ -146,7 +146,7 @@ public class Unit : MonoBehaviour
     {
         get
         {
-            return visionRange;
+            return visionRange * 100;
         }
     }
 
@@ -223,6 +223,7 @@ public class Unit : MonoBehaviour
         currentMovement = maxMovement;
 
         GameManager.OnStartRound += HandleOnStartRound;
+        GameManager.OnStartTurn += HandleOnStartTurn;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
 
         //OnUnitSpawned?.Invoke(this);
@@ -457,7 +458,7 @@ public class Unit : MonoBehaviour
     public bool IsValidCellForPath(HexCell current, HexCell neighbor)
     {
         // if a Unit exists on this cell
-        if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
+        //if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
 
         // invalid if cell is unexplored
         if (!neighbor.IsExplored) return false;
@@ -477,6 +478,12 @@ public class Unit : MonoBehaviour
     {
         HasAction = false;
         CurrentMovement = maxMovement;
+        Path.Clear(); // HACK: this is in theory not needed
+    }
+
+    private void HandleOnStartTurn()
+    {
+        HasAction = false;
         Path.Clear(); // HACK: this is in theory not needed
     }
 

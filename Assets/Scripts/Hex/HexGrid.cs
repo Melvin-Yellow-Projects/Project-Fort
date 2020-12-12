@@ -46,7 +46,7 @@ public class HexGrid : MonoBehaviour
     public int cellCountZ = 15;
 
     /* Variables */
-    public List<Unit> units = new List<Unit>(); // hACK: should not be public 
+    public List<Unit> units = new List<Unit>(); // HACK: should not be public 
 
     #endregion
 
@@ -307,7 +307,7 @@ public class HexGrid : MonoBehaviour
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
         // return cell using index
-        return cells[index]; // BUG: out of bounds error when editing top most cells
+        return cells[index]; // FIXME: out of bounds error when editing top most cells
     }
 
     /// <summary>

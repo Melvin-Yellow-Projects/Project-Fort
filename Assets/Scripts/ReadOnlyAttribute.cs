@@ -7,8 +7,8 @@
  * Date Created: September 11, 2020
  * 
  * Additional Comments:
- *      UNDONE: force serialization with the ReadOnly PropertyAttribute
- *      UNDONE: add the ability to comment the variable
+ *      TODO: force serialization with the ReadOnly PropertyAttribute
+ *      TODO: add the ability to comment the variable
  *      TODO: figure out how to put this script in the Editor folder
  **/
 

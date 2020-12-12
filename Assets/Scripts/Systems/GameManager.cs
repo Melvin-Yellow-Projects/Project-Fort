@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
     /// Event for when a new turn has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
+    /// <subscriber class="Unit">clears a unit's path</subscriber>
     public static event Action OnStartTurn;
 
     /// <summary>
@@ -87,6 +88,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        enabled = GameMode.Singleton.IsUsingTurnTimer;
         StartRound();
     }
 
@@ -134,8 +136,11 @@ public class GameManager : MonoBehaviour
 
         OnStartTurn?.Invoke();
 
-        ResetTimer();
-        enabled = true;
+        if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
+        else
+        {
+            moveTimerText.text = "Your Turn";
+        }
     }
 
     public void PlayTurn()
@@ -180,10 +185,10 @@ public class GameManager : MonoBehaviour
 
             OnUnitCombat?.Invoke();
 
-            for (int i = 0; i < grid.units.Count; i++) // FIXME: this should be a list of player units, not grid
+            for (int i = 0; i < grid.units.Count; i++) // TODO: this should be a list of player units, not grid
             {
                 Unit unit = grid.units[i];
-                unit.ExecuteNextMove(); // FIXME: correct number of steps
+                unit.ExecuteNextMove(); // TODO: correct number of steps
             }
 
             yield return new WaitForSeconds(0.4f); // HACK: hardcoded
@@ -199,6 +204,7 @@ public class GameManager : MonoBehaviour
     {
         //timeOfNextMove += GameMode.Singleton.TurnTimerLength;
         turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+        enabled = true;
     }
 
     #endregion

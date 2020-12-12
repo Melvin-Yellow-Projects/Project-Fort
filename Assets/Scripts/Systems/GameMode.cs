@@ -29,12 +29,10 @@ public class GameMode : ScriptableObject
 
     //[SerializeField] int minMovesPerTurn = 2;
 
-    [SerializeField] float turnTimerLength = 10f;
-
     [SerializeField] bool isUsingTurnTimer = false;
 
-
-
+    [SerializeField] float turnTimerLength = 10f;
+    
     //[SerializeField] bool isHotseat = false;
 
     //[SerializeField] bool canPlayerBreak = false;
@@ -54,6 +52,14 @@ public class GameMode : ScriptableObject
     #region Class Properties
 
     public static GameMode Singleton { get; set; }
+
+    public bool IsUsingTurnTimer
+    {
+        get
+        {
+            return isUsingTurnTimer;
+        }
+    }
 
     public float TurnTimerLength
     {

@@ -29,8 +29,6 @@ public class UnitPath
 
     UnitCursor curser;
 
-    //int moveCost = 0;
-
     #endregion
 
     /********** MARK: Public Properties **********/
@@ -67,6 +65,7 @@ public class UnitPath
         get
         {
             return unit.MyCell;
+            //return cells[0]; // this is the same thing
         }
     }
 
@@ -75,6 +74,15 @@ public class UnitPath
         get
         {
             return cells[cells.Count - 1];
+        }
+    }
+
+    public HexCell PenultimateCell
+    {
+        get
+        {
+            if (Length > 1) return cells[cells.Count - 2];
+            return null;
         }
     }
 
@@ -105,45 +113,39 @@ public class UnitPath
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <param name="canBackTrack"></param>
     public void AddCellToPath(HexCell cell, bool canBackTrack)
     {
+        // HACK: wow this code is really confusing
         // initialize if new path
         if (cells.Count == 0) cells.Add(unit.MyCell);
 
-        bool manualPath = false;
         if (!cells.Contains(cell) || canBackTrack)
         {
-            if(UnitPathfinding.CanAddCellToPath(unit, cell))
+            if (UnitPathfinding.CanAddCellToPath(unit, cell))
             {
                 cells.Add(cell);
 
                 if (UnitPathfinding.GetMoveCostCalculation(cells) <= unit.MaxMovement)
                 {
-                    manualPath = true;
-                    return;
+                    return; // ...otherwise reset the path if the path is too long
                 }
             }
         }
 
-        cells.Clear();
-        cells = UnitPathfinding.FindPath(unit, StartCell, cell);
-
-        if (curser) curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.MaxMovement);
-
-        //// HACK: this is mega confusing
-        //if (!HexPathfinding.CanAddCellToPath(unit, cell) || (cells.Contains(cell) && !canBackTrack))
-        //{
-        //    Debug.Log("Using A* to determine path");
-        //    cells.Clear();
-        //    cells = HexPathfinding.FindPath(unit, StartCell, cell);
-        //    // gray out path if it is too far
-        //}
-        //else
-        //{
-        //    cells.Add(cell);
-        //}
-
-        //if (curser) curser.HasError = (HexPathfinding.GetMoveCostCalculation(cells) > unit.Speed);
+        if (PenultimateCell == cell)
+        {
+            cells.Remove(EndCell);
+        }
+        else
+        {
+            cells.Clear();
+            cells = UnitPathfinding.FindPath(unit, StartCell, cell);
+        }
     }
 
     public void RemoveTailCells(int numberToRemove)
@@ -182,10 +184,11 @@ public class UnitPath
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser == null) curser = UnitCursor.Initialize(points);
-        else curser.Redraw(points);
+        if (curser) curser.Redraw(points); 
+        else curser = UnitCursor.Initialize(points);
 
         curser.IsSelected = unit.IsSelected;
+        curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.MaxMovement);
     }
 
     ///// <summary>

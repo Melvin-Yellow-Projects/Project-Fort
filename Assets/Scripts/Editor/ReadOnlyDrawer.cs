@@ -6,7 +6,7 @@
  * Date Created: September 11, 2020
  * 
  * Additional Comments:
- *      UNDONE: add a parameter that can change the text
+ *      TODO: add a parameter that can change the text
  **/
 
 using UnityEditor;
