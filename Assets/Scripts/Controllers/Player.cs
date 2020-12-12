@@ -99,6 +99,8 @@ public class Player : MonoBehaviour
         GameManager.OnStartTurn -= HandleOnStartTurn;
         GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
         GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
+
+        controls.Dispose();
     }
 
     protected void Update()
@@ -114,12 +116,41 @@ public class Player : MonoBehaviour
 
     #endregion
 
+    /********** MARK: Input Functions **********/
+    #region Input Functions
+
+    private void DoSelection(InputAction.CallbackContext context)
+    {
+        if (currentCell)
+        {
+            DeselectUnitAndClearItsPath();
+
+            SelectUnit(currentCell.MyUnit);
+        }
+    }
+
+    private void DoCommand(InputAction.CallbackContext context)
+    {
+        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
+
+        if (currentCell && selectedUnit)
+        {
+            selectedUnit.HasAction = true;
+            DeselectUnit();
+        }
+
+        MoveCount++;
+        OnCommandChange?.Invoke();
+    }
+
+    #endregion
+
     /********** MARK: Class Functions **********/
     #region Class Functions
 
     private void UpdateCurrentCell()
     {
-        HexCell cell = HexGrid.Singleton.GetCell();
+        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
         if (cell != currentCell)
         {
             if (currentCell) currentCell.DisableHighlight();
@@ -183,35 +214,6 @@ public class Player : MonoBehaviour
     {
         if (selectedUnit) selectedUnit.Path.Clear();
         DeselectUnit();
-    }
-
-    #endregion
-
-    /********** MARK: Input Functions **********/
-    #region Input Functions
-
-    private void DoSelection(InputAction.CallbackContext ctx)
-    {
-        if (currentCell)
-        {
-            DeselectUnitAndClearItsPath();
-
-            SelectUnit(currentCell.MyUnit);
-        }
-    }
-
-    private void DoCommand(InputAction.CallbackContext ctx)
-    {
-        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
- 
-        if (currentCell && selectedUnit)
-        {
-            selectedUnit.HasAction = true;
-            DeselectUnit();
-        }
-
-        MoveCount++;
-        OnCommandChange?.Invoke();
     }
 
     #endregion

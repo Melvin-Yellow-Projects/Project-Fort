@@ -1,6 +1,6 @@
 ﻿/**
- * File Name: HexMapEditor.cs
- * Description: Class to edit a Hex Map
+ * File Name: MapEditor.cs
+ * Description: Class to edit a hex Map
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: September 10, 2020
@@ -9,17 +9,20 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *
+ *      Previously known as HexMapEditor.cs
  **/
 
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.IO;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Class for editing a hex map/grid
 /// </summary>
-public class HexMapEditor : MonoBehaviour
+public class MapEditor : MonoBehaviour
 {
     /********** MARK: Public Variables **********/
     #region Public Variables
@@ -29,9 +32,6 @@ public class HexMapEditor : MonoBehaviour
     [Tooltip("prefab reference to the HexGrid material")]
     public Material terrainMaterial;
 
-    [Tooltip("an array of editor panels")]
-    public Transform[] editorPanels;
-
     #endregion
 
     /********** MARK: Private Variables **********/
@@ -39,10 +39,41 @@ public class HexMapEditor : MonoBehaviour
 
     int brushSize;
 
+    int activeElevation;
     int activeTerrainTypeIndex;
+    int activeUnitTypeIndex = -1;
 
-    bool applyElevation = true;
-    private int activeElevation;
+    int unitTeamIndex;
+
+    Controls controls;
+    bool isSelectionPressed = false;
+    bool isDeletionPressed = false;
+
+    #endregion
+
+    /********** MARK: Private Variables **********/
+    #region Private Variables
+
+    /// <summary>
+    /// Toggles elevation editing
+    /// </summary>
+    public bool IsSettingElevation { get; set; } = true;
+
+    public bool IsSettingTerrain
+    {
+        get
+        {
+            return (activeTerrainTypeIndex >= 0);
+        }
+    }
+
+    public bool IsSettingUnits
+    {
+        get
+        {
+            return (activeUnitTypeIndex >= 0);
+        }
+    }
 
     #endregion
 
@@ -56,56 +87,68 @@ public class HexMapEditor : MonoBehaviour
     {
         terrainMaterial.DisableKeyword("GRID_ON");
         Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+
+        controls = new Controls();
+
+        controls.MapEditor.Selection.performed += OnSelection;
+        controls.MapEditor.Selection.canceled += OnSelection;
+
+        controls.MapEditor.Deletion.performed += OnDeletion;
+        controls.MapEditor.Deletion.canceled += OnDeletion;
+
+        controls.Enable();
+        enabled = false;
     }
 
-    /// <summary>
-    /// Unity Method; Update() is called once per frame
-    /// HACK: direct manipulation of input
-    /// </summary>
-    protected void Update()
+    private void LateUpdate()
     {
-        // TODO: convert GetMouseButton to a specific input action
+        HandleInput();
+    }
+
+    private void OnDestroy()
+    {
+        controls.Dispose();
+    }
+
+    #endregion
+
+    /********** MARK: Input Functions **********/
+    #region Input Functions
+
+    private void OnSelection(InputAction.CallbackContext context)
+    {
+        isSelectionPressed = context.ReadValueAsButton();
+        enabled = context.ReadValueAsButton();
+    }
+
+    private void OnDeletion(InputAction.CallbackContext context)
+    {
+        isDeletionPressed = context.ReadValueAsButton();
+        enabled = context.ReadValueAsButton();
+    }
+
+    private void HandleInput()
+    {
         if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (Input.GetMouseButton(0))
+            if (isDeletionPressed) // do deletion
             {
-                HandleInput();
-                return;
+                DestroyUnit();
             }
-            if (Input.GetKeyDown(KeyCode.U) || Input.GetKeyDown(KeyCode.I))
+            else if (isSelectionPressed) // do selection
             {
-                if (Input.GetKey(KeyCode.LeftShift))
-                {
-                    DestroyUnit();
-                }
-                else
-                {
-                    if (Input.GetKeyDown(KeyCode.U)) CreateUnit(true);
-                    else CreateUnit(false);
-                }
-                return;
+                HexCell currentCell = HexGrid.Singleton.GetCellUnderMouse();
+
+                if (currentCell && IsSettingUnits) CreateUnit();
+                else if (currentCell && IsSettingTerrain) EditCells(currentCell);
             }
         }
-        //previousCell = null;
     }
 
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
-
-    /// <summary>
-    /// Handles the input from a player
-    /// HACK: raw input from left shift is used, should be an action
-    /// </summary>
-    protected void HandleInput()
-    {
-        HexCell currentCell = HexGrid.Singleton.GetCell();
-        if (currentCell)
-        {
-            EditCells(currentCell);
-        }
-    }
 
     /// <summary>
     /// Sets the map editor's brush size; size correlates to how many neighbors to edit after the
@@ -118,6 +161,16 @@ public class HexMapEditor : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets the elevation for the map editor; this function is independent of SetApplyElevation and
+    /// will not enable elevation editing if it is turned off
+    /// </summary>
+    /// <param name="elevation"></param>
+    public void SetElevation(float elevation)
+    {
+        activeElevation = (int)elevation;
+    }
+
+    /// <summary>
     /// Selects a color within HexMapEditor's available colors; a value of -1 disables color editing
     /// TODO: rewrite method desc
     /// </summary>
@@ -127,23 +180,14 @@ public class HexMapEditor : MonoBehaviour
         activeTerrainTypeIndex = index;
     }
 
-    /// <summary>
-    /// Toggles elevation editing
-    /// </summary>
-    /// <param name="toggle">enables or disables elevation editting</param>
-    public void SetApplyElevation(bool toggle)
+    public void SetUnitTypeIndex(int index)
     {
-        applyElevation = toggle;
+        activeUnitTypeIndex = index;
     }
 
-    /// <summary>
-    /// Sets the elevation for the map editor; this function is independent of SetApplyElevation and
-    /// will not enable elevation editing if it is turned off
-    /// </summary>
-    /// <param name="elevation"></param>
-    public void SetElevation(float elevation)
+    public void SetUnitTeamIndex(float index)
     {
-        activeElevation = (int)elevation;
+        unitTeamIndex = (int)index;
     }
 
     /// <summary>
@@ -183,9 +227,9 @@ public class HexMapEditor : MonoBehaviour
     {
         if (cell == null) return;
 
-        if (activeTerrainTypeIndex >= 0) cell.TerrainTypeIndex = activeTerrainTypeIndex;
+        if (IsSettingTerrain) cell.TerrainTypeIndex = activeTerrainTypeIndex;
 
-        if (applyElevation) cell.Elevation = activeElevation;
+        if (IsSettingElevation) cell.Elevation = activeElevation;
     }
 
     // TODO: comment ShowGrid
@@ -216,9 +260,11 @@ public class HexMapEditor : MonoBehaviour
     /// <summary>
     /// TODO: comment func CreateUnit
     /// </summary>
-    void CreateUnit(bool team)
+    void CreateUnit()
     {
-        HexCell cell = HexGrid.Singleton.GetCell();
+        bool team = (unitTeamIndex == 0);
+
+        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
         if (cell && !cell.MyUnit) // if the cell exists and the cell does not have a unit...
         {
             Unit unit = Instantiate(Unit.prefab);
@@ -232,7 +278,7 @@ public class HexMapEditor : MonoBehaviour
     /// </summary>
     void DestroyUnit()
     {
-        HexCell cell = HexGrid.Singleton.GetCell();
+        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
         if (cell && cell.MyUnit) // if the cell exists and the cell does have a unit...
         {
             cell.MyUnit.Die();

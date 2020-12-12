@@ -330,7 +330,7 @@ public class HexGrid : MonoBehaviour
         return cells[index];
     }
 
-    public HexCell GetCell()
+    public HexCell GetCellUnderMouse()
     {
         return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
     }

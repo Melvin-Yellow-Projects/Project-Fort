@@ -272,6 +272,74 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Map Editor"",
+            ""id"": ""37ac2727-9eb6-42b0-a928-14dccfde2bdb"",
+            ""actions"": [
+                {
+                    ""name"": ""Selection"",
+                    ""type"": ""Button"",
+                    ""id"": ""087b2b25-0009-4c31-9fbc-6a84b798e5d7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Deletion"",
+                    ""type"": ""Value"",
+                    ""id"": ""750721fb-c3cb-44a7-b909-b194b99b3d73"",
+                    ""expectedControlType"": ""Digital"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4ea28a1b-dbbb-47ea-8e79-ab9c01fd7a5e"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Selection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Button With One Modifier"",
+                    ""id"": ""e4e21d5b-ba2c-46ad-b8ff-618671f9f9f2"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Deletion"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""01424ae4-ca44-4ffb-8405-230cfe715821"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Deletion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""8a6072ca-27d0-4919-9475-ba0c99a3415e"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Deletion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -294,6 +362,10 @@ public class @Controls : IInputActionCollection, IDisposable
         m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
         m_Camera_Rotate = m_Camera.FindAction("Rotate", throwIfNotFound: true);
         m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
+        // Map Editor
+        m_MapEditor = asset.FindActionMap("Map Editor", throwIfNotFound: true);
+        m_MapEditor_Selection = m_MapEditor.FindAction("Selection", throwIfNotFound: true);
+        m_MapEditor_Deletion = m_MapEditor.FindAction("Deletion", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -462,6 +534,47 @@ public class @Controls : IInputActionCollection, IDisposable
         }
     }
     public CameraActions @Camera => new CameraActions(this);
+
+    // Map Editor
+    private readonly InputActionMap m_MapEditor;
+    private IMapEditorActions m_MapEditorActionsCallbackInterface;
+    private readonly InputAction m_MapEditor_Selection;
+    private readonly InputAction m_MapEditor_Deletion;
+    public struct MapEditorActions
+    {
+        private @Controls m_Wrapper;
+        public MapEditorActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Selection => m_Wrapper.m_MapEditor_Selection;
+        public InputAction @Deletion => m_Wrapper.m_MapEditor_Deletion;
+        public InputActionMap Get() { return m_Wrapper.m_MapEditor; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MapEditorActions set) { return set.Get(); }
+        public void SetCallbacks(IMapEditorActions instance)
+        {
+            if (m_Wrapper.m_MapEditorActionsCallbackInterface != null)
+            {
+                @Selection.started -= m_Wrapper.m_MapEditorActionsCallbackInterface.OnSelection;
+                @Selection.performed -= m_Wrapper.m_MapEditorActionsCallbackInterface.OnSelection;
+                @Selection.canceled -= m_Wrapper.m_MapEditorActionsCallbackInterface.OnSelection;
+                @Deletion.started -= m_Wrapper.m_MapEditorActionsCallbackInterface.OnDeletion;
+                @Deletion.performed -= m_Wrapper.m_MapEditorActionsCallbackInterface.OnDeletion;
+                @Deletion.canceled -= m_Wrapper.m_MapEditorActionsCallbackInterface.OnDeletion;
+            }
+            m_Wrapper.m_MapEditorActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Selection.started += instance.OnSelection;
+                @Selection.performed += instance.OnSelection;
+                @Selection.canceled += instance.OnSelection;
+                @Deletion.started += instance.OnDeletion;
+                @Deletion.performed += instance.OnDeletion;
+                @Deletion.canceled += instance.OnDeletion;
+            }
+        }
+    }
+    public MapEditorActions @MapEditor => new MapEditorActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -485,5 +598,10 @@ public class @Controls : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
+    }
+    public interface IMapEditorActions
+    {
+        void OnSelection(InputAction.CallbackContext context);
+        void OnDeletion(InputAction.CallbackContext context);
     }
 }
