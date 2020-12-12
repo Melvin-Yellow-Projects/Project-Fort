@@ -43,6 +43,8 @@ public class MapCamera : MonoBehaviour
 	float rotationAngle;
 
 	Controls controls;
+	bool isMovePressed = false;
+	bool isRotatePressed = false;
 
 	#endregion
 
@@ -105,12 +107,22 @@ public class MapCamera : MonoBehaviour
 		//if (moveDelta.x != 0f || moveDelta.y != 0f) AdjustPosition(moveDelta.x, moveDelta.y);
 	}
 
-	#endregion
+    private void OnDestroy()
+    {
+		controls.Dispose();
+    }
 
-	/********** MARK: Class Functions **********/
-	#region Class Functions
+    #endregion
 
-	public static void ValidatePosition()
+    /********** MARK: Input Functions **********/
+    #region Input Functions
+
+    #endregion
+
+    /********** MARK: Class Functions **********/
+    #region Class Functions
+
+    public static void ValidatePosition()
 	{
 		Singleton.AdjustPosition(0f, 0f);
 	}
