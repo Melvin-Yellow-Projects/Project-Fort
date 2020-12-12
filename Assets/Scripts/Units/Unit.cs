@@ -225,12 +225,12 @@ public class Unit : MonoBehaviour
         GameManager.OnStartRound += HandleOnStartRound;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
 
-        OnUnitSpawned?.Invoke(this);
+        //OnUnitSpawned?.Invoke(this);
     }
 
     private void Start()
     {
-        //OnUnitSpawned?.Invoke(this);
+        OnUnitSpawned?.Invoke(this);
     }
 
     private void OnDestroy()

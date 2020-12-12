@@ -87,6 +87,9 @@ public class HexGrid : MonoBehaviour
 
         CreateMap(cellCountX, cellCountZ);
 
+        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Unit.OnUnitDepawned += HandleOnUnitDepawned;
+
         Singleton = this;
     }
 
@@ -364,7 +367,8 @@ public class HexGrid : MonoBehaviour
 
     public void LoadUnitOntoGrid(Unit unit, HexCell location, float orientation)
     {
-        unit.transform.SetParent(transform, false); // HACK: parent the unit to the hex grid... hmm
+        // HACK: parent the unit to the hex grid... hmm
+        unit.transform.SetParent(transform, false); 
         unit.MyCell = location;
         unit.Orientation = orientation;
     }

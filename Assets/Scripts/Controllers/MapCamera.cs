@@ -117,7 +117,7 @@ public class MapCamera : MonoBehaviour
 
 	void AdjustPosition(InputAction.CallbackContext ctx)
     {
-		moveDelta = ctx.ReadValue<Vector2>();
+		//moveDelta = ctx.ReadValue<Vector2>();
 		//AdjustPosition(moveDelta.x, moveDelta.y);
 	}
 
@@ -152,7 +152,7 @@ public class MapCamera : MonoBehaviour
 
 	void AdjustRotation(InputAction.CallbackContext ctx)
 	{
-		Debug.Log("Rotating Camera");
+		//Debug.Log("Rotating Camera");
 	}
 
 	void AdjustRotation(float delta)
@@ -171,7 +171,7 @@ public class MapCamera : MonoBehaviour
 
 	void AdjustZoom(InputAction.CallbackContext ctx)
 	{
-		Debug.Log("Zooming Camera");
+		//Debug.Log("Zooming Camera");
 	}
 
 	void AdjustZoom(float delta)
