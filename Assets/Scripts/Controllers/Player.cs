@@ -238,7 +238,7 @@ public class Player : MonoBehaviour
         if (unit.MyTeam == MyTeam)
         {
             myUnits.Add(unit);
-            unit.MyUnitDisplay.ToggleMovementDisplay();
+            unit.Display.ToggleMovementDisplay();
         }
     }
 

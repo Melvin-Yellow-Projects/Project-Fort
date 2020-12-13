@@ -154,7 +154,7 @@ public class UnitPath
 
         for (int i = 0; i < numberToRemove; i++) cells.RemoveAt(0);
 
-        if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell does not equal Unit's cell!");
+        if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell is not Unit's cell!");
     }
 
     /// <summary>

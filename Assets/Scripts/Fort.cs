@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Team), typeof(ColorSetter))]
 public class Fort : MonoBehaviour
 {
     /********** MARK: Variables **********/

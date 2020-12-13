@@ -365,11 +365,11 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    public void LoadUnitOntoGrid(Unit unit, HexCell location, float orientation)
+    public void LoadUnitOntoGrid(Unit unit, HexCell cell, float orientation)
     {
         // HACK: parent the unit to the hex grid... hmm
-        unit.transform.SetParent(transform, false); 
-        unit.MyCell = location;
+        unit.transform.SetParent(transform, false);
+        unit.MyCell = cell;
         unit.Orientation = orientation;
     }
 

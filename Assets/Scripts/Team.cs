@@ -81,5 +81,16 @@ public class Team : MonoBehaviour
         return Equals(obj as Team);
     }
 
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hashCode = teamIndex.GetHashCode();
+            //hashCode = (hashCode * 397) ^ length.GetHashCode();
+            //hashCode = (hashCode * 397) ^ breadth.GetHashCode();
+            return hashCode;
+        }
+    }
+
     #endregion
 }

@@ -20,6 +20,9 @@ using System;
 /// <summary>
 /// a unit that is able to interact with a hex map 
 /// </summary>
+[RequireComponent(typeof(Team))]
+[RequireComponent(typeof(ColorSetter))]
+[RequireComponent(typeof(UnitDisplay))]
 public class Unit : MonoBehaviour
 {
     /********** MARK: Variables **********/
@@ -38,7 +41,7 @@ public class Unit : MonoBehaviour
 
     public static Unit prefab;
 
-    HexCell myCell; 
+    HexCell myCell;
     HexCell currentTravelCell; // HACK: i really don't like this name
 
     float orientation;
@@ -78,7 +81,7 @@ public class Unit : MonoBehaviour
         set
         {
             // if there is a previous cell...
-            if (myCell) 
+            if (myCell)
             {
                 UnitPathfinding.DecreaseVisibility(myCell, visionRange);
                 myCell.MyUnit = null;
@@ -91,7 +94,7 @@ public class Unit : MonoBehaviour
             transform.localPosition = value.Position;
         }
     }
-    
+
     /// <summary>
     /// A unit's rotation around the Y axis, in degrees
     /// </summary>
@@ -127,7 +130,7 @@ public class Unit : MonoBehaviour
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
             if (!CanMove) Path.Clear();
 
-            MyUnitDisplay.RefreshMovementDisplay();
+            Display.RefreshMovementDisplay();
 
             float saturation = (CanMove) ? 1 : cannotMoveSaturation;
             MyColorSetter.SetColor(MyTeam.MyColor * saturation);
@@ -186,7 +189,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public UnitDisplay MyUnitDisplay
+    public UnitDisplay Display
     {
         get
         {
@@ -233,7 +236,7 @@ public class Unit : MonoBehaviour
         GameManager.OnStartTurn += HandleOnStartTurn;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
 
-        MyUnitDisplay.RefreshMovementDisplay();
+        Display.RefreshMovementDisplay();
     }
 
     private void Start()
@@ -254,12 +257,12 @@ public class Unit : MonoBehaviour
 
     /********** MARK: Class Functions **********/
     #region Class Functions
-        
+
     public void ValidateLocation()
     {
         transform.localPosition = myCell.Position;
     }
-    
+
     public void Die(bool isPlayingAnimation = false)
     {
         if (myCell) UnitPathfinding.DecreaseVisibility(myCell, visionRange);
