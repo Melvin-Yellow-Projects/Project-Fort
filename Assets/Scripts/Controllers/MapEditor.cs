@@ -300,7 +300,7 @@ public class MapEditor : MonoBehaviour
         if (cell && !cell.MyUnit) 
         {
             Unit unit = Instantiate(Unit.prefab);
-            unit.Team = (team) ? 0 : 1;
+            unit.MyTeam.TeamIndex = (team) ? 0 : 1;
             HexGrid.Singleton.LoadUnitOntoGrid(unit, cell, Random.Range(0f, 360f));
         }
     }

@@ -476,11 +476,11 @@ public class HexCell : MonoBehaviour
 
     public void AddUnitToCell(Unit newUnit)
     {
-        if (MyUnit && MyUnit.Team == newUnit.Team) return; // if there's a friendly unit already there
+        if (MyUnit && MyUnit.MyTeam == newUnit.MyTeam) return; // if there's a friendly unit already there
         
         foreach (Unit unit in myUnitQueue)
         {
-            if (unit.Team == newUnit.Team) return; // if there's a friendly unit arriving 
+            if (unit.MyTeam == newUnit.MyTeam) return; // if there's a friendly unit arriving 
 
             //if (MyUnit.blocksthisunit(newUnit)) return false; // if unit is blocked by existing unit, reject
 
@@ -500,16 +500,23 @@ public class HexCell : MonoBehaviour
 
     private void HandleOnUnitCombat()
     {
+        bool hasKilled = false;
         if (MyUnit)
         {
             MyUnit.Die(isPlayingAnimation: true); // kill sedentary unit 
             MyUnit = null;
+            hasKilled = true;
         }
 
-        foreach (Unit unit in myUnitQueue)
+        for (int i = 0; i < myUnitQueue.Count; i++) 
         {
+            Unit unit = myUnitQueue[i];
+
+            if (hasKilled) unit.CurrentMovement = 1;
+
             if (myUnitQueue.Count > 1) unit.Die(isPlayingAnimation: true);
             else MyUnit = unit;
+
         }
 
         myUnitQueue.Clear();

@@ -16,7 +16,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using TMPro;
 
 /// <summary>
 /// a unit that is able to interact with a hex map 
@@ -26,8 +25,8 @@ public class Unit : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [SerializeField] GameObject movementDisplay = null;
-    [SerializeField] TMP_Text currentMovementText = null;
+    [Tooltip("saturation reduction for when a unit has moved")]
+    [SerializeField, Range(0, 1f)] float cannotMoveSaturation = 0.3f;
 
     // HACK: this needs to be configurable
     const float travelSpeed = 8f; 
@@ -47,8 +46,6 @@ public class Unit : MonoBehaviour
     bool isSelected = false;
 
     int team = 0;
-
-    Color myColor;
 
     #endregion
 
@@ -125,12 +122,15 @@ public class Unit : MonoBehaviour
         {
             return currentMovement;
         }
-        private set
+        set // HACK: this should be private but cell needs to set it on combat, it's also just weird
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
-            currentMovementText.text = $"{currentMovement}";
+            if (!CanMove) Path.Clear();
 
-            RefreshColor();
+            MyUnitDisplay.RefreshMovementDisplay();
+
+            float saturation = (CanMove) ? 1 : cannotMoveSaturation;
+            MyColorSetter.SetColor(MyTeam.MyColor * saturation);
         }
     }
 
@@ -178,19 +178,27 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public int Team
+    public Team MyTeam
     {
         get
         {
-            return team;
+            return GetComponent<Team>();
         }
+    }
 
-        set
+    public UnitDisplay MyUnitDisplay
+    {
+        get
         {
-            team = value;
+            return GetComponent<UnitDisplay>();
+        }
+    }
 
-            myColor = (team == 0) ? Color.blue : Color.red;
-            RefreshColor();
+    public ColorSetter MyColorSetter
+    {
+        get
+        {
+            return GetComponent<ColorSetter>(); ;
         }
     }
 
@@ -219,14 +227,13 @@ public class Unit : MonoBehaviour
     private void Awake()
     {
         Path = new UnitPath(this);
-        currentMovementText.text = $"{maxMovement}";
         currentMovement = maxMovement;
 
         GameManager.OnStartRound += HandleOnStartRound;
         GameManager.OnStartTurn += HandleOnStartTurn;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
 
-        //OnUnitSpawned?.Invoke(this);
+        MyUnitDisplay.RefreshMovementDisplay();
     }
 
     private void Start()
@@ -239,6 +246,7 @@ public class Unit : MonoBehaviour
         OnUnitDepawned?.Invoke(this);
 
         GameManager.OnStartRound -= HandleOnStartRound;
+        GameManager.OnStartTurn -= HandleOnStartTurn;
         GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
     }
 
@@ -281,24 +289,9 @@ public class Unit : MonoBehaviour
         float orientation = reader.ReadSingle();
 
         Unit unit = Instantiate(prefab);
-        if (header >= 4) unit.Team = reader.ReadByte();
+        if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
 
         grid.LoadUnitOntoGrid(unit, grid.GetCell(coordinates), orientation);
-    }
-
-    public void ToggleMovementDisplay()
-    {
-        movementDisplay.SetActive(!movementDisplay.activeSelf);
-    }
-
-    private void RefreshColor()
-    {
-        float saturation = (CanMove) ? 1 : 0.35f; // HACK: Hardcoded saturation Value
-
-        foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
-        {
-            renderer.material.color = myColor * saturation;
-        }
     }
 
     #endregion
@@ -346,6 +339,8 @@ public class Unit : MonoBehaviour
         else
         {
             StartCoroutine(RouteFailure());
+            Path.Clear();
+            CurrentMovement = 0;
         }
     }
 
@@ -509,13 +504,13 @@ public class Unit : MonoBehaviour
     {
         HasAction = false;
         CurrentMovement = maxMovement;
-        Path.Clear(); // HACK: this is in theory not needed
+        //Path.Clear(); 
     }
 
     private void HandleOnStartTurn()
     {
         HasAction = false;
-        Path.Clear(); // HACK: this is in theory not needed
+        //Path.Clear(); 
     }
 
     private void HandleOnStopMoveUnits()

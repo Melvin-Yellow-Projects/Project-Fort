@@ -44,7 +44,13 @@ public class Player : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    public int Team { get; set; } = 0;
+    public Team MyTeam
+    {
+        get
+        {
+            return GetComponent<Team>();
+        }
+    }
 
     public int MoveCount { get; set; } = 1;
 
@@ -229,10 +235,10 @@ public class Player : MonoBehaviour
 
     private void HandleOnUnitSpawned(Unit unit)
     {
-        if (unit.Team == Team)
+        if (unit.MyTeam == MyTeam)
         {
             myUnits.Add(unit);
-            unit.ToggleMovementDisplay();
+            unit.MyUnitDisplay.ToggleMovementDisplay();
         }
     }
 

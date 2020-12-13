@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
     /// Event for when unit moves have finished
     /// </summary>
     /// <subscriber class="Player">enables controls when units are moving</subscriber>
-    /// <subscriber class="Unit">HACK: changes color of unit if it can still move</subscriber>
+    /// <subscriber class="Unit">sets a unit's movement to 0 if it has moved</subscriber>
     public static event Action OnStopMoveUnits;
 
     #endregion
