@@ -70,7 +70,7 @@ public class Player : MonoBehaviour
     protected void Awake()
     {
         //terrainMaterial.DisableKeyword("GRID_ON");
-        Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        Shader.DisableKeyword("HEX_MAP_EDIT_MODE"); // HACK: this class should not have access to this line
 
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;

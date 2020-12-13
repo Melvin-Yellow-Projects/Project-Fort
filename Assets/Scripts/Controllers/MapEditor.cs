@@ -11,6 +11,8 @@
  *      Hex Map; this file has been updated it to better fit this project
  *
  *      Previously known as HexMapEditor.cs
+ *      
+ *      HACK: the UI for this class is very functional and not well done
  **/
 
 using UnityEngine;
@@ -51,14 +53,17 @@ public class MapEditor : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Private Variables **********/
-    #region Private Variables
+    /********** MARK: Properties **********/
+    #region Properties
 
     /// <summary>
     /// Toggles elevation editing
     /// </summary>
     public bool IsSettingElevation { get; set; } = true;
 
+    /// <summary>
+    /// Gets whether or not the Terrain can be set
+    /// </summary>
     public bool IsSettingTerrain
     {
         get
@@ -67,6 +72,9 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets whether or not a Unit can be set
+    /// </summary>
     public bool IsSettingUnits
     {
         get
@@ -83,7 +91,7 @@ public class MapEditor : MonoBehaviour
     /// <summary>
     /// Unity Method; Awake() is called before Start() upon GameObject creation
     /// </summary>
-    protected void Awake()
+    private void Awake()
     {
         terrainMaterial.DisableKeyword("GRID_ON");
         Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
@@ -100,11 +108,18 @@ public class MapEditor : MonoBehaviour
         enabled = false;
     }
 
+    /// <summary>
+    /// Unity Method; LateUpdate is called every frame, if the Behaviour is enabled and after all
+    /// Update functions have been called
+    /// </summary>
     private void LateUpdate()
     {
         HandleInput();
     }
 
+    /// <summary>
+    /// Unity Method; Called when the GameObject is destroyed
+    /// </summary>
     private void OnDestroy()
     {
         controls.Dispose();
@@ -115,18 +130,29 @@ public class MapEditor : MonoBehaviour
     /********** MARK: Input Functions **********/
     #region Input Functions
 
+    /// <summary>
+    /// Called when the Selection Action is performed or canceled 
+    /// </summary>
+    /// <param name="context">binding for this callback, button</param>
     private void OnSelection(InputAction.CallbackContext context)
     {
         isSelectionPressed = context.ReadValueAsButton();
         enabled = context.ReadValueAsButton();
     }
 
+    /// <summary>
+    /// Called when the Deletion Action is performed or canceled 
+    /// </summary>
+    /// <param name="context">binding for this callback, button with modifier</param>
     private void OnDeletion(InputAction.CallbackContext context)
     {
         isDeletionPressed = context.ReadValueAsButton();
         enabled = context.ReadValueAsButton();
     }
 
+    /// <summary>
+    /// Handles the deletion and selection input for the Map Editor Action Map
+    /// </summary>
     private void HandleInput()
     {
         if (!EventSystem.current.IsPointerOverGameObject())
@@ -161,30 +187,36 @@ public class MapEditor : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the elevation for the map editor; this function is independent of SetApplyElevation and
-    /// will not enable elevation editing if it is turned off
+    /// Sets the elevation for the map editor; this function is independent of IsSettingElevation
     /// </summary>
-    /// <param name="elevation"></param>
+    /// <param name="elevation">new elevation</param>
     public void SetElevation(float elevation)
     {
         activeElevation = (int)elevation;
     }
 
     /// <summary>
-    /// Selects a color within HexMapEditor's available colors; a value of -1 disables color editing
-    /// TODO: rewrite method desc
+    /// Sets the terrain material for the map
     /// </summary>
-    /// <param name="index">index of color to select</param>
+    /// <param name="index">index of material type</param>
     public void SetTerrainTypeIndex(int index)
     {
         activeTerrainTypeIndex = index;
     }
 
+    /// <summary>
+    /// Sets the unit type to be used when a new unit is created
+    /// </summary>
+    /// <param name="index">index of unit type</param>
     public void SetUnitTypeIndex(int index)
     {
         activeUnitTypeIndex = index;
     }
 
+    /// <summary>
+    /// Sets which team to use when a new unit is created
+    /// </summary>
+    /// <param name="index"></param>
     public void SetUnitTeamIndex(float index)
     {
         unitTeamIndex = (int)index;
@@ -195,7 +227,7 @@ public class MapEditor : MonoBehaviour
     /// cell's HexCoordinates to loop around all neighbors
     /// </summary>
     /// <param name="center">targeted cell to edit</param>
-	void EditCells(HexCell center)
+	private void EditCells(HexCell center)
     {
         int centerX = center.coordinates.X;
         int centerZ = center.coordinates.Z;
@@ -223,7 +255,7 @@ public class MapEditor : MonoBehaviour
     /// Edits a given HexCell, assigning it new information
     /// </summary>
     /// <param name="cell">HexCell to be editted</param>
-    void EditCell(HexCell cell)
+    private void EditCell(HexCell cell)
     {
         if (cell == null) return;
 
@@ -232,7 +264,10 @@ public class MapEditor : MonoBehaviour
         if (IsSettingElevation) cell.Elevation = activeElevation;
     }
 
-    // TODO: comment ShowGrid
+    /// <summary>
+    /// Toggles the grid for the terrain material
+    /// </summary>
+    /// <param name="visible"></param>
     public void ShowGrid(bool visible)
     {
         if (visible)
@@ -246,26 +281,23 @@ public class MapEditor : MonoBehaviour
     }
 
     /// <summary>
-    /// TODO: write update cell ui func
+    /// Sets the cell's label on the grid
     /// </summary>
-    /// <param name="index"></param>
+    /// <param name="index">type of label</param>
     public void UpdateCellUI(int index)
     {
-        // stop navigation calculation
-        HexGrid.Singleton.StopAllCoroutines();
-
         HexGrid.Singleton.SetCellLabel(index);
     }
 
     /// <summary>
-    /// TODO: comment func CreateUnit
+    /// Creates a unit on the cell underneath the mouse cursor
     /// </summary>
-    void CreateUnit()
+    private void CreateUnit()
     {
         bool team = (unitTeamIndex == 0);
 
         HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        if (cell && !cell.MyUnit) // if the cell exists and the cell does not have a unit...
+        if (cell && !cell.MyUnit) 
         {
             Unit unit = Instantiate(Unit.prefab);
             unit.Team = (team) ? 0 : 1;
@@ -274,12 +306,12 @@ public class MapEditor : MonoBehaviour
     }
 
     /// <summary>
-    /// TODO: comment func Destroy Unit
+    /// Destroys a unit on the cell underneath the mouse cursor
     /// </summary>
-    void DestroyUnit()
+    private void DestroyUnit()
     {
         HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        if (cell && cell.MyUnit) // if the cell exists and the cell does have a unit...
+        if (cell && cell.MyUnit) 
         {
             cell.MyUnit.Die();
         }
