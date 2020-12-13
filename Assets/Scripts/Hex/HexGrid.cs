@@ -127,7 +127,7 @@ public class HexGrid : MonoBehaviour
             }
         }
 
-        // verify valid map; UNDONE: add support for chunks that are partially filled with cells
+        // verify valid map; TODO: add support for chunks that are partially filled with cells
         if (x <= 0 || x % HexMetrics.chunkSizeX != 0 || z <= 0 || z % HexMetrics.chunkSizeZ != 0)
         {
             Debug.LogError("Unsupported map size.");

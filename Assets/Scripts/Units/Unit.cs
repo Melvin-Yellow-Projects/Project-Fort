@@ -318,27 +318,35 @@ public class Unit : MonoBehaviour
 
     public void ExecuteNextMove()
     {
-        if (!Path.HasPath || !Path.IsNextStepValid || !HasAction) return; // TODO: maybe continue to change dir
-
-        List<HexCell> cells = new List<HexCell>();
-
-        cells.Add(Path[0]);
-        cells.Add(Path[1]);
-
-        if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
+        if (!Path.HasPath || !HasAction) return; // TODO: maybe continue to change dir
 
         StopAllCoroutines();
-        StartCoroutine(Route(cells));
 
-        // remove path cells
-        myCell.MyUnit = null;
-        myCell = Path[1];
-        Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
+        if (Path.IsNextStepValid)
+        {
+            List<HexCell> cells = new List<HexCell>();
 
-        CurrentMovement--;
+            cells.Add(Path[0]);
+            cells.Add(Path[1]);
 
-        // redraw path curser
-        Path.Show();
+            if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
+            
+            StartCoroutine(RouteSuccess(cells));
+
+            // remove path cells
+            myCell.MyUnit = null;
+            myCell = Path[1];
+            Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
+
+            CurrentMovement--;
+
+            // redraw path curser
+            Path.Show();
+        }
+        else
+        {
+            StartCoroutine(RouteFailure());
+        }
     }
 
     /// <summary>
@@ -346,11 +354,9 @@ public class Unit : MonoBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
-    private IEnumerator Route(List<HexCell> cells)
+    private IEnumerator RouteSuccess(List<HexCell> cells)
     {
         Vector3 a, b, c = cells[0].Position;
-
-        List<int> l = new List<int>();
 
         // perform lookat
         yield return LookAt(cells[1].Position);
@@ -405,6 +411,31 @@ public class Unit : MonoBehaviour
 
         transform.localPosition = myCell.Position;
         orientation = transform.localRotation.eulerAngles.y;
+    }
+
+    private IEnumerator RouteFailure()
+    {
+        Vector3 startPosition = Path[0].Position;
+        Vector3 endPosition = Path[1].Position;
+        endPosition = Vector3.Lerp(startPosition, endPosition, 0.3f);
+        
+        yield return LookAt(endPosition);
+
+        float t = Time.deltaTime * travelSpeed;
+
+        for (; t < 1f; t += Time.deltaTime * 3 * travelSpeed)
+        {
+            transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
+            yield return null;
+        }
+
+        for (; t > 0f; t -= Time.deltaTime * travelSpeed)
+        {
+            transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
+            yield return null;
+        }
+
+        transform.localPosition = startPosition;
     }
 
     public void LookAt(HexDirection direction)
