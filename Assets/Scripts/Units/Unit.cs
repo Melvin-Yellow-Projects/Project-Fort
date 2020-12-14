@@ -282,7 +282,7 @@ public class Unit : MonoBehaviour
 
     public void PrepareNextMove()
     {
-        if (!Path.HasPath || !HasAction) return; // TODO: maybe continue to change dir
+        if (!Path.HasPath || !HasAction) return; 
 
         Path.IsNextStepValid = false;
 
@@ -292,7 +292,7 @@ public class Unit : MonoBehaviour
 
     public void ExecuteNextMove()
     {
-        if (!Path.HasPath || !HasAction) return; // TODO: maybe continue to change dir
+        if (!Path.HasPath || !HasAction) return; 
 
         StopAllCoroutines();
 
