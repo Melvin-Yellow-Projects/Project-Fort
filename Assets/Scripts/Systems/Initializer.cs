@@ -30,8 +30,12 @@ public class Initializer : MonoBehaviour
     [Tooltip("noise source for Hex Metrics")]
     public Texture2D noiseSource;
 
+    [Header("Fort")]
+    [Tooltip("reference to the Fort prefab")]
+    public Fort fortPrefab;
+
     [Header("Unit")]
-    [Tooltip("reference to the unit prefab")]
+    [Tooltip("reference to the Unit prefab")]
     public Unit unitPrefab;
 
     [Header("UnitCursor")]
@@ -56,6 +60,9 @@ public class Initializer : MonoBehaviour
         // HexMetrics
         if (noiseSource) HexMetrics.noiseSource = noiseSource;
 
+        // Fort
+        if (fortPrefab) Fort.prefab = fortPrefab;
+
         // Unit
         if (unitPrefab) Unit.prefab = unitPrefab;
 
@@ -74,6 +81,9 @@ public class Initializer : MonoBehaviour
 
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
+
+        // Fort
+        if (fortPrefab && !Fort.prefab) Fort.prefab = fortPrefab;
 
         // Unit
         if (unitPrefab && !Unit.prefab) Unit.prefab = unitPrefab;

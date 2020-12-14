@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(ColorSetter))]
 public class Team : MonoBehaviour
 {
     /********** MARK: Variables **********/
@@ -33,6 +34,7 @@ public class Team : MonoBehaviour
         set
         {
             teamIndex = value;
+            GetComponent<ColorSetter>().SetColor(MyColor);
         }
     }
 

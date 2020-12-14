@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
     /// Event for when a command has been invoked or revoked
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    public static event Action OnCommandChange;
+    public event Action OnCommandChange;
 
     #endregion
 

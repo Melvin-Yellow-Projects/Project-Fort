@@ -83,6 +83,8 @@ public class MapEditor : MonoBehaviour
         }
     }
 
+    public bool IsSettingForts { get; set; } = false;
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -163,9 +165,10 @@ public class MapEditor : MonoBehaviour
             }
             else if (isSelectionPressed) // do selection
             {
-                HexCell currentCell = HexGrid.Singleton.GetCellUnderMouse();
+                HexCell currentCell = HexGrid.Singleton.GetCellUnderMouse(); // HACK: this is done twice in the following methods
 
                 if (currentCell && IsSettingUnits) CreateUnit();
+                else if (currentCell && IsSettingForts) CreateFort();
                 else if (currentCell && IsSettingTerrain) EditCells(currentCell);
             }
         }
@@ -315,6 +318,34 @@ public class MapEditor : MonoBehaviour
         {
             cell.MyUnit.Die();
         }
+    }
+
+    private void CreateFort()
+    {
+        bool team = (unitTeamIndex == 0);
+
+        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
+        //if (cell && !cell.MyUnit)
+        //{
+        //    Fort fort = Instantiate(Fort.prefab);
+        //    fort.MyTeam.TeamIndex = (team) ? 0 : 1;
+        //    //HexGrid.Singleton.LoadUnitOntoGrid(unit, cell, Random.Range(0f, 360f));
+        //}
+        if (cell)
+        {
+            Fort fort = Instantiate(Fort.prefab);
+            fort.MyTeam.TeamIndex = (team) ? 0 : 1;
+            fort.transform.position = cell.Position;
+        }
+    }
+
+    private void DestroyFort()
+    {
+        //HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
+        //if (cell && cell.MyUnit)
+        //{
+        //    cell.MyUnit.Die();
+        //}
     }
 
     #endregion

@@ -18,6 +18,10 @@ public class Fort : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
+    HexCell myCell = null;
+
+    public static Fort prefab;
+
     #endregion
 
     /********** MARK: Properties **********/
@@ -31,10 +35,28 @@ public class Fort : MonoBehaviour
         }
     }
 
+    public HexCell MyCell
+    {
+        get
+        {
+            return myCell;
+        }
+        set
+        {
+            myCell = value;
+            ValidateLocation();
+        }
+    }
+
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
+
+    public void ValidateLocation()
+    {
+        transform.localPosition = myCell.Position;
+    }
 
     #endregion
 }

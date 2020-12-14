@@ -32,18 +32,18 @@ public class PlayerMenu : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    private void Awake()
+    private void Start()
     {
         GameManager.OnStartRound += SetMoveCountText;
         GameManager.OnStartTurn += SetMoveCountText;
-        Player.OnCommandChange += SetMoveCountText;
+        if (player) player.OnCommandChange += SetMoveCountText; // HACK: player menu also appears in the start menu
     }
 
     private void OnDestroy()
     {
         GameManager.OnStartRound -= SetMoveCountText;
         GameManager.OnStartTurn -= SetMoveCountText;
-        Player.OnCommandChange -= SetMoveCountText;
+        if (player) player.OnCommandChange -= SetMoveCountText;
     }
 
     #endregion
