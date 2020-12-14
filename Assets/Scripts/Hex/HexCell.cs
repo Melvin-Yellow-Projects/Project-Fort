@@ -211,6 +211,8 @@ public class HexCell : MonoBehaviour
     /// </summary>
     public Unit MyUnit { get; set; }
 
+    public Fort MyFort { get; set; }
+
     public List<Unit> MyUnitQueue
     {
         get
@@ -340,6 +342,7 @@ public class HexCell : MonoBehaviour
 
             // refresh unit location
             if (MyUnit) MyUnit.ValidateLocation();
+            if (MyFort) MyFort.ValidateLocation();
         }
     }
 

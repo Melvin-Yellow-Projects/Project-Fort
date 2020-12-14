@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
     /// Event for when unit moves have finished
     /// </summary>
     /// <subscriber class="Player">enables controls when units are moving</subscriber>
+    /// <subscriber class="Fort">checks to see if team has updated</subscriber>
     /// <subscriber class="Unit">sets a unit's movement to 0 if it has moved</subscriber>
     public static event Action OnStopMoveUnits;
 

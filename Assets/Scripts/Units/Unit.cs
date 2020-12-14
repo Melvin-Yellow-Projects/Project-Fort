@@ -48,8 +48,6 @@ public class Unit : MonoBehaviour
 
     bool isSelected = false;
 
-    int team = 0;
-
     #endregion
 
     /********** MARK: Class Events **********/
@@ -59,12 +57,14 @@ public class Unit : MonoBehaviour
     /// Event for when a unit is spawned, called in the Start Method
     /// </summary>
     /// <subscriber class="Player">adds unit to player's list of owned units</subscriber>
+    /// <subscriber class="Grid">adds unit to list of units</subscriber>
     public static event Action<Unit> OnUnitSpawned;
 
     /// <summary>
     /// Event for when a unit is despawned, called in the OnDestroy Method
     /// </summary>
     /// <subscriber class="Player">removes unit from player's list of owned units</subscriber>
+    /// <subscriber class="Grid">removes unit from list of units</subscriber>
     public static event Action<Unit> OnUnitDepawned;
 
     #endregion
@@ -201,7 +201,7 @@ public class Unit : MonoBehaviour
     {
         get
         {
-            return GetComponent<ColorSetter>(); ;
+            return GetComponent<ColorSetter>();
         }
     }
 
@@ -273,28 +273,6 @@ public class Unit : MonoBehaviour
 
         if (isPlayingAnimation) GetComponent<Death>().Die();
         else Destroy(gameObject);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="writer"></param>
-    public void Save(BinaryWriter writer)
-    {
-        myCell.coordinates.Save(writer);
-        writer.Write(orientation);
-        writer.Write((byte)team);
-    }
-
-    public static void Load(BinaryReader reader, int header, HexGrid grid)
-    {
-        HexCoordinates coordinates = HexCoordinates.Load(reader);
-        float orientation = reader.ReadSingle();
-
-        Unit unit = Instantiate(prefab);
-        if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
-
-        grid.LoadUnitOntoGrid(unit, grid.GetCell(coordinates), orientation);
     }
 
     #endregion
@@ -496,6 +474,32 @@ public class Unit : MonoBehaviour
 
         // neighbor is a valid cell
         return true;
+    }
+
+    #endregion
+
+    /********** MARK: Save/Load Functions **********/
+    #region Save/Load Functions
+
+    public void Save(BinaryWriter writer)
+    {
+        myCell.coordinates.Save(writer);
+        writer.Write(orientation);
+        writer.Write((byte)MyTeam.TeamIndex);
+    }
+
+    public static void Load(BinaryReader reader, int header)
+    {
+        HexCoordinates coordinates = HexCoordinates.Load(reader);
+        float orientation = reader.ReadSingle();
+
+        Unit unit = Instantiate(prefab);
+        if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
+
+        unit.MyCell = HexGrid.Singleton.GetCell(coordinates);
+        unit.Orientation = orientation;
+
+        HexGrid.Singleton.ParentTransformToGrid(unit.transform);
     }
 
     #endregion

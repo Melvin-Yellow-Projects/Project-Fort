@@ -46,7 +46,9 @@ public class HexGrid : MonoBehaviour
     public int cellCountZ = 15;
 
     /* Variables */
-    public List<Unit> units = new List<Unit>(); // HACK: should not be public 
+    public List<Unit> units = new List<Unit>(); // HACK: should not be public
+
+    List<Fort> forts = new List<Fort>();
 
     #endregion
 
@@ -87,6 +89,9 @@ public class HexGrid : MonoBehaviour
 
         CreateMap(cellCountX, cellCountZ);
 
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
+
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
@@ -106,6 +111,12 @@ public class HexGrid : MonoBehaviour
 
     protected void OnDestroy()
     {
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
+
+        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+
         Singleton = null;
     }
 
@@ -116,6 +127,7 @@ public class HexGrid : MonoBehaviour
 
     public bool CreateMap(int x, int z)
     {
+        ClearForts();
         ClearUnits();
 
         // destroy previous cells and chunks
@@ -365,12 +377,9 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    public void LoadUnitOntoGrid(Unit unit, HexCell cell, float orientation)
+    public void ParentTransformToGrid(Transform trans)
     {
-        // HACK: parent the unit to the hex grid... hmm
-        unit.transform.SetParent(transform, false);
-        unit.MyCell = cell;
-        unit.Orientation = orientation;
+        trans.SetParent(transform);
     }
 
     public void ClearPaths()
@@ -392,6 +401,14 @@ public class HexGrid : MonoBehaviour
         units.Clear();
     }
 
+    void ClearForts()
+    {
+        for (int i = 0; i < forts.Count; i++)
+        {
+            Destroy(forts[i].gameObject);
+        }
+    }
+
     public void ResetVisibility()
     {
         for (int i = 0; i < cells.Length; i++)
@@ -406,6 +423,11 @@ public class HexGrid : MonoBehaviour
         }
     }
 
+    #endregion
+
+    /********** MARK: Save/Load Functions **********/
+    #region Save/Load Functions
+
     /// <summary>
     /// TODO: comment save
     /// </summary>
@@ -418,6 +440,12 @@ public class HexGrid : MonoBehaviour
         for (int i = 0; i < cells.Length; i++)
         {
             cells[i].Save(writer);
+        }
+
+        writer.Write(forts.Count);
+        for (int i = 0; i < forts.Count; i++)
+        {
+            forts[i].Save(writer);
         }
 
         writer.Write(units.Count);
@@ -436,11 +464,8 @@ public class HexGrid : MonoBehaviour
         ClearUnits();
 
         int x = 20, z = 15;
-        if (header >= 1)
-        {
-            x = reader.ReadInt32();
-            z = reader.ReadInt32();
-        }
+        x = reader.ReadInt32();
+        z = reader.ReadInt32();
 
         // we dont need to make another map if it's the same size as the existing one
         if (x != cellCountX || z != cellCountZ)
@@ -460,14 +485,16 @@ public class HexGrid : MonoBehaviour
         {
             chunks[i].Refresh();
         }
-
-        if (header >= 2) // TODO: update safe files
+        int fortCount = reader.ReadInt32();
+        for (int i = 0; i < fortCount; i++)
         {
-            int unitCount = reader.ReadInt32();
-            for (int i = 0; i < unitCount; i++)
-            {
-                Unit.Load(reader, header, this);
-            }
+            Fort.Load(reader, header);
+        }
+
+        int unitCount = reader.ReadInt32();
+        for (int i = 0; i < unitCount; i++)
+        {
+            Unit.Load(reader, header);
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;
@@ -477,6 +504,20 @@ public class HexGrid : MonoBehaviour
 
     /********** MARK: Handler Functions **********/
     #region Handler Functions
+
+    private void HandleOnFortSpawned(Fort fort)
+    {
+        // TODO: Server validation
+
+        forts.Add(fort);
+    }
+
+    private void HandleOnFortDespawned(Fort fort)
+    {
+        // TODO: Server validation
+
+        forts.Remove(fort);
+    }
 
     private void HandleOnUnitSpawned(Unit unit)
     {

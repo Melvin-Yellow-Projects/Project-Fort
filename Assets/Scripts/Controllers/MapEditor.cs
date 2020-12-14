@@ -45,7 +45,7 @@ public class MapEditor : MonoBehaviour
     int activeTerrainTypeIndex;
     int activeUnitTypeIndex = -1;
 
-    int unitTeamIndex;
+    int teamIndex;
 
     Controls controls;
     bool isSelectionPressed = false;
@@ -157,20 +157,25 @@ public class MapEditor : MonoBehaviour
     /// </summary>
     private void HandleInput()
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
-        {
-            if (isDeletionPressed) // do deletion
-            {
-                DestroyUnit();
-            }
-            else if (isSelectionPressed) // do selection
-            {
-                HexCell currentCell = HexGrid.Singleton.GetCellUnderMouse(); // HACK: this is done twice in the following methods
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
-                if (currentCell && IsSettingUnits) CreateUnit();
-                else if (currentCell && IsSettingForts) CreateFort();
-                else if (currentCell && IsSettingTerrain) EditCells(currentCell);
-            }
+        HexCell currentCell = HexGrid.Singleton.GetCellUnderMouse();
+        if (!currentCell) return;
+
+        if (isDeletionPressed) // do deletion
+        {
+            ClearCellOfUnitsAndForts(currentCell);
+        }
+        else if (isSelectionPressed) // do selection
+        {
+            if (IsSettingForts) CreateFort(currentCell);
+            if (IsSettingUnits) CreateUnit(currentCell);
+            if (IsSettingTerrain) EditCells(currentCell);
+        }
+        else
+        {
+            // HACK: delete this line after testing
+            Debug.LogError("This line should never run");
         }
     }
 
@@ -217,12 +222,12 @@ public class MapEditor : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets which team to use when a new unit is created
+    /// Sets which team to use when a new unit or fort is created
     /// </summary>
     /// <param name="index"></param>
-    public void SetUnitTeamIndex(float index)
+    public void SetTeamIndex(float index)
     {
-        unitTeamIndex = (int)index;
+        teamIndex = (int)index;
     }
 
     /// <summary>
@@ -292,60 +297,36 @@ public class MapEditor : MonoBehaviour
         HexGrid.Singleton.SetCellLabel(index);
     }
 
-    /// <summary>
-    /// Creates a unit on the cell underneath the mouse cursor
-    /// </summary>
-    private void CreateUnit()
+    private void CreateUnit(HexCell cell)
     {
-        bool team = (unitTeamIndex == 0);
+        if (cell.MyUnit) return;
 
-        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        if (cell && !cell.MyUnit) 
-        {
-            Unit unit = Instantiate(Unit.prefab);
-            unit.MyTeam.TeamIndex = (team) ? 0 : 1;
-            HexGrid.Singleton.LoadUnitOntoGrid(unit, cell, Random.Range(0f, 360f));
-        }
+        Unit unit = Instantiate(Unit.prefab);
+
+        unit.MyCell = cell;
+        unit.MyTeam.TeamIndex = teamIndex;
+        unit.Orientation = Random.Range(0, 360f);
+
+        HexGrid.Singleton.ParentTransformToGrid(unit.transform);
     }
 
-    /// <summary>
-    /// Destroys a unit on the cell underneath the mouse cursor
-    /// </summary>
-    private void DestroyUnit()
+    private void CreateFort(HexCell cell)
     {
-        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        if (cell && cell.MyUnit) 
-        {
-            cell.MyUnit.Die();
-        }
+        if (cell.MyFort) return;
+
+        Fort fort = Instantiate(Fort.prefab);
+
+        fort.MyCell = cell;
+        fort.MyTeam.TeamIndex = teamIndex;
+        fort.Orientation = Random.Range(0, 360f);
+
+        HexGrid.Singleton.ParentTransformToGrid(fort.transform);
     }
 
-    private void CreateFort()
+    private void ClearCellOfUnitsAndForts(HexCell cell)
     {
-        bool team = (unitTeamIndex == 0);
-
-        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        //if (cell && !cell.MyUnit)
-        //{
-        //    Fort fort = Instantiate(Fort.prefab);
-        //    fort.MyTeam.TeamIndex = (team) ? 0 : 1;
-        //    //HexGrid.Singleton.LoadUnitOntoGrid(unit, cell, Random.Range(0f, 360f));
-        //}
-        if (cell)
-        {
-            Fort fort = Instantiate(Fort.prefab);
-            fort.MyTeam.TeamIndex = (team) ? 0 : 1;
-            fort.transform.position = cell.Position;
-        }
-    }
-
-    private void DestroyFort()
-    {
-        //HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        //if (cell && cell.MyUnit)
-        //{
-        //    cell.MyUnit.Die();
-        //}
+        if (cell.MyUnit) cell.MyUnit.Die();
+        if (cell.MyFort) Destroy(cell.MyFort.gameObject);
     }
 
     #endregion
