@@ -477,23 +477,15 @@ public class HexCell : MonoBehaviour
     /********** MARK: Unit Functions **********/
     #region Unit Functions
 
-    public void AddUnitToCell(Unit newUnit)
+    public void AddUnitToCellQueue(Unit newUnit)
     {
-        if (MyUnit && MyUnit.MyTeam == newUnit.MyTeam) return; // if there's a friendly unit already there
-        
-        foreach (Unit unit in myUnitQueue)
-        {
-            if (unit.MyTeam == newUnit.MyTeam) return; // if there's a friendly unit arriving 
-
-            //if (MyUnit.blocksthisunit(newUnit)) return false; // if unit is blocked by existing unit, reject
-
-        }
-
         myUnitQueue.Add(newUnit);
 
-        newUnit.Path.IsNextStepValid = true;
-
-        if (myUnitQueue.Count == 1) GameManager.OnUnitCombat += HandleOnUnitCombat;
+        if (myUnitQueue.Count == 1)
+        {
+            GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
+            GameManager.OnMoveUnits += HandleOnMoveUnits;
+        }
     }
 
     #endregion
@@ -501,30 +493,72 @@ public class HexCell : MonoBehaviour
     /********** MARK: Class Handler Functions **********/
     #region Class Functions
 
-    private void HandleOnUnitCombat()
+    private void HandleOnStartMoveUnits()
     {
-        bool hasKilled = false;
-        if (MyUnit)
+        // Check for friendly collisions or pieces that can return another piece
+        for (int i = 0; i < myUnitQueue.Count; i++)
         {
-            MyUnit.Die(isPlayingAnimation: true); // kill sedentary unit 
-            MyUnit = null;
-            hasKilled = true;
+            Unit unit1 = myUnitQueue[i];
+            Unit incomingUnit = (unit1.ToCell) ? unit1.ToCell.MyUnit : null;
+            bool hasRemovedUnit1 = false;
+            if (incomingUnit && incomingUnit.ToCell == unit1.MyCell)
+            {
+                incomingUnit.Path.IsNextStepValid = false;
+                incomingUnit.ToCell.myUnitQueue.Remove(incomingUnit);
+                incomingUnit.MyCell.AddUnitToCellQueue(incomingUnit);
+                hasRemovedUnit1 = true;
+                unit1.Path.IsNextStepValid = false;
+                myUnitQueue.Remove(unit1);
+                unit1.MyCell.AddUnitToCellQueue(unit1);
+            }
+
+            for (int j = i + 1; j < myUnitQueue.Count; j++)
+            {
+                Unit unit2 = myUnitQueue[j];
+                if (unit1.MyTeam == unit2.MyTeam) // friendly collision, both units return
+                {
+                    if (!hasRemovedUnit1)
+                    {
+                        unit1.Path.IsNextStepValid = false;
+                        myUnitQueue.Remove(unit1);
+                        unit1.MyCell.AddUnitToCellQueue(unit1);
+                    }
+                    unit2.Path.IsNextStepValid = false;
+                    myUnitQueue.Remove(unit2);
+                    unit2.MyCell.AddUnitToCellQueue(unit2);
+                }
+            }
         }
 
-        for (int i = 0; i < myUnitQueue.Count; i++) 
+        GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
+    }
+
+    private void HandleOnMoveUnits()
+    {
+        for (int i = 0; i < myUnitQueue.Count - 1; i++)
         {
-            Unit unit = myUnitQueue[i];
-
-            if (hasKilled) unit.CurrentMovement = 1;
-
-            if (myUnitQueue.Count > 1) unit.Die(isPlayingAnimation: true);
-            else MyUnit = unit;
-
+            Unit unit1 = myUnitQueue[i];
+            for (int j = i + 1; j < myUnitQueue.Count; j++)
+            {
+                Unit unit2 = myUnitQueue[j];
+                if (unit1.MyTeam == unit2.MyTeam) // friendly collision, both units return
+                {
+                    unit1.Path.IsNextStepValid = false;
+                    unit2.Path.IsNextStepValid = false;
+                }
+            }
         }
+
+        // TODO: kill enemy units
+        // TODO: update unit's mycell
+        // I think this would work better as three events
+        // OnPrepareMoveUnits
+        // OnAllyUnitsReturn
+        // OnUnitCombat
 
         myUnitQueue.Clear();
 
-        GameManager.OnUnitCombat -= HandleOnUnitCombat;
+        GameManager.OnMoveUnits -= HandleOnMoveUnits;
     }
 
     #endregion

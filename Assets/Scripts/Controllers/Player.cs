@@ -141,12 +141,10 @@ public class Player : MonoBehaviour
 
         if (currentCell && selectedUnit)
         {
-            selectedUnit.HasAction = true;
             DeselectUnit();
+            MoveCount++;
+            OnCommandChange?.Invoke();
         }
-
-        MoveCount++;
-        OnCommandChange?.Invoke();
     }
 
     #endregion
@@ -199,12 +197,11 @@ public class Player : MonoBehaviour
         selectedUnit = unit;
         if (selectedUnit.HasAction)
         {
-            selectedUnit.HasAction = false;
+            selectedUnit.Path.Clear();
             MoveCount--;
             OnCommandChange?.Invoke();
         }
         selectedUnit.IsSelected = true;
-        selectedUnit.Path.Clear();
     }
 
     private void DeselectUnit()

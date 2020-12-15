@@ -49,13 +49,14 @@ public class GameManager : MonoBehaviour
     /// Event for when unit moves have started
     /// </summary>
     /// <subscriber class="Player">disables controls when units are moving</subscriber>
+    /// <subscriber class="HexCell">subs when unit enters a cell, later handles moving</subscriber>
     public static event Action OnStartMoveUnits;
 
     /// <summary>
-    /// Event for starting/executing unit combat
+    /// Event for when unit moves have started
     /// </summary>
-    /// <subscriber class="HexCell">subs when unit enters a cell, later handles combat</subscriber>
-    public static event Action OnUnitCombat;
+    /// <subscriber class="HexCell">subs when unit enters a cell, later handles moving</subscriber>
+    public static event Action OnMoveUnits;
 
     /// <summary>
     /// Event for when unit moves have finished
@@ -171,8 +172,6 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over twice times
     {
-        OnStartMoveUnits?.Invoke();
-
         HexGrid grid = HexGrid.Singleton;
 
         for (int stepCount = 0; stepCount < numberOfSteps; stepCount++)
@@ -184,7 +183,8 @@ public class GameManager : MonoBehaviour
                 unit.PrepareNextMove();
             }
 
-            OnUnitCombat?.Invoke();
+            OnStartMoveUnits?.Invoke();
+            OnMoveUnits?.Invoke();
 
             for (int i = 0; i < grid.units.Count; i++) // TODO: this should be a list of player units, not grid
             {

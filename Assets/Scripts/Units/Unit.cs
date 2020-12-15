@@ -42,7 +42,7 @@ public class Unit : MonoBehaviour
     public static Unit prefab;
 
     HexCell myCell;
-    HexCell currentTravelCell; // HACK: i really don't like this name
+    HexCell routeCell;
 
     float orientation;
 
@@ -94,6 +94,8 @@ public class Unit : MonoBehaviour
             transform.localPosition = value.Position;
         }
     }
+
+    public HexCell ToCell { get; set; }
 
     /// <summary>
     /// A unit's rotation around the Y axis, in degrees
@@ -155,6 +157,14 @@ public class Unit : MonoBehaviour
 
     public UnitPath Path { get; private set; }
 
+    public bool HasAction
+    {
+        get
+        {
+            return Path.HasPath;
+        }
+    }
+
     public bool IsSelected
     {
         get
@@ -170,8 +180,6 @@ public class Unit : MonoBehaviour
             }
         }
     }
-
-    public bool HasAction { get; set; }
 
     public bool CanMove
     {
@@ -209,23 +217,6 @@ public class Unit : MonoBehaviour
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    private void OnEnable()
-    {
-        if (myCell) // prevents failure during recompile
-        {
-            transform.localPosition = myCell.Position;
-            if (currentTravelCell)
-            {
-                UnitPathfinding.IncreaseVisibility(myCell, visionRange);
-                UnitPathfinding.DecreaseVisibility(currentTravelCell, visionRange);
-                currentTravelCell = null;
-            }
-        }
-    }
 
     private void Awake()
     {
@@ -282,17 +273,22 @@ public class Unit : MonoBehaviour
 
     public void PrepareNextMove()
     {
-        if (!Path.HasPath || !HasAction) return; 
-
-        Path.IsNextStepValid = false;
-
-        // add unit to the next cell's unit queue
-        Path[1].AddUnitToCell(this);
+        if (!HasAction)
+        {
+            myCell.AddUnitToCellQueue(this);
+            ToCell = null;
+        }
+        else
+        {
+            Path.IsNextStepValid = true; // set flag initially to true, check for conditions later
+            ToCell = Path[1];
+            Path[1].AddUnitToCellQueue(this);
+        }
     }
 
     public void ExecuteNextMove()
     {
-        if (!Path.HasPath || !HasAction) return; 
+        if (!HasAction) return; 
 
         StopAllCoroutines();
 
@@ -339,18 +335,18 @@ public class Unit : MonoBehaviour
 
         // decrease vision HACK: this ? shenanigans is confusing
         UnitPathfinding.DecreaseVisibility(
-            currentTravelCell ? currentTravelCell : cells[0],
+            (routeCell) ? routeCell : cells[0],
             visionRange
         );
 
         float t = Time.deltaTime * travelSpeed;
         for (int i = 1; i < cells.Count; i++)
         {
-            currentTravelCell = cells[i]; // prevents teleportation
+            routeCell = cells[i]; // prevents teleportation
 
             a = c;
             b = cells[i - 1].Position;
-            c = (b + currentTravelCell.Position) * 0.5f;
+            c = (b + routeCell.Position) * 0.5f;
 
             UnitPathfinding.IncreaseVisibility(cells[i], visionRange);
 
@@ -367,7 +363,7 @@ public class Unit : MonoBehaviour
 
             t -= 1f;
         }
-        currentTravelCell = null;
+        routeCell = null;
 
         // arriving at the center if the last cell
         a = c;
@@ -509,15 +505,13 @@ public class Unit : MonoBehaviour
 
     private void HandleOnStartRound()
     {
-        HasAction = false;
-        CurrentMovement = maxMovement;
-        //Path.Clear(); 
+        Path.Clear();
+        CurrentMovement = maxMovement; 
     }
 
     private void HandleOnStartTurn()
     {
-        HasAction = false;
-        //Path.Clear(); 
+        Path.Clear();
     }
 
     private void HandleOnStopMoveUnits()
