@@ -170,7 +170,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(MoveUnits(8));
     }
 
-    private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over twice times
+    private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over several times
     {
         HexGrid grid = HexGrid.Singleton;
 
@@ -192,8 +192,11 @@ public class GameManager : MonoBehaviour
                 unit.ExecuteNextMove(); // TODO: correct number of steps
             }
 
-            yield return new WaitForSeconds(0.4f); // HACK: hardcoded
-
+            for (int i = 0; i < grid.units.Count; i++) // TODO: this should be a list of player units, not grid
+            {
+                Unit unit = grid.units[i];
+                if (unit.IsEnRoute) yield return unit.WaitForUnitEnRoute();
+            }
         }
 
         OnStopMoveUnits?.Invoke();

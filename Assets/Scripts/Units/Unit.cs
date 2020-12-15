@@ -157,6 +157,8 @@ public class Unit : MonoBehaviour
 
     public UnitPath Path { get; private set; }
 
+    public bool IsEnRoute { get; set; }
+
     public bool HasAction
     {
         get
@@ -300,7 +302,7 @@ public class Unit : MonoBehaviour
             cells.Add(Path[1]);
 
             if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
-            
+
             StartCoroutine(RouteSuccess(cells));
 
             // remove path cells
@@ -328,6 +330,7 @@ public class Unit : MonoBehaviour
     /// <returns></returns>
     private IEnumerator RouteSuccess(List<HexCell> cells)
     {
+        IsEnRoute = true;
         Vector3 a, b, c = cells[0].Position;
 
         // perform lookat
@@ -383,10 +386,12 @@ public class Unit : MonoBehaviour
 
         transform.localPosition = myCell.Position;
         orientation = transform.localRotation.eulerAngles.y;
+        IsEnRoute = false;
     }
 
     private IEnumerator RouteFailure()
     {
+        IsEnRoute = true;
         Vector3 startPosition = Path[0].Position;
         Vector3 endPosition = Path[1].Position;
         endPosition = Vector3.Lerp(startPosition, endPosition, 0.3f);
@@ -408,6 +413,12 @@ public class Unit : MonoBehaviour
         }
 
         transform.localPosition = startPosition;
+        IsEnRoute = false;
+    }
+
+    public IEnumerator WaitForUnitEnRoute()
+    {
+        while (IsEnRoute) yield return null;
     }
 
     public void LookAt(HexDirection direction)
