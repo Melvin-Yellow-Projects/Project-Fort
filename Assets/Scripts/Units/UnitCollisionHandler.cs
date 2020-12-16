@@ -46,7 +46,7 @@ public class UnitCollisionHandler : MonoBehaviour
 
         if (otherUnit.MyTeam == MyUnit.MyTeam) MyUnit.CancelAction();
 
-        else if (otherUnit.EnRouteCell) MyUnit.Die();
+        else if (otherUnit.EnRouteCell && !otherUnit.HadActionCanceled) MyUnit.Die(); // TODO: verify if we want the hadactioncanceled part
     }
 
     #endregion
