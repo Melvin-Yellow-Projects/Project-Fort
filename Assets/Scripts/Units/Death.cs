@@ -10,7 +10,7 @@ public class Death : MonoBehaviour
     [SerializeField] [Range(0, 1f)] float maxJitter = 0.2f;
 
     //[SerializeField] [Range(0, 5f)] float fallSpeed = 0.5f;
-    [SerializeField] [Range(0, 5f)] float fallSpeed = 5f;
+    [SerializeField] [Range(0, 20f)] float fallSpeed = 5f;
 
     [SerializeField] [Range(0, 5f)] float timeToSurvive = 3f;
 

@@ -396,7 +396,7 @@ public class HexGrid : MonoBehaviour
         {
             units[i].Path.Clear();
 
-            units[i].Die();
+            units[i].Die(isPlayingAnimation: false);
         }
         units.Clear();
     }

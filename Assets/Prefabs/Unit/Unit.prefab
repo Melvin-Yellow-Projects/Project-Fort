@@ -248,6 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6108e35af64b44b1adb6842b0b37c0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collisionHandler: {fileID: 263954031889026529}
   cannotMoveSaturation: 0.3
 --- !u!114 &3860982319881106542
 MonoBehaviour:
@@ -301,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxJitter: 0.2
-  fallSpeed: 5
+  fallSpeed: 10
   timeToSurvive: 3
 --- !u!114 &8798867571229102211
 MonoBehaviour:

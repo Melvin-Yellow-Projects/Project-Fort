@@ -56,6 +56,11 @@ public class UnitDisplay : MonoBehaviour
         movementDisplay.SetActive(!movementDisplay.activeSelf);
     }
 
+    public void HideDisplay()
+    {
+        movementDisplay.SetActive(false);
+    }
+
     /// <summary>
     /// Refreshes the movement display text
     /// </summary>

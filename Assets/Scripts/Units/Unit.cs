@@ -28,6 +28,11 @@ public class Unit : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
+    [Header("Cached References")]
+    [Tooltip("handler for unit combat and collisions")]
+    [SerializeField] UnitCollisionHandler collisionHandler;
+
+    [Header("Other Settings")]
     [Tooltip("saturation reduction for when a unit has moved")]
     [SerializeField, Range(0, 1f)] float cannotMoveSaturation = 0.3f;
 
@@ -42,11 +47,12 @@ public class Unit : MonoBehaviour
     public static Unit prefab;
 
     HexCell myCell;
-    HexCell enRouteCell;
 
     float orientation;
 
     bool isSelected = false;
+
+    bool isDying = false;
 
     float interpolator;
 
@@ -96,6 +102,8 @@ public class Unit : MonoBehaviour
             ValidateLocation();
         }
     }
+
+    public HexCell EnRouteCell { get; private set; }
 
     //public HexCell ToCell { get; set; }
 
@@ -168,6 +176,8 @@ public class Unit : MonoBehaviour
             return Path.HasPath;
         }
     }
+
+    public bool HadActionCanceled { get; private set; } = false;
 
     public bool IsSelected
     {
@@ -260,8 +270,13 @@ public class Unit : MonoBehaviour
         transform.localPosition = myCell.Position;
     }
 
-    public void Die(bool isPlayingAnimation = false)
+    public void Die(bool isPlayingAnimation = true)
     {
+        StopAllCoroutines();
+
+        IsEnRoute = false;
+        isDying = true;
+
         if (myCell) UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
         myCell.MyUnit = null;
@@ -290,12 +305,22 @@ public class Unit : MonoBehaviour
         StartCoroutine(Route(cells));
     }
 
-    public void CompleteAction()
+    public void CompleteAction() // HACK: these lines can be easily simplified
     {
-        if (!HasAction) return;
+        if (!EnRouteCell) return;
 
-        MyCell = enRouteCell; 
-        enRouteCell = null;
+        if (isDying) 
+        {
+            collisionHandler.gameObject.SetActive(false);
+            Display.HideDisplay();
+            return;
+        }
+
+        MyCell = EnRouteCell; 
+        EnRouteCell = null;
+        HadActionCanceled = false;
+
+        if (!HasAction) return;
 
         if (currentMovement == 0) CurrentMovement = 0; // HACK: there should be a flag for if a unit has moved and canceled its action
         else Path.RemoveTailCells(numberToRemove: 1);
@@ -305,10 +330,11 @@ public class Unit : MonoBehaviour
 
     public void CancelAction()
     {
-        if (!enRouteCell) return;
+        if (!EnRouteCell) return;
+
+        HadActionCanceled = true;
 
         StopAllCoroutines(); 
-
         StartCoroutine(RouteCanceled());
 
         currentMovement = 0; // HACK: see CompleteAction()
@@ -329,20 +355,20 @@ public class Unit : MonoBehaviour
 
         // decrease vision HACK: this ? shenanigans is confusing
         UnitPathfinding.DecreaseVisibility(
-            (enRouteCell) ? enRouteCell : cells[0],
+            (EnRouteCell) ? EnRouteCell : cells[0],
             visionRange
         );
 
         interpolator = Time.deltaTime * travelSpeed;
         for (int i = 1; i < cells.Count; i++)
         {
-            enRouteCell = cells[i]; // prevents teleportation
+            EnRouteCell = cells[i]; // prevents teleportation
 
             a = c;
             b = cells[i - 1].Position;
-            c = (b + enRouteCell.Position) * 0.5f;
+            c = (b + EnRouteCell.Position) * 0.5f;
 
-            UnitPathfinding.IncreaseVisibility(enRouteCell, visionRange);
+            UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
 
             for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
             {
@@ -354,18 +380,18 @@ public class Unit : MonoBehaviour
                 yield return null;
             }
 
-            UnitPathfinding.DecreaseVisibility(enRouteCell, visionRange);
+            UnitPathfinding.DecreaseVisibility(EnRouteCell, visionRange);
 
             interpolator -= 1f;
         }
-        enRouteCell = cells[cells.Count - 1];
+        EnRouteCell = cells[cells.Count - 1];
 
         // arriving at the center if the last cell
         a = c;
-        b = enRouteCell.Position; // We can simply use the destination here.
+        b = EnRouteCell.Position; // We can simply use the destination here.
         c = b;
 
-        UnitPathfinding.IncreaseVisibility(enRouteCell, visionRange);
+        UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
 
         for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
         {
@@ -377,7 +403,7 @@ public class Unit : MonoBehaviour
             yield return null;
         }
 
-        transform.localPosition = enRouteCell.Position;
+        transform.localPosition = EnRouteCell.Position;
         //orientation = transform.localRotation.eulerAngles.y;
         IsEnRoute = false;
     }
@@ -388,13 +414,13 @@ public class Unit : MonoBehaviour
 
         //yield return LookAt(myCell.Position);
 
-        UnitPathfinding.DecreaseVisibility(enRouteCell, visionRange);
+        UnitPathfinding.DecreaseVisibility(EnRouteCell, visionRange);
 
         Vector3 a = myCell.Position;
-        Vector3 b = enRouteCell.Position;
+        Vector3 b = EnRouteCell.Position;
         Vector3 c = b;
         Vector3 d;
-        enRouteCell = myCell;
+        EnRouteCell = myCell;
         //for (; interpolator > 0; interpolator -= Time.deltaTime * travelSpeed / 10)
         for (float t = 0; t < 1f; t += Time.deltaTime * travelSpeed / 2)
         {
@@ -406,7 +432,7 @@ public class Unit : MonoBehaviour
             yield return null;
         }
 
-        UnitPathfinding.IncreaseVisibility(enRouteCell, visionRange);
+        UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
 
         IsEnRoute = false;
     }

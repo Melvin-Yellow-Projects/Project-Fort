@@ -190,7 +190,8 @@ public class Player : MonoBehaviour
     private void SelectUnit(Unit unit)
     {
         // if this unit does not belong to the player, exit
-        if (!myUnits.Contains(unit)) return;
+        //if (!myUnits.Contains(unit)) return;
+        if (!unit) return;
 
         if (!unit.CanMove) return;
 

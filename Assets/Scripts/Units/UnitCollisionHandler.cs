@@ -41,11 +41,12 @@ public class UnitCollisionHandler : MonoBehaviour
     {
         Unit otherUnit = other.GetComponent<UnitCollisionHandler>().MyUnit;
 
-        if (!otherUnit) return;
+        // HACK: this should be 100% guarenteed because other collisions are disabled
+        if (!otherUnit) return; 
 
-        Debug.Log(otherUnit.name);
+        if (otherUnit.MyTeam == MyUnit.MyTeam) MyUnit.CancelAction();
 
-        MyUnit.CancelAction();
+        else if (otherUnit.EnRouteCell) MyUnit.Die();
     }
 
     #endregion

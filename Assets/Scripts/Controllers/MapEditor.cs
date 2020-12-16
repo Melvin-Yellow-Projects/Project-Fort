@@ -325,7 +325,7 @@ public class MapEditor : MonoBehaviour
 
     private void ClearCellOfUnitsAndForts(HexCell cell)
     {
-        if (cell.MyUnit) cell.MyUnit.Die();
+        if (cell.MyUnit) cell.MyUnit.Die(isPlayingAnimation: false);
         if (cell.MyFort) Destroy(cell.MyFort.gameObject);
     }
 
