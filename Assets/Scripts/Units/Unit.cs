@@ -90,7 +90,6 @@ public class Unit : MonoBehaviour
         {
             // if there is a previous cell...
             if (myCell && myCell.MyUnit == this)
-                //if (myCell)
             {
                 UnitPathfinding.DecreaseVisibility(myCell, visionRange);
                 myCell.MyUnit = null;
@@ -310,8 +309,6 @@ public class Unit : MonoBehaviour
     {
         if (!EnRouteCell) return;
 
-        Debug.Log("Updating my Cell");
-
         if (isDying) 
         {
             collisionHandler.gameObject.SetActive(false);
@@ -320,11 +317,10 @@ public class Unit : MonoBehaviour
         }
 
         MyCell = EnRouteCell; // FIXME: this happens to clear other unit's cells
-        Debug.Log(name + " has " + MyCell.name);
         EnRouteCell = null;
         HadActionCanceled = false;
 
-        if (!HasAction) return; // HACK: idk why this is needed
+        //if (!HasAction) return; // HACK: idk why this is needed
 
         if (currentMovement == 0) CurrentMovement = 0; // HACK: there should be a flag for if a unit has moved and canceled its action
         else Path.RemoveTailCells(numberToRemove: 1);
