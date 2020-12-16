@@ -139,7 +139,7 @@ public class Player : MonoBehaviour
     {
         if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
-        if (currentCell && selectedUnit && currentCell != selectedUnit.MyCell)
+        if (currentCell && selectedUnit && selectedUnit.HasAction)
         {
             DeselectUnit();
             MoveCount++;
