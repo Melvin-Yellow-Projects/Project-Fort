@@ -49,14 +49,7 @@ public class GameManager : MonoBehaviour
     /// Event for when unit moves have started
     /// </summary>
     /// <subscriber class="Player">disables controls when units are moving</subscriber>
-    /// <subscriber class="HexCell">subs when unit enters a cell, later handles moving</subscriber>
     public static event Action OnStartMoveUnits;
-
-    /// <summary>
-    /// Event for when unit moves have started
-    /// </summary>
-    /// <subscriber class="HexCell">subs when unit enters a cell, later handles moving</subscriber>
-    public static event Action OnMoveUnits;
 
     /// <summary>
     /// Event for when unit moves have finished
@@ -172,30 +165,37 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over several times
     {
+        OnStartMoveUnits?.Invoke();
+
         HexGrid grid = HexGrid.Singleton;
 
+        // How many Moves/Steps Units can Utilize
         for (int stepCount = 0; stepCount < numberOfSteps; stepCount++)
         {
-            // each player submits their moves
+            // Moving Units
+            for (int i = 0; i < grid.units.Count; i++) 
+            {
+                Unit unit = grid.units[i];
+                unit.DoAction(); // TODO: correct number of steps
+            }
+
+            // Waiting for Units
             for (int i = 0; i < grid.units.Count; i++)
             {
                 Unit unit = grid.units[i];
-                unit.PrepareNextMove();
+                if (unit.IsEnRoute)
+                {
+                    i = 0;
+                    yield return null;
+                }
+                
             }
 
-            OnStartMoveUnits?.Invoke();
-            OnMoveUnits?.Invoke();
-
-            for (int i = 0; i < grid.units.Count; i++) // TODO: this should be a list of player units, not grid
+            // Setting new cell for Units now that they moved
+            for (int i = 0; i < grid.units.Count; i++) 
             {
                 Unit unit = grid.units[i];
-                unit.ExecuteNextMove(); // TODO: correct number of steps
-            }
-
-            for (int i = 0; i < grid.units.Count; i++) // TODO: this should be a list of player units, not grid
-            {
-                Unit unit = grid.units[i];
-                if (unit.IsEnRoute) yield return unit.WaitForUnitEnRoute();
+                unit.CompleteAction();
             }
         }
 

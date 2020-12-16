@@ -50,8 +50,6 @@ public class UnitPath
         }
     }
 
-    public bool IsNextStepValid { get; set; } = false;
-
     public List<HexCell> Cells // HACK: this could be simplified with the variable cells
     {
         get

@@ -14,6 +14,9 @@ using System.IO;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// 
+/// </summary>
 [RequireComponent(typeof(Team), typeof(ColorSetter))]
 public class Fort : MonoBehaviour
 {

@@ -150,19 +150,19 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
-    /// Unity Method; Called when the GameObject is destroyed
+    /// Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides with
+    /// another GameObject; The Colliders involved are not always at the point of initial contact
     /// </summary>
-    private void OnDestroy()
+    /// <param name="other">other Collider/GameObject that the collision has occured with</param>
+    protected void OnTriggerEnter(Collider otherCollider)
     {
         throw new NotImplementedException();
     }
 
     /// <summary>
-    /// Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides with
-    /// another GameObject; The Colliders involved are not always at the point of initial contact
+    /// Unity Method; Called when the GameObject is destroyed
     /// </summary>
-    /// <param name="otherCollider">other GameObject that the collision has occured with</param>
-    protected void OnTriggerEnter(Collider otherCollider)
+    private void OnDestroy()
     {
         throw new NotImplementedException();
     }

@@ -32,7 +32,7 @@ public class Unit : MonoBehaviour
     [SerializeField, Range(0, 1f)] float cannotMoveSaturation = 0.3f;
 
     // HACK: this needs to be configurable
-    const float travelSpeed = 8f; 
+    const float travelSpeed = 6f; 
     const float rotationSpeed = 360f;
     int currentMovement = 8;
     const int maxMovement = 8;
@@ -42,11 +42,13 @@ public class Unit : MonoBehaviour
     public static Unit prefab;
 
     HexCell myCell;
-    HexCell routeCell;
+    HexCell enRouteCell;
 
     float orientation;
 
     bool isSelected = false;
+
+    float interpolator;
 
     #endregion
 
@@ -90,12 +92,12 @@ public class Unit : MonoBehaviour
             // update for new location
             myCell = value;
             value.MyUnit = this; // sets this hex cell's unit to this one
-            UnitPathfinding.IncreaseVisibility(value, visionRange);
-            transform.localPosition = value.Position;
+            UnitPathfinding.IncreaseVisibility(myCell, visionRange);
+            ValidateLocation();
         }
     }
 
-    public HexCell ToCell { get; set; }
+    //public HexCell ToCell { get; set; }
 
     /// <summary>
     /// A unit's rotation around the Y axis, in degrees
@@ -222,6 +224,8 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
+        name = $"Unit {UnityEngine.Random.Range(0, 10000)}";
+
         Path = new UnitPath(this);
         currentMovement = maxMovement;
 
@@ -273,54 +277,40 @@ public class Unit : MonoBehaviour
     /********** MARK: Pathing **********/
     #region Pathing
 
-    public void PrepareNextMove()
+    public void DoAction()
     {
-        if (!HasAction)
-        {
-            myCell.AddUnitToCellQueue(this);
-            ToCell = null;
-        }
-        else
-        {
-            Path.IsNextStepValid = true; // set flag initially to true, check for conditions later
-            ToCell = Path[1];
-            Path[1].AddUnitToCellQueue(this);
-        }
+        if (!HasAction) return;
+
+        CurrentMovement--;
+
+        List<HexCell> cells = new List<HexCell>();
+        cells.Add(Path[0]);
+        cells.Add(Path[1]);
+
+        StartCoroutine(Route(cells));
     }
 
-    public void ExecuteNextMove()
+    public void CompleteAction()
     {
-        if (!HasAction) return; 
+        if (!HasAction) return;
 
-        StopAllCoroutines();
+        MyCell = enRouteCell; // FIXME: this line is causing alot of problems, did i solve this?
 
-        if (Path.IsNextStepValid)
-        {
-            List<HexCell> cells = new List<HexCell>();
+        if (currentMovement == 0) CurrentMovement = 0; // HACK: there should be a flag for if a unit has moved and canceled its action
+        else Path.RemoveTailCells(numberToRemove: 1);
 
-            cells.Add(Path[0]);
-            cells.Add(Path[1]);
+        Path.Show();
+    }
 
-            if (cells[0] != myCell) Debug.LogError("This line should never execute"); // HACK: remove line
+    public void CancelAction()
+    {
+        if (!enRouteCell) return;
 
-            StartCoroutine(RouteSuccess(cells));
+        StopAllCoroutines(); 
 
-            // remove path cells
-            myCell.MyUnit = null;
-            myCell = Path[1];
-            Path.RemoveTailCells(numberToRemove: (cells.Count - 1));
+        StartCoroutine(RouteCanceled());
 
-            CurrentMovement--;
-
-            // redraw path curser
-            Path.Show();
-        }
-        else
-        {
-            StartCoroutine(RouteFailure());
-            Path.Clear();
-            CurrentMovement = 0;
-        }
+        currentMovement = 0; // HACK: see CompleteAction()
     }
 
     /// <summary>
@@ -328,102 +318,101 @@ public class Unit : MonoBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
-    private IEnumerator RouteSuccess(List<HexCell> cells)
+    private IEnumerator Route(List<HexCell> cells)
     {
         IsEnRoute = true;
         Vector3 a, b, c = cells[0].Position;
 
         // perform lookat
-        yield return LookAt(cells[1].Position);
+        //yield return LookAt(cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
         UnitPathfinding.DecreaseVisibility(
-            (routeCell) ? routeCell : cells[0],
+            (enRouteCell) ? enRouteCell : cells[0],
             visionRange
         );
 
-        float t = Time.deltaTime * travelSpeed;
+        interpolator = Time.deltaTime * travelSpeed;
         for (int i = 1; i < cells.Count; i++)
         {
-            routeCell = cells[i]; // prevents teleportation
+            enRouteCell = cells[i]; // prevents teleportation
 
             a = c;
             b = cells[i - 1].Position;
-            c = (b + routeCell.Position) * 0.5f;
+            c = (b + enRouteCell.Position) * 0.5f;
 
-            UnitPathfinding.IncreaseVisibility(cells[i], visionRange);
+            UnitPathfinding.IncreaseVisibility(enRouteCell, visionRange);
 
-            for (; t < 1f; t += Time.deltaTime * travelSpeed)
+            for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
             {
-                transform.localPosition = Bezier.GetPoint(a, b, c, t);
-                Vector3 d = Bezier.GetDerivative(a, b, c, t);
-                d.y = 0f;
-                transform.localRotation = Quaternion.LookRotation(d);
+                //transform.localPosition = Vector3.Lerp(a, b, interpolator);
+                transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
+                //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
+                //d.y = 0f;
+                //transform.localRotation = Quaternion.LookRotation(d);
                 yield return null;
             }
 
-            UnitPathfinding.DecreaseVisibility(cells[i], visionRange);
+            UnitPathfinding.DecreaseVisibility(enRouteCell, visionRange);
 
-            t -= 1f;
+            interpolator -= 1f;
         }
-        routeCell = null;
+        enRouteCell = cells[cells.Count - 1];
 
         // arriving at the center if the last cell
         a = c;
-        b = myCell.Position; // We can simply use the destination here.
+        b = enRouteCell.Position; // We can simply use the destination here.
         c = b;
 
-        UnitPathfinding.IncreaseVisibility(myCell, visionRange);
+        UnitPathfinding.IncreaseVisibility(enRouteCell, visionRange);
 
-        for (; t < 1f; t += Time.deltaTime * travelSpeed)
+        for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
         {
-            transform.localPosition = Bezier.GetPoint(a, b, c, t);
-            Vector3 d = Bezier.GetDerivative(a, b, c, t);
-            d.y = 0f;
-            transform.localRotation = Quaternion.LookRotation(d);
+            //transform.localPosition = Vector3.Lerp(a, b, interpolator);
+            transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
+            //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
+            //d.y = 0f;
+            //transform.localRotation = Quaternion.LookRotation(d);
             yield return null;
         }
 
-        transform.localPosition = myCell.Position;
-        orientation = transform.localRotation.eulerAngles.y;
+        transform.localPosition = enRouteCell.Position;
+        //orientation = transform.localRotation.eulerAngles.y;
         IsEnRoute = false;
     }
 
-    private IEnumerator RouteFailure()
-    {
+    private IEnumerator RouteCanceled()
+    {   
         IsEnRoute = true;
-        Vector3 startPosition = Path[0].Position;
-        Vector3 endPosition = Path[1].Position;
-        endPosition = Vector3.Lerp(startPosition, endPosition, 0.3f);
-        
-        yield return LookAt(endPosition);
 
-        float t = Time.deltaTime * travelSpeed;
+        //yield return LookAt(myCell.Position);
 
-        for (; t < 1f; t += Time.deltaTime * 3 * travelSpeed)
+        if (enRouteCell) UnitPathfinding.DecreaseVisibility(enRouteCell, visionRange);
+
+        Vector3 a = myCell.Position;
+        Vector3 b = enRouteCell.Position;
+        Vector3 c = b;
+        Vector3 d;
+        enRouteCell = myCell;
+        //for (; interpolator > 0; interpolator -= Time.deltaTime * travelSpeed / 10)
+        for (float t = 0; t < 1f; t += Time.deltaTime * travelSpeed / 2)
         {
-            transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, a, t);
+            //transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
+            //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator); // this will be backwards
+            //d.y = 0f;
+            //transform.localRotation = Quaternion.LookRotation(d);
             yield return null;
         }
 
-        for (; t > 0f; t -= Time.deltaTime * travelSpeed)
-        {
-            transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
-            yield return null;
-        }
+        UnitPathfinding.IncreaseVisibility(enRouteCell, visionRange);
 
-        transform.localPosition = startPosition;
         IsEnRoute = false;
-    }
-
-    public IEnumerator WaitForUnitEnRoute()
-    {
-        while (IsEnRoute) yield return null;
     }
 
     public void LookAt(HexDirection direction)
     {
-        // HACK: yea dis is hacky, coroutine needs to probably be stopped first
+        // HACK: yea dis is weird, coroutine needs to probably be stopped first
         Vector3 localPoint = HexMetrics.GetBridge(direction);
         StartCoroutine(LookAt(myCell.Position + localPoint));
     }
