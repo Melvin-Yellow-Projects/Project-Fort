@@ -294,7 +294,8 @@ public class Unit : MonoBehaviour
     {
         if (!HasAction) return;
 
-        MyCell = enRouteCell; // FIXME: this line is causing alot of problems, did i solve this?
+        MyCell = enRouteCell; 
+        enRouteCell = null;
 
         if (currentMovement == 0) CurrentMovement = 0; // HACK: there should be a flag for if a unit has moved and canceled its action
         else Path.RemoveTailCells(numberToRemove: 1);
@@ -387,7 +388,7 @@ public class Unit : MonoBehaviour
 
         //yield return LookAt(myCell.Position);
 
-        if (enRouteCell) UnitPathfinding.DecreaseVisibility(enRouteCell, visionRange);
+        UnitPathfinding.DecreaseVisibility(enRouteCell, visionRange);
 
         Vector3 a = myCell.Position;
         Vector3 b = enRouteCell.Position;

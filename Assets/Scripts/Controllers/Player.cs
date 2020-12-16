@@ -137,9 +137,9 @@ public class Player : MonoBehaviour
 
     private void DoCommand(InputAction.CallbackContext context)
     {
-        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
+        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
-        if (currentCell && selectedUnit)
+        if (currentCell && selectedUnit && currentCell != selectedUnit.MyCell)
         {
             DeselectUnit();
             MoveCount++;
@@ -194,13 +194,15 @@ public class Player : MonoBehaviour
 
         if (!unit.CanMove) return;
 
-        selectedUnit = unit;
-        if (selectedUnit.HasAction)
+        if (unit.HasAction)
         {
-            selectedUnit.Path.Clear();
+            unit.Path.Clear();
             MoveCount--;
             OnCommandChange?.Invoke();
         }
+        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+
+        selectedUnit = unit;
         selectedUnit.IsSelected = true;
     }
 
@@ -226,7 +228,7 @@ public class Player : MonoBehaviour
 
     private void HandleOnStartTurn()
     {
-        MoveCount = 1;
+        MoveCount = 0;
         OnCommandChange?.Invoke(); // HACK: there has to be a better way
     }
 
