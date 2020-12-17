@@ -44,8 +44,6 @@ public class Unit : MonoBehaviour
     const int visionRange = 3;
     const int movesPerStep = 1;
 
-    public static Unit prefab;
-
     HexCell myCell;
 
     float orientation;
@@ -53,8 +51,6 @@ public class Unit : MonoBehaviour
     bool isSelected = false;
 
     bool isDying = false;
-
-    float interpolator;
 
     #endregion
 
@@ -79,6 +75,8 @@ public class Unit : MonoBehaviour
 
     /********** MARK: Properties **********/
     #region Properties
+
+    public static Unit Prefab { get; set; }
 
     public HexCell MyCell
     {
@@ -137,7 +135,7 @@ public class Unit : MonoBehaviour
         {
             return currentMovement;
         }
-        set // HACK: this should be private but cell needs to set it on combat, it's also just weird
+        private set 
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
             if (!CanMove) Path.Clear();
@@ -320,15 +318,12 @@ public class Unit : MonoBehaviour
         EnRouteCell = null;
         HadActionCanceled = false;
 
-        //if (!HasAction) return; // HACK: idk why this is needed
-
-        if (currentMovement == 0) CurrentMovement = 0; // HACK: there should be a flag for if a unit has moved and canceled its action
-        else Path.RemoveTailCells(numberToRemove: 1);
+        if (HasAction) Path.RemoveTailCells(numberToRemove: 1);
 
         Path.Show();
     }
 
-    public void CancelAction()
+    public void UndoAction()
     {
         if (!EnRouteCell) return;
 
@@ -336,8 +331,11 @@ public class Unit : MonoBehaviour
 
         StopAllCoroutines(); 
         StartCoroutine(RouteCanceled());
+    }
 
-        currentMovement = 0; // HACK: see CompleteAction()
+    public void StopActions()
+    {
+        CurrentMovement = 0;
     }
 
     /// <summary>
@@ -359,7 +357,7 @@ public class Unit : MonoBehaviour
             visionRange
         );
 
-        interpolator = Time.deltaTime * travelSpeed;
+        float interpolator = Time.deltaTime * travelSpeed;
         for (int i = 1; i < cells.Count; i++)
         {
             EnRouteCell = cells[i]; // prevents teleportation
@@ -516,7 +514,7 @@ public class Unit : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        Unit unit = Instantiate(prefab);
+        Unit unit = Instantiate(Prefab);
         if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
 
         unit.MyCell = HexGrid.Singleton.GetCell(coordinates);

@@ -296,7 +296,7 @@ public class MapEditor : MonoBehaviour
     {
         if (cell.MyUnit) return;
 
-        Unit unit = Instantiate(Unit.prefab);
+        Unit unit = Instantiate(Unit.Prefab);
 
         unit.MyCell = cell;
         unit.MyTeam.TeamIndex = teamIndex;
@@ -309,7 +309,7 @@ public class MapEditor : MonoBehaviour
     {
         if (cell.MyFort) return;
 
-        Fort fort = Instantiate(Fort.prefab);
+        Fort fort = Instantiate(Fort.Prefab);
 
         fort.MyCell = cell;
         fort.MyTeam.TeamIndex = teamIndex;

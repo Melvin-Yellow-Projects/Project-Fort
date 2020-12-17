@@ -61,14 +61,14 @@ public class Initializer : MonoBehaviour
         if (noiseSource) HexMetrics.noiseSource = noiseSource;
 
         // Fort
-        if (fortPrefab) Fort.prefab = fortPrefab;
+        if (fortPrefab) Fort.Prefab = fortPrefab;
 
         // Unit
-        if (unitPrefab) Unit.prefab = unitPrefab;
+        if (unitPrefab) Unit.Prefab = unitPrefab;
 
         // UnitCursor
-        if (unitCursorPrefab) UnitCursor.prefab = unitCursorPrefab;
-        if (unitCursorMaterial) UnitCursor.material = unitCursorMaterial;
+        if (unitCursorPrefab) UnitCursor.Prefab = unitCursorPrefab;
+        if (unitCursorMaterial) UnitCursor.MyMaterial = unitCursorMaterial;
     }
 
     /// <summary>
@@ -83,14 +83,14 @@ public class Initializer : MonoBehaviour
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
         // Fort
-        if (fortPrefab && !Fort.prefab) Fort.prefab = fortPrefab;
+        if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
 
         // Unit
-        if (unitPrefab && !Unit.prefab) Unit.prefab = unitPrefab;
+        if (unitPrefab && !Unit.Prefab) Unit.Prefab = unitPrefab;
 
         // UnitCursor
-        if (unitCursorPrefab && !UnitCursor.prefab) UnitCursor.prefab = unitCursorPrefab;
-        if (unitCursorMaterial && !UnitCursor.material) UnitCursor.material = unitCursorMaterial;
+        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
+        if (unitCursorMaterial && !UnitCursor.MyMaterial) UnitCursor.MyMaterial = unitCursorMaterial;
     }
 
     #endregion

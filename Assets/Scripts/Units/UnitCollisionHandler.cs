@@ -49,7 +49,7 @@ public class UnitCollisionHandler : MonoBehaviour
         // is the unit on my team?
         if (otherUnit.MyTeam == MyUnit.MyTeam)
         {
-            MyUnit.CancelAction();
+            MyUnit.UndoAction();
         }
 
         // do i die to this unit?
@@ -58,10 +58,10 @@ public class UnitCollisionHandler : MonoBehaviour
             MyUnit.Die(); // TODO: verify if we want the hadactioncanceled part
         }
 
-        // the unit is my enemy, and i have killed him
+        // the unit is my enemy, and i have killed him, and now i have to stop moving
         else
         {
-            MyUnit.CurrentMovement = 0; // HACK: this should probably be a function
+            MyUnit.StopActions();
         }
     }
 
