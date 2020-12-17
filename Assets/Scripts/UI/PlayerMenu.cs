@@ -69,7 +69,7 @@ public class PlayerMenu : MonoBehaviour
 
     public void UpdateTimerText(string text)
     {
-
+        moveTimerText.text = text;
     }
 
     private void SetMoveCountText()

@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using TMPro;
 
 /// <summary>
 /// 
@@ -99,7 +98,8 @@ public class GameManager : MonoBehaviour
         else
         {
             // Update Timer
-            PlayerMenu.Singleton.UpdateTimerText($"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3));
+            string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
+            PlayerMenu.Singleton.UpdateTimerText(text);
         }
     }
 
