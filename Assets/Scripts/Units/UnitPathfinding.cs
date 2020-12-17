@@ -128,11 +128,6 @@ public class UnitPathfinding : MonoBehaviour
 
                     // distance is calculated from move cost
                     int distance = current.Distance + moveCost;
-                    int turn = (distance - 1) / unit.MaxMovement;
-
-                    // this adjusts the distance if there is left over movement
-                    // TODO: is this the system we want?
-                    if (turn > currentTurn) distance = turn * unit.MaxMovement + moveCost;
 
                     // adding a new cell that hasn't been updated
                     if (neighbor.SearchPhase < searchFrontierPhase)
@@ -175,7 +170,7 @@ public class UnitPathfinding : MonoBehaviour
     }
 
     /// <summary>
-    /// todo: comment IsValidCellForSearch; UNDONE: add rivers and water
+    /// todo: comment IsValidCellForSearch;
     /// </summary>
     /// <param name="current"></param>
     /// <param name="neighbor"></param>

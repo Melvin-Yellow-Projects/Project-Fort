@@ -22,8 +22,6 @@ public class GameManager : MonoBehaviour
     /********** MARK: Private Variables **********/
     #region Private Variables
 
-    [SerializeField] TMP_Text moveTimerText = null;
-
     float turnTimer = 0f;
 
     #endregion
@@ -101,7 +99,7 @@ public class GameManager : MonoBehaviour
         else
         {
             // Update Timer
-            moveTimerText.text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
+            PlayerMenu.Singleton.UpdateTimerText($"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3));
         }
     }
 
@@ -134,7 +132,7 @@ public class GameManager : MonoBehaviour
         if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
         else
         {
-            moveTimerText.text = "Your Turn";
+            PlayerMenu.Singleton.UpdateTimerText("Your Turn");
         }
     }
 
@@ -157,7 +155,7 @@ public class GameManager : MonoBehaviour
     private void MoveUnits()
     {
         enabled = false;
-        moveTimerText.text = "Executing Turn";
+        PlayerMenu.Singleton.UpdateTimerText("Executing Turn");
 
         StopAllCoroutines();
         StartCoroutine(MoveUnits(8));

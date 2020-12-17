@@ -319,7 +319,7 @@ public class HexGrid : MonoBehaviour
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
         // return cell using index
-        return cells[index]; // FIXME: out of bounds error when editing top most cells
+        return cells[index];
     }
 
     /// <summary>

@@ -316,7 +316,7 @@ public class Unit : MonoBehaviour
             return;
         }
 
-        MyCell = EnRouteCell; // FIXME: this happens to clear other unit's cells
+        MyCell = EnRouteCell;
         EnRouteCell = null;
         HadActionCanceled = false;
 
@@ -419,7 +419,7 @@ public class Unit : MonoBehaviour
         Vector3 a = myCell.Position;
         Vector3 b = EnRouteCell.Position;
         Vector3 c = b;
-        Vector3 d;
+        Vector3 d; // HACK: all of this is so jank
         EnRouteCell = myCell;
         //for (; interpolator > 0; interpolator -= Time.deltaTime * travelSpeed / 10)
         for (float t = 0; t < 1f; t += Time.deltaTime * travelSpeed / 2)

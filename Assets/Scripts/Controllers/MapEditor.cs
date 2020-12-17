@@ -172,11 +172,6 @@ public class MapEditor : MonoBehaviour
             if (IsSettingUnits) CreateUnit(currentCell);
             if (IsSettingTerrain) EditCells(currentCell);
         }
-        else
-        {
-            // HACK: delete this line after testing
-            Debug.LogError("This line should never run");
-        }
     }
 
     #endregion

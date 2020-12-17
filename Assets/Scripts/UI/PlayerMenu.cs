@@ -22,28 +22,44 @@ public class PlayerMenu : MonoBehaviour
     #region Variables
 
     /* Cached References */
-
+    [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
+    [SerializeField] TMP_Text moveTimerText = null;
 
-    public Player player = null; // HACK: This is definitely not a great way to do this
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    public static PlayerMenu Singleton { get; set; }
+
+    public Player MyPlayer { get; set; }
 
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    private void Awake()
+    {
+        Singleton = this;
+    }
+
     private void Start()
     {
+        // HACK: this will not work when there are multiple players
+        MyPlayer = FindObjectOfType<Player>();
+
         GameManager.OnStartRound += SetMoveCountText;
         GameManager.OnStartTurn += SetMoveCountText;
-        if (player) player.OnCommandChange += SetMoveCountText; // HACK: player menu also appears in the start menu
+        MyPlayer.OnCommandChange += SetMoveCountText; 
     }
 
     private void OnDestroy()
     {
         GameManager.OnStartRound -= SetMoveCountText;
         GameManager.OnStartTurn -= SetMoveCountText;
-        if (player) player.OnCommandChange -= SetMoveCountText;
+        MyPlayer.OnCommandChange -= SetMoveCountText;
     }
 
     #endregion
@@ -51,12 +67,17 @@ public class PlayerMenu : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    public void UpdateTimerText(string text)
+    {
+
+    }
+
     private void SetMoveCountText()
     {
         GameMode gm = GameMode.Singleton;
 
-        string moveCountString = (player.MoveCount >= gm.MovesPerTurn) ?
-            "MXX" : $"M{player.MoveCount}";
+        string moveCountString = (MyPlayer.MoveCount >= gm.MovesPerTurn) ?
+            "MXX" : $"M{MyPlayer.MoveCount}";
 
         moveCountText.text = $"R{GameManager.Singleton.RoundCount}:" +
             $"T{GameManager.Singleton.TurnCount}:" +

@@ -85,10 +85,6 @@ public class Player : MonoBehaviour
         GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
         GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
 
-        // HACK: this should be done some other way
-        PlayerMenu menu = FindObjectOfType<PlayerMenu>();
-        menu.player = this;
-
         controls = new Controls();
         controls.Player.Selection.performed += DoSelection;
 
