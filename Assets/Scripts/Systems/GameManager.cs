@@ -174,14 +174,14 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < grid.units.Count; i++) 
             {
                 Unit unit = grid.units[i];
-                unit.DoAction(); // TODO: correct number of steps
+                unit.Movement.DoAction(); // TODO: correct number of steps
             }
 
             // Waiting for Units
             for (int i = 0; i < grid.units.Count; i++)
             {
                 Unit unit = grid.units[i];
-                if (unit.IsEnRoute)
+                if (unit.Movement.IsEnRoute)
                 {
                     i = 0;
                     yield return null;
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < grid.units.Count; i++) 
             {
                 Unit unit = grid.units[i];
-                unit.CompleteAction();
+                unit.Movement.CompleteAction();
             }
         }
 

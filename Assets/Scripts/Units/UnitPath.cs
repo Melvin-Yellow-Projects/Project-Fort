@@ -23,11 +23,12 @@ public class UnitPath
     #region Private Variables
 
     Unit unit;
+    UnitMovement movement;
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells = new List<HexCell>();
 
-    UnitCursor curser;
+    UnitCursor cursor;
 
     #endregion
 
@@ -104,6 +105,7 @@ public class UnitPath
     public UnitPath(Unit unit)
     {
         this.unit = unit;
+        movement = unit.Movement;
     }
 
     #endregion
@@ -128,7 +130,7 @@ public class UnitPath
             {
                 cells.Add(cell);
 
-                if (UnitPathfinding.GetMoveCostCalculation(cells) <= unit.MaxMovement)
+                if (UnitPathfinding.GetMoveCostCalculation(cells) <= movement.MaxMovement)
                 {
                     return; // ...otherwise reset the path if the path is too long
                 }
@@ -164,7 +166,7 @@ public class UnitPath
     {
         if (!HasPath)
         {
-            if (curser != null) curser.DestroyCurser();
+            if (cursor != null) cursor.DestroyCursor();
             return;
             
         }
@@ -182,11 +184,11 @@ public class UnitPath
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser) curser.Redraw(points); 
-        else curser = UnitCursor.Initialize(points);
+        if (cursor) cursor.Redraw(points); 
+        else cursor = UnitCursor.Initialize(points);
 
-        curser.IsSelected = unit.IsSelected;
-        curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.MaxMovement);
+        cursor.IsSelected = unit.IsSelected;
+        cursor.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > movement.MaxMovement);
     }
 
     ///// <summary>
@@ -204,8 +206,8 @@ public class UnitPath
 
     public void Clear()
     {
-        //Hide();
-        if (curser != null) curser.DestroyCurser(); // TODO: i think there needs to be a hide function for the curser
+        //Hide(); // TODO: i think there needs to be a hide function for the cursor
+        if (cursor != null) cursor.DestroyCursor(); 
 
         //moveCost = 0;
 

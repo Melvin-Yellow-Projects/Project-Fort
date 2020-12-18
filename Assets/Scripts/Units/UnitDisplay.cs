@@ -66,7 +66,7 @@ public class UnitDisplay : MonoBehaviour
     /// </summary>
     public void RefreshMovementDisplay()
     {
-        currentMovementText.text = $"{MyUnit.CurrentMovement}";
+        currentMovementText.text = $"{MyUnit.Movement.CurrentMovement}";
     }
 
     #endregion

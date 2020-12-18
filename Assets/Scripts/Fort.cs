@@ -52,13 +52,7 @@ public class Fort : MonoBehaviour
 
     public static Fort Prefab { get; set; }
 
-    public Team MyTeam
-    {
-        get
-        {
-            return GetComponent<Team>();
-        }
-    }
+    public Team MyTeam { get; private set; }
 
     public HexCell MyCell
     {
@@ -94,6 +88,8 @@ public class Fort : MonoBehaviour
 
     private void Awake()
     {
+        MyTeam = GetComponent<Team>();
+
         Subscribe();
     }
 

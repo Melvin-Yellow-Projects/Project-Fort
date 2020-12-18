@@ -59,12 +59,12 @@ public class UnitPathfinding : MonoBehaviour
 
     public static bool CanAddCellToPath(Unit unit, HexCell cell)
     {
-        UnitPath path = unit.Path;
+        UnitPath path = unit.Movement.Path;
         if (!path.EndCell.IsNeighbor(cell)) return false;
 
         if (!IsValidCellForSearch(unit, path.EndCell, cell, isUsingQueue: false)) return false;
 
-        if (!unit.IsValidEdgeForPath(path.EndCell, cell)) return false;
+        if (!unit.Movement.IsValidEdgeForPath(path.EndCell, cell)) return false;
 
         return true;
     }
@@ -113,7 +113,7 @@ public class UnitPathfinding : MonoBehaviour
                 return GetPathCells(startCell, endCell);
             }
 
-            int currentTurn = (current.Distance - 1) / unit.MaxMovement;
+            int currentTurn = (current.Distance - 1) / unit.Movement.MaxMovement;
 
             // search all neighbors of the current cell
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -121,7 +121,7 @@ public class UnitPathfinding : MonoBehaviour
                 // check if the neighbors are valid cells to search
                 HexCell neighbor = current.GetNeighbor(d);
                 if (IsValidCellForSearch(unit, current, neighbor, isUsingQueue: true) &&
-                    unit.IsValidEdgeForPath(current, neighbor))
+                    unit.Movement.IsValidEdgeForPath(current, neighbor))
                 {
                     // if they are valid, calculate distance and add them to the queue
                     int moveCost = GetMoveCostCalculation(current, neighbor);
@@ -181,7 +181,7 @@ public class UnitPathfinding : MonoBehaviour
         // invalid if neighbor is null or if the cell is already out of the queue
         if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase)) return false;
 
-        return unit.IsValidCellForPath(current, neighbor);
+        return unit.Movement.IsValidCellForPath(current, neighbor);
     }
 
     /// <summary>

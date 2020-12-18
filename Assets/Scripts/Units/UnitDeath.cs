@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public class Death : MonoBehaviour
+public class UnitDeath : MonoBehaviour
 {
     /********** MARK: Public Variables **********/
     #region Public Variables
@@ -18,12 +19,35 @@ public class Death : MonoBehaviour
 
     #endregion
 
+    /********** MARK: Public Variables **********/
+    #region Public Variables
+
+    public bool IsDying { get; private set; } = false;
+
+    #endregion
+
+    /********** MARK: Class Events **********/
+    #region Class Events
+
+    /// <summary>
+    /// Event for when a unit is killed/destroyed
+    /// </summary>
+    /// <subscriber class="UnitMovement">clears movement data and removes visibility</subscriber>
+    public event Action OnDeath;
+
+    #endregion
+
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void Die()
+    public void Die(bool isPlayingAnimation = true)
     {
-        StartCoroutine(DeathAnim());
+        OnDeath?.Invoke();
+
+        IsDying = true;
+
+        if (isPlayingAnimation) StartCoroutine(DeathAnim());
+        else Destroy(gameObject);
     }
 
     private IEnumerator DeathAnim()
@@ -41,7 +65,7 @@ public class Death : MonoBehaviour
 
     private void DisplacementUpdate()
     {
-        float jitter = Random.Range(-maxJitter, maxJitter);
+        float jitter = UnityEngine.Random.Range(-maxJitter, maxJitter);
 
         transform.position = originalPosition + new Vector3(jitter, jitter, jitter);
 

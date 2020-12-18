@@ -135,7 +135,7 @@ public class Player : MonoBehaviour
     {
         if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
-        if (currentCell && selectedUnit && selectedUnit.HasAction)
+        if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
         {
             DeselectUnit();
             MoveCount++;
@@ -172,15 +172,15 @@ public class Player : MonoBehaviour
         if (Input.GetKey("left shift"))
         {
             // can backtrack
-            selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: true);
+            selectedUnit.Movement.Path.AddCellToPath(currentCell, canBackTrack: true);
         }
         else
         {
             // can't backtrack
-            selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: false);
+            selectedUnit.Movement.Path.AddCellToPath(currentCell, canBackTrack: false);
         }
 
-        selectedUnit.Path.Show();
+        selectedUnit.Movement.Path.Show();
     }
 
     private void SelectUnit(Unit unit)
@@ -189,11 +189,11 @@ public class Player : MonoBehaviour
         //if (!myUnits.Contains(unit)) return;
         if (!unit) return;
 
-        if (!unit.CanMove) return;
+        if (!unit.Movement.CanMove) return;
 
-        if (unit.HasAction)
+        if (unit.Movement.HasAction)
         {
-            unit.Path.Clear();
+            unit.Movement.Path.Clear();
             MoveCount--;
             OnCommandChange?.Invoke();
         }
@@ -214,7 +214,7 @@ public class Player : MonoBehaviour
 
     private void DeselectUnitAndClearItsPath()
     {
-        if (selectedUnit) selectedUnit.Path.Clear();
+        if (selectedUnit) selectedUnit.Movement.Path.Clear();
         DeselectUnit();
     }
 
@@ -234,7 +234,7 @@ public class Player : MonoBehaviour
         if (unit.MyTeam == MyTeam)
         {
             myUnits.Add(unit);
-            unit.Display.ToggleMovementDisplay();
+            unit.Movement.Display.ToggleMovementDisplay();
         }
     }
 

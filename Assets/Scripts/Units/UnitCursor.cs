@@ -22,7 +22,7 @@ public class UnitCursor : MonoBehaviour
 
     /* Cached References */
     [Header("Cached References")]
-    [Tooltip("head GameObject of the hex curser")]
+    [Tooltip("head GameObject of the hex cursor")]
     [SerializeField] GameObject cursorHead = null;
 
     Transform bodyTransform;
@@ -135,7 +135,7 @@ public class UnitCursor : MonoBehaviour
 
     public static UnitCursor Initialize(List<Vector3> points)
     {
-        if (!Prefab || !MyMaterial) Debug.LogError("HexCurser prefab and material are not found");
+        if (!Prefab || !MyMaterial) Debug.LogError("UnitCursor prefab and material are not found");
 
         UnitCursor cursor = Instantiate<UnitCursor>(Prefab);
 
@@ -204,8 +204,8 @@ public class UnitCursor : MonoBehaviour
 
         // set color
         cursorHead.GetComponent<SpriteRenderer>().color = Color;
-        //if (collisionIndex == -1) curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
-        //else curserHead.GetComponent<SpriteRenderer>().color = ErrorColor;
+        //if (collisionIndex == -1) cursorHead.GetComponent<SpriteRenderer>().color = DefaultColor;
+        //else cursorHead.GetComponent<SpriteRenderer>().color = ErrorColor;
     }
 
     protected void UpdateBody()
@@ -268,7 +268,7 @@ public class UnitCursor : MonoBehaviour
         enabled = true;
     }
 
-    public void DestroyCurser()
+    public void DestroyCursor()
     {
         Destroy(gameObject);
     }

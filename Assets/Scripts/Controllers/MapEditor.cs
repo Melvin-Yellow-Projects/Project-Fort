@@ -300,7 +300,7 @@ public class MapEditor : MonoBehaviour
 
         unit.MyCell = cell;
         unit.MyTeam.TeamIndex = teamIndex;
-        unit.Orientation = Random.Range(0, 360f);
+        unit.Movement.Orientation = Random.Range(0, 360f);
 
         HexGrid.Singleton.ParentTransformToGrid(unit.transform);
     }
