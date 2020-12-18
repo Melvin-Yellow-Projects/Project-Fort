@@ -6,7 +6,8 @@
  * Date Created: October 18, 2020
  * 
  * Additional Comments:
- *      HACK: this class creates a lot of instances, and then deletes them very fast
+ *      TODO: Update Path to better track the pathing of the unit, in particular the tail of the
+ *              path does a poor job in showing where the unit is moving during its move
  *      
  *      Previously known as HexPath.cs
  **/

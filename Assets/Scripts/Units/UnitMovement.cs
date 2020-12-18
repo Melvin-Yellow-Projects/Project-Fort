@@ -80,7 +80,6 @@ public class UnitMovement : MonoBehaviour
         private set
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
-            if (!CanMove) Path.Clear();
 
             Display.RefreshMovementDisplay();
 
@@ -117,7 +116,7 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    public bool HadActionCanceled { get; private set; } = false;
+    public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
 
     public bool CanMove
     {
@@ -171,8 +170,6 @@ public class UnitMovement : MonoBehaviour
     {
         if (!HasAction) return;
 
-        CurrentMovement--;
-
         List<HexCell> cells = new List<HexCell>();
         cells.Add(Path[0]);
         cells.Add(Path[1]);
@@ -183,6 +180,8 @@ public class UnitMovement : MonoBehaviour
     public void CompleteAction() // HACK: these lines can be easily simplified
     {
         if (!EnRouteCell) return;
+
+        CurrentMovement--;
 
         if (GetComponent<UnitDeath>().IsDying) // HACK: this is probably inefficient
         {
@@ -204,6 +203,7 @@ public class UnitMovement : MonoBehaviour
     {
         if (!EnRouteCell) return;
 
+        StopActions();
         HadActionCanceled = true;
 
         StopAllCoroutines();
@@ -213,6 +213,7 @@ public class UnitMovement : MonoBehaviour
     public void StopActions()
     {
         CurrentMovement = 0;
+        Path.Clear();
     }
 
     /// <summary>
