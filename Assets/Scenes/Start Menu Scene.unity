@@ -2013,7 +2013,7 @@ PrefabInstance:
     - target: {fileID: 964691865800807506, guid: 7f98b735106d83b45bfd0b0a3808eb79,
         type: 3}
       propertyPath: m_Name
-      value: Player Menu
+      value: System Menu
       objectReference: {fileID: 0}
     - target: {fileID: 4093627980631745829, guid: 7f98b735106d83b45bfd0b0a3808eb79,
         type: 3}
@@ -2122,34 +2122,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5079200830324352783, guid: 7f98b735106d83b45bfd0b0a3808eb79,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5079200830324352783, guid: 7f98b735106d83b45bfd0b0a3808eb79,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5079200830324352783, guid: 7f98b735106d83b45bfd0b0a3808eb79,
-        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1205715712}
-    - target: {fileID: 5079200830324352783, guid: 7f98b735106d83b45bfd0b0a3808eb79,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5079200830324352783, guid: 7f98b735106d83b45bfd0b0a3808eb79,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Open
-      objectReference: {fileID: 0}
-    - target: {fileID: 5079200830324352783, guid: 7f98b735106d83b45bfd0b0a3808eb79,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f98b735106d83b45bfd0b0a3808eb79, type: 3}
 --- !u!114 &1205715712 stripped

@@ -341,7 +341,7 @@ public class HexCell : MonoBehaviour
             }
 
             // refresh unit location
-            if (MyUnit) MyUnit.ValidateLocation();
+            if (MyUnit) MyUnit.Movement.ValidateLocation();
             if (MyFort) MyFort.ValidateLocation();
         }
     }

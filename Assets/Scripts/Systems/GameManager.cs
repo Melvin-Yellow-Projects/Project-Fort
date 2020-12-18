@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using TMPro;
 
 /// <summary>
 /// 
@@ -21,8 +20,6 @@ public class GameManager : MonoBehaviour
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
-
-    [SerializeField] TMP_Text moveTimerText = null;
 
     float turnTimer = 0f;
 
@@ -101,7 +98,8 @@ public class GameManager : MonoBehaviour
         else
         {
             // Update Timer
-            moveTimerText.text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
+            string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
+            PlayerMenu.Singleton.UpdateTimerText(text);
         }
     }
 
@@ -134,7 +132,7 @@ public class GameManager : MonoBehaviour
         if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
         else
         {
-            moveTimerText.text = "Your Turn";
+            PlayerMenu.Singleton.UpdateTimerText("Your Turn");
         }
     }
 
@@ -157,7 +155,7 @@ public class GameManager : MonoBehaviour
     private void MoveUnits()
     {
         enabled = false;
-        moveTimerText.text = "Executing Turn";
+        PlayerMenu.Singleton.UpdateTimerText("Executing Turn");
 
         StopAllCoroutines();
         StartCoroutine(MoveUnits(8));
@@ -176,14 +174,14 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < grid.units.Count; i++) 
             {
                 Unit unit = grid.units[i];
-                unit.DoAction(); // TODO: correct number of steps
+                unit.Movement.DoAction(); // TODO: correct number of steps
             }
 
             // Waiting for Units
             for (int i = 0; i < grid.units.Count; i++)
             {
                 Unit unit = grid.units[i];
-                if (unit.IsEnRoute)
+                if (unit.Movement.IsEnRoute)
                 {
                     i = 0;
                     yield return null;
@@ -195,7 +193,7 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < grid.units.Count; i++) 
             {
                 Unit unit = grid.units[i];
-                unit.CompleteAction();
+                unit.Movement.CompleteAction();
             }
         }
 

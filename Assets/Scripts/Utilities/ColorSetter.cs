@@ -21,6 +21,9 @@ public class ColorSetter : MonoBehaviour
     [Tooltip("speed in which to change the unit's color")]
     [SerializeField, Range(0, 10f)] float changeColorSpeed = 0.1f;
 
+    [Tooltip("percentage to saturate the color when saturation is toggled")]
+    [SerializeField, Range(0, 1f)] float saturation = 0.3f;
+
     #endregion
 
     /********** MARK: Class Functions **********/
@@ -30,9 +33,12 @@ public class ColorSetter : MonoBehaviour
     /// Sets the color of all the materials under this GameObject
     /// </summary>
     /// <param name="color"></param>
-    public void SetColor(Color color)
+    /// <param name="isSaturating">whether or not this color is getting saturated</param>
+    public void SetColor(Color color, bool isSaturating = false)
     {
         StopAllCoroutines();
+
+        if (isSaturating) color *= saturation;
 
         foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
         {

@@ -28,33 +28,7 @@ public class Unit : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [Header("Cached References")]
-    [Tooltip("handler for unit combat and collisions")]
-    [SerializeField] UnitCollisionHandler collisionHandler;
-
-    [Header("Other Settings")]
-    [Tooltip("saturation reduction for when a unit has moved")]
-    [SerializeField, Range(0, 1f)] float cannotMoveSaturation = 0.3f;
-
-    // HACK: this needs to be configurable
-    const float travelSpeed = 6f; 
-    const float rotationSpeed = 360f;
-    int currentMovement = 8;
-    const int maxMovement = 8;
-    const int visionRange = 3;
-    const int movesPerStep = 1;
-
-    public static Unit prefab;
-
-    HexCell myCell;
-
-    float orientation;
-
     bool isSelected = false;
-
-    bool isDying = false;
-
-    float interpolator;
 
     #endregion
 
@@ -80,104 +54,15 @@ public class Unit : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    public HexCell MyCell
-    {
-        get
-        {
-            return myCell;
-        }
-        set
-        {
-            // if there is a previous cell...
-            if (myCell && myCell.MyUnit == this)
-            {
-                UnitPathfinding.DecreaseVisibility(myCell, visionRange);
-                myCell.MyUnit = null;
-            }
+    public static Unit Prefab { get; set; }
 
-            // update for new location
-            myCell = value;
-            myCell.MyUnit = this; // sets this hex cell's unit to this one
-            UnitPathfinding.IncreaseVisibility(myCell, visionRange);
-            ValidateLocation();
-        }
-    }
+    public Team MyTeam { get; private set; }
 
-    public HexCell EnRouteCell { get; private set; }
+    public ColorSetter MyColorSetter { get; private set; }
 
-    //public HexCell ToCell { get; set; }
+    public UnitMovement Movement { get; private set; }
 
-    /// <summary>
-    /// A unit's rotation around the Y axis, in degrees
-    /// </summary>
-    public float Orientation
-    {
-        get
-        {
-            return orientation;
-        }
-        set
-        {
-            orientation = value;
-            transform.localRotation = Quaternion.Euler(0f, value, 0f);
-        }
-    }
-
-    public HexDirection Direction
-    {
-        get
-        {
-            return HexMetrics.AngleToDirection(orientation);
-        }
-    }
-
-    public int CurrentMovement
-    {
-        get
-        {
-            return currentMovement;
-        }
-        set // HACK: this should be private but cell needs to set it on combat, it's also just weird
-        {
-            currentMovement = Mathf.Clamp(value, 0, maxMovement);
-            if (!CanMove) Path.Clear();
-
-            Display.RefreshMovementDisplay();
-
-            float saturation = (CanMove) ? 1 : cannotMoveSaturation;
-            MyColorSetter.SetColor(MyTeam.MyColor * saturation);
-        }
-    }
-
-    public int MaxMovement
-    {
-        get
-        {
-            return maxMovement;
-        }
-    }
-
-    public int VisionRange
-    {
-        get
-        {
-            return visionRange * 100;
-        }
-    }
-
-    public UnitPath Path { get; private set; }
-
-    public bool IsEnRoute { get; set; }
-
-    public bool HasAction
-    {
-        get
-        {
-            return Path.HasPath;
-        }
-    }
-
-    public bool HadActionCanceled { get; private set; } = false;
+    public UnitCollisionHandler CollisionHandler { get; private set; }
 
     public bool IsSelected
     {
@@ -187,43 +72,20 @@ public class Unit : MonoBehaviour
         }
         set
         {
-            if (value != isSelected)
-            {
-                isSelected = value;
-                Path.Show(); // updates path HACK: kinda sloppy
-            }
+            isSelected = value;
+            Movement.RefreshPath(); 
         }
     }
 
-    public bool CanMove
+    public HexCell MyCell
     {
         get
         {
-            return (currentMovement > 0);
+            return Movement.MyCell;
         }
-    }
-
-    public Team MyTeam
-    {
-        get
+        set
         {
-            return GetComponent<Team>();
-        }
-    }
-
-    public UnitDisplay Display
-    {
-        get
-        {
-            return GetComponent<UnitDisplay>();
-        }
-    }
-
-    public ColorSetter MyColorSetter
-    {
-        get
-        {
-            return GetComponent<ColorSetter>();
+            Movement.MyCell = value;
         }
     }
 
@@ -234,16 +96,10 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-        name = $"Unit {UnityEngine.Random.Range(0, 10000)}";
-
-        Path = new UnitPath(this);
-        currentMovement = maxMovement;
-
-        GameManager.OnStartRound += HandleOnStartRound;
-        GameManager.OnStartTurn += HandleOnStartTurn;
-        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
-
-        Display.RefreshMovementDisplay();
+        MyTeam = GetComponent<Team>();
+        MyColorSetter = GetComponent<ColorSetter>();
+        Movement = GetComponent<UnitMovement>();
+        CollisionHandler = GetComponentInChildren<UnitCollisionHandler>();
     }
 
     private void Start()
@@ -254,10 +110,6 @@ public class Unit : MonoBehaviour
     private void OnDestroy()
     {
         OnUnitDepawned?.Invoke(this);
-
-        GameManager.OnStartRound -= HandleOnStartRound;
-        GameManager.OnStartTurn -= HandleOnStartTurn;
-        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
     }
 
     #endregion
@@ -265,238 +117,11 @@ public class Unit : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void ValidateLocation()
-    {
-        transform.localPosition = myCell.Position;
-    }
-
     public void Die(bool isPlayingAnimation = true)
     {
         StopAllCoroutines();
 
-        IsEnRoute = false;
-        isDying = true;
-
-        if (myCell) UnitPathfinding.DecreaseVisibility(myCell, visionRange);
-
-        myCell.MyUnit = null;
-
-        Path.Clear();
-
-        if (isPlayingAnimation) GetComponent<Death>().Die();
-        else Destroy(gameObject);
-    }
-
-    #endregion
-
-    /********** MARK: Pathing **********/
-    #region Pathing
-
-    public void DoAction()
-    {
-        if (!HasAction) return;
-
-        CurrentMovement--;
-
-        List<HexCell> cells = new List<HexCell>();
-        cells.Add(Path[0]);
-        cells.Add(Path[1]);
-
-        StartCoroutine(Route(cells));
-    }
-
-    public void CompleteAction() // HACK: these lines can be easily simplified
-    {
-        if (!EnRouteCell) return;
-
-        if (isDying) 
-        {
-            collisionHandler.gameObject.SetActive(false);
-            Display.HideDisplay();
-            return;
-        }
-
-        MyCell = EnRouteCell; // FIXME: this happens to clear other unit's cells
-        EnRouteCell = null;
-        HadActionCanceled = false;
-
-        //if (!HasAction) return; // HACK: idk why this is needed
-
-        if (currentMovement == 0) CurrentMovement = 0; // HACK: there should be a flag for if a unit has moved and canceled its action
-        else Path.RemoveTailCells(numberToRemove: 1);
-
-        Path.Show();
-    }
-
-    public void CancelAction()
-    {
-        if (!EnRouteCell) return;
-
-        HadActionCanceled = true;
-
-        StopAllCoroutines(); 
-        StartCoroutine(RouteCanceled());
-
-        currentMovement = 0; // HACK: see CompleteAction()
-    }
-
-    /// <summary>
-    /// TODO: comment this; apparently a unit's velocity will slow down when changing directions,
-    /// why?
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator Route(List<HexCell> cells)
-    {
-        IsEnRoute = true;
-        Vector3 a, b, c = cells[0].Position;
-
-        // perform lookat
-        //yield return LookAt(cells[1].Position);
-
-        // decrease vision HACK: this ? shenanigans is confusing
-        UnitPathfinding.DecreaseVisibility(
-            (EnRouteCell) ? EnRouteCell : cells[0],
-            visionRange
-        );
-
-        interpolator = Time.deltaTime * travelSpeed;
-        for (int i = 1; i < cells.Count; i++)
-        {
-            EnRouteCell = cells[i]; // prevents teleportation
-
-            a = c;
-            b = cells[i - 1].Position;
-            c = (b + EnRouteCell.Position) * 0.5f;
-
-            UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
-
-            for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
-            {
-                //transform.localPosition = Vector3.Lerp(a, b, interpolator);
-                transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
-                //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
-                //d.y = 0f;
-                //transform.localRotation = Quaternion.LookRotation(d);
-                yield return null;
-            }
-
-            UnitPathfinding.DecreaseVisibility(EnRouteCell, visionRange);
-
-            interpolator -= 1f;
-        }
-        EnRouteCell = cells[cells.Count - 1];
-
-        // arriving at the center if the last cell
-        a = c;
-        b = EnRouteCell.Position; // We can simply use the destination here.
-        c = b;
-
-        UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
-
-        for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
-        {
-            //transform.localPosition = Vector3.Lerp(a, b, interpolator);
-            transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
-            //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
-            //d.y = 0f;
-            //transform.localRotation = Quaternion.LookRotation(d);
-            yield return null;
-        }
-
-        transform.localPosition = EnRouteCell.Position;
-        //orientation = transform.localRotation.eulerAngles.y;
-        IsEnRoute = false;
-    }
-
-    private IEnumerator RouteCanceled()
-    {   
-        IsEnRoute = true;
-
-        //yield return LookAt(myCell.Position);
-
-        UnitPathfinding.DecreaseVisibility(EnRouteCell, visionRange);
-
-        Vector3 a = myCell.Position;
-        Vector3 b = EnRouteCell.Position;
-        Vector3 c = b;
-        Vector3 d;
-        EnRouteCell = myCell;
-        //for (; interpolator > 0; interpolator -= Time.deltaTime * travelSpeed / 10)
-        for (float t = 0; t < 1f; t += Time.deltaTime * travelSpeed / 2)
-        {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, a, t);
-            //transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
-            //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator); // this will be backwards
-            //d.y = 0f;
-            //transform.localRotation = Quaternion.LookRotation(d);
-            yield return null;
-        }
-
-        UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
-
-        IsEnRoute = false;
-    }
-
-    public void LookAt(HexDirection direction)
-    {
-        // HACK: yea dis is weird, coroutine needs to probably be stopped first
-        Vector3 localPoint = HexMetrics.GetBridge(direction);
-        StartCoroutine(LookAt(myCell.Position + localPoint));
-    }
-
-    IEnumerator LookAt(Vector3 point)
-    {
-        // locks the y dimension
-        point.y = transform.localPosition.y;
-
-        Quaternion fromRotation = transform.localRotation;
-        Quaternion toRotation = Quaternion.LookRotation(point - transform.localPosition);
-
-        float angle = Quaternion.Angle(fromRotation, toRotation);
-
-        if (angle > 0f)
-        {
-            // normalizes the speed so that it's always the same regardless of angle; "To ensure a
-            // uniform angular speed, we have to slow down our interpolation as the rotation angle
-            // increases."
-            float speed = rotationSpeed / angle;
-
-            for (float t = Time.deltaTime * speed; t < 1f; t += Time.deltaTime * speed)
-            {
-                transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
-                yield return null;
-            }
-        }
-
-        transform.LookAt(point);
-        orientation = transform.localRotation.eulerAngles.y;
-
-    }
-
-    public bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
-    {
-        // invalid if there is a river inbetween
-        //if (current.GetEdgeType(neighbor) == river) return false;
-
-        // invalid if edge between cells is a cliff
-        if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
-
-        // neighbor is a valid cell
-        return true;
-    }
-
-    public bool IsValidCellForPath(HexCell current, HexCell neighbor)
-    {
-        // if a Unit exists on this cell
-        //if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
-
-        // invalid if cell is unexplored
-        if (!neighbor.IsExplored) return false;
-
-        //isValid &= !cell.IsUnderwater; // cell is not underwater
-
-        // neighbor is a valid cell
-        return true;
+        GetComponent<UnitDeath>().Die(isPlayingAnimation);
     }
 
     #endregion
@@ -506,8 +131,8 @@ public class Unit : MonoBehaviour
 
     public void Save(BinaryWriter writer)
     {
-        myCell.coordinates.Save(writer);
-        writer.Write(orientation);
+        MyCell.coordinates.Save(writer);
+        writer.Write(Movement.Orientation);
         writer.Write((byte)MyTeam.TeamIndex);
     }
 
@@ -516,76 +141,14 @@ public class Unit : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        Unit unit = Instantiate(prefab);
+        Unit unit = Instantiate(Prefab);
         if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
 
-        unit.MyCell = HexGrid.Singleton.GetCell(coordinates);
-        unit.Orientation = orientation;
+        unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
+        unit.Movement.Orientation = orientation;
 
         HexGrid.Singleton.ParentTransformToGrid(unit.transform);
     }
-
-    #endregion
-
-    /********** MARK: Handle Functions **********/
-    #region Handle Functions
-
-    private void HandleOnStartRound()
-    {
-        Path.Clear();
-        CurrentMovement = maxMovement; 
-    }
-
-    private void HandleOnStartTurn()
-    {
-        Path.Clear();
-    }
-
-    private void HandleOnStopMoveUnits()
-    {
-        if (currentMovement < maxMovement)
-        {
-            CurrentMovement = 0;
-        }
-    }
-
-    #endregion
-
-    /********** MARK: Debug **********/
-    #region Debug
-
-    ///// <summary>
-    ///// Unity Method; Gizmos are drawn only when the object is selected; Gizmos are not pickable;
-    ///// This is used to ease setup
-    ///// </summary>
-    //void OnDrawGizmos()
-    //{
-    //    if (pathToTravel == null || pathToTravel.Count == 0)
-    //    {
-    //        return;
-    //    }
-
-    //    Vector3 a, b, c = pathToTravel[0].Position;
-
-    //    for (int i = 1; i < pathToTravel.Count; i++)
-    //    {
-    //        a = c;
-    //        b = pathToTravel[i - 1].Position;
-    //        c = (b + pathToTravel[i].Position) * 0.5f;
-    //        for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed)
-    //        {
-    //            Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
-    //        }
-    //    }
-
-    //    a = c;
-    //    b = pathToTravel[pathToTravel.Count - 1].Position;
-    //    c = b;
-    //    for (float t = 0f; t < 1f; t += 0.1f)
-    //    {
-    //        Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
-    //    }
-    //}
 
     #endregion
 

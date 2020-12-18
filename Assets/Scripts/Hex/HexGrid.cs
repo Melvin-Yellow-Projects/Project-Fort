@@ -71,6 +71,8 @@ public class HexGrid : MonoBehaviour
 
     HexCellShaderData cellShaderData;
 
+    int unitCount = 0;
+
     #endregion
 
     /********** MARK: Public Properties **********/
@@ -319,7 +321,7 @@ public class HexGrid : MonoBehaviour
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
         // return cell using index
-        return cells[index]; // FIXME: out of bounds error when editing top most cells
+        return cells[index];
     }
 
     /// <summary>
@@ -386,7 +388,7 @@ public class HexGrid : MonoBehaviour
     {
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Path.Clear();
+            units[i].Movement.Path.Clear();
         }
     }
 
@@ -394,8 +396,6 @@ public class HexGrid : MonoBehaviour
     {
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Path.Clear();
-
             units[i].Die(isPlayingAnimation: false);
         }
         units.Clear();
@@ -419,7 +419,7 @@ public class HexGrid : MonoBehaviour
         for (int i = 0; i < units.Count; i++)
         {
             Unit unit = units[i];
-            UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.VisionRange);
+            UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.Movement.VisionRange);
         }
     }
 
@@ -522,6 +522,9 @@ public class HexGrid : MonoBehaviour
     private void HandleOnUnitSpawned(Unit unit)
     {
         // TODO: Server validation
+
+        unit.name = $"Unit {unitCount}";
+        unitCount += 1;
 
         units.Add(unit);
     }

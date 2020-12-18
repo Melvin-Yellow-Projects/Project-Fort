@@ -26,8 +26,6 @@ public class Fort : MonoBehaviour
     HexCell myCell = null;
     float orientation;
 
-    public static Fort prefab;
-
     #endregion
 
     /********** MARK: Class Events **********/
@@ -52,13 +50,9 @@ public class Fort : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    public Team MyTeam
-    {
-        get
-        {
-            return GetComponent<Team>();
-        }
-    }
+    public static Fort Prefab { get; set; }
+
+    public Team MyTeam { get; private set; }
 
     public HexCell MyCell
     {
@@ -94,6 +88,8 @@ public class Fort : MonoBehaviour
 
     private void Awake()
     {
+        MyTeam = GetComponent<Team>();
+
         Subscribe();
     }
 
@@ -137,7 +133,7 @@ public class Fort : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        Fort fort = Instantiate(prefab);
+        Fort fort = Instantiate(Prefab);
         if (header >= 4) fort.MyTeam.TeamIndex = reader.ReadByte();
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);

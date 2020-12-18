@@ -42,11 +42,30 @@ public class UnitCollisionHandler : MonoBehaviour
         Unit otherUnit = other.GetComponent<UnitCollisionHandler>().MyUnit;
 
         // HACK: this should be 100% guarenteed because other collisions are disabled
-        if (!otherUnit) return; 
+        if (!otherUnit) return;
 
-        if (otherUnit.MyTeam == MyUnit.MyTeam) MyUnit.CancelAction();
+        Debug.Log($"{MyUnit.name} has collided with {otherUnit.name}");
 
-        else if (otherUnit.EnRouteCell && !otherUnit.HadActionCanceled) MyUnit.Die(); // TODO: verify if we want the hadactioncanceled part
+        // is the unit on my team?
+        if (otherUnit.MyTeam == MyUnit.MyTeam)
+        {
+            // Other Unit is my Ally
+            MyUnit.Movement.UndoAction();
+        }
+
+        // do i die to this unit?
+        else if (otherUnit.Movement.EnRouteCell && !otherUnit.Movement.HadActionCanceled)
+        {
+            // Other Unit is in Active Combat
+            MyUnit.Die(); // TODO: verify if we want the hadactioncanceled part
+        }
+
+        // the unit is my enemy, and i have killed him, and now i have to stop moving
+        else
+        {
+            // Other Unit is in Inactive Combat
+            MyUnit.Movement.StopActions();
+        }
     }
 
     #endregion
