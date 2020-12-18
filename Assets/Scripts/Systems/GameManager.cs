@@ -39,22 +39,21 @@ public class GameManager : MonoBehaviour
     /// Event for when a new turn has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    /// <subscriber class="Unit">clears a unit's path</subscriber>
     public static event Action OnStartTurn;
 
     /// <summary>
-    /// Event for when unit moves have started
+    /// Event for turn is playing
     /// </summary>
     /// <subscriber class="Player">disables controls when units are moving</subscriber>
-    public static event Action OnStartMoveUnits;
+    public static event Action OnPlayTurn;
 
     /// <summary>
-    /// Event for when unit moves have finished
+    /// Event for turn has stopped playing
     /// </summary>
     /// <subscriber class="Player">enables controls when units are moving</subscriber>
     /// <subscriber class="Fort">checks to see if team has updated</subscriber>
-    /// <subscriber class="Unit">sets a unit's movement to 0 if it has moved</subscriber>
-    public static event Action OnStopMoveUnits;
+    /// <subscriber class="UnitMovement">sets a unit's movement to 0 if it has moved</subscriber>
+    public static event Action OnStopTurn;
 
     #endregion
 
@@ -129,22 +128,18 @@ public class GameManager : MonoBehaviour
 
         OnStartTurn?.Invoke();
 
+        // update timer and its text
         if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
-        else
-        {
-            PlayerMenu.Singleton.UpdateTimerText("Your Turn");
-        }
+        else PlayerMenu.Singleton.UpdateTimerText("Your Turn");
     }
 
     public void PlayTurn()
     {
-        MoveUnits();
-    }
+        enabled = false;
+        PlayerMenu.Singleton.UpdateTimerText("Executing Turn");
 
-    private void StopTurn()
-    {
-        if (TurnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
-        else StartTurn();
+        StopAllCoroutines();
+        StartCoroutine(PlayTurn(8));
     }
 
     #endregion
@@ -152,54 +147,60 @@ public class GameManager : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    private void MoveUnits()
+    // HACK:  units are looped over several times
+    private IEnumerator PlayTurn(int numberOfTurnSteps) 
     {
-        enabled = false;
-        PlayerMenu.Singleton.UpdateTimerText("Executing Turn");
-
-        StopAllCoroutines();
-        StartCoroutine(MoveUnits(8));
-    }
-
-    private IEnumerator MoveUnits(int numberOfSteps) // HACK:  units are looped over several times
-    {
-        OnStartMoveUnits?.Invoke();
-
-        HexGrid grid = HexGrid.Singleton;
+        OnPlayTurn?.Invoke();
 
         // How many Moves/Steps Units can Utilize
-        for (int stepCount = 0; stepCount < numberOfSteps; stepCount++)
+        for (int step = 0; step < numberOfTurnSteps; step++)
         {
-            // Moving Units
-            for (int i = 0; i < grid.units.Count; i++) 
-            {
-                Unit unit = grid.units[i];
-                unit.Movement.DoAction(); // TODO: correct number of steps
-            }
+            MoveUnits();
 
-            // Waiting for Units
-            for (int i = 0; i < grid.units.Count; i++)
-            {
-                Unit unit = grid.units[i];
-                if (unit.Movement.IsEnRoute)
-                {
-                    i = 0;
-                    yield return null;
-                }
-                
-            }
+            yield return WaitForUnits();
 
-            // Setting new cell for Units now that they moved
-            for (int i = 0; i < grid.units.Count; i++) 
-            {
-                Unit unit = grid.units[i];
-                unit.Movement.CompleteAction();
-            }
+            CompleteTurnStep();
         }
 
-        OnStopMoveUnits?.Invoke();
+        OnStopTurn?.Invoke();
 
-        StopTurn();
+        // Finished Turn, either start new one or start a new round
+        if (TurnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
+        else StartTurn();
+    }
+
+    private void MoveUnits()
+    {
+        // Moving Units
+        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        {
+            Unit unit = HexGrid.Singleton.units[i];
+            unit.Movement.DoAction(); // TODO: correct number of steps
+        }
+    }
+
+    private IEnumerator WaitForUnits()
+    {
+        // Waiting for Units
+        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        {
+            Unit unit = HexGrid.Singleton.units[i];
+            if (unit.Movement.IsEnRoute)
+            {
+                i = 0;
+                yield return null;
+            }
+        }
+    }
+
+    private void CompleteTurnStep()
+    {
+        // Setting new cell for Units now that they moved
+        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        {
+            Unit unit = HexGrid.Singleton.units[i];
+            unit.Movement.CompleteAction();
+        }
     }
 
     private void ResetTimer()

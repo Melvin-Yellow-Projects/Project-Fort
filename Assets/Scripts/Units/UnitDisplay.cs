@@ -29,22 +29,6 @@ public class UnitDisplay : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Properties **********/
-    #region Properties
-
-    /// <summary>
-    /// Referenece to this display's unit
-    /// </summary>
-    public Unit MyUnit
-    {
-        get
-        {
-            return GetComponent<Unit>();
-        }
-    }
-
-    #endregion
-
     /********** MARK: Class Functions **********/
     #region Class Functions
 
@@ -64,9 +48,9 @@ public class UnitDisplay : MonoBehaviour
     /// <summary>
     /// Refreshes the movement display text
     /// </summary>
-    public void RefreshMovementDisplay()
+    public void RefreshMovementDisplay(int movement)
     {
-        currentMovementText.text = $"{MyUnit.Movement.CurrentMovement}";
+        currentMovementText.text = $"{movement}";
     }
 
     #endregion

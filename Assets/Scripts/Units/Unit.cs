@@ -117,6 +117,11 @@ public class Unit : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    public void ValidateLocation()
+    {
+        transform.localPosition = MyCell.Position;
+    }
+
     public void Die(bool isPlayingAnimation = true)
     {
         StopAllCoroutines();

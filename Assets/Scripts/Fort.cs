@@ -144,20 +144,20 @@ public class Fort : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Handle Functions **********/
-    #region Handle Functions
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
 
     private void Subscribe()
     {
-        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
+        GameManager.OnStopTurn += HandleOnStopTurn;
     }
 
     private void Unsubscribe()
     {
-        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
+        GameManager.OnStopTurn -= HandleOnStopTurn;
     }
 
-    public void HandleOnStopMoveUnits()
+    public void HandleOnStopTurn()
     {
         Unit unit = myCell.MyUnit;
 

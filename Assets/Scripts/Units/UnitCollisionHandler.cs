@@ -50,21 +50,21 @@ public class UnitCollisionHandler : MonoBehaviour
         if (otherUnit.MyTeam == MyUnit.MyTeam)
         {
             // Other Unit is my Ally
-            MyUnit.Movement.UndoAction();
+            MyUnit.Movement.CancelAction();
         }
 
         // do i die to this unit?
         else if (otherUnit.Movement.EnRouteCell && !otherUnit.Movement.HadActionCanceled)
         {
             // Other Unit is in Active Combat
-            MyUnit.Die(); // TODO: verify if we want the hadactioncanceled part
+            MyUnit.Die();
         }
 
         // the unit is my enemy, and i have killed him, and now i have to stop moving
         else
         {
             // Other Unit is in Inactive Combat
-            MyUnit.Movement.StopActions();
+            MyUnit.Movement.CanMove = false;
         }
     }
 

@@ -78,31 +78,12 @@ public class Player : MonoBehaviour
         //terrainMaterial.DisableKeyword("GRID_ON");
         Shader.DisableKeyword("HEX_MAP_EDIT_MODE"); // HACK: this class should not have access to this line
 
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
-        Unit.OnUnitDepawned += HandleOnUnitDepawned;
-
-        GameManager.OnStartTurn += HandleOnStartTurn;
-        GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
-        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
-
-        controls = new Controls();
-        controls.Player.Selection.performed += DoSelection;
-
-        controls.Player.Command.performed += DoCommand;
-
-        controls.Enable();
+        Subscribe();
     }
 
     private void OnDestroy()
     {
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
-        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
-
-        GameManager.OnStartTurn -= HandleOnStartTurn;
-        GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
-        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
-
-        controls.Dispose();
+        Unsubscribe();
     }
 
     protected void Update()
@@ -220,13 +201,34 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Handler Functions **********/
-    #region Handler Functions
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
 
-    private void HandleOnStartTurn()
+    private void Subscribe()
     {
-        MoveCount = 0;
-        OnCommandChange?.Invoke(); // HACK: there has to be a better way
+        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Unit.OnUnitDepawned += HandleOnUnitDepawned;
+
+        GameManager.OnStartTurn += HandleOnStartTurn;
+        GameManager.OnPlayTurn += HandleOnPlayTurn;
+        GameManager.OnStopTurn += HandleOnStopTurn;
+
+        controls = new Controls();
+        controls.Player.Selection.performed += DoSelection;
+        controls.Player.Command.performed += DoCommand;
+        controls.Enable();
+    }
+
+    private void Unsubscribe()
+    {
+        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+
+        GameManager.OnStartTurn -= HandleOnStartTurn;
+        GameManager.OnPlayTurn -= HandleOnPlayTurn;
+        GameManager.OnStopTurn -= HandleOnStopTurn;
+
+        controls.Dispose();
     }
 
     private void HandleOnUnitSpawned(Unit unit)
@@ -243,13 +245,19 @@ public class Player : MonoBehaviour
         myUnits.Remove(unit);
     }
 
-    private void HandleOnStartMoveUnits()
+    private void HandleOnStartTurn()
+    {
+        MoveCount = 0;
+        OnCommandChange?.Invoke(); // HACK: there has to be a better way
+    }
+
+    private void HandleOnPlayTurn()
     {
         DeselectUnitAndClearItsPath();
         controls.Disable();
     }
 
-    private void HandleOnStopMoveUnits()
+    private void HandleOnStopTurn()
     {
         controls.Enable();
     }

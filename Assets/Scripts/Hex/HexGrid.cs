@@ -91,11 +91,7 @@ public class HexGrid : MonoBehaviour
 
         CreateMap(cellCountX, cellCountZ);
 
-        Fort.OnFortSpawned += HandleOnFortSpawned;
-        Fort.OnFortDespawned += HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
-        Unit.OnUnitDepawned += HandleOnUnitDepawned;
+        Subscribe();
 
         Singleton = this;
     }
@@ -113,11 +109,7 @@ public class HexGrid : MonoBehaviour
 
     protected void OnDestroy()
     {
-        Fort.OnFortSpawned -= HandleOnFortSpawned;
-        Fort.OnFortDespawned -= HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
-        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+        Unsubscribe();
 
         Singleton = null;
     }
@@ -502,8 +494,26 @@ public class HexGrid : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Handler Functions **********/
-    #region Handler Functions
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void Subscribe()
+    {
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
+
+        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Unit.OnUnitDepawned += HandleOnUnitDepawned;
+    }
+
+    private void Unsubscribe()
+    {
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
+
+        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+    }
 
     private void HandleOnFortSpawned(Fort fort)
     {

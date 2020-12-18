@@ -28,6 +28,8 @@ public class UnitMovement : MonoBehaviour
 
     public UnitDisplay Display { get; private set; }
 
+    public UnitPath Path { get; private set; }
+
     public HexCell MyCell
     {
         get
@@ -47,13 +49,9 @@ public class UnitMovement : MonoBehaviour
             myCell = value;
             myCell.MyUnit = MyUnit; // sets this hex cell's unit to this one
             UnitPathfinding.IncreaseVisibility(myCell, visionRange);
-            ValidateLocation();
+            MyUnit.ValidateLocation();
         }
     }
-
-    public HexCell EnRouteCell { get; private set; }
-
-    //public HexCell ToCell { get; set; }
 
     /// <summary>
     /// A unit's rotation around the Y axis, in degrees
@@ -71,6 +69,14 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
+    public int VisionRange
+    {
+        get
+        {
+            return visionRange * 100;
+        }
+    }
+
     public int CurrentMovement
     {
         get
@@ -81,7 +87,7 @@ public class UnitMovement : MonoBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
 
-            Display.RefreshMovementDisplay();
+            Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
             MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
@@ -96,15 +102,7 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    public int VisionRange
-    {
-        get
-        {
-            return visionRange * 100;
-        }
-    }
-
-    public UnitPath Path { get; private set; }
+    public HexCell EnRouteCell { get; private set; }
 
     public bool IsEnRoute { get; set; }
 
@@ -118,13 +116,26 @@ public class UnitMovement : MonoBehaviour
 
     public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
 
-    public bool CanMove
+    // HACK: might be better broken up into a property and function FreezeUnit()/CannotMove() 
+    public bool CanMove 
     {
         get
         {
             return (currentMovement > 0);
         }
-    }
+        set
+        {
+            if (value)
+            {
+                CurrentMovement = maxMovement;
+            }
+            else
+            {
+                CurrentMovement = 0;
+            }
+            Path.Clear();
+        }
+    } 
 
     #endregion
 
@@ -135,36 +146,23 @@ public class UnitMovement : MonoBehaviour
     {
         MyUnit = GetComponent<Unit>();
         Display = GetComponent<UnitDisplay>();
-
         Path = new UnitPath(MyUnit);
 
         currentMovement = maxMovement;
+        Display.RefreshMovementDisplay(currentMovement);
 
-        GameManager.OnStartRound += HandleOnStartRound;
-        GameManager.OnStartTurn += HandleOnStartTurn;
-        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
-
-
-        Display.RefreshMovementDisplay();
+        Subscribe();
     }
 
     private void OnDestroy()
     {
-        GameManager.OnStartRound -= HandleOnStartRound;
-        GameManager.OnStartTurn -= HandleOnStartTurn;
-        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
-        GetComponent<UnitDeath>().OnDeath -= HandleOnDeath;
+        Unsubscribe();
     }
 
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
-
-    public void ValidateLocation()
-    {
-        transform.localPosition = myCell.Position;
-    }
 
     public void DoAction()
     {
@@ -177,43 +175,39 @@ public class UnitMovement : MonoBehaviour
         StartCoroutine(Route(cells));
     }
 
-    public void CompleteAction() // HACK: these lines can be easily simplified
+    public void CompleteAction()
     {
         if (!EnRouteCell) return;
-
-        CurrentMovement--;
 
         if (GetComponent<UnitDeath>().IsDying) // HACK: this is probably inefficient
         {
             MyUnit.CollisionHandler.gameObject.SetActive(false);
             Display.HideDisplay();
-            return;
         }
+        else
+        {
+            MyCell = EnRouteCell;
+            EnRouteCell = null;
+            HadActionCanceled = false;
 
-        MyCell = EnRouteCell;
-        EnRouteCell = null;
-        HadActionCanceled = false;
-
-        if (HasAction) Path.RemoveTailCells(numberToRemove: 1);
-
-        Path.Show();
+            CurrentMovement--;
+            if (HasAction)
+            {
+                Path.RemoveTailCells(numberToRemove: 1);
+                Path.Show();
+            }
+        }
     }
 
-    public void UndoAction()
+    public void CancelAction()
     {
         if (!EnRouteCell) return;
 
-        StopActions();
+        CanMove = false;
         HadActionCanceled = true;
 
         StopAllCoroutines();
         StartCoroutine(RouteCanceled());
-    }
-
-    public void StopActions()
-    {
-        CurrentMovement = 0;
-        Path.Clear();
     }
 
     /// <summary>
@@ -383,26 +377,32 @@ public class UnitMovement : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Handle Functions **********/
-    #region Handle Functions
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void Subscribe()
+    {
+        GameManager.OnStartRound += HandleOnStartRound;
+        GameManager.OnStopTurn += HandleOnStopTurn;
+        GetComponent<UnitDeath>().OnDeath += HandleOnDeath;
+    }
+
+    private void Unsubscribe()
+    {
+        GameManager.OnStartRound -= HandleOnStartRound;
+        GameManager.OnStopTurn -= HandleOnStopTurn;
+        GetComponent<UnitDeath>().OnDeath -= HandleOnDeath;
+    }
 
     private void HandleOnStartRound()
     {
-        Path.Clear();
-        CurrentMovement = maxMovement;
+        CanMove = true;
     }
 
-    private void HandleOnStartTurn()
+    private void HandleOnStopTurn()
     {
-        Path.Clear();
-    }
-
-    private void HandleOnStopMoveUnits()
-    {
-        if (currentMovement < maxMovement)
-        {
-            CurrentMovement = 0;
-        }
+        // TODO: this might change for units
+        if (currentMovement < maxMovement) CanMove = false;
     }
 
     private void HandleOnDeath()

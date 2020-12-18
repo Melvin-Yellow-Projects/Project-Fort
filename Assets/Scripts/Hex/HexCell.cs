@@ -326,24 +326,20 @@ public class HexCell : MonoBehaviour
     /// </summary>
     void Refresh()
     {
-        if (chunk != null)
+        if (!chunk) return;
+
+        chunk.Refresh();
+
+        // retriangulate neighbors' chunks if updating cell is from a different chunks
+        for (int i = 0; i < neighbors.Length; i++)
         {
-            chunk.Refresh();
-
-            // retriangulate neighbors' chunks if updating cell is from a different chunks
-            for (int i = 0; i < neighbors.Length; i++)
-            {
-                HexCell neighbor = neighbors[i];
-                if (neighbor != null && neighbor.chunk != chunk)
-                {
-                    neighbor.chunk.Refresh();
-                }
-            }
-
-            // refresh unit location
-            if (MyUnit) MyUnit.Movement.ValidateLocation();
-            if (MyFort) MyFort.ValidateLocation();
+            HexCell neighbor = neighbors[i];
+            if (neighbor != null && neighbor.chunk != chunk) neighbor.chunk.Refresh();
         }
+
+        // refresh unit location
+        if (MyUnit) MyUnit.ValidateLocation();
+        if (MyFort) MyFort.ValidateLocation();
     }
 
     //void RefreshSelfOnly()
