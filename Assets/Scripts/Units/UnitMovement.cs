@@ -12,10 +12,10 @@ public class UnitMovement : MonoBehaviour
     const float rotationSpeed = 360f;
     int currentMovement = 8;
     const int maxMovement = 8;
-    const int visionRange = 3;
-    const int movesPerStep = 1;
+    const int visionRange = 10000;
+    //const int movesPerStep = 1;
 
-    HexCell myCell;
+    public HexCell myCell;
 
     float orientation;
 
@@ -39,7 +39,7 @@ public class UnitMovement : MonoBehaviour
         set
         {
             // if there is a previous cell...
-            if (myCell && myCell.MyUnit == this)
+            if (myCell && myCell.MyUnit == this.MyUnit)
             {
                 UnitPathfinding.DecreaseVisibility(myCell, visionRange);
                 myCell.MyUnit = null;
@@ -73,7 +73,7 @@ public class UnitMovement : MonoBehaviour
     {
         get
         {
-            return visionRange * 100;
+            return visionRange;
         }
     }
 

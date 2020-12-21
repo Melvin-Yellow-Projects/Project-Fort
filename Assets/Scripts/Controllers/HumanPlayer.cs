@@ -41,12 +41,11 @@ public class HumanPlayer : Player
     protected void Update()
     {
         // HACK: is this still needed?
+        // verify pointer is not on top of GUI
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
-        {
-            UpdateCurrentCell();
-            if (selectedUnit) DoPathfinding();
-        }
+        UpdateCurrentCell();
+        if (selectedUnit) DoPathfinding();
     }
 
     #endregion
@@ -56,12 +55,11 @@ public class HumanPlayer : Player
 
     private void DoSelection(InputAction.CallbackContext context)
     {
-        if (currentCell)
-        {
-            DeselectUnitAndClearItsPath();
+        if (!currentCell) return;
 
-            SelectUnit(currentCell.MyUnit);
-        }
+        DeselectUnitAndClearItsPath();
+
+        SelectUnit(currentCell.MyUnit);
     }
 
     private void DoCommand(InputAction.CallbackContext context)
