@@ -124,7 +124,7 @@ public class Unit : MonoBehaviour
 
     public void Die(bool isPlayingAnimation = true)
     {
-        StopAllCoroutines();
+        //StopAllCoroutines(); // HACK: i think this line can be safely removed
 
         GetComponent<UnitDeath>().Die(isPlayingAnimation);
     }

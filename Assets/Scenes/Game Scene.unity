@@ -981,6 +981,7 @@ MonoBehaviour:
     type: 3}
   chunkPrefab: {fileID: 8047540563214710014, guid: abdb84c07d29c48fdbd50fbc8ac049dc,
     type: 3}
+  isEditorMode: 0
   cellCountX: 20
   cellCountZ: 15
   units: []
@@ -1561,6 +1562,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1238804638316010437, guid: 9bcaafcdcb79e4165b227f4f4246cff3,
+        type: 3}
+      propertyPath: sceneId
+      value: 749733418
+      objectReference: {fileID: 0}
     - target: {fileID: 3526458366338087290, guid: 9bcaafcdcb79e4165b227f4f4246cff3,
         type: 3}
       propertyPath: m_RootOrder
@@ -1619,7 +1625,7 @@ PrefabInstance:
     - target: {fileID: 3526458366338087291, guid: 9bcaafcdcb79e4165b227f4f4246cff3,
         type: 3}
       propertyPath: m_Name
-      value: Player
+      value: Human Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9bcaafcdcb79e4165b227f4f4246cff3, type: 3}

@@ -407,6 +407,8 @@ public class UnitMovement : MonoBehaviour
 
     private void HandleOnDeath()
     {
+        StopAllCoroutines();
+
         MyCell.MyUnit = null;
 
         IsEnRoute = false;
