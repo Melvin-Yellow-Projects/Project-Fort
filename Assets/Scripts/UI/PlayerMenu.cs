@@ -26,6 +26,8 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] TMP_Text moveCountText = null;
     [SerializeField] TMP_Text moveTimerText = null;
 
+    Player player = null;
+
     #endregion
 
     /********** MARK: Properties **********/
@@ -33,7 +35,19 @@ public class PlayerMenu : MonoBehaviour
 
     public static PlayerMenu Singleton { get; set; }
 
-    public Player MyPlayer { get; set; }
+    public Player MyPlayer
+    {
+        get
+        {
+            return player;
+        }
+        set
+        {
+            if (!value) return;
+            player = value;
+            enabled = true;
+        }
+    }
 
     #endregion
 
@@ -43,23 +57,14 @@ public class PlayerMenu : MonoBehaviour
     private void Awake()
     {
         Singleton = this;
-    }
+        enabled = false;
 
-    private void Start()
-    {
-        // HACK: this will not work when there are multiple players
-        MyPlayer = FindObjectOfType<Player>();
-
-        GameManager.OnStartRound += SetMoveCountText;
-        GameManager.OnStartTurn += SetMoveCountText;
-        MyPlayer.OnCommandChange += SetMoveCountText; 
+        Subscribe();
     }
 
     private void OnDestroy()
     {
-        GameManager.OnStartRound -= SetMoveCountText;
-        GameManager.OnStartTurn -= SetMoveCountText;
-        MyPlayer.OnCommandChange -= SetMoveCountText;
+        Unsubscribe();
     }
 
     #endregion
@@ -67,23 +72,40 @@ public class PlayerMenu : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void UpdateTimerText(string text)
+    public static void UpdateTimerText(string text)
     {
-        moveTimerText.text = text;
+        Singleton.moveTimerText.text = text;
     }
 
-    private void SetMoveCountText()
+    public static void RefreshMoveCountText()
     {
         GameMode gm = GameMode.Singleton;
 
-        string moveCountString = (MyPlayer.MoveCount >= gm.MovesPerTurn) ?
-            "MXX" : $"M{MyPlayer.MoveCount}";
+        if (!Singleton.MyPlayer) return;
 
-        moveCountText.text = $"R{GameManager.Singleton.RoundCount}:" +
+        string moveCountString = (Singleton.MyPlayer.MoveCount >= gm.MovesPerTurn) ?
+            "MXX" : $"M{Singleton.MyPlayer.MoveCount}";
+
+        Singleton.moveCountText.text = $"R{GameManager.Singleton.RoundCount}:" +
             $"T{GameManager.Singleton.TurnCount}:" +
             moveCountString;
     }
 
     #endregion
 
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void Subscribe()
+    {
+        GameManager.OnStartRound += RefreshMoveCountText;
+        GameManager.OnStartTurn += RefreshMoveCountText;
+    }
+
+    private void Unsubscribe()
+    {
+        GameManager.OnStartRound -= RefreshMoveCountText;
+        GameManager.OnStartTurn -= RefreshMoveCountText;
+    }
+    #endregion
 }

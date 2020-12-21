@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
         {
             // Update Timer
             string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
-            PlayerMenu.Singleton.UpdateTimerText(text);
+            PlayerMenu.UpdateTimerText(text);
         }
     }
 
@@ -130,13 +130,13 @@ public class GameManager : MonoBehaviour
 
         // update timer and its text
         if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
-        else PlayerMenu.Singleton.UpdateTimerText("Your Turn");
+        else PlayerMenu.UpdateTimerText("Your Turn");
     }
 
     public void PlayTurn()
     {
         enabled = false;
-        PlayerMenu.Singleton.UpdateTimerText("Executing Turn");
+        PlayerMenu.UpdateTimerText("Executing Turn");
 
         StopAllCoroutines();
         StartCoroutine(PlayTurn(8));

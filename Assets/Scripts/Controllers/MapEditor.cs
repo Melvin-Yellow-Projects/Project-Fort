@@ -95,9 +95,6 @@ public class MapEditor : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        terrainMaterial.DisableKeyword("GRID_ON");
-        Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-
         controls = new Controls();
 
         controls.MapEditor.Selection.performed += OnSelection;

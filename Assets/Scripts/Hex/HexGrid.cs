@@ -39,6 +39,9 @@ public class HexGrid : MonoBehaviour
 
     /* Settings */
     [Header("Settings")]
+    [Tooltip("whether or not the game is set to editor mode")]
+    public bool isEditorMode = false;
+
     [Tooltip("number of cell in the x direction; effectively width")]
     public int cellCountX = 20;
 
@@ -87,6 +90,10 @@ public class HexGrid : MonoBehaviour
         
     protected void Awake()
     {
+        if (isEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE"); ;
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
         CreateMap(cellCountX, cellCountZ);

@@ -57,7 +57,10 @@ public class GameSession : MonoBehaviour
         //{
         //    DontDestroyOnLoad(gameObject);
         //}
+    }
 
+    private void Start()
+    {
         LoadMapFromReader(); // HACK: this could be moved to the SaveLoadMenu even
     }
 
