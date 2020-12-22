@@ -321,6 +321,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6578015582841221282}
+        m_TargetAssemblyTypeName: PreLobbyMenu, Assembly-CSharp
+        m_MethodName: CancelJoinLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3101162408230975179
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,7 +782,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4359583969644351852
 RectTransform:
   m_ObjectHideFlags: 0
@@ -868,6 +880,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   addressInput: {fileID: 4903426235945761979}
   joiningLobbyMenu: {fileID: 1436911470291342870}
+  lobbyMenu: {fileID: 0}
 --- !u!1 &4454376476333389956
 GameObject:
   m_ObjectHideFlags: 0
@@ -1641,7 +1654,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6578015582841221282}
         m_TargetAssemblyTypeName: PreLobbyMenu, Assembly-CSharp
-        m_MethodName: Join
+        m_MethodName: JoinLobby
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2613,10 +2626,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 6578015582841221282}
+        m_TargetAssemblyTypeName: PreLobbyMenu, Assembly-CSharp
+        m_MethodName: HostLobby
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

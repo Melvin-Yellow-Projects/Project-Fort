@@ -14,5 +14,38 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
+
+    private void Start()
+    {
+        Subscribe();
+    }
+
+    private void OnDestroy()
+    {
+        Unsubscribe();
+    }
+
+    #endregion
+
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void Subscribe()
+    {
+        GameNetworkManager.OnClientConnected += HandleOnClientConnected;
+    }
+
+    private void Unsubscribe()
+    {
+        GameNetworkManager.OnClientConnected -= HandleOnClientConnected;
+    }
+
+    private void HandleOnClientConnected()
+    {
+        gameObject.SetActive(false);
+    }
+
+    #endregion
 }

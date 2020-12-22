@@ -49,6 +49,7 @@ public class EllipsisSetter : MonoBehaviour
 
     private void OnEnable()
     {
+        tmpText.text = originalText;
         StartCoroutine(AddEllipses());
     }
 

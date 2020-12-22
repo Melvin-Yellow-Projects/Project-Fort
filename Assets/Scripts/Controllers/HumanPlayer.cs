@@ -35,7 +35,7 @@ public class HumanPlayer : Player
 
     protected void Start()
     {
-        PlayerMenu.Singleton.MyPlayer = this; // TODO: this needs to occur on client
+        //PlayerMenu.Singleton.MyPlayer = this; // TODO: this needs to occur on client
     }
 
     protected void Update()

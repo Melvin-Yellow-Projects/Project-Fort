@@ -23,6 +23,7 @@ public class PreLobbyMenu : MonoBehaviour
 
     [SerializeField] TMP_InputField addressInput = null;
     [SerializeField] GameObject joiningLobbyMenu = null;
+    [SerializeField] GameObject lobbyMenu = null;
 
     #endregion
 
@@ -41,10 +42,19 @@ public class PreLobbyMenu : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Server Functions **********/
-    #region Server Functions
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
-    public void Join()
+    public void HostLobby()
+    {
+        lobbyMenu.SetActive(true);
+
+        // TODO: Steam integration
+
+        NetworkManager.singleton.StartHost();
+    }
+
+    public void JoinLobby()
     {
         string address = addressInput.text;
 
@@ -52,9 +62,12 @@ public class PreLobbyMenu : MonoBehaviour
         NetworkManager.singleton.StartClient();
     }
 
-    public void CancelJoin()
+    public void CancelJoinLobby()
     {
-
+        // TODO: this needs to disconnect the client that calls this function
+        //GameNetworkManager.Singleton.StopClient();
+        //NetworkClient.connection.Disconnect();
+        Debug.LogWarning("Cancel Joing Lobby Not Yet Implemented");
     }
 
     #endregion
@@ -65,23 +78,17 @@ public class PreLobbyMenu : MonoBehaviour
     private void Subscribe()
     {
         GameNetworkManager.OnClientConnected += HandleOnClientConnected;
-        GameNetworkManager.OnClientDisconnected += HandleOnClientDisconnected;
     }
 
     private void Unsubscribe()
     {
         GameNetworkManager.OnClientConnected -= HandleOnClientConnected;
-        GameNetworkManager.OnClientDisconnected -= HandleOnClientDisconnected;
     }
 
     private void HandleOnClientConnected()
     {
-        //joiningLobbyMenu.SetActive(true);
-    }
-
-    private void HandleOnClientDisconnected()
-    {
         joiningLobbyMenu.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     #endregion

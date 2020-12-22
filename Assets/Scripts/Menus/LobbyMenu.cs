@@ -22,10 +22,9 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [SerializeField] GameObject lobbyUI = null;
     [SerializeField] Button startGameButton = null;
-    [SerializeField] TMP_Text[] playerNameTexts = new TMP_Text[4]; // HACK: hardcoded
-    [SerializeField] RawImage[] playerSteamImages = new RawImage[4];
+    [SerializeField] TMP_Text[] playerNameTexts = new TMP_Text[0];
+    [SerializeField] RawImage[] playerSteamImages = new RawImage[0];
 
     #endregion
 
@@ -34,52 +33,18 @@ public class LobbyMenu : MonoBehaviour
 
     private void Start()
     {
-        //RTSNetworkManager.ClientOnConnected += HandleClientConnected;
-        //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
-        //RTSPlayerInfo.ClientOnInfoUpdated += ClientHandleInfoUpdated;
+        Subscribe();
     }
 
     private void OnDestroy()
     {
-        //RTSNetworkManager.ClientOnConnected -= HandleClientConnected;
-        //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
-        //RTSPlayerInfo.ClientOnInfoUpdated -= ClientHandleInfoUpdated;
+        Unsubscribe();
     }
 
     #endregion
 
-    /********** MARK: Server Functions **********/
-    #region Server Functions
-
-    private void HandleClientConnected()
-    {
-        lobbyUI.SetActive(true);
-    }
-
-    private void ClientHandleInfoUpdated()
-    {
-        //RTSNetworkManager rtsNetworkManager = (RTSNetworkManager)NetworkManager.singleton;
-        //List<RTSPlayer> players = rtsNetworkManager.Players;
-
-        //for (int i = 0; i < players.Count; i++)
-        //{
-        //    playerNameTexts[i].text = players[i].GetComponent<RTSPlayerInfo>().DisplayName;
-        //    playerSteamImages[i].texture = players[i].GetComponent<RTSPlayerInfo>().DisplayTexture;
-        //}
-
-        //for (int i = players.Count; i < playerNameTexts.Length; i++)
-        //{
-        //    playerNameTexts[i].text = "Waiting For Player...";
-        //    playerSteamImages[i].texture = null;
-        //}
-
-        //startGameButton.interactable = (players.Count >= rtsNetworkManager.MinPlayersToStartGame);
-    }
-
-    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
-    {
-        startGameButton.gameObject.SetActive(state);
-    }
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
     public void StartGame()
     {
@@ -88,7 +53,6 @@ public class LobbyMenu : MonoBehaviour
 
     public void LeaveLobby()
     {
-
         if (NetworkServer.active && NetworkClient.isConnected) // are you a host?
         {
             NetworkManager.singleton.StopHost();
@@ -96,10 +60,59 @@ public class LobbyMenu : MonoBehaviour
         else // you must be a client
         {
             NetworkManager.singleton.StopClient();
-
-            // this reloads the start menu, it's the lazy way rather than turning on/off various UI
-            SceneManager.LoadScene(0);
         }
+
+        // this reloads the start menu, it's the lazy way rather than turning on/off various UI
+        SceneManager.LoadScene(0);
+    }
+
+    #endregion
+
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void Subscribe()
+    {
+        GameNetworkManager.OnClientConnected += HandleOnClientConnected;
+        //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
+        //RTSPlayerInfo.ClientOnInfoUpdated += ClientHandleInfoUpdated;
+    }
+
+    private void Unsubscribe()
+    {
+        GameNetworkManager.OnClientConnected -= HandleOnClientConnected;
+        //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
+        //RTSPlayerInfo.ClientOnInfoUpdated -= ClientHandleInfoUpdated;
+    }
+
+    private void HandleOnClientConnected()
+    {
+        gameObject.SetActive(true);
+
+        List<HumanPlayer> players = GameNetworkManager.Singleton.HumanPlayers;
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            // TODO: add player avatar and name
+            playerNameTexts[i].text = $"Player {i + 1}";
+            playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = false;
+            //playerNameTexts[i].text = players[i].GetComponent<RTSPlayerInfo>().DisplayName;
+            //playerSteamImages[i].texture = players[i].GetComponent<RTSPlayerInfo>().DisplayTexture;
+        }
+
+        for (int i = players.Count; i < playerNameTexts.Length; i++)
+        {
+            playerNameTexts[i].text = "Waiting For Player";
+            playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = true;
+            //playerSteamImages[i].texture = null;
+        }
+
+        startGameButton.interactable = (players.Count >= 2);
+    }
+
+    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
+    {
+        startGameButton.gameObject.SetActive(state);
     }
 
     #endregion

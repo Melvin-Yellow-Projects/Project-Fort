@@ -19,6 +19,8 @@ public class GameNetworkManager : NetworkManager
     /********** MARK: Variables **********/
     #region Variables
 
+    bool isGameInProgress = false;
+
     #endregion
 
     /********** MARK: Class Events **********/
@@ -34,6 +36,58 @@ public class GameNetworkManager : NetworkManager
     /// Event for when a client disconnects from the server
     /// </summary>
     public static event Action OnClientDisconnected;
+
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    public static GameNetworkManager Singleton
+    {
+        get
+        {
+            return singleton as GameNetworkManager;
+        }
+    }
+
+    public List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
+
+    #endregion
+
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
+
+    //public override void Awake()
+    //{
+    //    base.Awake();
+    //    Singleton
+    //}
+
+    #endregion
+
+    /********** MARK: Server Functions **********/
+    #region Server Functions
+
+    public override void OnServerConnect(NetworkConnection conn)
+    {
+        // TODO: make player a spectator
+        if (!isGameInProgress) return;
+        conn.Disconnect();
+    }
+
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        HumanPlayers.Remove(conn.identity.GetComponent<HumanPlayer>());
+
+        base.OnServerDisconnect(conn);
+    }
+
+    public override void OnServerAddPlayer(NetworkConnection conn)
+    {
+        base.OnServerAddPlayer(conn);
+
+        HumanPlayers.Add(conn.identity.GetComponent<HumanPlayer>());
+    }
 
     #endregion
 
