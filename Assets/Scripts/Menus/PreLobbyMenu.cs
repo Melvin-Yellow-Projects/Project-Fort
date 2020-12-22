@@ -21,9 +21,8 @@ public class PreLobbyMenu : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [SerializeField] TMP_InputField addressInput = null;
     [SerializeField] GameObject joiningLobbyMenu = null;
-    [SerializeField] GameObject lobbyMenu = null;
+    [SerializeField] TMP_InputField addressInput = null;
 
     #endregion
 
@@ -47,8 +46,6 @@ public class PreLobbyMenu : MonoBehaviour
 
     public void HostLobby()
     {
-        lobbyMenu.SetActive(true);
-
         // TODO: Steam integration
 
         NetworkManager.singleton.StartHost();

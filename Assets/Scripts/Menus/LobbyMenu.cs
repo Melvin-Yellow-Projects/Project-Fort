@@ -26,6 +26,8 @@ public class LobbyMenu : MonoBehaviour
     [SerializeField] TMP_Text[] playerNameTexts = new TMP_Text[0];
     //[SerializeField] RawImage[] playerSteamImages = new RawImage[0];
 
+    bool hasSubscribed = false;
+
     #endregion
 
     /********** MARK: Unity Functions **********/
@@ -34,7 +36,6 @@ public class LobbyMenu : MonoBehaviour
     private void Awake()
     {
         Subscribe();
-        Debug.Log("this is working right?");
     }
 
     private void OnDestroy()
@@ -72,8 +73,11 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Event Handler Functions **********/
     #region Event Handler Functions
 
-    private void Subscribe()
+    public void Subscribe()
     {
+        if (hasSubscribed) return;
+        hasSubscribed = true;
+
         GameNetworkManager.OnClientConnected += HandleOnClientConnected;
         //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
         //RTSPlayerInfo.ClientOnInfoUpdated += ClientHandleInfoUpdated;

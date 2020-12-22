@@ -14,12 +14,20 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
+    /********** MARK: Variables **********/
+    #region Variables
+
+    [SerializeField] LobbyMenu lobbyMenu = null;
+
+    #endregion
+
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
     private void Start()
     {
         Subscribe();
+        lobbyMenu.Subscribe();
     }
 
     private void OnDestroy()
