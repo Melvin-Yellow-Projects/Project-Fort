@@ -97,6 +97,8 @@ public class GameNetworkManager : NetworkManager
         base.OnClientConnect(conn);
 
         OnClientConnected?.Invoke();
+
+        Debug.Log("Hello! I have connected!");
     }
 
     [Client]
@@ -105,8 +107,6 @@ public class GameNetworkManager : NetworkManager
         base.OnClientDisconnect(conn);
 
         //OnClientDisconnected?.Invoke();
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
     #endregion

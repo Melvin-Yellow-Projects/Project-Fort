@@ -31,7 +31,7 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    private void Start()
+    private void Awake()
     {
         Subscribe();
     }
@@ -63,7 +63,7 @@ public class LobbyMenu : MonoBehaviour
         }
 
         // this reloads the start menu, it's the lazy way rather than turning on/off various UI
-        
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
     #endregion
@@ -88,7 +88,15 @@ public class LobbyMenu : MonoBehaviour
     private void HandleOnClientConnected()
     {
         gameObject.SetActive(true);
+    }
 
+    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
+    {
+        startGameButton.gameObject.SetActive(state);
+    }
+
+    private void ClientHandleInfoUpdated()
+    {
         List<HumanPlayer> players = GameNetworkManager.Singleton.HumanPlayers;
 
         for (int i = 0; i < players.Count; i++)
@@ -108,11 +116,6 @@ public class LobbyMenu : MonoBehaviour
         }
 
         startGameButton.interactable = (players.Count >= 2);
-    }
-
-    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
-    {
-        startGameButton.gameObject.SetActive(state);
     }
 
     #endregion
