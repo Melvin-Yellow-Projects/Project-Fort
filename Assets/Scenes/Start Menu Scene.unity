@@ -3032,11 +3032,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4903426236037027071, guid: 696b560a3a69ac94faeb025effe188e5,
-        type: 3}
-      propertyPath: m_text
-      value: 192.168.1.3
-      objectReference: {fileID: 0}
     - target: {fileID: 6578015582841221282, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}
       propertyPath: lobbyMenu

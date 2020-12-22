@@ -24,7 +24,7 @@ public class LobbyMenu : MonoBehaviour
 
     [SerializeField] Button startGameButton = null;
     [SerializeField] TMP_Text[] playerNameTexts = new TMP_Text[0];
-    [SerializeField] RawImage[] playerSteamImages = new RawImage[0];
+    //[SerializeField] RawImage[] playerSteamImages = new RawImage[0];
 
     #endregion
 
@@ -34,6 +34,7 @@ public class LobbyMenu : MonoBehaviour
     private void Awake()
     {
         Subscribe();
+        Debug.Log("this is working right?");
     }
 
     private void OnDestroy()
