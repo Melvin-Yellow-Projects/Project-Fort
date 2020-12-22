@@ -80,8 +80,6 @@ public abstract class Player : NetworkBehaviour
 
     public override void OnStopClient()
     {
-        //ClientOnInfoUpdated?.Invoke();
-
         if (!isClientOnly) { return; }
 
         // HACK: this line will fail if the player is an AI

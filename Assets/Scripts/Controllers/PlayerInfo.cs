@@ -75,6 +75,11 @@ public class PlayerInfo : NetworkBehaviour
     /********** MARK: Client Functions **********/
     #region Client Functions
 
+    public override void OnStopClient()
+    {
+        OnClientPlayerInfoUpdate?.Invoke();
+    }
+
     #endregion
 
     /********** MARK: Event Handler Functions **********/
