@@ -79,14 +79,14 @@ public class LobbyMenu : MonoBehaviour
         hasSubscribed = true;
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
-        GameNetworkManager.OnServerAddPlayerEvent += HandleOnServerAddPlayerEvent;
+        PlayerInfo.OnClientPlayerInfoUpdate += UpdatePlayerTags;
         //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
     }
 
     private void Unsubscribe()
     {
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
-        GameNetworkManager.OnServerAddPlayerEvent -= HandleOnServerAddPlayerEvent;
+        PlayerInfo.OnClientPlayerInfoUpdate -= UpdatePlayerTags;
         //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
     }
 
@@ -95,7 +95,7 @@ public class LobbyMenu : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private void HandleOnServerAddPlayerEvent(HumanPlayer player)
+    private void UpdatePlayerTags()
     {
         List<HumanPlayer> players = GameNetworkManager.Singleton.HumanPlayers;
 

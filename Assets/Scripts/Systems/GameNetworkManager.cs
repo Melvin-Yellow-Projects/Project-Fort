@@ -27,11 +27,6 @@ public class GameNetworkManager : NetworkManager
     #region Class Events
 
     /// <summary>
-    /// Event for when a client disconnects from the server
-    /// </summary>
-    public static event Action<HumanPlayer> OnServerAddPlayerEvent;
-
-    /// <summary>
     /// Event for when a client connects to the server
     /// </summary>
     /// <subscriber class="MainMenu">...</subscriber>
@@ -91,10 +86,12 @@ public class GameNetworkManager : NetworkManager
         base.OnServerAddPlayer(conn);
 
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
+        PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
 
         HumanPlayers.Add(player);
 
-        OnServerAddPlayerEvent?.Invoke(player);
+        playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
+        playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
     }
 
     #endregion

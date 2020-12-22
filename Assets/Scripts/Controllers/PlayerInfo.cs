@@ -12,20 +12,65 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class PlayerInfo : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
-    //[SyncVar(hook = nameof(AuthorityHandlePartyOwnerStateUpdated))]
+    [SyncVar]
     bool isPartyOwner = false;
 
-    //[SyncVar(hook = nameof(ClientHandleDisplayNameUpdated))]
-    string displayName;
-
     [SyncVar]
-    Color teamColor = new Color();
+    string playerName;
+
+    //[SyncVar]
+    //Color playerColor = new Color();
+
+    #endregion
+
+    /********** MARK: Class Events **********/
+    #region Class Events
+
+    /// <summary>
+    /// Event for when a client disconnects from the server
+    /// </summary>
+    public static event Action OnClientPlayerInfoUpdate;
+
+    #endregion
+
+    /********** MARK: Class Events **********/
+    #region Class Events
+
+    public bool IsPartyOwner
+    {
+        get
+        {
+            return isPartyOwner;
+        }
+
+        [Server]
+        set
+        {
+            isPartyOwner = value;
+            OnClientPlayerInfoUpdate?.Invoke();
+        }
+    }
+
+    public string PlayerName
+    {
+        get
+        {
+            return playerName;
+        }
+
+        set
+        {
+            playerName = value;
+            OnClientPlayerInfoUpdate?.Invoke();
+        }
+    }
 
     #endregion
 
