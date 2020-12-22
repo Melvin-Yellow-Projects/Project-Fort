@@ -106,6 +106,8 @@ public class GameNetworkManager : NetworkManager
         base.OnClientDisconnect(conn);
 
         OnClientDisconnected?.Invoke();
+
+        Debug.Log("New client has joined!");
     }
 
     #endregion
