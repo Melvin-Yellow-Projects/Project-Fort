@@ -1,4 +1,14 @@
-﻿using System.Collections;
+﻿/**
+ * File Name: UnitMovement.cs
+ * Description: 
+ * 
+ * Authors: Will Lacey
+ * Date Created: December 17, 2020
+ * 
+ * Additional Comments: 
+ **/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +22,7 @@ public class UnitMovement : MonoBehaviour
     const float rotationSpeed = 360f;
     int currentMovement = 8;
     const int maxMovement = 8;
-    const int visionRange = 10000;
+    const int visionRange = 100;
     //const int movesPerStep = 1;
 
     public HexCell myCell;

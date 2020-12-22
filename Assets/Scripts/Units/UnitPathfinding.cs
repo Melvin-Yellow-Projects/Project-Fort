@@ -229,6 +229,7 @@ public class UnitPathfinding : MonoBehaviour
     /// TODO: comment GetVisibleCells
     /// HACK: this is also soooo close to Search
     /// HACK: verify visibility calculations, will most likely need an update
+    /// FIXME: this breaks if the number is very large
     /// </summary>
     /// <param name="fromCell"></param>
     /// <param name="range"></param>
@@ -297,6 +298,7 @@ public class UnitPathfinding : MonoBehaviour
 
     public static void IncreaseVisibility(HexCell fromCell, int range)
     {
+        return; // FIXME: visibility is broken
         List<HexCell> cells = GetVisibleCells(fromCell, range);
         for (int i = 0; i < cells.Count; i++)
         {
@@ -307,6 +309,7 @@ public class UnitPathfinding : MonoBehaviour
 
     public static void DecreaseVisibility(HexCell fromCell, int range)
     {
+        return; // FIXME: visibility is broken
         List<HexCell> cells = GetVisibleCells(fromCell, range);
         for (int i = 0; i < cells.Count; i++)
         {

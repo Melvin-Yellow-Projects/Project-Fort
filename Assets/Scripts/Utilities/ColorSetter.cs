@@ -17,7 +17,7 @@ public class ColorSetter : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [Header("Other Settings")]
+    [Header("Settings")]
     [Tooltip("speed in which to change the unit's color")]
     [SerializeField, Range(0, 10f)] float changeColorSpeed = 0.1f;
 
