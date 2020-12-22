@@ -63,7 +63,7 @@ public class LobbyMenu : MonoBehaviour
         }
 
         // this reloads the start menu, it's the lazy way rather than turning on/off various UI
-        SceneManager.LoadScene(0);
+        
     }
 
     #endregion

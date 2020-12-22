@@ -57,17 +57,12 @@ public class GameNetworkManager : NetworkManager
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    //public override void Awake()
-    //{
-    //    base.Awake();
-    //    Singleton
-    //}
-
     #endregion
 
     /********** MARK: Server Functions **********/
     #region Server Functions
 
+    [Server]
     public override void OnServerConnect(NetworkConnection conn)
     {
         // TODO: make player a spectator
@@ -75,6 +70,7 @@ public class GameNetworkManager : NetworkManager
         conn.Disconnect();
     }
 
+    [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         HumanPlayers.Remove(conn.identity.GetComponent<HumanPlayer>());
@@ -82,6 +78,7 @@ public class GameNetworkManager : NetworkManager
         base.OnServerDisconnect(conn);
     }
 
+    [Server]
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
@@ -94,20 +91,22 @@ public class GameNetworkManager : NetworkManager
     /********** MARK: Client Functions **********/
     #region Client Functions
 
+    [Client]
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
 
         OnClientConnected?.Invoke();
-
-        Debug.Log("New client has joined!");
     }
 
+    [Client]
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
 
-        OnClientDisconnected?.Invoke();
+        //OnClientDisconnected?.Invoke();
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
     #endregion
