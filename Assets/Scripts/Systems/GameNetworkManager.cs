@@ -98,7 +98,7 @@ public class GameNetworkManager : NetworkManager
 
         OnClientConnected?.Invoke();
 
-        Debug.Log("Hello! I have connected!");
+        Debug.Log("Hello! I have connected!"); // HACK: remove this code
     }
 
     [Client]
