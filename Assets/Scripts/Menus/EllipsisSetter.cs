@@ -45,8 +45,16 @@ public class EllipsisSetter : MonoBehaviour
     {
         tmpText = GetComponent<TMP_Text>();
         originalText = tmpText.text;
+    }
 
+    private void OnEnable()
+    {
         StartCoroutine(AddEllipses());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     #endregion
