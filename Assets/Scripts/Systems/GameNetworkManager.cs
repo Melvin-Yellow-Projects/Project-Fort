@@ -99,6 +99,8 @@ public class GameNetworkManager : NetworkManager
         base.OnClientConnect(conn);
 
         OnClientConnected?.Invoke();
+
+        Debug.Log("New client has joined!");
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -106,8 +108,6 @@ public class GameNetworkManager : NetworkManager
         base.OnClientDisconnect(conn);
 
         OnClientDisconnected?.Invoke();
-
-        Debug.Log("New client has joined!");
     }
 
     #endregion
