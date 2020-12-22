@@ -78,29 +78,24 @@ public class LobbyMenu : MonoBehaviour
         if (hasSubscribed) return;
         hasSubscribed = true;
 
-        GameNetworkManager.OnClientConnected += HandleOnClientConnected;
+        GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
+        GameNetworkManager.OnServerAddPlayerEvent += HandleOnServerAddPlayerEvent;
         //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
-        //RTSPlayerInfo.ClientOnInfoUpdated += ClientHandleInfoUpdated;
     }
 
     private void Unsubscribe()
     {
-        GameNetworkManager.OnClientConnected -= HandleOnClientConnected;
+        GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
+        GameNetworkManager.OnServerAddPlayerEvent -= HandleOnServerAddPlayerEvent;
         //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
-        //RTSPlayerInfo.ClientOnInfoUpdated -= ClientHandleInfoUpdated;
     }
 
-    private void HandleOnClientConnected()
+    private void HandleOnClientConnectEvent()
     {
         gameObject.SetActive(true);
     }
 
-    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
-    {
-        startGameButton.gameObject.SetActive(state);
-    }
-
-    private void ClientHandleInfoUpdated()
+    private void HandleOnServerAddPlayerEvent(HumanPlayer player)
     {
         List<HumanPlayer> players = GameNetworkManager.Singleton.HumanPlayers;
 
@@ -121,6 +116,11 @@ public class LobbyMenu : MonoBehaviour
         }
 
         startGameButton.interactable = (players.Count >= 2);
+    }
+
+    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
+    {
+        startGameButton.gameObject.SetActive(state);
     }
 
     #endregion

@@ -74,17 +74,17 @@ public class PreLobbyMenu : MonoBehaviour
 
     private void Subscribe()
     {
-        GameNetworkManager.OnClientConnected += HandleOnClientConnected;
+        GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
         //GameNetworkManager.OnClientDisconnected += HandleOnClientDisconnected;
     }
 
     private void Unsubscribe()
     {
-        GameNetworkManager.OnClientConnected -= HandleOnClientConnected;
+        GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
         //GameNetworkManager.OnClientDisconnected -= HandleOnClientDisconnected;
     }
 
-    private void HandleOnClientConnected()
+    private void HandleOnClientConnectEvent()
     {
         joiningLobbyMenu.SetActive(false);
         gameObject.SetActive(false);

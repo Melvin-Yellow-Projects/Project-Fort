@@ -42,15 +42,15 @@ public class MainMenu : MonoBehaviour
 
     private void Subscribe()
     {
-        GameNetworkManager.OnClientConnected += HandleOnClientConnected;
+        GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
     }
 
     private void Unsubscribe()
     {
-        GameNetworkManager.OnClientConnected -= HandleOnClientConnected;
+        GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
     }
 
-    private void HandleOnClientConnected()
+    private void HandleOnClientConnectEvent()
     {
         gameObject.SetActive(false);
     }

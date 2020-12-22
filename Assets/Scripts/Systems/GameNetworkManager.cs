@@ -27,15 +27,22 @@ public class GameNetworkManager : NetworkManager
     #region Class Events
 
     /// <summary>
+    /// Event for when a client disconnects from the server
+    /// </summary>
+    public static event Action<HumanPlayer> OnServerAddPlayerEvent;
+
+    /// <summary>
     /// Event for when a client connects to the server
     /// </summary>
+    /// <subscriber class="MainMenu">...</subscriber>
     /// <subscriber class="PreLobbyMenu">...</subscriber>
-    public static event Action OnClientConnected;
+    /// <subscriber class="LobbyMenu">...</subscriber>
+    public static event Action OnClientConnectEvent;
 
     /// <summary>
     /// Event for when a client disconnects from the server
     /// </summary>
-    public static event Action OnClientDisconnected;
+    public static event Action OnClientDisconnectEvent;
 
     #endregion
 
@@ -83,7 +90,11 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
-        HumanPlayers.Add(conn.identity.GetComponent<HumanPlayer>());
+        HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
+
+        HumanPlayers.Add(player);
+
+        OnServerAddPlayerEvent?.Invoke(player);
     }
 
     #endregion
@@ -96,7 +107,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
-        OnClientConnected?.Invoke();
+        OnClientConnectEvent?.Invoke();
 
         Debug.Log("Hello! I have connected!"); // HACK: remove this code
     }
@@ -106,7 +117,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientDisconnect(conn);
 
-        //OnClientDisconnected?.Invoke();
+        OnClientDisconnectEvent?.Invoke();
     }
 
     #endregion
