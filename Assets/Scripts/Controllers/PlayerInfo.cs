@@ -72,6 +72,11 @@ public class PlayerInfo : NetworkBehaviour
 
     #endregion
 
+    /********** MARK: Client Functions **********/
+    #region Client Functions
+
+    #endregion
+
     /********** MARK: Event Handler Functions **********/
     #region Event Handler Functions
 

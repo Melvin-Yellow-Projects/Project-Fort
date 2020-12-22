@@ -81,6 +81,15 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
+    public override void OnStopServer()
+    {
+        HumanPlayers.Clear();
+
+        isGameInProgress = false;
+    }
+
+
+    [Server]
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
@@ -93,6 +102,18 @@ public class GameNetworkManager : NetworkManager
         playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
         playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
     }
+
+    [Server]
+    public void ServerStartGame()
+    {
+        if (HumanPlayers.Count < 2) return;
+
+        isGameInProgress = true;
+
+        Debug.LogError("Scene not ready for launch! Yikes!");
+        //ServerChangeScene("Scene_Map_01");
+    }
+
 
     #endregion
 
@@ -115,6 +136,11 @@ public class GameNetworkManager : NetworkManager
         base.OnClientDisconnect(conn);
 
         OnClientDisconnectEvent?.Invoke();
+    }
+
+    public override void OnStopClient()
+    {
+        HumanPlayers.Clear();
     }
 
     #endregion
