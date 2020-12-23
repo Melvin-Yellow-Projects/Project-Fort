@@ -97,12 +97,12 @@ public class PlayerInfo : NetworkBehaviour
 
     private void HookOnSetPartyOwner(bool oldValue, bool newValue)
     {
-        //OnClientPlayerInfoUpdate?.Invoke();
+        OnClientPlayerInfoUpdate?.Invoke();
     }
 
     private void HookOnSetPlayerName(string oldValue, string newValue)
     {
-        //OnClientPlayerInfoUpdate?.Invoke();
+        OnClientPlayerInfoUpdate?.Invoke();
     }
 
     #endregion
