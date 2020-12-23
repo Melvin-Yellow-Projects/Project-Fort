@@ -99,8 +99,8 @@ public class GameNetworkManager : NetworkManager
 
         HumanPlayers.Add(player);
 
-        playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
-        playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
+        //playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
+        //playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
     }
 
     [Server]
