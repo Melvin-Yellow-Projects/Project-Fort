@@ -75,10 +75,10 @@ public class PlayerInfo : NetworkBehaviour
     /********** MARK: Client Functions **********/
     #region Client Functions
 
-    //public override void OnStopClient()
-    //{
-    //    OnClientPlayerInfoUpdate?.Invoke();
-    //}
+    public override void OnStopClient()
+    {
+        OnClientPlayerInfoUpdate?.Invoke();
+    }
 
     #endregion
 
@@ -97,12 +97,12 @@ public class PlayerInfo : NetworkBehaviour
 
     private void HookOnSetPartyOwner(bool oldValue, bool newValue)
     {
-        OnClientPlayerInfoUpdate?.Invoke();
+        //OnClientPlayerInfoUpdate?.Invoke();
     }
 
     private void HookOnSetPlayerName(string oldValue, string newValue)
     {
-        OnClientPlayerInfoUpdate?.Invoke();
+        //OnClientPlayerInfoUpdate?.Invoke();
     }
 
     #endregion
