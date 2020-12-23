@@ -148,6 +148,53 @@ public class HumanPlayer : Player
 
     #endregion
 
+    /********** MARK: Server Functions **********/
+    #region Client Functions Functions
+
+    //[Command]
+    //public void CmdStartGame()
+    //{
+    //    if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+
+    //    GameNetworkManager.Singleton.ServerStartGame();
+    //}
+
+    #endregion
+
+    /********** MARK: Client Functions **********/
+    #region Client Functions Functions
+
+    public override void OnStartClient()
+    {
+        // HACK: idk which line works between the following two 
+        if (NetworkServer.active) return;
+        //if (!isClientOnly) return; 
+
+        // HACK: i think this prevents player from being deleted in the next scene
+        DontDestroyOnLoad(gameObject);
+
+        // HACK: this line will fail if the player is an AI
+        GameNetworkManager.Singleton.HumanPlayers.Add(this);
+    }
+
+    public override void OnStopClient()
+    {
+        if (!isClientOnly) { return; }
+
+        // HACK: this line will fail if the player is an AI
+        GameNetworkManager.Singleton.HumanPlayers.Remove(this);
+
+        //if (!hasAuthority) { return; }
+
+        //Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
+        //Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
+        //Building.AuthorityOnBuildingSpawned -= AuthorityHandleBuildingSpawned;
+        //Building.AuthorityOnBuildingDespawned -= AuthorityHandleBuildingDespawned;
+
+    }
+
+    #endregion
+
     /********** MARK: Event Handler Functions **********/
     #region Event Handler Functions
 
