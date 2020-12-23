@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2533082967054051952}
   - component: {fileID: 2533082967054051955}
   - component: {fileID: 1956970663857256852}
+  - component: {fileID: 7148059656023749899}
   - component: {fileID: 3032736157813010642}
   m_Layer: 0
   m_Name: Empty Player
@@ -69,6 +70,20 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
+--- !u!114 &7148059656023749899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2533082967054051953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 833a4b196e945fa4195a54eb937e5b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!114 &3032736157813010642
 MonoBehaviour:
   m_ObjectHideFlags: 0
