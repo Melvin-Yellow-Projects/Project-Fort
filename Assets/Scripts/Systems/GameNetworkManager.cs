@@ -110,8 +110,16 @@ public class GameNetworkManager : NetworkManager
 
         isGameInProgress = true;
 
-        Debug.LogError("Scene not ready for launch! Yikes!");
+        Debug.LogWarning("Scene not ready for launch! Yikes!");
         //ServerChangeScene("Scene_Map_01");
+    }
+
+    [Command]
+    public void CmdStartGame()
+    {
+        if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
+
+        ServerStartGame();
     }
 
 

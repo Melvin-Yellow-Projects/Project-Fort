@@ -50,7 +50,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        //NetworkClient.connection.identity.GetComponent<RTSPlayer>().CmdStartGame();
+        GameNetworkManager.Singleton.CmdStartGame();
     }
 
     public void LeaveLobby()
@@ -80,14 +80,14 @@ public class LobbyMenu : MonoBehaviour
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
         PlayerInfo.OnClientPlayerInfoUpdate += UpdatePlayerTags;
-        //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated += AuthorityHandlePartyOwnerStateUpdated;
+        PlayerInfo.OnClientPlayerInfoUpdate += HandlePartyOwnerStateChange;
     }
 
     private void Unsubscribe()
     {
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
         PlayerInfo.OnClientPlayerInfoUpdate -= UpdatePlayerTags;
-        //RTSPlayerInfo.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
+        PlayerInfo.OnClientPlayerInfoUpdate -= HandlePartyOwnerStateChange;
     }
 
     private void HandleOnClientConnectEvent()
@@ -118,9 +118,11 @@ public class LobbyMenu : MonoBehaviour
         startGameButton.interactable = (players.Count >= 2);
     }
 
-    private void AuthorityHandlePartyOwnerStateUpdated(bool state)
+    private void HandlePartyOwnerStateChange()
     {
-        startGameButton.gameObject.SetActive(state);
+        if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
+
+        startGameButton.gameObject.SetActive(true);
     }
 
     #endregion
