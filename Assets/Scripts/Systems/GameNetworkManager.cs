@@ -114,15 +114,6 @@ public class GameNetworkManager : NetworkManager
         //ServerChangeScene("Scene_Map_01");
     }
 
-    [Command]
-    public void CmdStartGame()
-    {
-        if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
-
-        ServerStartGame();
-    }
-
-
     #endregion
 
     /********** MARK: Client Functions **********/

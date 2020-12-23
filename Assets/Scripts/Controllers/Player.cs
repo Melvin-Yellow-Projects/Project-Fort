@@ -63,6 +63,19 @@ public abstract class Player : NetworkBehaviour
 
     #endregion
 
+    /********** MARK: Server Functions **********/
+    #region Client Functions Functions
+
+    [Command]
+    public void CmdStartGame()
+    {
+        if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+
+        GameNetworkManager.Singleton.ServerStartGame();
+    }
+
+    #endregion
+
     /********** MARK: Client Functions **********/
     #region Client Functions Functions
 
