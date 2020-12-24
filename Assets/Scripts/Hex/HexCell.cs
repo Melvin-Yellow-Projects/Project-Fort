@@ -462,7 +462,8 @@ public class HexCell : MonoBehaviour
         elevation = reader.ReadByte();
 
         // HACK: hardcoded value
-        IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        //IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        IsExplored = reader.ReadBoolean(); IsExplored = true; // HACK: removed IsExplored value
         ShaderData.RefreshVisibility(this);
 
         RefreshPosition();
