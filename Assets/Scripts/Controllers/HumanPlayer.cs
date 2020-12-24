@@ -149,7 +149,12 @@ public class HumanPlayer : Player
     #endregion
 
     /********** MARK: Server Functions **********/
-    #region Client Functions Functions
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     [Command]
     public void CmdStartGame()
@@ -162,7 +167,7 @@ public class HumanPlayer : Player
     #endregion
 
     /********** MARK: Client Functions **********/
-    #region Client Functions Functions
+    #region Client Functions
 
     public override void OnStartClient()
     {
