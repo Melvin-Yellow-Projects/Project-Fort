@@ -19,11 +19,11 @@ public class PlayerInfo : NetworkBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [SyncVar(hook = nameof(HookOnSetPartyOwner))]
-    bool isPartyOwner = false;
+    //[SyncVar(hook = nameof(HookOnSetPartyOwner))]
+    //bool isPartyOwner = false;
 
-    //[SyncVar(hook = nameof(HookOnSetPlayerName))]
-    //string playerName;
+    [SyncVar(hook = nameof(HookOnSetPlayerName))]
+    string playerName;
 
     //[SyncVar]
     //Color playerColor = new Color();
@@ -43,32 +43,33 @@ public class PlayerInfo : NetworkBehaviour
     /********** MARK: Class Events **********/
     #region Class Events
 
-    public bool IsPartyOwner
+    //public bool IsPartyOwner
+    //{
+    //    get
+    //    {
+    //        return isPartyOwner;
+    //    }
+
+    //    [Server]
+    //    set
+    //    {
+    //        isPartyOwner = value;
+    //    }
+    //}
+
+    public string PlayerName
     {
         get
         {
-            return isPartyOwner;
+            return playerName;
         }
 
         [Server]
         set
         {
-            isPartyOwner = value;
+            playerName = value;
         }
     }
-
-    //public string PlayerName
-    //{
-    //    get
-    //    {
-    //        return playerName;
-    //    }
-
-    //    set
-    //    {
-    //        playerName = value;
-    //    }
-    //}
 
     #endregion
 
@@ -85,25 +86,27 @@ public class PlayerInfo : NetworkBehaviour
     /********** MARK: Event Handler Functions **********/
     #region Event Handler Functions
 
-    private void Subscribe()
-    {
-        
-    }
+    //private void Subscribe()
+    //{
 
-    private void Unsubscribe()
-    {
-        
-    }
+    //}
 
-    private void HookOnSetPartyOwner(bool oldValue, bool newValue)
+    //private void Unsubscribe()
+    //{
+
+    //}
+
+    //private void HookOnSetPartyOwner(bool oldValue, bool newValue)
+    //{
+    //    if (!hasAuthority) return;
+
+    //    OnClientPlayerInfoUpdate?.Invoke();
+    //}
+
+    private void HookOnSetPlayerName(string oldValue, string newValue)
     {
         OnClientPlayerInfoUpdate?.Invoke();
     }
-
-    //private void HookOnSetPlayerName(string oldValue, string newValue)
-    //{
-    //    OnClientPlayerInfoUpdate?.Invoke();
-    //}
 
     #endregion
 }
