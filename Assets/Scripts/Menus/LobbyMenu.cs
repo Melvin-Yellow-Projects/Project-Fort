@@ -120,9 +120,9 @@ public class LobbyMenu : MonoBehaviour
 
     private void HandlePartyOwnerStateChange()
     {
-        if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
+        //if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
 
-        startGameButton.gameObject.SetActive(true);
+        //startGameButton.gameObject.SetActive(true);
     }
 
     #endregion
