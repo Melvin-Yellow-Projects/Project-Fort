@@ -184,7 +184,7 @@ public class HumanPlayer : Player
         // HACK: this line will fail if the player is an AI
         GameNetworkManager.Singleton.HumanPlayers.Remove(this);
 
-        //if (!hasAuthority) { return; }
+        if (!hasAuthority) { return; }
 
         //Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
         //Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;

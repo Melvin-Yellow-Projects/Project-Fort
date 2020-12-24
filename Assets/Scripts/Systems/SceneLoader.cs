@@ -33,16 +33,7 @@ public class SceneLoader : MonoBehaviour
     /// Loads a scene by name
     /// </summary>
     /// <param name="sceneName">name of the scene to be loaded</param>
-    public void LoadSceneByName(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-    }
-
-    /// <summary>
-    /// Loads a scene by name
-    /// </summary>
-    /// <param name="sceneName">name of the scene to be loaded</param>
-    public static void LoadSceneByName(string sceneName, bool dummy)
+    public static void LoadSceneByName(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }

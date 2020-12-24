@@ -48,10 +48,10 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    public void StartGame()
-    {
-        NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
-    }
+    //public void StartGame()
+    //{
+    //    NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+    //}
 
     public void LeaveLobby()
     {

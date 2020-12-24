@@ -122,29 +122,43 @@ public class SaveLoadMenu : MonoBehaviour
         {
             Load(path);
         }
-        else
+        else if (menuMode == 2)
         {
-            PrepareReaderForNextScene("Game Scene");
+            PrepareReaderForNextScene();
+        }
+        else if (menuMode == 3)
+        {
+            PrepareReaderForServer();
         }
 
         // exit menu
         Close();
     }
 
-    private void PrepareReaderForNextScene(string nextSceneName)
+    private void PrepareReaderForNextScene()
     {
         string path = GetSelectedPath();
 
-        // if the path is empty, exit
-        if (path == null) return;
-
-        // if the path is invalid, exit
-        if (!IsPathValid(path)) return;
+        // if the path is empty or invalid, exit
+        if (path == null || !IsPathValid(path)) return;
 
         BinaryReader reader = new BinaryReader(File.OpenRead(path));
         GameSession.BinaryReaderBuffer = reader;
 
-        SceneLoader.LoadSceneByName(nextSceneName, false);
+        SceneLoader.LoadSceneByName("Game Scene");
+    }
+
+    private void PrepareReaderForServer()
+    {
+        string path = GetSelectedPath();
+
+        // if the path is empty or invalid, exit
+        if (path == null || !IsPathValid(path)) return;
+
+        BinaryReader reader = new BinaryReader(File.OpenRead(path));
+        GameSession.BinaryReaderBuffer = reader;
+
+        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
     }
 
     public void SelectItem(string name)
@@ -179,16 +193,13 @@ public class SaveLoadMenu : MonoBehaviour
     /// allowed"
     /// </summary>
     /// <returns></returns>
-    string GetSelectedPath()
+    string GetSelectedPath(bool logSaveLocation = false)
     {
         string mapName = nameInput.text;
-        if (mapName.Length == 0)
-        {
-            return null;
-        }
+        if (mapName.Length == 0) return null;
 
         // this shows where the file is going to be saved
-        //Debug.Log(Application.persistentDataPath);
+        if (logSaveLocation) Debug.Log(Application.persistentDataPath);
 
         // creates path specific to the system's file storage
         return Path.Combine(Application.persistentDataPath, mapName + ".map");
