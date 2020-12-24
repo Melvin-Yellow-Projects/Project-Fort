@@ -64,6 +64,7 @@ public class PlayerInfo : NetworkBehaviour
             return playerName;
         }
 
+        [Server]
         set
         {
             playerName = value;
