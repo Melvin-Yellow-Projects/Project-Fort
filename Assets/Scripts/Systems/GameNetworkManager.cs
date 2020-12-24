@@ -89,7 +89,6 @@ public class GameNetworkManager : NetworkManager
         isGameInProgress = false;
     }
 
-
     [Server]
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
