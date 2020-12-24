@@ -123,7 +123,7 @@ public class LobbyMenu : MonoBehaviour
         if (!NetworkClient.connection.identity) return;
         if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
 
-        //startGameButton.gameObject.SetActive(true);
+        startGameButton.gameObject.SetActive(true);
     }
 
     #endregion

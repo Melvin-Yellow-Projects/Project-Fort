@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2173617942552456811}
   - component: {fileID: -170377524941410652}
   - component: {fileID: -6134402128047789783}
-  - component: {fileID: 4397186016181328350}
   m_Layer: 0
   m_Name: Game Network Manager
   m_TagString: Untagged
@@ -106,18 +105,3 @@ MonoBehaviour:
   SendWindowSize: 128
   ReceiveWindowSize: 128
   debugGUI: 0
---- !u!114 &4397186016181328350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showGUI: 1
-  offsetX: 0
-  offsetY: 50
