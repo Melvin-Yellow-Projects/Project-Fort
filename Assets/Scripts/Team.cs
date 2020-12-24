@@ -11,13 +11,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [RequireComponent(typeof(ColorSetter))]
-public class Team : MonoBehaviour
+public class Team : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
+    [SyncVar]
     int teamIndex = 0;
 
     #endregion
