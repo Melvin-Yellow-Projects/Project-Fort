@@ -45,7 +45,7 @@ public class MapEditor : MonoBehaviour
     int activeTerrainTypeIndex;
     int activeUnitTypeIndex = -1;
 
-    int teamIndex;
+    int teamIndex = 1;
 
     Controls controls;
     bool isSelectionPressed = false;

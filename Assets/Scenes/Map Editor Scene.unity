@@ -1243,6 +1243,21 @@ PrefabInstance:
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6157793139460770838, guid: 8590254789ad14fd5924d7a49de21a83,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6157793139460770838, guid: 8590254789ad14fd5924d7a49de21a83,
+        type: 3}
+      propertyPath: m_MaxValue
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6157793139460770838, guid: 8590254789ad14fd5924d7a49de21a83,
+        type: 3}
+      propertyPath: m_MinValue
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6977863226351203249, guid: 8590254789ad14fd5924d7a49de21a83,
         type: 3}
       propertyPath: m_AnchorMax.y

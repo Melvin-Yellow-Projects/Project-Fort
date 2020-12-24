@@ -36,6 +36,8 @@ public class Team : NetworkBehaviour
         set
         {
             teamIndex = value;
+
+            // if offline, change color, otherwise the HookOnTeamIndex will change color
             if (!NetworkServer.active) GetComponent<ColorSetter>().SetColor(MyColor);
         }
     }
@@ -44,7 +46,7 @@ public class Team : NetworkBehaviour
     {
         get
         {
-            return (teamIndex == 0) ? Color.blue : Color.red;
+            return (teamIndex == 1) ? Color.blue : Color.red;
         }
     }
 
