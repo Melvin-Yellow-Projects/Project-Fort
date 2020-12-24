@@ -13,12 +13,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System;
+using Mirror;
 
 /// <summary>
 /// 
 /// </summary>
 [RequireComponent(typeof(Team), typeof(ColorSetter))]
-public class Fort : MonoBehaviour
+public class Fort : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
@@ -140,6 +141,8 @@ public class Fort : MonoBehaviour
         fort.Orientation = orientation;
 
         HexGrid.Singleton.ParentTransformToGrid(fort.transform);
+
+        if (NetworkServer.active) NetworkServer.Spawn(fort.gameObject);
     }
 
     #endregion

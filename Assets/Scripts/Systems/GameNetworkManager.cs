@@ -99,6 +99,7 @@ public class GameNetworkManager : NetworkManager
 
         HumanPlayers.Add(player);
 
+        player.MyTeam.TeamIndex = HumanPlayers.Count; // TODO: move to playerInfo
         playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
         playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
     }

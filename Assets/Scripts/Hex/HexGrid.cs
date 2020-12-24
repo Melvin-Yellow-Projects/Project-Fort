@@ -81,7 +81,7 @@ public class HexGrid : MonoBehaviour
     /********** MARK: Public Properties **********/
     #region Public Properties
 
-    public static HexGrid Singleton { get; set; }
+    public static HexGrid Singleton { get; private set; }
 
     #endregion
 

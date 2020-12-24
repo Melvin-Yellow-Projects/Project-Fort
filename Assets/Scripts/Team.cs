@@ -38,7 +38,11 @@ public class Team : NetworkBehaviour
             teamIndex = value;
 
             // if offline, change color, otherwise the HookOnTeamIndex will change color
-            if (!NetworkServer.active) GetComponent<ColorSetter>().SetColor(MyColor);
+            if (!NetworkServer.active)
+            {
+                // HACK: this needs to be fixed asap, it's awful
+                if (GetComponent<ColorSetter>()) GetComponent<ColorSetter>().SetColor(MyColor);
+            }
         }
     }
 

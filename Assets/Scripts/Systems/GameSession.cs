@@ -6,15 +6,13 @@
  * Date Created: March 27, 2020
  * 
  * Additional Comments:
- *      TODO: move this into GameManager?
- * 
  **/
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class GameSession : MonoBehaviour
 {
@@ -29,7 +27,11 @@ public class GameSession : MonoBehaviour
     /********** MARK: Public Properties **********/
     # region Public Properties
 
+    public static GameSession Singleton { get; private set; }
+
     public static BinaryReader BinaryReaderBuffer { get; set; }
+
+    public bool IsOnline { get; set; } = false;
 
     #endregion
 
@@ -41,33 +43,15 @@ public class GameSession : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // HACK: this logic is for keeping the game session alive across scenes
-        //int gameStatusCount = FindObjectsOfType<GameSession>().Length;
-        //if (gameStatusCount > 1)
-        //{
-        //    gameObject.SetActive(false);
-        //    DestroyGameSession();
+        if (!Singleton) InitGameSession();
 
-        //    GameSession gameSession = FindObjectOfType<GameSession>();
-        //    gameSession.gameSpeed = gameSpeed;
-
-        //    LoadMapFromReader();
-        //}
-        //else
-        //{
-        //    DontDestroyOnLoad(gameObject);
-        //}
-    }
-
-    private void Start()
-    {
-        LoadMapFromReader(); // HACK: this could be moved to the SaveLoadMenu even
+        else DestroyGameSession();
     }
 
     /// <summary>
     ///     Unity Method; Update() is called once per frame
     /// </summary>
-    void Update()
+    private void Update()
     {
         Time.timeScale = gameSpeed;
     }
@@ -76,9 +60,18 @@ public class GameSession : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
-    private void LoadMapFromReader()
+    private void InitGameSession()
     {
-        if (BinaryReaderBuffer == null) return;
+        Singleton = this;
+
+        DontDestroyOnLoad(gameObject);
+
+        SceneManager.activeSceneChanged += HandleActiveSceneChanged;
+    }
+
+    private void LoadMapFromReader() 
+    {
+        if (BinaryReaderBuffer == null) return; // HACK: This could be moved to SaveLoadMenu
 
         SaveLoadMenu.LoadMapFromReader(BinaryReaderBuffer);
 
@@ -86,12 +79,38 @@ public class GameSession : MonoBehaviour
         BinaryReaderBuffer = null;
     }
 
+    private void SpawnOfflinePlayer()
+    {
+        if (IsOnline) return;
+
+        //if (!SceneManager.GetActiveScene().name.StartsWith("Game Scene")) return;
+
+        GameObject offlinePlayer = Instantiate(GameNetworkManager.Singleton.playerPrefab);
+        HumanPlayer humanPlayer = offlinePlayer.GetComponent<HumanPlayer>();
+
+        humanPlayer.enabled = true;
+        humanPlayer.MyTeam.TeamIndex = 1;
+    }
+
     /// <summary>
     ///     Destroys GameObject containing Game Session Class
     /// </summary>
     public void DestroyGameSession()
     {
+        Singleton.gameSpeed = gameSpeed;
         Destroy(gameObject);
+    }
+
+    #endregion
+
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void HandleActiveSceneChanged(Scene current, Scene next)
+    {
+        if (next.name.StartsWith("Game Scene")) SpawnOfflinePlayer(); // HACK: string reference
+
+        LoadMapFromReader();
     }
 
     #endregion
