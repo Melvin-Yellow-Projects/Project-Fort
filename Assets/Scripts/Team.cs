@@ -33,16 +33,14 @@ public class Team : NetworkBehaviour
         {
             return teamIndex;
         }
+
+        [Server]
         set
         {
             teamIndex = value;
 
             // if offline, change color, otherwise the HookOnTeamIndex will change color
-            if (!NetworkServer.active)
-            {
-                // HACK: this needs to be fixed asap, it's awful
-                if (GetComponent<ColorSetter>()) GetComponent<ColorSetter>().SetColor(MyColor);
-            }
+            if (!NetworkServer.active && MyColorSetter) MyColorSetter.SetColor(MyColor);
         }
     }
 
@@ -54,6 +52,15 @@ public class Team : NetworkBehaviour
         }
     }
 
+    // HACK: this might not be present on a GameObject that doesn't need to have it's color set
+    public ColorSetter MyColorSetter 
+    {
+        get
+        {
+            return GetComponent<ColorSetter>();
+        }
+    }
+
     #endregion
 
     /********** MARK: Event Handler Functions **********/
@@ -61,7 +68,7 @@ public class Team : NetworkBehaviour
 
     private void HookOnTeamIndex(int oldValue, int newValue)
     {
-        GetComponent<ColorSetter>().SetColor(MyColor);
+        if (MyColorSetter) MyColorSetter.SetColor(MyColor);
     }
 
     #endregion
