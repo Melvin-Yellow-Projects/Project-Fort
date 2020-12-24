@@ -151,13 +151,13 @@ public class HumanPlayer : Player
     /********** MARK: Server Functions **********/
     #region Client Functions Functions
 
-    //[Command]
-    //public void CmdStartGame()
-    //{
-    //    if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+    [Command]
+    public void CmdStartGame()
+    {
+        if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
-    //    GameNetworkManager.Singleton.ServerStartGame();
-    //}
+        GameNetworkManager.Singleton.ServerStartGame();
+    }
 
     #endregion
 

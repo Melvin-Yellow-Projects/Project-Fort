@@ -50,7 +50,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        //NetworkClient.connection.identity.GetComponent<Player>().CmdStartGame();
+        NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
     }
 
     public void LeaveLobby()

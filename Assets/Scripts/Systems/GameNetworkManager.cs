@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameNetworkManager : NetworkManager
 {
@@ -110,8 +111,37 @@ public class GameNetworkManager : NetworkManager
 
         isGameInProgress = true;
 
-        Debug.LogWarning("Scene not ready for launch! Yikes!");
-        //ServerChangeScene("Scene_Map_01");
+        ServerChangeScene("Game Scene");
+    }
+
+    [Server]
+    public override void OnServerSceneChanged(string sceneName)
+    {
+        // HACK: string reference
+        if (!SceneManager.GetActiveScene().name.StartsWith("Game Scene")) return;
+
+        //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
+        //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
+
+        Debug.Log("It's time to spawn a map!");
+
+        //foreach (RTSPlayer player in Players)
+        //{
+        //    // spawning unit base on server
+        //    Vector3 pos = GetStartPosition().position;
+        //    Quaternion rot = Quaternion.identity;
+        //    GameObject unitBaseInstance = Instantiate(unitBasePrefab, pos, rot);
+        //    UnitBase unitBase = unitBaseInstance.GetComponent<UnitBase>();
+        //    unitBase.SteamId = player.GetComponent<RTSPlayerInfo>().SteamId;
+
+        //    // spawning the small car on server
+        //    pos = unitBase.SpawnPoint.position;
+        //    GameObject smallCarInstance = Instantiate(smallCarPrefab, pos, rot);
+
+        //    // server tells all clients to spawn instance, and sets authority to a connection
+        //    NetworkServer.Spawn(unitBaseInstance, player.connectionToClient);
+        //    NetworkServer.Spawn(smallCarInstance, player.connectionToClient);
+        //}
     }
 
     #endregion
