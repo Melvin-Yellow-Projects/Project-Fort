@@ -98,7 +98,7 @@ public class PlayerInfo : NetworkBehaviour
 
     private void HookOnSetPartyOwner(bool oldValue, bool newValue)
     {
-        //if (!hasAuthority) return;
+        if (!hasAuthority) return;
 
         OnClientPlayerInfoUpdate?.Invoke();
     }
