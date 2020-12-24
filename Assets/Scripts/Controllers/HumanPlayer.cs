@@ -157,7 +157,7 @@ public class HumanPlayer : Player
     }
 
     [Command]
-    public void CmdStartGame()
+    public void CmdStartGame() // HACK: i dont like this function here
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 

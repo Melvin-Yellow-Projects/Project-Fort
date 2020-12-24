@@ -148,7 +148,7 @@ public class SaveLoadMenu : MonoBehaviour
         SceneLoader.LoadSceneByName("Game Scene");
     }
 
-    private void PrepareReaderForServer()
+    private void PrepareReaderForServer() // HACK: PrepareReaderForServer() is kinda fishy
     {
         string path = GetSelectedPath();
 

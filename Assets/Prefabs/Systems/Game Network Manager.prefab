@@ -49,7 +49,7 @@ MonoBehaviour:
   autoStartServerBuild: 1
   showDebugMessages: 0
   serverTickRate: 30
-  offlineScene: 
+  offlineScene: Assets/Scenes/Start Menu Scene.unity
   onlineScene: 
   transport: {fileID: -6134402128047789783}
   networkAddress: localhost
@@ -57,10 +57,12 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 3526458366338087291, guid: 9bcaafcdcb79e4165b227f4f4246cff3,
+    type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 1936015192140806696, guid: 42403f62e5c024786b85537907da21f9, type: 3}
 --- !u!114 &-6134402128047789783
 MonoBehaviour:
   m_ObjectHideFlags: 0

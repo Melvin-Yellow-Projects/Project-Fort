@@ -123,6 +123,8 @@ public class GameNetworkManager : NetworkManager
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
 
         Debug.Log("It's time to spawn a map!");
+
+        for (int i = 0; i < HumanPlayers.Count; i++) HumanPlayers[i].enabled = true;
     }
 
     #endregion
