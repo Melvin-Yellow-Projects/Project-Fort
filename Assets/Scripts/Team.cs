@@ -36,6 +36,7 @@ public class Team : NetworkBehaviour
         set
         {
             teamIndex = value;
+            if (!NetworkServer.active) GetComponent<ColorSetter>().SetColor(MyColor);
         }
     }
 
