@@ -158,7 +158,7 @@ public class SaveLoadMenu : MonoBehaviour
         BinaryReader reader = new BinaryReader(File.OpenRead(path));
         GameSession.BinaryReaderBuffer = reader;
 
-        NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
     }
 
     public void SelectItem(string name)
