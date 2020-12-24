@@ -154,9 +154,9 @@ public class HumanPlayer : Player
     [Command]
     public void CmdStartGame()
     {
-        //if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+        if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
-        //GameNetworkManager.Singleton.ServerStartGame();
+        GameNetworkManager.Singleton.ServerStartGame();
     }
 
     #endregion
