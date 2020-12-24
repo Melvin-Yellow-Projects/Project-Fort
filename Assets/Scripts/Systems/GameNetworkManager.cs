@@ -110,22 +110,19 @@ public class GameNetworkManager : NetworkManager
 
         isGameInProgress = true;
 
-        ServerChangeScene("_TestSpawn");
+        ServerChangeScene("Game Scene");
     }
 
     [Server]
     public override void OnServerSceneChanged(string sceneName)
     {
         // HACK: string reference
-        if (!SceneManager.GetActiveScene().name.StartsWith("_TestSpawn")) return;
+        if (!SceneManager.GetActiveScene().name.StartsWith("Game Scene")) return;
 
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
 
         Debug.Log("It's time to spawn a map!");
-
-        Unit unit = Instantiate(Unit.Prefab, new Vector3(), new Quaternion());
-        NetworkServer.Spawn(unit.gameObject);
     }
 
     #endregion
