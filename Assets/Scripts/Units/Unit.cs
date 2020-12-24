@@ -154,9 +154,6 @@ public class Unit : NetworkBehaviour
         unit.Movement.Orientation = orientation;
 
         HexGrid.Singleton.ParentTransformToGrid(unit.transform);
-
-        NetworkServer.Spawn(unit.gameObject);
-        Debug.Log("Spawning on Network");
     }
 
     #endregion

@@ -124,23 +124,8 @@ public class GameNetworkManager : NetworkManager
 
         Debug.Log("It's time to spawn a map!");
 
-        //foreach (RTSPlayer player in Players)
-        //{
-        //    // spawning unit base on server
-        //    Vector3 pos = GetStartPosition().position;
-        //    Quaternion rot = Quaternion.identity;
-        //    GameObject unitBaseInstance = Instantiate(unitBasePrefab, pos, rot);
-        //    UnitBase unitBase = unitBaseInstance.GetComponent<UnitBase>();
-        //    unitBase.SteamId = player.GetComponent<RTSPlayerInfo>().SteamId;
-
-        //    // spawning the small car on server
-        //    pos = unitBase.SpawnPoint.position;
-        //    GameObject smallCarInstance = Instantiate(smallCarPrefab, pos, rot);
-
-        //    // server tells all clients to spawn instance, and sets authority to a connection
-        //    NetworkServer.Spawn(unitBaseInstance, player.connectionToClient);
-        //    NetworkServer.Spawn(smallCarInstance, player.connectionToClient);
-        //}
+        Unit unit = Instantiate(Unit.Prefab, new Vector3(), new Quaternion());
+        NetworkServer.Spawn(unit.gameObject);
     }
 
     #endregion
