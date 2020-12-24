@@ -19,7 +19,7 @@ public class Team : NetworkBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [SyncVar]
+    [SyncVar(hook = nameof(HookOnTeamIndex))]
     int teamIndex = 0;
 
     #endregion
@@ -36,7 +36,6 @@ public class Team : NetworkBehaviour
         set
         {
             teamIndex = value;
-            GetComponent<ColorSetter>().SetColor(MyColor);
         }
     }
 
@@ -50,8 +49,13 @@ public class Team : NetworkBehaviour
 
     #endregion
 
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void HookOnTeamIndex(int oldValue, int newValue)
+    {
+        GetComponent<ColorSetter>().SetColor(MyColor);
+    }
 
     #endregion
 

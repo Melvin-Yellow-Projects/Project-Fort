@@ -19,10 +19,10 @@ public class PlayerInfo : NetworkBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
-    [SyncVar(hook = nameof(HookOnSetPartyOwner))]
+    [SyncVar(hook = nameof(HookOnIsPartyOwner))]
     bool isPartyOwner = false;
 
-    [SyncVar(hook = nameof(HookOnSetPlayerName))]
+    [SyncVar(hook = nameof(HookOnPlayerName))]
     string playerName;
 
     //[SyncVar]
@@ -96,14 +96,14 @@ public class PlayerInfo : NetworkBehaviour
 
     }
 
-    private void HookOnSetPartyOwner(bool oldValue, bool newValue)
+    private void HookOnIsPartyOwner(bool oldValue, bool newValue)
     {
         if (!hasAuthority) return;
 
         OnClientPlayerInfoUpdate?.Invoke();
     }
 
-    private void HookOnSetPlayerName(string oldValue, string newValue)
+    private void HookOnPlayerName(string oldValue, string newValue)
     {
         OnClientPlayerInfoUpdate?.Invoke();
     }
