@@ -22,8 +22,8 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar(hook = nameof(HookOnSetPartyOwner))]
     bool isPartyOwner = false;
 
-    [SyncVar(hook = nameof(HookOnSetPlayerName))]
-    string playerName;
+    //[SyncVar(hook = nameof(HookOnSetPlayerName))]
+    //string playerName;
 
     //[SyncVar]
     //Color playerColor = new Color();
@@ -57,19 +57,18 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    public string PlayerName
-    {
-        get
-        {
-            return playerName;
-        }
+    //public string PlayerName
+    //{
+    //    get
+    //    {
+    //        return playerName;
+    //    }
 
-        [Server]
-        set
-        {
-            playerName = value;
-        }
-    }
+    //    set
+    //    {
+    //        playerName = value;
+    //    }
+    //}
 
     #endregion
 
@@ -101,10 +100,10 @@ public class PlayerInfo : NetworkBehaviour
         OnClientPlayerInfoUpdate?.Invoke();
     }
 
-    private void HookOnSetPlayerName(string oldValue, string newValue)
-    {
-        OnClientPlayerInfoUpdate?.Invoke();
-    }
+    //private void HookOnSetPlayerName(string oldValue, string newValue)
+    //{
+    //    OnClientPlayerInfoUpdate?.Invoke();
+    //}
 
     #endregion
 }
