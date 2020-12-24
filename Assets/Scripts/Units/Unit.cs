@@ -155,7 +155,11 @@ public class Unit : NetworkBehaviour
 
         HexGrid.Singleton.ParentTransformToGrid(unit.transform);
 
-        if (NetworkServer.active) NetworkServer.Spawn(unit.gameObject);
+        if (NetworkServer.active)
+        {
+            NetworkServer.Spawn(unit.gameObject);
+            Debug.Log("Spawning on Network");
+        }
     }
 
     #endregion
