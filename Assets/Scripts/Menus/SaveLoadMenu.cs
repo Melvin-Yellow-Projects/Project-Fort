@@ -124,31 +124,33 @@ public class SaveLoadMenu : MonoBehaviour
         }
         else if (menuMode == 2)
         {
-            PrepareReaderForNextScene();
+            PrepareReaderForLocalGame();
         }
         else if (menuMode == 3)
         {
-            PrepareReaderForServer();
+            PrepareReaderForOnlineGame();
         }
 
         // exit menu
         Close();
     }
 
-    private void PrepareReaderForNextScene()
+    private void PrepareReaderForLocalGame()
     {
-        string path = GetSelectedPath();
+        PrepareReader();
 
-        // if the path is empty or invalid, exit
-        if (path == null || !IsPathValid(path)) return;
-
-        BinaryReader reader = new BinaryReader(File.OpenRead(path));
-        GameSession.BinaryReaderBuffer = reader;
-
-        SceneLoader.LoadSceneByName("Game Scene");
+        SceneLoader.LoadLocalGame();
     }
 
-    private void PrepareReaderForServer() // HACK: PrepareReaderForServer() is kinda fishy
+    private void PrepareReaderForOnlineGame() 
+    {
+        PrepareReader();
+
+        // HACK: This line is kinda fishy
+        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+    }
+
+    private void PrepareReader()
     {
         string path = GetSelectedPath();
 
@@ -157,8 +159,6 @@ public class SaveLoadMenu : MonoBehaviour
 
         BinaryReader reader = new BinaryReader(File.OpenRead(path));
         GameSession.BinaryReaderBuffer = reader;
-
-        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
     }
 
     public void SelectItem(string name)

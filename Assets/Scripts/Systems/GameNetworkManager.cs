@@ -76,6 +76,8 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        if (!GameSession.Singleton.IsOnline) return;
+
         HumanPlayers.Remove(conn.identity.GetComponent<HumanPlayer>());
 
         base.OnServerDisconnect(conn);
@@ -107,7 +109,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public void ServerStartGame()
     {
-        if (HumanPlayers.Count < 2) return;
+        if (HumanPlayers.Count < 1) return;
 
         isGameInProgress = true;
 
@@ -117,8 +119,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerSceneChanged(string sceneName)
     {
-        // HACK: string reference
-        if (!SceneManager.GetActiveScene().name.StartsWith("Game Scene")) return;
+        if (!SceneLoader.IsGameScene) return;
 
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
@@ -138,9 +139,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
-        OnClientConnectEvent?.Invoke();
-
-        Debug.Log("Hello! I have connected!"); // HACK: remove this code
+        if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
     [Client]
@@ -148,7 +147,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientDisconnect(conn);
 
-        OnClientDisconnectEvent?.Invoke();
+        if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
     public override void OnStopClient()

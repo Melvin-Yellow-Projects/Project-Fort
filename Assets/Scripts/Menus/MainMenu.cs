@@ -17,6 +17,7 @@ public class MainMenu : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
+    [SerializeField] GameObject preLobbyMenu = null;
     [SerializeField] LobbyMenu lobbyMenu = null;
 
     #endregion
@@ -33,6 +34,18 @@ public class MainMenu : MonoBehaviour
     private void OnDestroy()
     {
         Unsubscribe();
+    }
+
+    #endregion
+
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
+
+    public void OnlineButtonPressed()
+    {
+        gameObject.SetActive(false);
+        preLobbyMenu.SetActive(true);
+        GameSession.Singleton.IsOnline = true;
     }
 
     #endregion

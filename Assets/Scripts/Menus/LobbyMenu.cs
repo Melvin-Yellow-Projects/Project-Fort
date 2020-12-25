@@ -65,7 +65,7 @@ public class LobbyMenu : MonoBehaviour
         }
 
         // this reloads the start menu, it's the lazy way rather than turning on/off various UI
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        SceneLoader.LoadStartScene();
     }
 
     #endregion
@@ -115,7 +115,7 @@ public class LobbyMenu : MonoBehaviour
             //playerSteamImages[i].texture = null;
         }
 
-        startGameButton.interactable = (players.Count >= 2);
+        startGameButton.interactable = (players.Count >= 1);
     }
 
     private void HandlePartyOwnerStateChange()

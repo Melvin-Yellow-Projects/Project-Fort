@@ -31,18 +31,13 @@ public class Team : NetworkBehaviour
     {
         get
         {
-            return teamIndex;
+            return teamIndex; 
         }
 
-        // FIXME: this is prone to security flaws, it should have the [Server] attribute, but then
-        // maps can't be made in offline mode
+        [Server]
         set
         {
             teamIndex = value;
-
-            // if offline, change color, otherwise the HookOnTeamIndex will change color
-            // HACK: is there a better way to do this?
-            if (!NetworkServer.active && MyColorSetter) MyColorSetter.SetColor(MyColor);
         }
     }
 

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
+using Mirror;
 
 public class GameSession : MonoBehaviour
 {
@@ -79,19 +80,6 @@ public class GameSession : MonoBehaviour
         BinaryReaderBuffer = null;
     }
 
-    private void SpawnOfflinePlayer()
-    {
-        if (IsOnline) return;
-
-        //if (!SceneManager.GetActiveScene().name.StartsWith("Game Scene")) return;
-
-        GameObject offlinePlayer = Instantiate(GameNetworkManager.Singleton.playerPrefab);
-        HumanPlayer humanPlayer = offlinePlayer.GetComponent<HumanPlayer>();
-
-        humanPlayer.enabled = true;
-        humanPlayer.MyTeam.TeamIndex = 1;
-    }
-
     /// <summary>
     ///     Destroys GameObject containing Game Session Class
     /// </summary>
@@ -108,10 +96,28 @@ public class GameSession : MonoBehaviour
 
     private void HandleActiveSceneChanged(Scene current, Scene next)
     {
-        if (next.name.StartsWith("Game Scene")) SpawnOfflinePlayer(); // HACK: string reference
+        //if (next.name.StartsWith("Game Scene")) SpawnOfflinePlayer(); // HACK: i think this can be removed
 
-        LoadMapFromReader();
+        LoadMapFromReader(); // HACK: is this overkill to do it every scene change?
     }
+
+    #endregion
+
+    /********** MARK: Debug Functions **********/
+    #region Debug Functions
+
+    /**
+    private void SpawnOfflinePlayer()
+    {
+        if (IsOnline) return;
+
+        GameObject offlinePlayer = Instantiate(GameNetworkManager.Singleton.playerPrefab);
+        HumanPlayer humanPlayer = offlinePlayer.GetComponent<HumanPlayer>();
+
+        humanPlayer.enabled = true;
+        humanPlayer.MyTeam.TeamIndex = 1;
+    }
+    */
 
     #endregion
 }
