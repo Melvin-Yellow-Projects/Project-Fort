@@ -68,15 +68,18 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerConnect(NetworkConnection conn)
     {
+        if (!GameSession.Singleton.IsOnline) return;
+
         // TODO: make player a spectator
         if (!isGameInProgress) return;
+
         conn.Disconnect();
     }
 
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (!GameSession.Singleton.IsOnline) return;
+        if (!autoCreatePlayer) return;
 
         HumanPlayers.Remove(conn.identity.GetComponent<HumanPlayer>());
 
@@ -107,7 +110,7 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public void ServerStartGame()
+    public void ServerStartGame() // HACK move this into SceneLoader?
     {
         if (HumanPlayers.Count < 1) return;
 
@@ -117,7 +120,7 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public override void OnServerSceneChanged(string sceneName)
+    public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
     {
         if (!SceneLoader.IsGameScene) return;
 

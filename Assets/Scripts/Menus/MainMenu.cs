@@ -28,12 +28,13 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         Subscribe();
-        lobbyMenu.Subscribe();
+        lobbyMenu.Subscribe(); // HACK: i really don't like this, but it works
     }
 
     private void OnDestroy()
     {
         Unsubscribe();
+        lobbyMenu.Unsubscribe();
     }
 
     #endregion

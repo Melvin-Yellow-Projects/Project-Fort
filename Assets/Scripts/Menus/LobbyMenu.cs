@@ -33,25 +33,23 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    private void Awake()
-    {
-        Subscribe();
-    }
+    // HACK: Since awake and on destroy are only called on previously active game objects, the
+    // sub and unsub methods are called by MainMenu.cs. This is jank, but it works. maybe do over?
 
-    private void OnDestroy()
-    {
-        Unsubscribe();
-    }
+    //private void Awake()
+    //{
+    //    Subscribe();
+    //}
+
+    //private void OnDestroy()
+    //{
+    //    Unsubscribe();
+    //}
 
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
-
-    //public void StartGame()
-    //{
-    //    NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
-    //}
 
     public void LeaveLobby()
     {
@@ -83,7 +81,7 @@ public class LobbyMenu : MonoBehaviour
         PlayerInfo.OnClientPlayerInfoUpdate += HandlePartyOwnerStateChange;
     }
 
-    private void Unsubscribe()
+    public void Unsubscribe()
     {
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
         PlayerInfo.OnClientPlayerInfoUpdate -= UpdatePlayerTags;
