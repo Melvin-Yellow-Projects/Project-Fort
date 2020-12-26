@@ -166,8 +166,8 @@ public class MapEditor : MonoBehaviour
         else if (isSelectionPressed) // do selection
         {
             if (IsSettingForts) CreateFort(currentCell);
-            if (IsSettingUnits) CreateUnit(currentCell);
-            if (IsSettingTerrain) EditCells(currentCell);
+            else if (IsSettingUnits) CreateUnit(currentCell);
+            else EditCells(currentCell);
         }
     }
 

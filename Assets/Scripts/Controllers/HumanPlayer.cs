@@ -85,7 +85,8 @@ public class HumanPlayer : Player
         if (cell != currentCell)
         {
             if (currentCell) currentCell.DisableHighlight();
-            if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+            //if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+            if (cell) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f)); // HACK: visibility off
 
             currentCell = cell;
             hasCurrentCellUpdated = true; // whether or not current cell has updated
