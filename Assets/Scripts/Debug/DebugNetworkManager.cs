@@ -22,6 +22,7 @@ public class DebugNetworkManager : NetworkManager
         Players.Add(player);
 
         player.DisplayName = $"Player {Players.Count}";
+
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)

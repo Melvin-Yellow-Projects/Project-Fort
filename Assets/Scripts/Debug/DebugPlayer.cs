@@ -44,9 +44,11 @@ public class DebugPlayer : NetworkBehaviour
 
     #region Unity Functions
 
-    [Client]
+    [ClientCallback]
     private void Update()
     {
+        if (!hasAuthority) return;
+
         if (Input.GetKey("a")) CmdMovePlayer(-1);
         if (Input.GetKey("d")) CmdMovePlayer(1);
     }
