@@ -241,7 +241,8 @@ public class HexCell : MonoBehaviour
     {
         get
         {
-            return explored && Explorable;
+            //return explored && Explorable;
+            return true; // HACK: remove this when visibility is working again
         }
         private set
         {
