@@ -24,5 +24,19 @@ public class DebugNetworkManager : NetworkManager
         player.DisplayName = $"Player {Players.Count}";
     }
 
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        DebugPlayer player = conn.identity.GetComponent<DebugPlayer>();
+
+        Players.Remove(player);
+
+        base.OnServerDisconnect(conn);
+    }
+
+    public override void OnStopServer()
+    {
+        Players.Clear();
+    }
+
     #endregion
 }

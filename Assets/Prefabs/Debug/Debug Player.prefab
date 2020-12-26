@@ -84,6 +84,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   displayNameText: {fileID: 283559389199229658}
+  speed: 1
 --- !u!1 &7171782581471012597
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +342,7 @@ RectTransform:
   m_GameObject: {fileID: 8640619192624482440}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 7859532071852581622}
   m_Father: {fileID: 2533082967054051952}

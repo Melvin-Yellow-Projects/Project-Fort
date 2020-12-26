@@ -12,6 +12,10 @@ public class DebugPlayer : NetworkBehaviour
 
     [SyncVar(hook = nameof(HookOnDisplayName))]
     string displayName;
+
+    [SyncVar]
+    [SerializeField] float speed = 1;
+
     #endregion
 
     #region Events
@@ -38,6 +42,16 @@ public class DebugPlayer : NetworkBehaviour
 
     #endregion
 
+    #region Unity Functions
+
+    private void Update()
+    {
+        if (Input.GetKey("a")) CmdMovePlayer(-1);
+        if (Input.GetKey("d")) CmdMovePlayer(1);
+    }
+
+    #endregion
+
     #region Server Functions
 
     public override void OnStartServer()
@@ -60,6 +74,16 @@ public class DebugPlayer : NetworkBehaviour
     public override void OnStopClient()
     {
         ClientPlayerInfoUpdated -= HandleClientPlayerInfoUpdated;
+    }
+
+    [Command]
+    public void CmdMovePlayer(float direction)
+    {
+        Vector3 pos = transform.position;
+
+        pos.x += direction * speed;
+
+        transform.position = pos;
     }
 
     #endregion
