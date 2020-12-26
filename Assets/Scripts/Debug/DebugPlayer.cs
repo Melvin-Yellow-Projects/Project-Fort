@@ -44,6 +44,7 @@ public class DebugPlayer : NetworkBehaviour
 
     #region Unity Functions
 
+    [ServerCallback]
     private void Update()
     {
         if (Input.GetKey("a")) CmdMovePlayer(-1);
