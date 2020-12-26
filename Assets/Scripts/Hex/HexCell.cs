@@ -463,7 +463,7 @@ public class HexCell : MonoBehaviour
 
         // HACK: hardcoded value
         //IsExplored = header >= 3 ? reader.ReadBoolean() : false;
-        IsExplored = reader.ReadBoolean(); IsExplored = true; // HACK: removed IsExplored value
+        IsExplored = reader.ReadBoolean(); IsExplored = true; // FIXME: removed IsExplored value
         ShaderData.RefreshVisibility(this);
 
         RefreshPosition();

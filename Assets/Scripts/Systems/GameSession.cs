@@ -30,8 +30,6 @@ public class GameSession : MonoBehaviour
 
     public static GameSession Singleton { get; private set; }
 
-    public static BinaryReader BinaryReaderBuffer { get; set; }
-
     public bool IsOnline { get; set; } = false;
 
     #endregion
@@ -72,12 +70,7 @@ public class GameSession : MonoBehaviour
 
     private void LoadMapFromReader() 
     {
-        if (BinaryReaderBuffer == null) return; // HACK: This could be moved to SaveLoadMenu
-
-        SaveLoadMenu.LoadMapFromReader(BinaryReaderBuffer);
-
-        BinaryReaderBuffer.Close();
-        BinaryReaderBuffer = null;
+        SaveLoadMenu.LoadMapFromReader();
     }
 
     /// <summary>

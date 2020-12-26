@@ -86,8 +86,6 @@ public abstract class Player : NetworkBehaviour
     {
         if (unit.MyTeam != MyTeam) return;
 
-        Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
-
         myUnits.Add(unit);
     }
 

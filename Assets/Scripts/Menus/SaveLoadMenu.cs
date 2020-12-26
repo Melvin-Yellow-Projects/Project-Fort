@@ -16,6 +16,7 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 using UnityEngine.InputSystem;
+using Mirror;
 
 /// <summary>
 /// 
@@ -51,6 +52,13 @@ public class SaveLoadMenu : MonoBehaviour
     int menuMode;
 
     Controls controls;
+
+    #endregion
+
+    /********** MARK: Public Properties **********/
+    # region Public Properties
+
+    public static BinaryReader BinaryReaderBuffer { get; set; }
 
     #endregion
 
@@ -157,8 +165,7 @@ public class SaveLoadMenu : MonoBehaviour
         // if the path is empty or invalid, exit
         if (path == null || !IsPathValid(path)) return;
 
-        BinaryReader reader = new BinaryReader(File.OpenRead(path));
-        GameSession.BinaryReaderBuffer = reader;
+        BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
     }
 
     public void SelectItem(string name)
@@ -217,7 +224,7 @@ public class SaveLoadMenu : MonoBehaviour
         using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
         {
             writer.Write(mapFileVersion);
-            FindObjectOfType<HexGrid>().Save(writer);
+            HexGrid.Singleton.Save(writer);
         }
     }
 
@@ -229,20 +236,19 @@ public class SaveLoadMenu : MonoBehaviour
         // check to see if the path exists
         if (!IsPathValid(path)) return;
 
-        // creates a file stream object encapsulated within the BinaryReader; the using block then
-        // defines where this object will exist
-        using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
-        {
-            LoadMapFromReader(reader);
-        }
+        BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+
+        LoadMapFromReader();
     }
 
-    public static void LoadMapFromReader(BinaryReader reader)
+    public static void LoadMapFromReader()
     {
-        int header = reader.ReadInt32();
+        if (BinaryReaderBuffer == null) return;
+
+        int header = BinaryReaderBuffer.ReadInt32();
         if (header <= mapFileVersion)
         {
-            FindObjectOfType<HexGrid>().Load(reader, header);
+            HexGrid.Singleton.Load(BinaryReaderBuffer, header);
 
             MapCamera.ValidatePosition();
         }
@@ -250,6 +256,9 @@ public class SaveLoadMenu : MonoBehaviour
         {
             Debug.LogWarning("Unknown map format " + header);
         }
+
+        BinaryReaderBuffer.Close();
+        BinaryReaderBuffer = null;
     }
 
     private bool IsPathValid(string path)
@@ -280,3 +289,16 @@ public class SaveLoadMenu : MonoBehaviour
 
     #endregion
 }
+
+//public static class CustomReadWriteFunctions
+//{
+//    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
+//    {
+//        HexGrid.Singleton.Save(writer);
+//    }
+
+//    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
+//    {
+//        return new BinaryReader(reader.ReadInt32(), reader.ReadSingle());
+//    }
+//}
