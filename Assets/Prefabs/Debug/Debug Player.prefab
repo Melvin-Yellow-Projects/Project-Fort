@@ -64,7 +64,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.01
+  syncInterval: 0
   clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
@@ -84,7 +84,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   displayNameText: {fileID: 283559389199229658}
-  speed: 0.5
+  speed: 0.25
 --- !u!1 &7171782581471012597
 GameObject:
   m_ObjectHideFlags: 0
