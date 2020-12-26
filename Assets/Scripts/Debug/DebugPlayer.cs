@@ -44,6 +44,7 @@ public class DebugPlayer : NetworkBehaviour
 
     #region Unity Functions
 
+    [Client]
     private void Update()
     {
         if (Input.GetKey("a")) CmdMovePlayer(-1);
@@ -86,7 +87,7 @@ public class DebugPlayer : NetworkBehaviour
     {
         Vector3 pos = transform.position;
 
-        pos.x += direction * speed;
+        pos.x += direction * speed * Time.deltaTime;
 
         transform.position = pos;
     }
