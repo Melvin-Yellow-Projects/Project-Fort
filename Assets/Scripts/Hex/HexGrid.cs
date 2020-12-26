@@ -48,6 +48,9 @@ public class HexGrid : MonoBehaviour
     [Tooltip("number of cell in the z direction; effectively height")]
     public int cellCountZ = 15;
 
+    [Tooltip("layers to ignore when raycasting")]
+    [SerializeField] LayerMask layersToIgnore; // TODO: this would probably be better as a cell layer
+
     /* Variables */
     public List<Unit> units = new List<Unit>(); // HACK: should not be public
 
@@ -357,16 +360,12 @@ public class HexGrid : MonoBehaviour
         RaycastHit hit;
 
         // did we hit anything? then return that HexCell
-        if (Physics.Raycast(inputRay, out hit))
-        {
-            // draw line for 1 second
-            Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
+        if (!Physics.Raycast(inputRay, out hit, 1000, ~layersToIgnore)) return null;
 
-            return GetCell(hit.point);
-        }
+        // draw line for 1 second
+        Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-        // nothing was found
-        return null;
+        return GetCell(hit.point);
     }
 
     // TODO: comment SetCellLabel
