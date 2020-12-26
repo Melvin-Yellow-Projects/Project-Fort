@@ -142,7 +142,7 @@ public class Fort : NetworkBehaviour
 
         HexGrid.Singleton.ParentTransformToGrid(fort.transform);
 
-        if (NetworkServer.active) NetworkServer.Spawn(fort.gameObject);
+        NetworkServer.Spawn(fort.gameObject);
     }
 
     #endregion
