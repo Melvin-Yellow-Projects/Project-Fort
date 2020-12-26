@@ -294,11 +294,16 @@ public class SaveLoadMenu : MonoBehaviour
 //{
 //    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
 //    {
-//        HexGrid.Singleton.Save(writer);
+//        //writer.Write(mapFileVersion);
+//        //HexGrid.Singleton.Save(writer);
 //    }
 
 //    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
 //    {
-//        return new BinaryReader(reader.ReadInt32(), reader.ReadSingle());
+//        //int header = BinaryReaderBuffer.ReadInt32();
+//        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
+
+//        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
+//        return new BinaryReader(null);
 //    }
 //}

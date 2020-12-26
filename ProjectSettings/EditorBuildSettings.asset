@@ -15,6 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Map Editor Scene.unity
     guid: 2ae350eee7871a543b0cb8221e1f23d6
   - enabled: 1
-    path: Assets/Scenes/_TestSpawn.unity
+    path: Assets/Scenes/_FOG.unity
     guid: ddf3eda7d061add478a9ea15a507cf74
   m_configObjects: {}
