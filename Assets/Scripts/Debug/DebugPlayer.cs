@@ -57,7 +57,6 @@ public class DebugPlayer : NetworkBehaviour
     public override void OnStartServer()
     {
         ClientPlayerInfoUpdated += HandleClientPlayerInfoUpdated;
-
     }
 
     #endregion
@@ -78,6 +77,12 @@ public class DebugPlayer : NetworkBehaviour
 
     [Command]
     public void CmdMovePlayer(float direction)
+    {
+        RpcMovePlayer(direction);
+    }
+
+    [ClientRpc]
+    public void RpcMovePlayer(float direction)
     {
         Vector3 pos = transform.position;
 
