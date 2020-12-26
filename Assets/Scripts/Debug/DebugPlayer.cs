@@ -91,6 +91,8 @@ public class DebugPlayer : NetworkBehaviour
 
         pos.x += direction * speed * Time.deltaTime;
 
+        Debug.Log(Time.deltaTime);
+
         transform.position = pos;
     }
 
