@@ -57,21 +57,17 @@ public class DebugPlayer : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        DebugPlayer otherPlayer = other.GetComponent<DebugPlayer>();
-        // see player
-        otherPlayer.playerBody.SetActive(true);
+        DebugPlayer otherPlayer = other.GetComponentInParent<DebugPlayer>();
 
-        Debug.Log($"{name} can now see {other.name}!");
+        ServerSeePlayer(otherPlayer);
     }
 
     [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
-        DebugPlayer otherPlayer = other.GetComponent<DebugPlayer>();
-        // hide player
-        otherPlayer.playerBody.SetActive(false);
-
-        Debug.Log($"{name} can no longer see {other.name}..");
+        DebugPlayer otherPlayer = other.GetComponentInParent<DebugPlayer>();
+        
+        ServerHidePlayer(otherPlayer);
     }
 
     #endregion
@@ -89,14 +85,28 @@ public class DebugPlayer : NetworkBehaviour
         RpcMovePlayer(direction);
     }
 
-    private void ServerSeePlayer()
+    [Server]
+    private void ServerSeePlayer(DebugPlayer player)
     {
+        RpcSeePlayer(player);
 
+        if (!hasAuthority) return;
+
+        player.playerBody.SetActive(true);
+
+        Debug.Log($"I am the server player and I can now see {player.name}!");
     }
 
-    private void ServerHidePlayer()
+    [Server]
+    private void ServerHidePlayer(DebugPlayer player)
     {
+        RpcSeePlayer(player);
 
+        if (!hasAuthority) return;
+
+        player.playerBody.SetActive(false);
+
+        Debug.Log($"I am the server player and I can no longer see {player.name}..");
     }
 
     #endregion
@@ -125,14 +135,24 @@ public class DebugPlayer : NetworkBehaviour
         transform.position = pos;
     }
 
-    private void ClientSeePlayer()
+    [ClientRpc]
+    private void RpcSeePlayer(DebugPlayer player)
     {
+        if (!hasAuthority) return;
 
+        player.playerBody.SetActive(true);
+
+        Debug.Log($"I can now see {player.name}!");
     }
 
-    private void ClientHidePlayer()
+    [ClientRpc]
+    private void RpcHidePlayer(DebugPlayer player)
     {
+        if (!hasAuthority) return;
 
+        player.playerBody.SetActive(false);
+
+        Debug.Log($"I can now see {player.name}!");
     }
 
     #endregion
