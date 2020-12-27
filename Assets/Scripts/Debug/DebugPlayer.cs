@@ -10,6 +10,8 @@ public class DebugPlayer : NetworkBehaviour
     #region Variables
     [SerializeField] TMP_Text displayNameText;
 
+    [SerializeField] GameObject playerBody;
+
     [SyncVar(hook = nameof(HookOnDisplayName))]
     string displayName;
 
@@ -55,7 +57,21 @@ public class DebugPlayer : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        DebugPlayer player = other.GetComponent<DebugPlayer>();
+        DebugPlayer otherPlayer = other.GetComponent<DebugPlayer>();
+        // see player
+        otherPlayer.playerBody.SetActive(true);
+
+        Debug.Log($"{name} can now see {other.name}!");
+    }
+
+    [ServerCallback]
+    private void OnTriggerExit(Collider other)
+    {
+        DebugPlayer otherPlayer = other.GetComponent<DebugPlayer>();
+        // hide player
+        otherPlayer.playerBody.SetActive(false);
+
+        Debug.Log($"{name} can no longer see {other.name}..");
     }
 
     #endregion
@@ -65,6 +81,22 @@ public class DebugPlayer : NetworkBehaviour
     public override void OnStartServer()
     {
         ClientPlayerInfoUpdated += HandleClientPlayerInfoUpdated;
+    }
+
+    [Command]
+    private void CmdMovePlayer(float direction)
+    {
+        RpcMovePlayer(direction);
+    }
+
+    private void ServerSeePlayer()
+    {
+
+    }
+
+    private void ServerHidePlayer()
+    {
+
     }
 
     #endregion
@@ -83,22 +115,24 @@ public class DebugPlayer : NetworkBehaviour
         ClientPlayerInfoUpdated -= HandleClientPlayerInfoUpdated;
     }
 
-    [Command]
-    public void CmdMovePlayer(float direction)
-    {
-        RpcMovePlayer(direction);
-    }
-
     [ClientRpc]
-    public void RpcMovePlayer(float direction)
+    private void RpcMovePlayer(float direction)
     {
         Vector3 pos = transform.position;
 
-        //pos.x += direction * speed * Time.deltaTime;
-        //pos.x += direction * speed * Time.fixedTime;
         pos.x += direction * speed;
 
         transform.position = pos;
+    }
+
+    private void ClientSeePlayer()
+    {
+
+    }
+
+    private void ClientHidePlayer()
+    {
+
     }
 
     #endregion
