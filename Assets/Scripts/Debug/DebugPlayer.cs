@@ -80,7 +80,15 @@ public class DebugPlayer : NetworkBehaviour
     [Command]
     public void CmdMovePlayer(float direction)
     {
-        RpcMovePlayer(direction);
+        //RpcMovePlayer(direction);
+
+        Vector3 pos = transform.position;
+
+        pos.x += direction * speed * Time.deltaTime;
+
+        Debug.Log(Time.deltaTime);
+
+        transform.position = pos;
     }
 
     [ClientRpc]
