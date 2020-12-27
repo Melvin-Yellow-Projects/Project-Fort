@@ -141,8 +141,7 @@ public class DebugUnit : NetworkBehaviour
     {
         if (!hasAuthority) return;
 
-        // spawn unit
-        //Instantiate(unitIdentity.gameObject);
+        NetworkServer.Spawn(unitIdentity.gameObject);
 
         Debug.Log($"I can now see {unitIdentity.name}!");
     }
@@ -152,10 +151,9 @@ public class DebugUnit : NetworkBehaviour
     {
         if (!hasAuthority) return;
 
-        // destroy unit
-        //Destroy(unitIdentity.gameObject);
+        NetworkServer.UnSpawn(unitIdentity.gameObject);
 
-        Debug.Log($"I can now see {unitIdentity.name}!");
+        Debug.Log($"I can no longer see {unitIdentity.name}..");
     }
     #endregion
     /************************************************************/
