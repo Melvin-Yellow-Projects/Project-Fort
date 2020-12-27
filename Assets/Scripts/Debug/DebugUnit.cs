@@ -142,7 +142,7 @@ public class DebugUnit : NetworkBehaviour
         if (!hasAuthority) return;
 
         // spawn unit
-        Instantiate(unitIdentity.gameObject);
+        //Instantiate(unitIdentity.gameObject);
 
         Debug.Log($"I can now see {unitIdentity.name}!");
     }
@@ -153,7 +153,7 @@ public class DebugUnit : NetworkBehaviour
         if (!hasAuthority) return;
 
         // destroy unit
-        Destroy(unitIdentity.gameObject);
+        //Destroy(unitIdentity.gameObject);
 
         Debug.Log($"I can now see {unitIdentity.name}!");
     }
