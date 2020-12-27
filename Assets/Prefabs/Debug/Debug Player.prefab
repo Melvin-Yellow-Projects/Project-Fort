@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2533082967054051952}
   - component: {fileID: 2533082967054051955}
-  - component: {fileID: 1956970663857256852}
   - component: {fileID: 4385403522986231973}
   m_Layer: 0
   m_Name: Debug Player
@@ -51,24 +50,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &1956970663857256852
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2533082967054051953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
 --- !u!114 &4385403522986231973
 MonoBehaviour:
   m_ObjectHideFlags: 0
