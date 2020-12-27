@@ -44,7 +44,7 @@ public class DebugPlayer : NetworkBehaviour
 
     #region Unity Functions
 
-    [ClientCallback]
+    //[ClientCallback]
     private void Update()
     {
         if (!hasAuthority) return;
