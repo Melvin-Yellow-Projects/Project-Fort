@@ -37,7 +37,7 @@ public class DebugUnit : NetworkBehaviour
         set
         {
             displayName = value;
-            displayNameText.text = value;
+            //displayNameText.text = value;
         }
     }
 
