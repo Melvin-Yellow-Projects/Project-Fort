@@ -94,7 +94,9 @@ public class DebugPlayer : NetworkBehaviour
     {
         Vector3 pos = transform.position;
 
-        pos.x += direction * speed * Time.fixedTime;
+        //pos.x += direction * speed * Time.deltaTime;
+        //pos.x += direction * speed * Time.fixedTime;
+        pos.x += direction * speed;
 
         transform.position = pos;
     }
