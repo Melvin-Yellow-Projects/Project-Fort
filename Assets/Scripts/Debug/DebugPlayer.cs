@@ -52,6 +52,12 @@ public class DebugPlayer : NetworkBehaviour
         if (Input.GetKey("d")) CmdMovePlayer(1);
     }
 
+    [ServerCallback]
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log($"I see {other.name}");
+    }
+
     #endregion
 
     #region Server Functions
@@ -80,15 +86,7 @@ public class DebugPlayer : NetworkBehaviour
     [Command]
     public void CmdMovePlayer(float direction)
     {
-        //RpcMovePlayer(direction);
-
-        Vector3 pos = transform.position;
-
-        pos.x += direction * speed * Time.deltaTime;
-
-        Debug.Log(Time.deltaTime);
-
-        transform.position = pos;
+        RpcMovePlayer(direction);
     }
 
     [ClientRpc]
@@ -97,8 +95,6 @@ public class DebugPlayer : NetworkBehaviour
         Vector3 pos = transform.position;
 
         pos.x += direction * speed * Time.deltaTime;
-
-        Debug.Log(Time.deltaTime);
 
         transform.position = pos;
     }
