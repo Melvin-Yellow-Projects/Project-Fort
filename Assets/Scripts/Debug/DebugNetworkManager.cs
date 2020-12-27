@@ -5,12 +5,19 @@ using Mirror;
 
 public class DebugNetworkManager : NetworkManager
 {
+    /************************************************************/
+    #region Variables
+
+    [SerializeField] DebugUnit unitPrefab;
+
+    #endregion
+    /************************************************************/
     #region Properties
 
     public List<DebugPlayer> Players { get; } = new List<DebugPlayer>();
 
     #endregion
-
+    /************************************************************/
     #region Server Functions
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -21,8 +28,11 @@ public class DebugNetworkManager : NetworkManager
 
         Players.Add(player);
 
-        player.DisplayName = $"Player {Players.Count}";
+        DebugUnit unit = Instantiate(unitPrefab);
 
+        NetworkServer.Spawn(unit.gameObject, conn);
+
+        unit.DisplayName = $"Player {Players.Count}";
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
@@ -40,4 +50,5 @@ public class DebugNetworkManager : NetworkManager
     }
 
     #endregion
+    /************************************************************/
 }
