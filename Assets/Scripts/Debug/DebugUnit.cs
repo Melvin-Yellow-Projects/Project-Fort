@@ -49,8 +49,8 @@ public class DebugUnit : NetworkBehaviour
     {
         if (!hasAuthority) return;
 
-        if (Input.GetKey("a")) CmdMovePlayer(-1);
-        if (Input.GetKey("d")) CmdMovePlayer(1);
+        if (Input.GetKey("a")) CmdMoveUnit(-1);
+        if (Input.GetKey("d")) CmdMoveUnit(1);
     }
 
     [ServerCallback]
@@ -79,9 +79,9 @@ public class DebugUnit : NetworkBehaviour
     }
 
     [Command]
-    private void CmdMovePlayer(float direction)
+    private void CmdMoveUnit(float direction)
     {
-        RpcMovePlayer(direction);
+        RpcMoveUnit(direction);
     }
 
     [Server]
@@ -127,7 +127,7 @@ public class DebugUnit : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcMovePlayer(float direction)
+    private void RpcMoveUnit(float direction)
     {
         Vector3 pos = transform.position;
 
