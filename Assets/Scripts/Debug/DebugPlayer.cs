@@ -44,7 +44,7 @@ public class DebugPlayer : NetworkBehaviour
 
     #region Unity Functions
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (!hasAuthority) return;
 
@@ -55,7 +55,7 @@ public class DebugPlayer : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"I see {other.name}");
+        DebugPlayer player = other.GetComponent<DebugPlayer>();
     }
 
     #endregion
@@ -94,7 +94,7 @@ public class DebugPlayer : NetworkBehaviour
     {
         Vector3 pos = transform.position;
 
-        pos.x += direction * speed * Time.deltaTime;
+        pos.x += direction * speed * Time.fixedTime;
 
         transform.position = pos;
     }
