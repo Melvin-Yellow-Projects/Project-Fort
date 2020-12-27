@@ -67,7 +67,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   displayNameText: {fileID: 283559389199229658}
-  speed: 30
+  speed: 0.25
 --- !u!54 &8934094658656896551
 Rigidbody:
   m_ObjectHideFlags: 0
