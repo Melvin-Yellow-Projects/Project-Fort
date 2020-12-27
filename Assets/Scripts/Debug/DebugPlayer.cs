@@ -88,7 +88,7 @@ public class DebugPlayer : NetworkBehaviour
     [Server]
     private void ServerSeePlayer(DebugPlayer player)
     {
-        RpcSeePlayer(player);
+        //RpcSeePlayer(player);
 
         if (!hasAuthority) return;
 
@@ -100,7 +100,7 @@ public class DebugPlayer : NetworkBehaviour
     [Server]
     private void ServerHidePlayer(DebugPlayer player)
     {
-        RpcSeePlayer(player);
+        //RpcSeePlayer(player);
 
         if (!hasAuthority) return;
 
@@ -135,25 +135,25 @@ public class DebugPlayer : NetworkBehaviour
         transform.position = pos;
     }
 
-    [ClientRpc]
-    private void RpcSeePlayer(DebugPlayer player)
-    {
-        if (!hasAuthority) return;
+    //[ClientRpc]
+    //private void RpcSeePlayer(DebugPlayer player)
+    //{
+    //    if (!hasAuthority) return;
 
-        player.playerBody.SetActive(true);
+    //    player.playerBody.SetActive(true);
 
-        Debug.Log($"I can now see {player.name}!");
-    }
+    //    Debug.Log($"I can now see {player.name}!");
+    //}
 
-    [ClientRpc]
-    private void RpcHidePlayer(DebugPlayer player)
-    {
-        if (!hasAuthority) return;
+    //[ClientRpc]
+    //private void RpcHidePlayer(DebugPlayer player)
+    //{
+    //    if (!hasAuthority) return;
 
-        player.playerBody.SetActive(false);
+    //    player.playerBody.SetActive(false);
 
-        Debug.Log($"I can now see {player.name}!");
-    }
+    //    Debug.Log($"I can now see {player.name}!");
+    //}
 
     #endregion
 
