@@ -88,10 +88,11 @@ public class DebugPlayer : NetworkBehaviour
     [Server]
     private void ServerSeePlayer(DebugPlayer player)
     {
-        //RpcSeePlayer(player);
+        RpcSeePlayer(player.netIdentity);
 
         if (!hasAuthority) return;
 
+        player.displayNameText.gameObject.SetActive(true);
         player.playerBody.SetActive(true);
 
         Debug.Log($"I am the server player and I can now see {player.name}!");
@@ -100,10 +101,11 @@ public class DebugPlayer : NetworkBehaviour
     [Server]
     private void ServerHidePlayer(DebugPlayer player)
     {
-        //RpcSeePlayer(player);
+        RpcHidePlayer(player.netIdentity);
 
         if (!hasAuthority) return;
 
+        player.displayNameText.gameObject.SetActive(false);
         player.playerBody.SetActive(false);
 
         Debug.Log($"I am the server player and I can no longer see {player.name}..");
@@ -135,25 +137,27 @@ public class DebugPlayer : NetworkBehaviour
         transform.position = pos;
     }
 
-    //[ClientRpc]
-    //private void RpcSeePlayer(DebugPlayer player)
-    //{
-    //    if (!hasAuthority) return;
+    [ClientRpc]
+    private void RpcSeePlayer(NetworkIdentity playerIdentity)
+    {
+        if (!hasAuthority) return;
 
-    //    player.playerBody.SetActive(true);
+        // spawn player
+        Instantiate(playerIdentity);
 
-    //    Debug.Log($"I can now see {player.name}!");
-    //}
+        Debug.Log($"I can now see {playerIdentity.name}!");
+    }
 
-    //[ClientRpc]
-    //private void RpcHidePlayer(DebugPlayer player)
-    //{
-    //    if (!hasAuthority) return;
+    [ClientRpc]
+    private void RpcHidePlayer(NetworkIdentity playerIdentity)
+    {
+        if (!hasAuthority) return;
 
-    //    player.playerBody.SetActive(false);
+        // destroy player
+        Destroy(playerIdentity);
 
-    //    Debug.Log($"I can now see {player.name}!");
-    //}
+        Debug.Log($"I can now see {playerIdentity.name}!");
+    }
 
     #endregion
 
