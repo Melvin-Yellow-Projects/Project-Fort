@@ -37,6 +37,7 @@ public class DebugUnit : NetworkBehaviour
         set
         {
             displayName = value;
+            //displayNameText.text = value;
         }
     }
 
@@ -46,7 +47,7 @@ public class DebugUnit : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!hasAuthority) return; // HACK: could be replaced with a [clientcallback] or something
+        if (!hasAuthority) return;
 
         if (Input.GetKey("a")) CmdMoveUnit(-1);
         if (Input.GetKey("d")) CmdMoveUnit(1);
@@ -57,7 +58,7 @@ public class DebugUnit : NetworkBehaviour
     {
         DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
 
-        ServerSeeUnit(otherUnit);
+        ServerShowUnit(otherUnit);
     }
 
     [ServerCallback]
@@ -72,40 +73,43 @@ public class DebugUnit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
+    public override void OnStartServer()
+    {
+        DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
+    }
+
     [Command]
     private void CmdMoveUnit(float direction)
     {
-        if (!hasAuthority) return;
-
         RpcMoveUnit(direction);
     }
 
     [Server]
-    private void ServerSeeUnit(DebugUnit unit)
+    private void ServerShowUnit(DebugUnit unit)
     {
-        //RpcSeeUnit(unit.netIdentity);
-
-        //TargetSeeUnit(unit.netIdentity);
-
-        if (!hasAuthority) return;
-
-        unit.displayNameText.gameObject.SetActive(true);
-        unit.unitBody.SetActive(true);
-
-        Debug.Log($"I am the server unit and I can now see {unit.name}!");
+        if (hasAuthority) // shows unit for host
+        {
+            unit.displayNameText.gameObject.SetActive(true);
+            unit.unitBody.SetActive(true);
+        }
+        else
+        {
+            TargetShowUnit(connectionToClient, unit.netIdentity);
+        }
     }
 
     [Server]
     private void ServerHideUnit(DebugUnit unit)
     {
-        //RpcHideUnit(unit.netIdentity);
-
-        if (!hasAuthority) return;
-
-        unit.displayNameText.gameObject.SetActive(false);
-        unit.unitBody.SetActive(false);
-
-        Debug.Log($"I am the server unit and I can no longer see {unit.name}..");
+        if (hasAuthority) // hides unit for host
+        {
+            unit.displayNameText.gameObject.SetActive(false);
+            unit.unitBody.SetActive(false);
+        }
+        else
+        {
+            TargetHideUnit(connectionToClient, unit.netIdentity);
+        }
     }
 
     #endregion
@@ -114,17 +118,9 @@ public class DebugUnit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
+        if (!isClientOnly) return;
 
-        if (hasAuthority)
-        {
-            displayNameText.gameObject.SetActive(true);
-            unitBody.SetActive(true);
-        }
-        else
-        {
-            NetworkServer.UnSpawn(gameObject);
-        }
+        DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
     }
 
     public override void OnStopClient()
@@ -143,30 +139,20 @@ public class DebugUnit : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetSeeUnit()
+    private void TargetShowUnit(NetworkConnection target, NetworkIdentity unitIdentity)
     {
+        DebugUnit unit = unitIdentity.GetComponent<DebugUnit>();
 
+        Debug.Log($"I need to show unit{unit.name}");
     }
 
-    //[ClientRpc]
-    //private void RpcSeeUnit(NetworkIdentity unitIdentity)
-    //{
-    //    if (!hasAuthority) return;
+    [TargetRpc]
+    private void TargetHideUnit(NetworkConnection target, NetworkIdentity unitIdentity)
+    {
+        DebugUnit unit = unitIdentity.GetComponent<DebugUnit>();
 
-    //    NetworkServer.Spawn(unitIdentity.gameObject);
-
-    //    Debug.Log($"I can now see {unitIdentity.name}!");
-    //}
-
-    //[ClientRpc]
-    //private void RpcHideUnit(NetworkIdentity unitIdentity)
-    //{
-    //    if (!hasAuthority) return;
-
-    //    NetworkServer.UnSpawn(unitIdentity.gameObject);
-
-    //    Debug.Log($"I can no longer see {unitIdentity.name}..");
-    //}
+        Debug.Log($"I need to hide unit{unit.name}");
+    }
 
     #endregion
     /************************************************************/
