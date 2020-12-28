@@ -73,11 +73,6 @@ public class DebugUnit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    public override void OnStartServer()
-    {
-        DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
-    }
-
     [Command]
     private void CmdMoveUnit(float direction)
     {
@@ -118,9 +113,9 @@ public class DebugUnit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (!isClientOnly) return;
-
         DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
+
+        if (!hasAuthority) return;
     }
 
     public override void OnStopClient()
