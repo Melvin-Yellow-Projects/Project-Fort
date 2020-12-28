@@ -22,7 +22,7 @@ public class DebugUnit : NetworkBehaviour
     [SyncVar(hook = nameof(HookOnDisplayName))]
     string displayName;
 
-    GameObject prefab = null;
+    //GameObject prefab = null;
 
     #endregion
     /************************************************************/
@@ -78,7 +78,10 @@ public class DebugUnit : NetworkBehaviour
     [Server]
     public void RegisterPrefab(GameObject prefab)
     {
-        this.prefab = prefab;
+        ClientScene.UnregisterPrefab(prefab);
+
+        //this.prefab = prefab;
+        //System.Guid assetId = this.netIdentity.assetId;
         ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
     }
 
@@ -175,7 +178,7 @@ public class DebugUnit : NetworkBehaviour
     public GameObject HandleSpawn(SpawnMessage msg)
     {
         Debug.Log("Calling Custom Spawn Method");
-        return Instantiate(prefab, msg.position, msg.rotation);
+        return Instantiate(gameObject, msg.position, msg.rotation);
     }
 
     public void HandleUnSpawn(GameObject spawned)
