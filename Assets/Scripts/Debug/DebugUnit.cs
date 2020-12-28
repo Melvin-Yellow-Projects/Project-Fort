@@ -73,6 +73,11 @@ public class DebugUnit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
+    public override void OnStartServer()
+    {
+        Debug.Log("Hi");
+    }
+
     [Command]
     private void CmdMoveUnit(float direction)
     {

@@ -30,7 +30,7 @@ public class DebugNetworkManager : NetworkManager
 
         DebugUnit unit = Instantiate(unitPrefab);
 
-        NetworkServer.Spawn(unit.gameObject, conn); // FIXME: remove this
+        //NetworkServer.Spawn(unit.gameObject, conn); // FIXME: remove this
 
         unit.DisplayName = $"Player {Players.Count}";
     }

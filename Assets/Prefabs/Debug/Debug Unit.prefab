@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2533082967054051955}
   - component: {fileID: 7454889795743140698}
   - component: {fileID: 8934094658656896551}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Debug Unit
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 7859532071852581622}
   - component: {fileID: 3098754634103369452}
   - component: {fileID: 283559389199229658}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -327,7 +327,7 @@ GameObject:
   - component: {fileID: 8217655013759989043}
   - component: {fileID: 2267948022118501228}
   - component: {fileID: 7390123152148019861}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Player Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 5522290348670410755}
   - component: {fileID: 1228455863643559673}
   - component: {fileID: 4188782387408729436}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
