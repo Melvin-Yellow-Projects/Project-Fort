@@ -37,7 +37,6 @@ public class DebugUnit : NetworkBehaviour
         set
         {
             displayName = value;
-            //displayNameText.text = value;
         }
     }
 
@@ -47,7 +46,7 @@ public class DebugUnit : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!hasAuthority) return;
+        if (!hasAuthority) return; // HACK: could be replaced with a [clientcallback] or something
 
         if (Input.GetKey("a")) CmdMoveUnit(-1);
         if (Input.GetKey("d")) CmdMoveUnit(1);
@@ -73,21 +72,20 @@ public class DebugUnit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    public override void OnStartServer()
-    {
-        DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
-    }
-
     [Command]
     private void CmdMoveUnit(float direction)
     {
+        if (!hasAuthority) return;
+
         RpcMoveUnit(direction);
     }
 
     [Server]
     private void ServerSeeUnit(DebugUnit unit)
     {
-        RpcSeeUnit(unit.netIdentity);
+        //RpcSeeUnit(unit.netIdentity);
+
+        //TargetSeeUnit(unit.netIdentity);
 
         if (!hasAuthority) return;
 
@@ -100,7 +98,7 @@ public class DebugUnit : NetworkBehaviour
     [Server]
     private void ServerHideUnit(DebugUnit unit)
     {
-        RpcHideUnit(unit.netIdentity);
+        //RpcHideUnit(unit.netIdentity);
 
         if (!hasAuthority) return;
 
@@ -116,9 +114,17 @@ public class DebugUnit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (!isClientOnly) return;
-
         DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
+
+        if (hasAuthority)
+        {
+            displayNameText.gameObject.SetActive(true);
+            unitBody.SetActive(true);
+        }
+        else
+        {
+            NetworkServer.UnSpawn(gameObject);
+        }
     }
 
     public override void OnStopClient()
@@ -136,25 +142,32 @@ public class DebugUnit : NetworkBehaviour
         transform.position = pos;
     }
 
-    [ClientRpc]
-    private void RpcSeeUnit(NetworkIdentity unitIdentity)
+    [TargetRpc]
+    private void TargetSeeUnit()
     {
-        if (!hasAuthority) return;
 
-        NetworkServer.Spawn(unitIdentity.gameObject);
-
-        Debug.Log($"I can now see {unitIdentity.name}!");
     }
 
-    [ClientRpc]
-    private void RpcHideUnit(NetworkIdentity unitIdentity)
-    {
-        if (!hasAuthority) return;
+    //[ClientRpc]
+    //private void RpcSeeUnit(NetworkIdentity unitIdentity)
+    //{
+    //    if (!hasAuthority) return;
 
-        NetworkServer.UnSpawn(unitIdentity.gameObject);
+    //    NetworkServer.Spawn(unitIdentity.gameObject);
 
-        Debug.Log($"I can no longer see {unitIdentity.name}..");
-    }
+    //    Debug.Log($"I can now see {unitIdentity.name}!");
+    //}
+
+    //[ClientRpc]
+    //private void RpcHideUnit(NetworkIdentity unitIdentity)
+    //{
+    //    if (!hasAuthority) return;
+
+    //    NetworkServer.UnSpawn(unitIdentity.gameObject);
+
+    //    Debug.Log($"I can no longer see {unitIdentity.name}..");
+    //}
+
     #endregion
     /************************************************************/
     #region Handle Functions

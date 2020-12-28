@@ -30,8 +30,6 @@ public class DebugNetworkManager : NetworkManager
 
         DebugUnit unit = Instantiate(unitPrefab);
 
-        NetworkServer.Spawn(unit.gameObject, conn);
-
         unit.DisplayName = $"Player {Players.Count}";
     }
 
