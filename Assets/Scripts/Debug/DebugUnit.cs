@@ -82,8 +82,9 @@ public class DebugUnit : NetworkBehaviour
         //ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
 
         //this.prefab = prefab;
-        
+
         System.Guid assetId = this.netIdentity.assetId;
+        ClientScene.UnregisterSpawnHandler(assetId);
         ClientScene.RegisterSpawnHandler(assetId, HandleSpawn, HandleUnSpawn);
     }
 
