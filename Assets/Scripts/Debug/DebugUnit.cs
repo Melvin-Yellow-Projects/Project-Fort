@@ -11,7 +11,6 @@ public class DebugUnit : NetworkBehaviour
     #region Variables
 
     [Header("Cached References")]
-    [SerializeField] GameObject prefab;
     [SerializeField] TMP_Text displayNameText;
     [SerializeField] GameObject unitBody;
 
@@ -22,6 +21,8 @@ public class DebugUnit : NetworkBehaviour
     /* Other Variables */
     [SyncVar(hook = nameof(HookOnDisplayName))]
     string displayName;
+
+    GameObject prefab = null;
 
     #endregion
     /************************************************************/
@@ -45,11 +46,6 @@ public class DebugUnit : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Unity Functions
-
-    private void Start()
-    {
-        ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
-    }
 
     private void FixedUpdate()
     {
@@ -78,6 +74,13 @@ public class DebugUnit : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Server Functions
+
+    [Server]
+    public void RegisterPrefab(GameObject prefab)
+    {
+        this.prefab = prefab;
+        ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
+    }
 
     [Command]
     private void CmdMoveUnit(float direction)
@@ -172,12 +175,12 @@ public class DebugUnit : NetworkBehaviour
     public GameObject HandleSpawn(SpawnMessage msg)
     {
         Debug.Log("Calling Custom Spawn Method");
-
         return Instantiate(prefab, msg.position, msg.rotation);
     }
 
     public void HandleUnSpawn(GameObject spawned)
     {
+        Debug.Log("Calling Custom UnSpawn Method");
         Destroy(spawned);
     }
 
