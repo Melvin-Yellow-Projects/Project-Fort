@@ -75,19 +75,6 @@ public class DebugUnit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
-    public void RegisterSpawnHandler()
-    {
-        //ClientScene.UnregisterPrefab(prefab);
-        //ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
-
-        //this.prefab = prefab;
-
-        System.Guid assetId = this.netIdentity.assetId;
-        ClientScene.UnregisterSpawnHandler(assetId);
-        ClientScene.RegisterSpawnHandler(assetId, HandleSpawn, HandleUnSpawn);
-    }
-
     [Command]
     private void CmdMoveUnit(float direction)
     {
@@ -176,19 +163,6 @@ public class DebugUnit : NetworkBehaviour
     private void HookOnDisplayName(string oldValue, string newValue)
     {
         displayNameText.text = displayName;
-    }
-
-    public GameObject HandleSpawn(SpawnMessage msg)
-    {
-        Debug.Log("Calling Custom Spawn Method");
-        return null;
-        //return Instantiate(gameObject, msg.position, msg.rotation);
-    }
-
-    public void HandleUnSpawn(GameObject spawned)
-    {
-        Debug.Log("Calling Custom UnSpawn Method");
-        Destroy(spawned);
     }
 
     #endregion

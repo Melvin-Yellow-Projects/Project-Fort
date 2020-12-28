@@ -8,7 +8,7 @@ public class DebugNetworkManager : NetworkManager
     /************************************************************/
     #region Variables
 
-    [SerializeField] DebugUnit unitPrefab;
+    System.Guid unitAssetId;
 
     #endregion
     /************************************************************/
@@ -20,6 +20,16 @@ public class DebugNetworkManager : NetworkManager
     /************************************************************/
     #region Server Functions
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        GameObject unitPrefab = spawnPrefabs[0];
+        unitAssetId = unitPrefab.GetComponent<NetworkIdentity>().assetId;
+        ClientScene.UnregisterSpawnHandler(unitAssetId);
+        ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+    }
+
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
@@ -28,11 +38,9 @@ public class DebugNetworkManager : NetworkManager
 
         Players.Add(player);
 
-        //GameObject unitPrefab = spawnPrefabs[0];
+        DebugUnit unit = Instantiate(spawnPrefabs[0]).GetComponent<DebugUnit>();
 
-        DebugUnit unit = Instantiate(unitPrefab);
-        unit.RegisterSpawnHandler();
-        NetworkServer.Spawn(unit.gameObject, conn);
+        NetworkServer.Spawn(unit.gameObject, unitAssetId, conn);
 
         unit.DisplayName = $"Player {Players.Count}";
     }
@@ -44,8 +52,6 @@ public class DebugNetworkManager : NetworkManager
         Players.Remove(player);
 
         base.OnServerDisconnect(conn);
-
-
     }
 
     public override void OnStopServer()
@@ -55,4 +61,19 @@ public class DebugNetworkManager : NetworkManager
 
     #endregion
     /************************************************************/
+    #region Handle Functions
+
+    public GameObject HandleSpawnUnit(SpawnMessage msg)
+    {
+        Debug.Log("Calling Custom Spawn Method");
+        return Instantiate(spawnPrefabs[0], msg.position, msg.rotation);
+    }
+
+    public void HandleUnSpawnUnit(GameObject spawned)
+    {
+        Debug.Log("Calling Custom UnSpawn Method");
+        Destroy(spawned);
+    }
+
+    #endregion
 }
