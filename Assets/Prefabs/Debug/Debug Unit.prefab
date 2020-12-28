@@ -66,6 +66,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  prefab: {fileID: 2533082967054051953}
   displayNameText: {fileID: 283559389199229658}
   unitBody: {fileID: 7171782581471012597}
   speed: 1
