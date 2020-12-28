@@ -76,13 +76,15 @@ public class DebugUnit : NetworkBehaviour
     #region Server Functions
 
     [Server]
-    public void RegisterPrefab(GameObject prefab)
+    public void RegisterSpawnHandler()
     {
-        ClientScene.UnregisterPrefab(prefab);
+        //ClientScene.UnregisterPrefab(prefab);
+        //ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
 
         //this.prefab = prefab;
-        //System.Guid assetId = this.netIdentity.assetId;
-        ClientScene.RegisterPrefab(prefab, HandleSpawn, HandleUnSpawn);
+        
+        System.Guid assetId = this.netIdentity.assetId;
+        ClientScene.RegisterSpawnHandler(assetId, HandleSpawn, HandleUnSpawn);
     }
 
     [Command]

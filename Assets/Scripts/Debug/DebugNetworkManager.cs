@@ -28,8 +28,10 @@ public class DebugNetworkManager : NetworkManager
 
         Players.Add(player);
 
+        //GameObject unitPrefab = spawnPrefabs[0];
+
         DebugUnit unit = Instantiate(unitPrefab);
-        unit.RegisterPrefab(unit.gameObject);
+        unit.RegisterSpawnHandler();
         NetworkServer.Spawn(unit.gameObject, conn);
 
         unit.DisplayName = $"Player {Players.Count}";
