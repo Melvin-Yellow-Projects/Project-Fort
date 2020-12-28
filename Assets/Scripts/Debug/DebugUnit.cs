@@ -56,7 +56,7 @@ public class DebugUnit : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
-        DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
+        DebugUnit otherUnit = other.GetComponent<DebugUnit>();
 
         ServerShowUnit(otherUnit);
     }
@@ -64,7 +64,7 @@ public class DebugUnit : NetworkBehaviour
     [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
-        DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
+        DebugUnit otherUnit = other.GetComponent<DebugUnit>();
 
         ServerHideUnit(otherUnit);
     }
