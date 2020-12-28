@@ -178,7 +178,8 @@ public class DebugUnit : NetworkBehaviour
     public GameObject HandleSpawn(SpawnMessage msg)
     {
         Debug.Log("Calling Custom Spawn Method");
-        return Instantiate(gameObject, msg.position, msg.rotation);
+        return null;
+        //return Instantiate(gameObject, msg.position, msg.rotation);
     }
 
     public void HandleUnSpawn(GameObject spawned)
