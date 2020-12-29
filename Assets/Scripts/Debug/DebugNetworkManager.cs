@@ -29,7 +29,7 @@ public class DebugNetworkManager : NetworkManager
 
         //ClientScene.UnregisterSpawnHandler(unitAssetId);
 
-        //ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
+        ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
 
         //ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
     }
