@@ -35,8 +35,7 @@ public class DebugNetworkManager : NetworkManager
         //ClientScene.UnregisterSpawnHandler(unitAssetId);
 
         ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
-
-        //ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+        ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
