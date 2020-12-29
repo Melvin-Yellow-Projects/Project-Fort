@@ -25,17 +25,13 @@ public class DebugNetworkManager : NetworkManager
     {
         base.Start();
 
-        Debug.Log($"I had {spawnPrefabs.Count} number of registered prefabs");
-
         unitAssetId = unitPrefab.GetComponent<NetworkIdentity>().assetId;
-        
-        ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
 
         //ClientScene.UnregisterSpawnHandler(unitAssetId);
 
-        //ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+        //ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
 
-        Debug.Log($"I have now {spawnPrefabs.Count} number of registered prefabs");
+        //ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -48,7 +44,7 @@ public class DebugNetworkManager : NetworkManager
 
         DebugUnit unit = Instantiate(unitPrefab).GetComponent<DebugUnit>();
 
-        NetworkServer.Spawn(unit.gameObject, unitAssetId, conn);
+        NetworkServer.Spawn(unit.gameObject, conn);
 
         unit.DisplayName = $"Player {Players.Count}";
     }
