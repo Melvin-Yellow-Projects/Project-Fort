@@ -8,6 +8,7 @@ public class DebugNetworkManager : NetworkManager
     /************************************************************/
     #region Variables
 
+    [SerializeField] GameObject unitPrefab;
     System.Guid unitAssetId;
 
     #endregion
@@ -20,14 +21,21 @@ public class DebugNetworkManager : NetworkManager
     /************************************************************/
     #region Server Functions
 
-    public override void OnStartServer()
+    public override void Start()
     {
-        base.OnStartServer();
+        base.Start();
 
-        GameObject unitPrefab = spawnPrefabs[0];
+        Debug.Log($"I had {spawnPrefabs.Count} number of registered prefabs");
+
         unitAssetId = unitPrefab.GetComponent<NetworkIdentity>().assetId;
-        ClientScene.UnregisterSpawnHandler(unitAssetId);
-        ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+        
+        ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
+
+        //ClientScene.UnregisterSpawnHandler(unitAssetId);
+
+        //ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+
+        Debug.Log($"I have now {spawnPrefabs.Count} number of registered prefabs");
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -38,7 +46,7 @@ public class DebugNetworkManager : NetworkManager
 
         Players.Add(player);
 
-        DebugUnit unit = Instantiate(spawnPrefabs[0]).GetComponent<DebugUnit>();
+        DebugUnit unit = Instantiate(unitPrefab).GetComponent<DebugUnit>();
 
         NetworkServer.Spawn(unit.gameObject, unitAssetId, conn);
 
@@ -66,7 +74,8 @@ public class DebugNetworkManager : NetworkManager
     public GameObject HandleSpawnUnit(SpawnMessage msg)
     {
         Debug.Log("Calling Custom Spawn Method");
-        return Instantiate(spawnPrefabs[0], msg.position, msg.rotation);
+        //return Instantiate(spawnPrefabs[0], msg.position, msg.rotation);
+        return null;
     }
 
     public void HandleUnSpawnUnit(GameObject spawned)
