@@ -21,22 +21,29 @@ public class DebugNetworkManager : NetworkManager
     /************************************************************/
     #region Server Functions
 
-    public override void Start()
+    bool isInitialized = false;
+
+    [Server]
+    public void InitializePrefab()
     {
-        base.Start();
+        if (isInitialized) return;
+
+        isInitialized = true;
 
         unitAssetId = unitPrefab.GetComponent<NetworkIdentity>().assetId;
 
         //ClientScene.UnregisterSpawnHandler(unitAssetId);
 
-        ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
+        //ClientScene.RegisterPrefab(unitPrefab, HandleSpawnUnit, HandleUnSpawnUnit);
 
-        //ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+        ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
+
+        InitializePrefab();
 
         DebugPlayer player = conn.identity.GetComponent<DebugPlayer>();
 
@@ -44,7 +51,7 @@ public class DebugNetworkManager : NetworkManager
 
         DebugUnit unit = Instantiate(unitPrefab).GetComponent<DebugUnit>();
 
-        NetworkServer.Spawn(unit.gameObject, unitAssetId, conn);
+        NetworkServer.Spawn(unitPrefab, unitAssetId, conn);
 
         unit.DisplayName = $"Player {Players.Count}";
     }
