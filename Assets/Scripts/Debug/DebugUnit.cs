@@ -55,21 +55,21 @@ public class DebugUnit : NetworkBehaviour
         if (Input.GetKey("d")) CmdMoveUnit(1);
     }
 
-    [ServerCallback]
-    private void OnTriggerEnter(Collider other)
-    {
-        DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
+    //[ServerCallback]
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
 
-        ServerShowUnit(otherUnit);
-    }
+    //    ServerShowUnit(otherUnit);
+    //}
 
-    [ServerCallback]
-    private void OnTriggerExit(Collider other)
-    {
-        DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
+    //[ServerCallback]
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
 
-        ServerHideUnit(otherUnit);
-    }
+    //    ServerHideUnit(otherUnit);
+    //}
 
     #endregion
     /************************************************************/
