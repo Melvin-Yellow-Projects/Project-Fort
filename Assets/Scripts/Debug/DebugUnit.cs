@@ -167,4 +167,37 @@ public class DebugUnit : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Handle Functions
+
+    [TargetRpc]
+    public void TargetRegisterPrefab(NetworkConnection target)
+    {
+        DebugUnit unitInstance = Instantiate(gameObject).GetComponent<DebugUnit>();
+
+        System.Guid unitAssetId = unitInstance.GetComponent<NetworkIdentity>().assetId;
+
+        //ClientScene.UnregisterSpawnHandler(unitAssetId);
+
+        ClientScene.RegisterPrefab(unitInstance.gameObject, HandleSpawnUnit, HandleUnSpawnUnit);
+        ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
+
+        NetworkServer.Spawn(unitInstance.gameObject, unitAssetId, target);
+
+        //unit.DisplayName = $"Player {Players.Count}";
+    }
+
+    public GameObject HandleSpawnUnit(SpawnMessage msg)
+    {
+        Debug.Log("Calling Custom Spawn Method");
+        //return Instantiate(spawnPrefabs[0], msg.position, msg.rotation);
+        return null;
+    }
+
+    public void HandleUnSpawnUnit(GameObject spawned)
+    {
+        Debug.Log("Calling Custom UnSpawn Method");
+        Destroy(spawned);
+    }
+
+    #endregion
 }
