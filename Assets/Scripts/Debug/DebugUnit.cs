@@ -39,7 +39,6 @@ public class DebugUnit : NetworkBehaviour
         set
         {
             displayName = value;
-            //displayNameText.text = value;
         }
     }
 
@@ -55,22 +54,6 @@ public class DebugUnit : NetworkBehaviour
         if (Input.GetKey("d")) CmdMoveUnit(1);
     }
 
-    //[ServerCallback]
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
-
-    //    ServerShowUnit(otherUnit);
-    //}
-
-    //[ServerCallback]
-    //private void OnTriggerExit(Collider other)
-    //{
-    //    DebugUnit otherUnit = other.GetComponentInParent<DebugUnit>();
-
-    //    ServerHideUnit(otherUnit);
-    //}
-
     #endregion
     /************************************************************/
     #region Server Functions
@@ -79,34 +62,6 @@ public class DebugUnit : NetworkBehaviour
     private void CmdMoveUnit(float direction)
     {
         RpcMoveUnit(direction);
-    }
-
-    [Server]
-    private void ServerShowUnit(DebugUnit unit)
-    {
-        if (hasAuthority) // shows unit for host
-        {
-            unit.displayNameText.gameObject.SetActive(true);
-            unit.unitBody.SetActive(true);
-        }
-        else
-        {
-            TargetShowUnit(connectionToClient, unit.netIdentity);
-        }
-    }
-
-    [Server]
-    private void ServerHideUnit(DebugUnit unit)
-    {
-        if (hasAuthority) // hides unit for host
-        {
-            unit.displayNameText.gameObject.SetActive(false);
-            unit.unitBody.SetActive(false);
-        }
-        else
-        {
-            TargetHideUnit(connectionToClient, unit.netIdentity);
-        }
     }
 
     #endregion
@@ -135,22 +90,6 @@ public class DebugUnit : NetworkBehaviour
         transform.position = pos;
     }
 
-    [TargetRpc]
-    private void TargetShowUnit(NetworkConnection target, NetworkIdentity unitIdentity)
-    {
-        DebugUnit unit = unitIdentity.GetComponent<DebugUnit>();
-
-        Debug.Log($"I need to show unit{unit.name}");
-    }
-
-    [TargetRpc]
-    private void TargetHideUnit(NetworkConnection target, NetworkIdentity unitIdentity)
-    {
-        DebugUnit unit = unitIdentity.GetComponent<DebugUnit>();
-
-        Debug.Log($"I need to hide unit{unit.name}");
-    }
-
     #endregion
     /************************************************************/
     #region Handle Functions
@@ -163,40 +102,6 @@ public class DebugUnit : NetworkBehaviour
     private void HookOnDisplayName(string oldValue, string newValue)
     {
         displayNameText.text = displayName;
-    }
-
-    #endregion
-    /************************************************************/
-    #region Handle Functions
-
-    [TargetRpc]
-    public void TargetRegisterPrefab(NetworkConnection target)
-    {
-        DebugUnit unitInstance = Instantiate(gameObject).GetComponent<DebugUnit>();
-
-        System.Guid unitAssetId = unitInstance.GetComponent<NetworkIdentity>().assetId;
-
-        //ClientScene.UnregisterSpawnHandler(unitAssetId);
-
-        ClientScene.RegisterPrefab(unitInstance.gameObject, HandleSpawnUnit, HandleUnSpawnUnit);
-        ClientScene.RegisterSpawnHandler(unitAssetId, HandleSpawnUnit, HandleUnSpawnUnit);
-
-        NetworkServer.Spawn(unitInstance.gameObject, unitAssetId, target);
-
-        //unit.DisplayName = $"Player {Players.Count}";
-    }
-
-    public GameObject HandleSpawnUnit(SpawnMessage msg)
-    {
-        Debug.Log("Calling Custom Spawn Method");
-        //return Instantiate(spawnPrefabs[0], msg.position, msg.rotation);
-        return null;
-    }
-
-    public void HandleUnSpawnUnit(GameObject spawned)
-    {
-        Debug.Log("Calling Custom UnSpawn Method");
-        Destroy(spawned);
     }
 
     #endregion

@@ -20,8 +20,6 @@ public class DebugNetworkManager : NetworkManager
     /************************************************************/
     #region Server Functions
 
-    bool isInitialized = false;
-
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
