@@ -17,7 +17,7 @@ public class Observer : NetworkVisibility
     /// How often (in seconds) that this object should update the list of observers that can see it.
     /// </summary>
     [Tooltip("How often (in seconds) that this object should update the list of observers that can see it.")]
-    [SerializeField] float visUpdateInterval = 1;
+    [SerializeField] float visUpdateInterval = 0.1f;
 
     #endregion
     /************************************************************/

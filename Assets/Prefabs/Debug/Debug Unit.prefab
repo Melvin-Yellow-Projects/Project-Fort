@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2533082967054051952}
   - component: {fileID: 2533082967054051955}
   - component: {fileID: 7454889795743140698}
-  - component: {fileID: 2108671257111680310}
   - component: {fileID: 8934094658656896551}
   m_Layer: 0
   m_Name: Debug Unit
@@ -70,22 +69,6 @@ MonoBehaviour:
   displayNameText: {fileID: 283559389199229658}
   unitBody: {fileID: 7171782581471012597}
   speed: 1
---- !u!114 &2108671257111680310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2533082967054051953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f78eca2dcb7434abd9a31dd529b83756, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  visRange: 10
-  visUpdateInterval: 0.01
 --- !u!54 &8934094658656896551
 Rigidbody:
   m_ObjectHideFlags: 0
