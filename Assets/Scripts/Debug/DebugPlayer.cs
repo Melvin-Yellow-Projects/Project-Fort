@@ -13,6 +13,12 @@ public class DebugPlayer : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Properties
+
+    public DebugUnit MyUnit { get; [Server] set; }
+
+    #endregion
+    /************************************************************/
     #region Client Functions
 
     public override void OnStartClient()
