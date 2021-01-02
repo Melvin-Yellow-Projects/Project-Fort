@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
-
+using System.Collections;
 public class Observer : NetworkVisibility
 {
     /************************************************************/
@@ -23,9 +23,13 @@ public class Observer : NetworkVisibility
     /************************************************************/
     #region Class Functions
 
-    private void RebuildObservers()
+    private IEnumerator RebuildObservers()
     {
-        netIdentity.RebuildObservers(false);
+        while (true)
+        {
+            netIdentity.RebuildObservers(false);
+            yield return new WaitForSeconds(visUpdateInterval);
+        }
     }
 
     /// <summary>
@@ -63,7 +67,7 @@ public class Observer : NetworkVisibility
     /// <param name="visible">New visibility state.</param>
     public override void OnSetHostVisibility(bool visible)
     {
-        base.OnSetHostVisibility(visible);
+        //base.OnSetHostVisibility(visible);
 
         //foreach (Renderer rend in GetComponentsInChildren<Renderer>())
         //    rend.enabled = visible;
@@ -83,13 +87,16 @@ public class Observer : NetworkVisibility
     [Server]
     public override void OnStartServer()
     {
-        InvokeRepeating(nameof(RebuildObservers), 0, visUpdateInterval);
+        StartCoroutine(RebuildObservers());
+        //InvokeRepeating(nameof(RebuildObservers), 0, visUpdateInterval);
     }
 
     [Server]
     public override void OnStopServer()
     {
-        CancelInvoke(nameof(RebuildObservers));
+        //CancelInvoke(nameof(RebuildObservers));
+
+        StopAllCoroutines();
     }
 
     #endregion
