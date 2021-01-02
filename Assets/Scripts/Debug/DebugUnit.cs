@@ -84,6 +84,8 @@ public class DebugUnit : NetworkBehaviour
     [ClientRpc]
     private void RpcMoveUnit(float direction)
     {
+        Debug.Log("Moving");
+
         Vector3 pos = transform.position;
 
         pos.x += direction * speed;
