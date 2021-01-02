@@ -71,6 +71,7 @@ public class DebugUnit : NetworkBehaviour
 
     public override void OnStartClient()
     {
+        displayNameText.enabled = true;
         DebugPlayer.OnClientPlayerJoined += HandleOnClientPlayerJoined;
 
         if (!hasAuthority) return;
@@ -79,6 +80,7 @@ public class DebugUnit : NetworkBehaviour
     public override void OnStopClient()
     {
         DebugPlayer.OnClientPlayerJoined -= HandleOnClientPlayerJoined;
+        displayNameText.enabled = false;
     }
 
     [ClientRpc]
