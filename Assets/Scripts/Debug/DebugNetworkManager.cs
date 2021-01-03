@@ -31,7 +31,7 @@ public class DebugNetworkManager : NetworkManager
         player.MyUnit = unit;
         NetworkServer.Spawn(unit.gameObject, conn);
 
-        unit.DisplayName = $"Unit {Players.Count}";
+        unit.DisplayName = $"Player {Players.Count}";
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
