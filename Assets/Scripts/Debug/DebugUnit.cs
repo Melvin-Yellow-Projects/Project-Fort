@@ -62,6 +62,9 @@ public class DebugUnit : NetworkBehaviour
     [Command]
     private void CmdMoveUnit(float direction)
     {
+        // validation logic would go here
+
+        MoveUnit(direction);
         RpcMoveUnit(direction);
     }
 
@@ -86,8 +89,15 @@ public class DebugUnit : NetworkBehaviour
     [ClientRpc]
     private void RpcMoveUnit(float direction)
     {
-        Debug.Log("Moving");
+        if (!isClientOnly) return;
+        MoveUnit(direction);
+    }
+    #endregion
+    /************************************************************/
+    #region Class Functions
 
+    private void MoveUnit(float direction)
+    {
         Vector3 pos = transform.position;
 
         pos.x += direction * speed;
