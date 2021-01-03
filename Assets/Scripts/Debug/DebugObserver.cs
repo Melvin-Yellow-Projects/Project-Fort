@@ -74,15 +74,14 @@ public class DebugObserver : NetworkVisibility
 
         base.OnSetHostVisibility(visible);
 
-        //foreach (Renderer rend in GetComponentsInChildren<Renderer>())
-        //    rend.enabled = visible;
+        transform.Find("Player Name").gameObject.SetActive(visible);
     }
 
     private bool DoesConnectionHaveVision(NetworkConnection conn)
     {
-        DebugPlayer player = conn.identity.GetComponent<DebugPlayer>();
+        if (conn == null || conn.identity == null) return false;
 
-        if (!player || player.MyUnit) return false;
+        DebugPlayer player = conn.identity.GetComponent<DebugPlayer>();
 
         return Vector3.Distance(player.MyUnit.transform.position, transform.position) < visRange;
     }
