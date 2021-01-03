@@ -39,7 +39,6 @@ public class DebugUnit : NetworkBehaviour
         set
         {
             displayName = value;
-            //NetworkVisibility
         }
     }
 
