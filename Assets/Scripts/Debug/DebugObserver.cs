@@ -70,9 +70,9 @@ public class DebugObserver : NetworkVisibility
     /// <param name="visible">New visibility state.</param>
     public override void OnSetHostVisibility(bool visible)
     {
-        //if (isClient) return;
+        if (!isClient) return;
 
-        //base.OnSetHostVisibility(visible);
+        base.OnSetHostVisibility(visible);
 
         //foreach (Renderer rend in GetComponentsInChildren<Renderer>())
         //    rend.enabled = visible;
