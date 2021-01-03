@@ -70,6 +70,8 @@ public class DebugObserver : NetworkVisibility
     /// <param name="visible">New visibility state.</param>
     public override void OnSetHostVisibility(bool visible)
     {
+        if (isClient) return;
+
         base.OnSetHostVisibility(visible);
 
         //foreach (Renderer rend in GetComponentsInChildren<Renderer>())
@@ -79,6 +81,8 @@ public class DebugObserver : NetworkVisibility
     private bool DoesConnectionHaveVision(NetworkConnection conn)
     {
         DebugPlayer player = conn.identity.GetComponent<DebugPlayer>();
+
+        if (!player || player.MyUnit) return false;
 
         return Vector3.Distance(player.MyUnit.transform.position, transform.position) < visRange;
     }
