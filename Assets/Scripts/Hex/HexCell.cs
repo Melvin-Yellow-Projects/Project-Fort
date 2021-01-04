@@ -389,10 +389,20 @@ public class HexCell : MonoBehaviour
     /// Enables the HexCellOutline Sprite
     /// </summary>
     /// <param name="color">Color to set the Sprite</param>
-    public void EnableHighlight(Color color)
+    public void EnableHighlight(Color color, bool useColorSetter=false)
     {
         Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
-        highlight.color = color;
+
+        if (useColorSetter)
+        {
+            ColorSetter setter = uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+            StartCoroutine(setter.SetColor(highlight, color));
+        }
+        else
+        {
+            highlight.color = color;
+        }
+
         highlight.enabled = true;
     }
 

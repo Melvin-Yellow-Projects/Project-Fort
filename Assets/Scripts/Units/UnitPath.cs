@@ -12,6 +12,7 @@
  *      Previously known as HexPath.cs
  **/
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -169,6 +170,8 @@ public class UnitPath
     /// <param name="speed"></param>
     public void Show()
     {
+        //StopAllCoroutines();
+
         if (!HasPath)
         {
             if (cursor != null) cursor.DestroyCursor();
@@ -193,6 +196,11 @@ public class UnitPath
 
         cursor.IsSelected = unit.IsSelected;
         cursor.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > movement.MaxMovement);
+    }
+
+    private IEnumerator AnimatePath()
+    {
+        yield return null;
     }
 
     ///// <summary>

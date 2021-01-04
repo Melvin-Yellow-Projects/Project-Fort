@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ColorSetter : MonoBehaviour
 {
@@ -52,11 +53,26 @@ public class ColorSetter : MonoBehaviour
     /// <param name="material">material to change the color of</param>
     /// <param name="color">what color to change the material to</param>
     /// <returns>yields every frame</returns>
-    private IEnumerator SetColor(Material material, Color color)
+    public IEnumerator SetColor(Material material, Color color)
     {
         for (float t = 0; t < 1f; t += Time.deltaTime * changeColorSpeed)
         {
             material.color = Color.Lerp(material.color, color, t);
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Coroutine for setting a image's color
+    /// </summary>
+    /// <param name="image">image to change the color of</param>
+    /// <param name="color">what color to change the image to</param>
+    /// <returns>yields every frame</returns>
+    public IEnumerator SetColor(Image image, Color color)
+    {
+        for (float t = 0; t < 1f; t += Time.deltaTime * changeColorSpeed)
+        {
+            image.color = Color.Lerp(image.color, color, t);
             yield return null;
         }
     }
