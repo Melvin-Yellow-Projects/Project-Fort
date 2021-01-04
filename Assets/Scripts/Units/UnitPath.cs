@@ -144,7 +144,7 @@ public class UnitPath
         }
         else
         {
-            cells.Clear();
+            Clear(clearCursor:false);
             cells = UnitPathfinding.FindPath(unit, StartCell, cell);
         }
     }
@@ -153,7 +153,11 @@ public class UnitPath
     {
         if (numberToRemove > cells.Count) Debug.LogError("Removing more cells than in Path!");
 
-        for (int i = 0; i < numberToRemove; i++) cells.RemoveAt(0);
+        for (int i = 0; i < numberToRemove; i++)
+        {
+            cells.RemoveAt(0);
+            cells[i].DisableHighlight();
+        }
 
         if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell is not Unit's cell!");
     }
@@ -169,7 +173,6 @@ public class UnitPath
         {
             if (cursor != null) cursor.DestroyCursor();
             return;
-            
         }
 
         List<Vector3> points = new List<Vector3>();
@@ -178,14 +181,14 @@ public class UnitPath
         {
             //int turn = (cells[i].Distance - 1) / unit.Speed;
             //cells[i].SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-            //cells[i].EnableHighlight(Color.white);
+            cells[i].EnableHighlight(Color.white);
 
             points.Add(cells[i].Position);
         }
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (cursor) cursor.Redraw(points); 
+        if (cursor) cursor.Redraw(points);
         else cursor = UnitCursor.Initialize(points);
 
         cursor.IsSelected = unit.IsSelected;
@@ -205,12 +208,17 @@ public class UnitPath
     //    }
     //}
 
-    public void Clear()
+    public void Clear(bool clearCursor=true)
     {
         //Hide(); // TODO: i think there needs to be a hide function for the cursor
-        if (cursor != null) cursor.DestroyCursor(); 
+        if (clearCursor && cursor != null) cursor.DestroyCursor();
 
         //moveCost = 0;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            cells[i].DisableHighlight();
+        }
 
         cells.Clear();
     }
