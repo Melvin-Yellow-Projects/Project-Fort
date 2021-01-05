@@ -15,13 +15,16 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using Mirror;
 
-public class GameSession : MonoBehaviour
+public class GameSession : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] private float gameSpeed = 1f;
+
+    [SyncVar]
+    BinaryReader binaryReaderBuffer;
 
     #endregion
 
@@ -31,6 +34,20 @@ public class GameSession : MonoBehaviour
     public static GameSession Singleton { get; private set; }
 
     public bool IsOnline { get; set; } = false;
+
+    public BinaryReader BinaryReaderBuffer
+    {
+        get
+        {
+            return binaryReaderBuffer;
+        }
+
+        [Server]
+        set
+        {
+            binaryReaderBuffer = value;
+        }
+    }
 
     #endregion
 

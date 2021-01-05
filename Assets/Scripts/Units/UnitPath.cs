@@ -15,11 +15,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 
 /// </summary>
-public class UnitPath
+public class UnitPath : MonoBehaviour
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
@@ -101,13 +102,13 @@ public class UnitPath
 
     #endregion
 
-    /********** MARK: Constructors **********/
-    #region Constructor
+    /********** MARK: Public Properties **********/
+    #region Public Properties
 
-    public UnitPath(Unit unit)
+    private void Awake()
     {
-        this.unit = unit;
-        movement = unit.Movement;
+        unit = GetComponent<Unit>();
+        movement = GetComponent<UnitMovement>();
     }
 
     #endregion
@@ -156,8 +157,8 @@ public class UnitPath
 
         for (int i = 0; i < numberToRemove; i++)
         {
+            //cells[0].DisableHighlight();
             cells.RemoveAt(0);
-            cells[i].DisableHighlight();
         }
 
         if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell is not Unit's cell!");
@@ -184,7 +185,7 @@ public class UnitPath
         {
             //int turn = (cells[i].Distance - 1) / unit.Speed;
             //cells[i].SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
-            cells[i].EnableHighlight(Color.white);
+            //cells[i].EnableHighlight(Color.white);
 
             points.Add(cells[i].Position);
         }
@@ -196,11 +197,27 @@ public class UnitPath
 
         cursor.IsSelected = unit.IsSelected;
         cursor.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > movement.MaxMovement);
+
+        //StartCoroutine(AnimatePath());
     }
 
     private IEnumerator AnimatePath()
     {
-        yield return null;
+        Image highlight;
+        ColorSetter setter;
+        int i = 0;
+        while (HasPath && unit.IsSelected)
+        {
+            highlight = cells[i].uiRectTransform.GetChild(0).GetComponent<Image>();
+            setter = cells[i].uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+
+            yield return setter.SetColor(highlight, Color.red, cutoff:0.3f);
+            Debug.Log("Helo");
+            StartCoroutine(setter.SetColor(highlight, Color.white));
+
+            i++;
+            if (i >= cells.Count) i = 0;
+        }
     }
 
     ///// <summary>
@@ -223,10 +240,10 @@ public class UnitPath
 
         //moveCost = 0;
 
-        for (int i = 0; i < cells.Count; i++)
-        {
-            cells[i].DisableHighlight();
-        }
+        //for (int i = 0; i < cells.Count; i++)
+        //{
+        //    cells[i].DisableHighlight();
+        //}
 
         cells.Clear();
     }

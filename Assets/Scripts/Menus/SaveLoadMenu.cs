@@ -55,13 +55,6 @@ public class SaveLoadMenu : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Public Properties **********/
-    # region Public Properties
-
-    public static BinaryReader BinaryReaderBuffer { get; set; }
-
-    #endregion
-
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
@@ -165,7 +158,7 @@ public class SaveLoadMenu : MonoBehaviour
         // if the path is empty or invalid, exit
         if (path == null || !IsPathValid(path)) return;
 
-        BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+        GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
     }
 
     public void SelectItem(string name)
@@ -236,19 +229,19 @@ public class SaveLoadMenu : MonoBehaviour
         // check to see if the path exists
         if (!IsPathValid(path)) return;
 
-        BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+        GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
 
         LoadMapFromReader();
     }
 
     public static void LoadMapFromReader()
     {
-        if (BinaryReaderBuffer == null) return;
+        if (GameSession.Singleton.BinaryReaderBuffer == null) return;
 
-        int header = BinaryReaderBuffer.ReadInt32();
+        int header = GameSession.Singleton.BinaryReaderBuffer.ReadInt32();
         if (header <= mapFileVersion)
         {
-            HexGrid.Singleton.Load(BinaryReaderBuffer, header);
+            HexGrid.Singleton.Load(GameSession.Singleton.BinaryReaderBuffer, header);
 
             MapCamera.ValidatePosition();
         }
@@ -257,8 +250,8 @@ public class SaveLoadMenu : MonoBehaviour
             Debug.LogWarning("Unknown map format " + header);
         }
 
-        BinaryReaderBuffer.Close();
-        BinaryReaderBuffer = null;
+        GameSession.Singleton.BinaryReaderBuffer.Close();
+        GameSession.Singleton.BinaryReaderBuffer = null;
     }
 
     private bool IsPathValid(string path)
@@ -290,20 +283,20 @@ public class SaveLoadMenu : MonoBehaviour
     #endregion
 }
 
-//public static class CustomReadWriteFunctions
-//{
-//    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
-//    {
-//        //writer.Write(mapFileVersion);
-//        //HexGrid.Singleton.Save(writer);
-//    }
+public static class CustomReadWriteFunctions
+{
+    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
+    {
+        //writer.Write(mapFileVersion);
+        //HexGrid.Singleton.Save(writer);
+    }
 
-//    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
-//    {
-//        //int header = BinaryReaderBuffer.ReadInt32();
-//        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
+    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
+    {
+        //int header = BinaryReaderBuffer.ReadInt32();
+        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
 
-//        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
-//        return new BinaryReader(null);
-//    }
-//}
+        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
+        return new BinaryReader(null);
+    }
+}

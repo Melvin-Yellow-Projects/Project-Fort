@@ -68,10 +68,11 @@ public class ColorSetter : MonoBehaviour
     /// <param name="image">image to change the color of</param>
     /// <param name="color">what color to change the image to</param>
     /// <returns>yields every frame</returns>
-    public IEnumerator SetColor(Image image, Color color)
+    public IEnumerator SetColor(Image image, Color color, float cutoff=1f)
     {
-        for (float t = 0; t < 1f; t += Time.deltaTime * changeColorSpeed)
+        for (float t = 0; t < cutoff; t += Time.deltaTime * changeColorSpeed)
         {
+            Debug.Log(t);
             image.color = Color.Lerp(image.color, color, t);
             yield return null;
         }
