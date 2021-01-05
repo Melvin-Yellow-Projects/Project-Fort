@@ -210,15 +210,13 @@ public class SaveLoadMenu : MonoBehaviour
     /// </summary>
 	public void Save(string path)
     {
-        // creates a file stream object encapsulated within the BinaryWriter; the using block then
-        // defines where this object will exist; "these objects have a Dispose method, which is
-        // implicitly invoked when exiting the using scope"; c#/visual studio also struggle to make
-        // sense of this... so ignore warnings or any editor suggestions outside of Unity Editor
-        using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
-        {
-            writer.Write(mapFileVersion);
-            HexGrid.Singleton.Save(writer);
-        }
+        BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
+
+        writer.Write(mapFileVersion);
+
+        HexGrid.Singleton.Save(writer);
+
+        writer.Close();
     }
 
     /// <summary>
@@ -283,20 +281,20 @@ public class SaveLoadMenu : MonoBehaviour
     #endregion
 }
 
-public static class CustomReadWriteFunctions
-{
-    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
-    {
-        //writer.Write(mapFileVersion);
-        //HexGrid.Singleton.Save(writer);
-    }
+//public static class CustomReadWriteFunctions
+//{
+//    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
+//    {
+//        //writer.Write(mapFileVersion);
+//        //HexGrid.Singleton.Save(writer);
+//    }
 
-    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
-    {
-        //int header = BinaryReaderBuffer.ReadInt32();
-        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
+//    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
+//    {
+//        //int header = BinaryReaderBuffer.ReadInt32();
+//        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
 
-        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
-        return new BinaryReader(null);
-    }
-}
+//        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
+//        return new BinaryReader(null);
+//    }
+//}

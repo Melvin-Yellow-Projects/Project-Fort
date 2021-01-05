@@ -23,7 +23,7 @@ public class GameSession : NetworkBehaviour
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] private float gameSpeed = 1f;
 
-    [SyncVar]
+    //[SyncVar]
     BinaryReader binaryReaderBuffer;
 
     #endregion
@@ -42,8 +42,7 @@ public class GameSession : NetworkBehaviour
             return binaryReaderBuffer;
         }
 
-        [Server]
-        set
+        set // TODO: this might need to be a server only attribute
         {
             binaryReaderBuffer = value;
         }
