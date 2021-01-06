@@ -135,20 +135,20 @@ public class Unit : NetworkBehaviour
     /********** MARK: Save/Load Functions **********/
     #region Save/Load Functions
 
-    public void Save(BinaryWriter writer)
+    public void Save(HexBuffer hexBuffer)
     {
-        MyCell.coordinates.Save(writer);
-        writer.Write(Movement.Orientation);
-        writer.Write((byte)MyTeam.TeamIndex);
+        MyCell.coordinates.Save(hexBuffer);
+        hexBuffer.Write(Movement.Orientation);
+        hexBuffer.Write((byte)MyTeam.TeamIndex);
     }
 
-    public static void Load(BinaryReader reader, int header)
+    public static void Load(HexBuffer hexBuffer, int header)
     {
-        HexCoordinates coordinates = HexCoordinates.Load(reader);
-        float orientation = reader.ReadSingle();
+        HexCoordinates coordinates = HexCoordinates.Load(hexBuffer);
+        float orientation = hexBuffer.ReadSingle();
 
         Unit unit = Instantiate(Prefab);
-        if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
+        if (header >= 4) unit.MyTeam.TeamIndex = hexBuffer.ReadByte();
 
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;

@@ -215,11 +215,11 @@ public struct HexCoordinates
 	/// </summary>
 	/// <param name="reader"></param>
 	/// <returns></returns>
-	public static HexCoordinates Load(BinaryReader reader)
+	public static HexCoordinates Load(HexBuffer hexBuffer)
 	{
 		HexCoordinates c;
-		c.x = reader.ReadInt32();
-		c.z = reader.ReadInt32();
+		c.x = hexBuffer.ReadInt32();
+		c.z = hexBuffer.ReadInt32();
 		return c;
 	}
 
@@ -228,10 +228,10 @@ public struct HexCoordinates
 	/// Saves/writes the coordinates to the stream
 	/// </summary>
 	/// <param name="writer"></param>
-	public void Save(BinaryWriter writer)
+	public void Save(HexBuffer buffer)
 	{
-		writer.Write(x);
-		writer.Write(z);
+		buffer.Write(x);
+		buffer.Write(z);
 	}
 
 	#endregion

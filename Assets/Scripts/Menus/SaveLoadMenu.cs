@@ -158,7 +158,7 @@ public class SaveLoadMenu : MonoBehaviour
         // if the path is empty or invalid, exit
         if (path == null || !IsPathValid(path)) return;
 
-        GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+        //GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
     }
 
     public void SelectItem(string name)
@@ -210,13 +210,18 @@ public class SaveLoadMenu : MonoBehaviour
     /// </summary>
 	public void Save(string path)
     {
-        BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
+        //BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
+        GameSession.Singleton.MapHexBuffer = HexBuffer.WriteToHexBuffer(File.Open(path, FileMode.Create));
 
-        writer.Write(mapFileVersion);
+        //writer.Write(mapFileVersion);
+        GameSession.Singleton.MapHexBuffer.Write(mapFileVersion);
 
-        HexGrid.Singleton.Save(writer);
+        //HexGrid.Singleton.Save(writer);
+        HexGrid.Singleton.Save(GameSession.Singleton.MapHexBuffer);
 
-        writer.Close();
+        //writer.Close();
+
+
     }
 
     /// <summary>
@@ -227,19 +232,23 @@ public class SaveLoadMenu : MonoBehaviour
         // check to see if the path exists
         if (!IsPathValid(path)) return;
 
-        GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+        //GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+        GameSession.Singleton.MapHexBuffer = HexBuffer.ReadFromHexBuffer(File.OpenRead(path));
 
         LoadMapFromReader();
     }
 
     public static void LoadMapFromReader()
     {
-        if (GameSession.Singleton.BinaryReaderBuffer == null) return;
+        //if (GameSession.Singleton.BinaryReaderBuffer == null) return;
+        if (GameSession.Singleton.MapHexBuffer.IsEmpty()) return;
 
-        int header = GameSession.Singleton.BinaryReaderBuffer.ReadInt32();
+        //int header = GameSession.Singleton.BinaryReaderBuffer.ReadInt32();
+        int header = GameSession.Singleton.MapHexBuffer.ReadInt32();
         if (header <= mapFileVersion)
         {
-            HexGrid.Singleton.Load(GameSession.Singleton.BinaryReaderBuffer, header);
+            //HexGrid.Singleton.Load(GameSession.Singleton.BinaryReaderBuffer, header);
+            HexGrid.Singleton.Load(GameSession.Singleton.MapHexBuffer, header);
 
             MapCamera.ValidatePosition();
         }
@@ -248,8 +257,9 @@ public class SaveLoadMenu : MonoBehaviour
             Debug.LogWarning("Unknown map format " + header);
         }
 
-        GameSession.Singleton.BinaryReaderBuffer.Close();
-        GameSession.Singleton.BinaryReaderBuffer = null;
+        //GameSession.Singleton.BinaryReaderBuffer.Close();
+        //GameSession.Singleton.BinaryReaderBuffer = null;
+        GameSession.Singleton.MapHexBuffer.Clear();
     }
 
     private bool IsPathValid(string path)
@@ -281,20 +291,23 @@ public class SaveLoadMenu : MonoBehaviour
     #endregion
 }
 
-//public static class CustomReadWriteFunctions
-//{
-//    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
-//    {
-//        //writer.Write(mapFileVersion);
-//        //HexGrid.Singleton.Save(writer);
-//    }
+public static class CustomReadWriteFunctions
+{
+    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
+    {
+        //writer.Write(mapFileVersion);
+        //HexGrid.Singleton.Save(writer);
+    }
 
-//    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
-//    {
-//        //int header = BinaryReaderBuffer.ReadInt32();
-//        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
+    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
+    {
 
-//        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
-//        return new BinaryReader(null);
-//    }
-//}
+        //reader.
+
+        //int header = BinaryReaderBuffer.ReadInt32();
+        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
+
+        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
+        return new BinaryReader(null);
+    }
+}

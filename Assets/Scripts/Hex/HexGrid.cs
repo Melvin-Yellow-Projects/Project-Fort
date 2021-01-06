@@ -430,26 +430,26 @@ public class HexGrid : MonoBehaviour
     /// TODO: comment save
     /// </summary>
     /// <param name="writer"></param>
-    public void Save(BinaryWriter writer)
+    public void Save(HexBuffer hexBuffer)
     {
-        writer.Write(cellCountX);
-        writer.Write(cellCountZ);
+        hexBuffer.Write(cellCountX);
+        hexBuffer.Write(cellCountZ);
 
         for (int i = 0; i < cells.Length; i++)
         {
-            cells[i].Save(writer);
+            cells[i].Save(hexBuffer);
         }
 
-        writer.Write(forts.Count);
+        hexBuffer.Write(forts.Count);
         for (int i = 0; i < forts.Count; i++)
         {
-            forts[i].Save(writer);
+            forts[i].Save(hexBuffer);
         }
 
-        writer.Write(units.Count);
+        hexBuffer.Write(units.Count);
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Save(writer);
+            units[i].Save(hexBuffer);
         }
     }
 
@@ -457,13 +457,13 @@ public class HexGrid : MonoBehaviour
     /// TODO comment load
     /// </summary>
     /// <param name="reader"></param>
-    public void Load(BinaryReader reader, int header)
+    public void Load(HexBuffer hexBuffer, int header)
     {
         ClearUnits();
 
         int x = 20, z = 15;
-        x = reader.ReadInt32();
-        z = reader.ReadInt32();
+        x = hexBuffer.ReadInt32();
+        z = hexBuffer.ReadInt32();
 
         // we dont need to make another map if it's the same size as the existing one
         if (x != cellCountX || z != cellCountZ)
@@ -477,22 +477,22 @@ public class HexGrid : MonoBehaviour
 
         for (int i = 0; i < cells.Length; i++)
         {
-            cells[i].Load(reader, header);
+            cells[i].Load(hexBuffer, header);
         }
         for (int i = 0; i < chunks.Length; i++)
         {
             chunks[i].Refresh();
         }
-        int fortCount = reader.ReadInt32();
+        int fortCount = hexBuffer.ReadInt32();
         for (int i = 0; i < fortCount; i++)
         {
-            Fort.Load(reader, header);
+            Fort.Load(hexBuffer, header);
         }
 
-        int unitCount = reader.ReadInt32();
+        int unitCount = hexBuffer.ReadInt32();
         for (int i = 0; i < unitCount; i++)
         {
-            Unit.Load(reader, header);
+            Unit.Load(hexBuffer, header);
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;

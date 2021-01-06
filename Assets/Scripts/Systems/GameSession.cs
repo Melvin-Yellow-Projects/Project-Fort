@@ -24,7 +24,7 @@ public class GameSession : NetworkBehaviour
     [SerializeField] [Range(0, 10)] private float gameSpeed = 1f;
 
     //[SyncVar]
-    BinaryReader binaryReaderBuffer;
+    HexBuffer mapHexBuffer;
 
     #endregion
 
@@ -35,16 +35,16 @@ public class GameSession : NetworkBehaviour
 
     public bool IsOnline { get; set; } = false;
 
-    public BinaryReader BinaryReaderBuffer
+    public HexBuffer MapHexBuffer
     {
         get
         {
-            return binaryReaderBuffer;
+            return mapHexBuffer;
         }
 
         set // TODO: this might need to be a server only attribute
         {
-            binaryReaderBuffer = value;
+            mapHexBuffer = value;
         }
     }
 
@@ -82,6 +82,8 @@ public class GameSession : NetworkBehaviour
         DontDestroyOnLoad(gameObject);
 
         SceneManager.activeSceneChanged += HandleActiveSceneChanged;
+
+        mapHexBuffer = new HexBuffer();
     }
 
     private void LoadMapFromReader() 

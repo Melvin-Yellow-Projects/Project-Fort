@@ -452,28 +452,30 @@ public class HexCell : MonoBehaviour
     /// file size
     /// </summary>
     /// <param name="writer"></param>
-    public void Save(BinaryWriter writer)
+    public void Save(HexBuffer hexBuffer)
     {
-        writer.Write((byte)terrainTypeIndex);
-        writer.Write((byte)elevation);
-        writer.Write(IsExplored);
+        hexBuffer.Write((byte)terrainTypeIndex);
+        //hexBuffer.Write(terrainTypeIndex);
+        hexBuffer.Write((byte)elevation);
+        //hexBuffer.Write(elevation);
+        hexBuffer.Write(IsExplored);
     }
 
     /// <summary>
     /// TODO: write Load func
     /// </summary>
     /// <param name="reader"></param>
-    public void Load(BinaryReader reader, int header)
+    public void Load(HexBuffer hexBuffer, int header)
     {
         // HACK: this could be replaced with the terrain type index property
-        terrainTypeIndex = reader.ReadByte();
+        terrainTypeIndex = hexBuffer.ReadByte();
         ShaderData.RefreshTerrain(this);
 
-        elevation = reader.ReadByte();
+        elevation = hexBuffer.ReadByte();
 
         // HACK: hardcoded value
         //IsExplored = header >= 3 ? reader.ReadBoolean() : false;
-        IsExplored = reader.ReadBoolean(); IsExplored = true; // FIXME: removed IsExplored value
+        IsExplored = hexBuffer.ReadBoolean(); IsExplored = true; // FIXME: removed IsExplored value
         ShaderData.RefreshVisibility(this);
 
         RefreshPosition();
