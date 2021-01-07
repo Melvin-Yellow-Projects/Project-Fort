@@ -122,20 +122,20 @@ public class Fort : NetworkBehaviour
     /********** MARK: Save/Load Functions **********/
     #region Save/Load Functions
 
-    public void Save(HexBuffer hexBuffer)
+    public void Save(BinaryWriter writer)
     {
-        myCell.coordinates.Save(hexBuffer);
-        hexBuffer.Write(orientation);
-        hexBuffer.Write((byte)MyTeam.TeamIndex);
+        myCell.coordinates.Save(writer);
+        writer.Write(orientation);
+        writer.Write((byte)MyTeam.TeamIndex);
     }
 
-    public static void Load(HexBuffer hexBuffer, int header)
+    public static void Load(BinaryReader reader, int header)
     {
-        HexCoordinates coordinates = HexCoordinates.Load(hexBuffer);
-        float orientation = hexBuffer.ReadSingle();
+        HexCoordinates coordinates = HexCoordinates.Load(reader);
+        float orientation = reader.ReadSingle();
 
         Fort fort = Instantiate(Prefab);
-        if (header >= 4) fort.MyTeam.TeamIndex = hexBuffer.ReadByte();
+        if (header >= 4) fort.MyTeam.TeamIndex = reader.ReadByte();
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;

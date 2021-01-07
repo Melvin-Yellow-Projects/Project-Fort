@@ -23,9 +23,6 @@ public class GameSession : NetworkBehaviour
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] private float gameSpeed = 1f;
 
-    //[SyncVar]
-    HexBuffer mapHexBuffer;
-
     #endregion
 
     /********** MARK: Public Properties **********/
@@ -34,19 +31,6 @@ public class GameSession : NetworkBehaviour
     public static GameSession Singleton { get; private set; }
 
     public bool IsOnline { get; set; } = false;
-
-    public HexBuffer MapHexBuffer
-    {
-        get
-        {
-            return mapHexBuffer;
-        }
-
-        set // TODO: this might need to be a server only attribute
-        {
-            mapHexBuffer = value;
-        }
-    }
 
     #endregion
 
@@ -82,13 +66,6 @@ public class GameSession : NetworkBehaviour
         DontDestroyOnLoad(gameObject);
 
         SceneManager.activeSceneChanged += HandleActiveSceneChanged;
-
-        mapHexBuffer = new HexBuffer();
-    }
-
-    private void LoadMapFromReader() 
-    {
-        SaveLoadMenu.LoadMapFromReader();
     }
 
     /// <summary>
@@ -109,7 +86,7 @@ public class GameSession : NetworkBehaviour
     {
         //if (next.name.StartsWith("Game Scene")) SpawnOfflinePlayer(); // HACK: i think this can be removed
 
-        LoadMapFromReader(); // HACK: is this overkill to do it every scene change?
+        SaveLoadMenu.LoadMapFromReader(); // HACK: is this overkill to do it every scene change?
     }
 
     #endregion

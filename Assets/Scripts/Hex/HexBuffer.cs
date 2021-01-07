@@ -22,6 +22,8 @@ public class HexBuffer
     string stringBuffer;
     //List<BitArray> bitArrayBuffer;
 
+    BinaryWriter writer;
+
     int index;
 
     #endregion
@@ -36,26 +38,21 @@ public class HexBuffer
         index = 0;
     }
 
-    public static HexBuffer WriteToHexBuffer(Stream input)
+    public void WriteTo(FileStream input)
     {
-        HexBuffer hexBuffer = new HexBuffer();
-
-        return hexBuffer;
+        writer = new BinaryWriter(input);
     }
 
-    public static HexBuffer ReadFromHexBuffer(Stream input)
+    public void ReadFrom(FileStream input)
     {
-        HexBuffer hexBuffer = new HexBuffer();
-
         while (input.Position < input.Length)
         {
             int b = input.ReadByte();
-            hexBuffer.Write((byte)b);
+            Write((byte)b, useStream: false);
         }
 
-        hexBuffer.Log();
-
-        return hexBuffer;
+        Log();
+        input.Close();
     }
 
     #endregion
@@ -66,6 +63,7 @@ public class HexBuffer
     public bool IsEmpty()
     {
         return (stringBuffer.Length == 0);
+        //return (stringBuffer.Length == 0 || fileStream == null);
     }
 
     public void Clear()
@@ -73,6 +71,14 @@ public class HexBuffer
         stringBuffer = "";
         //bitArrayBuffer.Clear();
         index = 0;
+
+        Close();
+    }
+
+    public void Close()
+    {
+        if (writer != null) writer.Close();
+        writer = null;
     }
 
     private string ToHexString(byte val)
@@ -97,28 +103,25 @@ public class HexBuffer
     /********** Writing Functions **********/
     #region Writing Functions
 
-    public void Write(byte val)
+    public void Write(byte val, bool useStream=true)
     {
         stringBuffer += ToHexString(val);
+
+        if (useStream) writer.Write(val);
     }
 
-    public void Write(bool val)
+    public void Write(bool val, bool useStream = true)
     {
-        if (val) stringBuffer += "01";
-        else stringBuffer += "00";
+        string hexString = "";
+        if (val) hexString += "01";
+        else hexString += "00";
+
+        stringBuffer += hexString;
+
+        if (useStream) writer.Write(val);
     }
 
-    public void Write(int val)
-    {
-        byte[] arr = BitConverter.GetBytes(val);
-
-        stringBuffer += ToHexString(arr[3]);
-        stringBuffer += ToHexString(arr[2]);
-        stringBuffer += ToHexString(arr[1]);
-        stringBuffer += ToHexString(arr[0]);
-    }
-
-    public void Write(float val)
+    public void Write(int val, bool useStream = true)
     {
         byte[] arr = BitConverter.GetBytes(val);
 
@@ -126,6 +129,34 @@ public class HexBuffer
         stringBuffer += ToHexString(arr[2]);
         stringBuffer += ToHexString(arr[1]);
         stringBuffer += ToHexString(arr[0]);
+
+        if (useStream)
+        {
+            writer.Write(val);
+            //fileStream.WriteByte(arr[3]);
+            //fileStream.WriteByte(arr[2]);
+            //fileStream.WriteByte(arr[1]);
+            //fileStream.WriteByte(arr[0]);
+        }    
+    }
+
+    public void Write(float val, bool useStream = true)
+    {
+        byte[] arr = BitConverter.GetBytes(val);
+
+        stringBuffer += ToHexString(arr[3]);
+        stringBuffer += ToHexString(arr[2]);
+        stringBuffer += ToHexString(arr[1]);
+        stringBuffer += ToHexString(arr[0]);
+
+        if (useStream)
+        {
+            writer.Write(val);
+            //fileStream.WriteByte(arr[3]);
+            //fileStream.WriteByte(arr[2]);
+            //fileStream.WriteByte(arr[1]);
+            //fileStream.WriteByte(arr[0]);
+        }
     }
 
     #endregion
@@ -142,9 +173,9 @@ public class HexBuffer
 
     public bool ReadBoolean()
     {
-        string val = stringBuffer.Substring(index, 1);
-        index += 1;
-        if (val.Equals("1")) return true;
+        string val = stringBuffer.Substring(index, 2);
+        index += 2;
+        if (val.Equals("01")) return true;
         return false;
     }
 

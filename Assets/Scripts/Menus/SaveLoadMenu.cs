@@ -55,6 +55,13 @@ public class SaveLoadMenu : MonoBehaviour
 
     #endregion
 
+    /********** MARK: Properties **********/
+    #region Properties
+
+    private static BinaryReader MapReader;
+
+    #endregion
+
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
@@ -158,7 +165,7 @@ public class SaveLoadMenu : MonoBehaviour
         // if the path is empty or invalid, exit
         if (path == null || !IsPathValid(path)) return;
 
-        //GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
+        MapReader = new BinaryReader(File.OpenRead(path));
     }
 
     public void SelectItem(string name)
@@ -210,18 +217,17 @@ public class SaveLoadMenu : MonoBehaviour
     /// </summary>
 	public void Save(string path)
     {
-        //BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
-        GameSession.Singleton.MapHexBuffer = HexBuffer.WriteToHexBuffer(File.Open(path, FileMode.Create));
+        BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
+        //GameSession.Singleton.MapHexBuffer.WriteTo(File.Open(path, FileMode.Create));
 
-        //writer.Write(mapFileVersion);
-        GameSession.Singleton.MapHexBuffer.Write(mapFileVersion);
+        writer.Write(mapFileVersion);
+        //GameSession.Singleton.MapHexBuffer.Write(mapFileVersion);
 
-        //HexGrid.Singleton.Save(writer);
-        HexGrid.Singleton.Save(GameSession.Singleton.MapHexBuffer);
+        HexGrid.Singleton.Save(writer);
+        //HexGrid.Singleton.Save(GameSession.Singleton.MapHexBuffer);
 
-        //writer.Close();
-
-
+        //GameSession.Singleton.MapHexBuffer.Close();
+        writer.Close();
     }
 
     /// <summary>
@@ -232,23 +238,23 @@ public class SaveLoadMenu : MonoBehaviour
         // check to see if the path exists
         if (!IsPathValid(path)) return;
 
-        //GameSession.Singleton.BinaryReaderBuffer = new BinaryReader(File.OpenRead(path));
-        GameSession.Singleton.MapHexBuffer = HexBuffer.ReadFromHexBuffer(File.OpenRead(path));
+        MapReader = new BinaryReader(File.OpenRead(path));
+        //GameSession.Singleton.MapHexBuffer.ReadFrom(File.OpenRead(path));
 
         LoadMapFromReader();
     }
 
     public static void LoadMapFromReader()
     {
-        //if (GameSession.Singleton.BinaryReaderBuffer == null) return;
-        if (GameSession.Singleton.MapHexBuffer.IsEmpty()) return;
+        if (MapReader == null) return;
+        //if (GameSession.Singleton.MapHexBuffer.IsEmpty()) return;
 
-        //int header = GameSession.Singleton.BinaryReaderBuffer.ReadInt32();
-        int header = GameSession.Singleton.MapHexBuffer.ReadInt32();
+        int header = MapReader.ReadInt32();
+        //int header = GameSession.Singleton.MapHexBuffer.ReadInt32();
         if (header <= mapFileVersion)
         {
-            //HexGrid.Singleton.Load(GameSession.Singleton.BinaryReaderBuffer, header);
-            HexGrid.Singleton.Load(GameSession.Singleton.MapHexBuffer, header);
+            HexGrid.Singleton.Load(MapReader, header);
+            //HexGrid.Singleton.Load(GameSession.Singleton.MapHexBuffer, header);
 
             MapCamera.ValidatePosition();
         }
@@ -257,9 +263,9 @@ public class SaveLoadMenu : MonoBehaviour
             Debug.LogWarning("Unknown map format " + header);
         }
 
-        //GameSession.Singleton.BinaryReaderBuffer.Close();
-        //GameSession.Singleton.BinaryReaderBuffer = null;
-        GameSession.Singleton.MapHexBuffer.Clear();
+        MapReader.Close();
+        MapReader = null;
+        //GameSession.Singleton.MapHexBuffer.Clear();
     }
 
     private bool IsPathValid(string path)
