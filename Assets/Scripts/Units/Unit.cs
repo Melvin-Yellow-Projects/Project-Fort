@@ -153,7 +153,9 @@ public class Unit : NetworkBehaviour
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;
 
-        HexGrid.Singleton.ParentTransformToGrid(unit.transform);
+
+        // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
+        //HexGrid.Singleton.ParentTransformToGrid(unit.transform);
 
         NetworkServer.Spawn(unit.gameObject);
     }

@@ -196,6 +196,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hex Grid
       objectReference: {fileID: 0}
+    - target: {fileID: 5675019671678609604, guid: 43caec3ffa22a400ebf8c051572d3235,
+        type: 3}
+      propertyPath: sceneId
+      value: 1183795378
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 43caec3ffa22a400ebf8c051572d3235, type: 3}
 --- !u!1001 &384089842

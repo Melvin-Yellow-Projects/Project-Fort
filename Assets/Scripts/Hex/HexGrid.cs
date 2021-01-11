@@ -17,13 +17,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using Mirror;
 
 /// <summary>
 /// Map/grid of HexCells
 /// </summary>
-public class HexGrid : MonoBehaviour
+public class HexGrid : NetworkBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     /* Cached References */
@@ -57,8 +58,7 @@ public class HexGrid : MonoBehaviour
     List<Fort> forts = new List<Fort>();
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -81,16 +81,15 @@ public class HexGrid : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Public Properties **********/
+    /************************************************************/
     #region Public Properties
 
     public static HexGrid Singleton { get; private set; }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
-        
+
     protected void Awake()
     {
         if (isEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
@@ -125,8 +124,37 @@ public class HexGrid : MonoBehaviour
     }
 
     #endregion
+    /************************************************************/
+    #region Server Functions
 
-    /********** MARK: Class Functions **********/
+    [Command]
+    private void CmdUpdateCellData(int index)
+    {
+        // TODO: Validation Logic, can this connection see this cell? if not return
+
+        //return HexCellData.Instantiate(cells[index]);
+
+        //Debug.Log($"Logging if connection is equal to var: {conn.Equals(connectionToClient)}");
+
+        TargetUpdateCellData(connectionToClient, HexCellData.Instantiate(cells[index]));
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    [TargetRpc]
+    private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
+    {
+        HexCell cell = cells[data.index];
+
+        cell.Elevation = data.elevation;
+        cell.TerrainTypeIndex = data.terrainTypeIndex;
+        //cell.IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
+    }
+
+    #endregion
+    /************************************************************/
     #region Class Functions
 
     public bool CreateMap(int x, int z)
@@ -346,11 +374,6 @@ public class HexGrid : MonoBehaviour
         return cells[index];
     }
 
-    public HexCell GetCellUnderMouse()
-    {
-        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-    }
-
     /// <summary>
     /// TODO: comment GetCell and touch up vars
     /// </summary>
@@ -366,6 +389,11 @@ public class HexGrid : MonoBehaviour
         Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
         return GetCell(hit.point);
+    }
+
+    public HexCell GetCellUnderMouse()
+    {
+        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
     }
 
     // TODO: comment SetCellLabel
@@ -422,8 +450,7 @@ public class HexGrid : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Save/Load Functions **********/
+    /************************************************************/
     #region Save/Load Functions
 
     /// <summary>
@@ -499,8 +526,7 @@ public class HexGrid : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()

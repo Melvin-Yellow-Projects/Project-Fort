@@ -140,7 +140,8 @@ public class Fort : NetworkBehaviour
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;
 
-        HexGrid.Singleton.ParentTransformToGrid(fort.transform);
+        // HACK: figure out to do with ParentTransformToGrid line (Fort.cs)
+        //HexGrid.Singleton.ParentTransformToGrid(fort.transform);
 
         NetworkServer.Spawn(fort.gameObject);
     }

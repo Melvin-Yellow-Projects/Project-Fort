@@ -13,32 +13,66 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class HexCellData
+/// <summary>
+/// 
+/// </summary>
+public struct HexCellData // HACK: this could be converted to a struct
 {
-    int elevation;
+    /************************************************************/
+    #region Variables
 
-    int terrainTypeIndex;
+    public int index;
 
-    bool explored;
+    public int elevation;
+
+    public int terrainTypeIndex;
+
+    public bool isExplored;
+
+    #endregion
+    /************************************************************/
+    #region Struct Functions
+
+    public static HexCellData Instantiate(HexCell cell)
+    {
+        return new HexCellData
+        {
+            index = cell.Index,
+            elevation = cell.Elevation,
+            terrainTypeIndex = cell.TerrainTypeIndex,
+            isExplored = cell.IsExplored
+        };
+    }
+    #endregion
 }
 
+/// <summary>
+/// 
+/// </summary>
 public static class HexCellDataSerializer
 {
-    public static void WriteBinaryReader(this NetworkWriter writer, HexCellData data)
+    /************************************************************/
+    #region Class Functions
+
+    public static void WriteHexCellData(this NetworkWriter writer, HexCellData data)
     {
-        //writer.Write(mapFileVersion);
-        //HexGrid.Singleton.Save(writer);
+        writer.Write(data.index);
+        writer.Write((byte)data.elevation);
+        writer.Write((byte)data.terrainTypeIndex);
+        writer.WriteBoolean(data.isExplored);
     }
 
-    public static HexCellData ReadBinaryReader(this NetworkReader reader)
+    public static HexCellData ReadHexCellData(this NetworkReader reader)
     {
+        HexCellData data = new HexCellData
+        {
+            index = reader.ReadInt32(),
+            elevation = reader.ReadByte(),
+            terrainTypeIndex = reader.ReadByte(),
+            isExplored = reader.ReadBoolean()
+        };
 
-        //reader.
-
-        //int header = BinaryReaderBuffer.ReadInt32();
-        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
-
-        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
-        return new HexCellData();
+        return data;
     }
+    #endregion
 }

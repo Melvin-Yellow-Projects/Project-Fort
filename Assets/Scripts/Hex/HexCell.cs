@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      HACK: some public variables shoudln't be public 
  **/
 
 using System.Collections;
@@ -220,7 +222,16 @@ public class HexCell : MonoBehaviour
             return myUnitQueue;
         }
     }
-    
+
+    public HexCellData Data
+    {
+        get
+        {
+            HexCellData data = new HexCellData();
+            return data;
+        }
+    }
+
     /// <summary>
     /// TODO: comment ShaderData
     /// </summary>
