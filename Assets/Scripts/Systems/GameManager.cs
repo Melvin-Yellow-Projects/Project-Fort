@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
             Unit unit = HexGrid.Singleton.units[i];
             if (unit.Movement.IsEnRoute)
             {
-                i = 0;
+                i = -1;
                 yield return null;
             }
         }

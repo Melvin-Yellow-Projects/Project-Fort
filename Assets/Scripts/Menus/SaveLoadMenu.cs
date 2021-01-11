@@ -296,24 +296,3 @@ public class SaveLoadMenu : MonoBehaviour
 
     #endregion
 }
-
-public static class CustomReadWriteFunctions
-{
-    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader value)
-    {
-        //writer.Write(mapFileVersion);
-        //HexGrid.Singleton.Save(writer);
-    }
-
-    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
-    {
-
-        //reader.
-
-        //int header = BinaryReaderBuffer.ReadInt32();
-        //HexGrid.Singleton.Load(BinaryReaderBuffer, header);
-
-        //return new MyData(reader.ReadInt32(), reader.ReadSingle());
-        return new BinaryReader(null);
-    }
-}
