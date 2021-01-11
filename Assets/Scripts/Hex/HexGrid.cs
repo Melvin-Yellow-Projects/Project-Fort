@@ -102,9 +102,11 @@ public class HexGrid : NetworkBehaviour
 
         CreateMap(cellCountX, cellCountZ);
 
-        Subscribe();
+        Debug.Log("Created Map, Why am I not working");
 
         UpdateMap();
+
+        Subscribe();
 
         Singleton = this;
     }
@@ -203,6 +205,8 @@ public class HexGrid : NetworkBehaviour
 
     private void UpdateMap()
     {
+        Debug.Log("Am I a Client");
+
         if (!isClientOnly) return;
 
         Debug.Log("Attept Map Update");
