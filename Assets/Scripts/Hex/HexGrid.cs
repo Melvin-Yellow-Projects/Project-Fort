@@ -150,11 +150,9 @@ public class HexGrid : NetworkBehaviour
     [TargetRpc]
     private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
     {
-        HexCell cell = cells[data.index];
-
-        cell.Elevation = data.elevation;
-        cell.TerrainTypeIndex = data.terrainTypeIndex;
-        //cell.IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
+        cells[data.index].Elevation = data.elevation;
+        cells[data.index].TerrainTypeIndex = data.terrainTypeIndex;
+        //cells[data.index].IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
     }
 
     #endregion
