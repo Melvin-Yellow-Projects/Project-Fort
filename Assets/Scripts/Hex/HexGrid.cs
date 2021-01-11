@@ -205,6 +205,8 @@ public class HexGrid : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
+        Debug.Log("Attept Map Update");
+
         for (int index = 0; index < cells.Length; index++)
         {
             CmdUpdateCellData(index);
