@@ -129,7 +129,8 @@ public class GameNetworkManager : NetworkManager
 
         Debug.Log("It's time to spawn a map!");
 
-        //for (int i = 0; i < HumanPlayers.Count; i++) HumanPlayers[i].enabled = true;
+        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
+        for (int i = 0; i < HumanPlayers.Count; i++) HumanPlayers[i].enabled = true;
     }
 
     #endregion
