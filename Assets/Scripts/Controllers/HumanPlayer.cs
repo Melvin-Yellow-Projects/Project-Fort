@@ -233,7 +233,7 @@ public class HumanPlayer : Player
         myUnits.Add(unit);
         unit.Movement.Display.ToggleMovementDisplay();
 
-        Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
+        //Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
     }
 
     protected override void HandleOnStartTurn()

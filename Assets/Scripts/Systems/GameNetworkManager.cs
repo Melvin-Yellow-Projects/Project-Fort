@@ -129,7 +129,7 @@ public class GameNetworkManager : NetworkManager
 
         Debug.Log("It's time to spawn a map!");
 
-        for (int i = 0; i < HumanPlayers.Count; i++) HumanPlayers[i].enabled = true;
+        //for (int i = 0; i < HumanPlayers.Count; i++) HumanPlayers[i].enabled = true;
     }
 
     #endregion

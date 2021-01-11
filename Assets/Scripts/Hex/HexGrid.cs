@@ -140,6 +140,8 @@ public class HexGrid : NetworkBehaviour
 
         //Debug.Log($"Logging if connection is equal to var: {conn.Equals(connectionToClient)}");
 
+        Debug.Log("Hello?");
+
         TargetUpdateCellData(connectionToClient, HexCellData.Instantiate(cells[index]));
     }
 
@@ -150,6 +152,8 @@ public class HexGrid : NetworkBehaviour
     [TargetRpc]
     private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
     {
+        Debug.Log("Oh! Hi!");
+
         cells[data.index].Elevation = data.elevation;
         cells[data.index].TerrainTypeIndex = data.terrainTypeIndex;
         //cells[data.index].IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
