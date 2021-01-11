@@ -64,11 +64,13 @@ public class HexGrid : NetworkBehaviour
     /// <summary>
     /// number of chunk columns
     /// </summary>
+    [SyncVar] // TODO: verify this works
     private int chunkCountX;
 
     /// <summary>
     /// number of chunk rows
     /// </summary>
+    [SyncVar]
     private int chunkCountZ;
 
     // references to the grid's chunks and cells
@@ -101,6 +103,8 @@ public class HexGrid : NetworkBehaviour
         CreateMap(cellCountX, cellCountZ);
 
         Subscribe();
+
+        UpdateMap();
 
         Singleton = this;
     }
@@ -193,6 +197,16 @@ public class HexGrid : NetworkBehaviour
         CreateCells(); // create cells
 
         return true;
+    }
+
+    private void UpdateMap()
+    {
+        if (!isClientOnly) return;
+
+        for (int index = 0; index < cells.Length; index++)
+        {
+            CmdUpdateCellData(index);
+        }
     }
 
     /// <summary>
