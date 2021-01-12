@@ -56,9 +56,9 @@ public static class HexCellDataSerializer
 
     public static void WriteHexCellData(this NetworkWriter writer, HexCellData data)
     {
-        writer.Write(data.index);
-        writer.Write((byte)data.elevation);
-        writer.Write((byte)data.terrainTypeIndex);
+        writer.WriteInt32(data.index);
+        writer.WriteByte((byte)data.elevation);
+        writer.WriteByte((byte)data.terrainTypeIndex);
         writer.WriteBoolean(data.isExplored);
     }
 
