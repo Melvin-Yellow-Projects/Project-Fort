@@ -126,6 +126,8 @@ public class HexGrid : NetworkBehaviour
     [Command]
     private void CmdUpdateCellData(int index)
     {
+        if (!hasAuthority) netIdentity.AssignClientAuthority(connectionToClient);
+
         // TODO: Validation Logic, can this connection see this cell? if not return
 
         //return HexCellData.Instantiate(cells[index]);
@@ -214,11 +216,6 @@ public class HexGrid : NetworkBehaviour
 
     private void UpdateMap()
     {
-        Debug.Log("excuse me?");
-        if (isClient) Debug.Log("I am a Client");
-        if (isClientOnly) Debug.Log("I am ONLY a Client");
-        if (isServer) Debug.Log("I am a Server");
-
         if (!isClientOnly) return;
 
         Debug.Log("Attempt Map Update");
