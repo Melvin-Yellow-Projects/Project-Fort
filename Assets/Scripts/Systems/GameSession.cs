@@ -6,6 +6,7 @@
  * Date Created: March 27, 2020
  * 
  * Additional Comments:
+ *      TODO: The "Date Created" is so off
  **/
 
 using System.Collections;
@@ -26,11 +27,13 @@ public class GameSession : NetworkBehaviour
     #endregion
 
     /********** MARK: Public Properties **********/
-    # region Public Properties
+    #region Public Properties
 
     public static GameSession Singleton { get; private set; }
 
-    public bool IsOnline { get; set; } = false;
+    public bool IsOnline { get; set; } = false; // HACK: this property isn't mega accurate 
+
+    public bool IsEditorMode { get; set; } = false;
 
     #endregion
 
@@ -65,7 +68,7 @@ public class GameSession : NetworkBehaviour
 
         DontDestroyOnLoad(gameObject);
 
-        SceneManager.activeSceneChanged += HandleActiveSceneChanged;
+        //SceneManager.activeSceneChanged += HandleActiveSceneChanged;
     }
 
     /// <summary>
@@ -75,6 +78,11 @@ public class GameSession : NetworkBehaviour
     {
         Singleton.gameSpeed = gameSpeed;
         Destroy(gameObject);
+    }
+
+    public static void GoOffline()
+    {
+        Singleton.IsOnline = false;
     }
 
     #endregion

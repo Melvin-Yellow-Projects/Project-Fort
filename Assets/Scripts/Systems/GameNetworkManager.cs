@@ -122,12 +122,13 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
     {
+        Debug.Log("It's time to spawn a map!");
+        HexGrid.SpawnMap();
+
         if (!SceneLoader.IsGameScene) return;
 
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
-
-        Debug.Log("It's time to spawn a map!");
 
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
         for (int i = 0; i < HumanPlayers.Count; i++) HumanPlayers[i].enabled = true;

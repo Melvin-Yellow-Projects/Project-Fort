@@ -45,13 +45,14 @@ public class SceneLoader : MonoBehaviour
 
         NetworkManager.singleton.autoCreatePlayer = true;
         GameSession.Singleton.IsOnline = false;
+        GameSession.Singleton.IsEditorMode = false;
 
         SceneManager.LoadScene(0);
     }
 
     public static void LoadLocalGame()
     {
-        GameSession.Singleton.IsOnline = false;
+        //GameSession.Singleton.IsOnline = false; // HACK: brute force line of code
         NetworkManager.singleton.StartHost();
 
         LoadSceneByName("Game Scene");
@@ -59,6 +60,7 @@ public class SceneLoader : MonoBehaviour
 
     public static void LoadMapEditorScene()
     {
+        GameSession.Singleton.IsEditorMode = true;
         NetworkManager.singleton.autoCreatePlayer = false;
         NetworkManager.singleton.StartHost();
 
@@ -73,7 +75,6 @@ public class SceneLoader : MonoBehaviour
     {
         GameNetworkManager.Singleton.ServerChangeScene(sceneName);
     }
-
 
     /// <summary>
     /// Quits Game

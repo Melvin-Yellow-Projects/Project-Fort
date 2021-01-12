@@ -39,14 +39,19 @@ public class MainMenu : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Unity Functions **********/
-    #region Unity Functions
+    /********** MARK: Class Functions **********/
+    #region Class Functions
 
     public void OnlineButtonPressed()
     {
         gameObject.SetActive(false);
         preLobbyMenu.SetActive(true);
         GameSession.Singleton.IsOnline = true;
+    }
+
+    public void GoOffline() // HACK: this function is a little off
+    {
+        GameSession.Singleton.IsOnline = false;
     }
 
     #endregion

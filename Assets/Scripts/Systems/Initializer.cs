@@ -28,15 +28,19 @@ public class Initializer : MonoBehaviour
 
     [Header("HexMetrics")]
     [Tooltip("noise source for Hex Metrics")]
-    public Texture2D noiseSource;
+    [SerializeField] Texture2D noiseSource;
+
+    [Header("HexGrid")]
+    [Tooltip("reference to the HexGrid prefab")]
+    [SerializeField] HexGrid hexGridPrefab;
 
     [Header("Fort")]
     [Tooltip("reference to the Fort prefab")]
-    public Fort fortPrefab;
+    [SerializeField] Fort fortPrefab;
 
     [Header("Unit")]
     [Tooltip("reference to the Unit prefab")]
-    public Unit unitPrefab;
+    [SerializeField] Unit unitPrefab;
 
     [Header("UnitCursor")]
     [Tooltip("unit cursor prefab reference")]
@@ -55,20 +59,24 @@ public class Initializer : MonoBehaviour
     protected void Awake()
     {
         // GameMode
-        if (gameModeSettings) GameMode.Singleton = gameModeSettings;
+        if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
         // HexMetrics
-        if (noiseSource) HexMetrics.noiseSource = noiseSource;
+        if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
+
+        // HexGrid
+        if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
 
         // Fort
-        if (fortPrefab) Fort.Prefab = fortPrefab;
+        if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
 
         // Unit
-        if (unitPrefab) Unit.Prefab = unitPrefab;
+        if (unitPrefab && !Unit.Prefab) Unit.Prefab = unitPrefab;
 
         // UnitCursor
-        if (unitCursorPrefab) UnitCursor.Prefab = unitCursorPrefab;
-        if (unitCursorMaterial) UnitCursor.MyMaterial = unitCursorMaterial;
+        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
+        if (unitCursorMaterial && !UnitCursor.MyMaterial)
+            UnitCursor.MyMaterial = unitCursorMaterial;
     }
 
     /// <summary>
@@ -82,6 +90,9 @@ public class Initializer : MonoBehaviour
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
+        // HexGrid
+        if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
+
         // Fort
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
 
@@ -90,7 +101,8 @@ public class Initializer : MonoBehaviour
 
         // UnitCursor
         if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
-        if (unitCursorMaterial && !UnitCursor.MyMaterial) UnitCursor.MyMaterial = unitCursorMaterial;
+        if (unitCursorMaterial && !UnitCursor.MyMaterial)
+            UnitCursor.MyMaterial = unitCursorMaterial;
     }
 
     #endregion

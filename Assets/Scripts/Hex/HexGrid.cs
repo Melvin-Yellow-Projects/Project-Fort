@@ -40,9 +40,6 @@ public class HexGrid : NetworkBehaviour
 
     /* Settings */
     [Header("Settings")]
-    [Tooltip("whether or not the game is set to editor mode")]
-    public bool isEditorMode = false;
-
     [Tooltip("number of cell in the x direction; effectively width")]
     public int cellCountX = 20;
 
@@ -86,41 +83,13 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Public Properties
 
+    public static HexGrid Prefab { get; set; }
+
     public static HexGrid Singleton { get; private set; }
 
     #endregion
     /************************************************************/
     #region Unity Functions
-
-    protected void Awake()
-    {
-        if (isEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE"); ;
-        //terrainMaterial.DisableKeyword("GRID_ON");
-
-        cellShaderData = gameObject.AddComponent<HexCellShaderData>();
-
-        CreateMap(cellCountX, cellCountZ);
-
-        Debug.Log("Created Map, Why am I not working");
-
-        UpdateMap();
-
-        Subscribe();
-
-        Singleton = this;
-    }
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    protected void OnEnable()
-    {
-        //HexMetrics.InitializeHashGrid(seed);
-        ResetVisibility();
-
-        Singleton = this;
-    }
 
     protected void OnDestroy()
     {
@@ -132,6 +101,29 @@ public class HexGrid : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Server Functions
+
+    [Server]
+    public static void SpawnMap()
+    {
+        Singleton = Instantiate(Prefab);
+
+        Singleton.Subscribe();
+
+        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
+        Singleton.cellShaderData = Singleton.gameObject.GetComponent<HexCellShaderData>();
+
+        Singleton.CreateMap(Prefab.cellCountX, Prefab.cellCountZ);
+
+        SaveLoadMenu.LoadMapFromReader();
+
+        NetworkServer.Spawn(Singleton.gameObject);
+
+        Singleton.UpdateMap();
+    }
 
     [Command]
     private void CmdUpdateCellData(int index)
@@ -205,18 +197,16 @@ public class HexGrid : NetworkBehaviour
 
     private void UpdateMap()
     {
+        Debug.Log("excuse me?");
         if (isClient) Debug.Log("I am a Client");
         if (isClientOnly) Debug.Log("I am ONLY a Client");
         if (isServer) Debug.Log("I am a Server");
 
         if (!isClientOnly) return;
 
-        Debug.Log("Attept Map Update");
+        Debug.Log("Attempt Map Update");
 
-        for (int index = 0; index < cells.Length; index++)
-        {
-            CmdUpdateCellData(index);
-        }
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     /// <summary>
