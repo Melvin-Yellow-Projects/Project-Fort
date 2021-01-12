@@ -142,7 +142,7 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("Hello?");
 
-        NetworkConnectionToClient conn = null;
+        NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
 
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
