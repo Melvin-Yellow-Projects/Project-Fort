@@ -142,7 +142,9 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("Hello?");
 
-        TargetUpdateCellData(connectionToClient, HexCellData.Instantiate(cells[index]));
+        NetworkConnectionToClient conn = null;
+
+        TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
 
     #endregion
