@@ -91,7 +91,7 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
-    protected void OnDestroy()
+    private void OnDestroy()
     {
         Unsubscribe();
 
@@ -116,13 +116,11 @@ public class HexGrid : NetworkBehaviour
 
         Singleton.cellShaderData = Singleton.gameObject.GetComponent<HexCellShaderData>();
 
-        Singleton.CreateMap(Prefab.cellCountX, Prefab.cellCountZ);
+        Singleton.CreateMap(Singleton.cellCountX, Singleton.cellCountZ);
 
         SaveLoadMenu.LoadMapFromReader();
 
         NetworkServer.Spawn(Singleton.gameObject);
-
-        Singleton.UpdateMap();
     }
 
     [Command]
@@ -142,6 +140,25 @@ public class HexGrid : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Client Functions
+
+    [Client]
+    public override void OnStartClient()
+    {
+        if (!isClientOnly) return;
+
+        Singleton = this;
+
+        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
+        cellShaderData = gameObject.GetComponent<HexCellShaderData>();
+
+        CreateMap(cellCountX, cellCountZ);
+
+        UpdateMap();
+    }
 
     [TargetRpc]
     private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
