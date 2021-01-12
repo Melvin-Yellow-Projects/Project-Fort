@@ -205,7 +205,9 @@ public class HexGrid : NetworkBehaviour
 
     private void UpdateMap()
     {
-        Debug.Log("Am I a Client");
+        if (isClient) Debug.Log("I am a Client");
+        if (isClientOnly) Debug.Log("I am ONLY a Client");
+        if (isServer) Debug.Log("I am a Server");
 
         if (!isClientOnly) return;
 
