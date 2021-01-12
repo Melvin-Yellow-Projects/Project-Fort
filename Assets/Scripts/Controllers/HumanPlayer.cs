@@ -179,7 +179,7 @@ public class HumanPlayer : Player
         DontDestroyOnLoad(gameObject);
 
         // HACK: this line will fail if the player is an AI
-        GameNetworkManager.Singleton.HumanPlayers.Add(this);
+        GameNetworkManager.HumanPlayers.Add(this);
     }
 
     public override void OnStopClient()
@@ -187,7 +187,7 @@ public class HumanPlayer : Player
         if (!isClientOnly) { return; }
 
         // HACK: this line will fail if the player is an AI
-        GameNetworkManager.Singleton.HumanPlayers.Remove(this);
+        GameNetworkManager.HumanPlayers.Remove(this);
 
         if (!hasAuthority) { return; }
 

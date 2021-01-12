@@ -17,14 +17,13 @@ using UnityEngine.SceneManagement;
 
 public class GameNetworkManager : NetworkManager
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     bool isGameInProgress = false;
 
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -41,8 +40,7 @@ public class GameNetworkManager : NetworkManager
     public static event Action OnClientDisconnectEvent;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static GameNetworkManager Singleton
@@ -53,16 +51,10 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
-    public List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
+    public static List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
-    #region Unity Functions
-
-    #endregion
-
-    /********** MARK: Server Functions **********/
+    /************************************************************/
     #region Server Functions
 
     [Server]
@@ -135,8 +127,7 @@ public class GameNetworkManager : NetworkManager
     }
 
     #endregion
-
-    /********** MARK: Client Functions **********/
+    /************************************************************/
     #region Client Functions
 
     [Client]

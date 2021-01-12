@@ -120,14 +120,19 @@ public class HexGrid : NetworkBehaviour
 
         SaveLoadMenu.LoadMapFromReader();
 
+        // HACK: there should be a better way to do this through maybe the Unit Class
+        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        {
+            NetworkConnection conn = GameNetworkManager.HumanPlayers[i].connectionToClient;
+            Singleton.netIdentity.AssignClientAuthority(conn);
+        }
+
         NetworkServer.Spawn(Singleton.gameObject);
     }
 
     [Command]
     private void CmdUpdateCellData(int index)
     {
-        if (!hasAuthority) netIdentity.AssignClientAuthority(connectionToClient);
-
         // TODO: Validation Logic, can this connection see this cell? if not return
 
         //return HexCellData.Instantiate(cells[index]);
