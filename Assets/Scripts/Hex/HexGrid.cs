@@ -183,8 +183,7 @@ public class HexGrid : NetworkBehaviour
 
     public bool CreateMap(int x, int z)
     {
-        ClearForts();
-        ClearUnits();
+        ClearMap();
 
         // destroy previous cells and chunks
         if (chunks != null)
@@ -459,24 +458,17 @@ public class HexGrid : NetworkBehaviour
 
     private void ClearMap()
     {
-
-    }
-
-    void ClearUnits()
-    {
         for (int i = 0; i < units.Count; i++)
         {
             units[i].Die(isPlayingAnimation: false);
         }
         units.Clear();
-    }
 
-    void ClearForts()
-    {
         for (int i = 0; i < forts.Count; i++)
         {
             Destroy(forts[i].gameObject);
         }
+        forts.Clear();
     }
 
     public void ResetVisibility()
@@ -530,7 +522,7 @@ public class HexGrid : NetworkBehaviour
     /// <param name="reader"></param>
     public void Load(BinaryReader mapReader, int header)
     {
-        ClearUnits();
+        ClearMap();
 
         int x = 20, z = 15;
         x = mapReader.ReadInt32();
