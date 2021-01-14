@@ -132,7 +132,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)]
-    private void CmdUpdateCellData(int index)
+    private void CmdUpdateCellData(int connectionId, int index)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
 
@@ -146,7 +146,7 @@ public class HexGrid : NetworkBehaviour
         // HACK: hardcoded
         //NetworkConnection conn = connectionToClient;
         //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-        NetworkConnectionToClient conn = null;
+        NetworkConnectionToClient conn = new NetworkConnectionToClient(connectionId);
 
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
@@ -232,15 +232,15 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("Attempt Map Update");
 
-        //int connId = 0;
-        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        //{
-        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
+        int connectionId = 0;
+        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        {
+            HumanPlayer player = GameNetworkManager.HumanPlayers[i];
 
-        //    if (player.hasAuthority) connId = player.connectionToClient.connectionId;
-        //}
+            if (player.hasAuthority) connectionId = player.connectionToClient.connectionId;
+        }
 
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(connectionId, index);
     }
 
     /// <summary>
