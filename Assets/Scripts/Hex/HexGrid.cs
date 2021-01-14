@@ -132,17 +132,15 @@ public class HexGrid : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)]
-    private void CmdUpdateCellData(NetworkIdentity playerIdentity, int index, NetworkConnectionToClient sender = null)
+    private void CmdUpdateCellData(int index, NetworkConnectionToClient conn = null)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
-        if (!playerIdentity) return;
-        if (!playerIdentity.GetComponent<HumanPlayer>()) return;
 
         //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-        NetworkConnection conn = playerIdentity.connectionToClient;
+        //NetworkConnection conn = playerIdentity.connectionToClient; 
 
         // HACK: this function could be inside of the HexCell class
-        TargetUpdateCellData(sender, HexCellData.Instantiate(cells[index]));
+        TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
 
     #endregion
@@ -224,14 +222,14 @@ public class HexGrid : NetworkBehaviour
         if (!isClientOnly) return;
 
         // HACK: a client should not be able to send a netIdentity
-        NetworkIdentity playerIdentity = null;
-        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        {
-            HumanPlayer player = GameNetworkManager.HumanPlayers[i];
-            if (player.hasAuthority) playerIdentity = player.netIdentity;
-        }
+        //NetworkIdentity playerIdentity = null;
+        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        //{
+        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
+        //    if (player.hasAuthority) playerIdentity = player.netIdentity;
+        //}
         
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(playerIdentity, index);
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     /// <summary>
