@@ -233,7 +233,7 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("Attempt Map Update");
 
-        NetworkIdentity playerIdentity;
+        NetworkIdentity playerIdentity = null;
         for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
         {
             HumanPlayer player = GameNetworkManager.HumanPlayers[i];
