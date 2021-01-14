@@ -16,7 +16,7 @@ using Mirror;
 /// <summary>
 /// 
 /// </summary>
-public struct HexCellData // HACK: this could be converted to a struct
+public struct HexCellData
 {
     /************************************************************/
     #region Variables

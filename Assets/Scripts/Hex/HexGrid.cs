@@ -136,13 +136,16 @@ public class HexGrid : NetworkBehaviour
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
 
+
         //return HexCellData.Instantiate(cells[index]);
 
         //Debug.Log($"Logging if connection is equal to var: {conn.Equals(connectionToClient)}");
 
         Debug.Log("Hello?");
 
-        NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
+        // HACK: hardcoded
+        NetworkConnection conn = connectionToClient;
+        //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
 
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
@@ -227,6 +230,14 @@ public class HexGrid : NetworkBehaviour
         if (!isClientOnly) return;
 
         Debug.Log("Attempt Map Update");
+
+        //int connId = 0;
+        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        //{
+        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
+
+        //    if (player.hasAuthority) connId = player.connectionToClient.connectionId;
+        //}
 
         for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
