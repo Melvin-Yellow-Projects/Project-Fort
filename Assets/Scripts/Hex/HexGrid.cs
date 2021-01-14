@@ -145,8 +145,8 @@ public class HexGrid : NetworkBehaviour
 
         // HACK: hardcoded
         //NetworkConnection conn = connectionToClient;
-        //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-        NetworkConnectionToClient conn = new NetworkConnectionToClient(connectionId);
+        NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
+        //NetworkConnectionToClient conn = new NetworkConnectionToClient(connectionId);
 
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
