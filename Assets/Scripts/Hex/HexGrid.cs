@@ -132,7 +132,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)]
-    private void CmdUpdateCellData(int index)
+    private void CmdUpdateCellData(NetworkIdentity playerIdentity, int index)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
 
@@ -144,9 +144,10 @@ public class HexGrid : NetworkBehaviour
         Debug.Log("Hello?");
 
         // HACK: hardcoded
-        //NetworkConnection conn = connectionToClient;
-        NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-        //NetworkConnectionToClient conn = new NetworkConnectionToClient(connectionId);
+        //NetworkConnection conn = connectionToClient; // DNE
+        //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
+        //NetworkConnectionToClient conn = new NetworkConnectionToClient(connectionId); // DNE
+        NetworkConnection conn = playerIdentity.connectionToClient;
 
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
@@ -232,15 +233,15 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("Attempt Map Update");
 
-        //int connectionId = 0;
-        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        //{
-        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
+        NetworkIdentity playerIdentity;
+        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        {
+            HumanPlayer player = GameNetworkManager.HumanPlayers[i];
 
-        //    if (player.hasAuthority) connectionId = player.connectionToClient.connectionId;
-        //}
-
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+            if (player.hasAuthority) playerIdentity = player.netIdentity;
+        }
+        
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(playerIdentity, index);
     }
 
     /// <summary>
