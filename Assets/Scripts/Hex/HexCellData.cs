@@ -56,7 +56,7 @@ public static class HexCellDataSerializer
 
     public static void WriteHexCellData(this NetworkWriter writer, HexCellData data)
     {
-        writer.WriteInt32(data.index);
+        writer.WriteInt32(data.index); // HACK not needed
         writer.WriteByte((byte)data.elevation);
         writer.WriteByte((byte)data.terrainTypeIndex);
         writer.WriteBoolean(data.isExplored);

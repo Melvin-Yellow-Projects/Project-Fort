@@ -132,7 +132,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)]
-    private void CmdUpdateCellData(NetworkIdentity playerIdentity, int index)
+    private void CmdUpdateCellData(NetworkIdentity playerIdentity, int index, NetworkConnectionToClient sender = null)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
         if (!playerIdentity) return;
@@ -141,7 +141,8 @@ public class HexGrid : NetworkBehaviour
         //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
         NetworkConnection conn = playerIdentity.connectionToClient;
 
-        TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
+        // HACK: this function could be inside of the HexCell class
+        TargetUpdateCellData(sender, HexCellData.Instantiate(cells[index]));
     }
 
     #endregion
