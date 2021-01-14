@@ -132,7 +132,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)]
-    private void CmdUpdateCellData(int connectionId, int index)
+    private void CmdUpdateCellData(int index)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
 
@@ -232,15 +232,15 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("Attempt Map Update");
 
-        int connectionId = 0;
-        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        {
-            HumanPlayer player = GameNetworkManager.HumanPlayers[i];
+        //int connectionId = 0;
+        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        //{
+        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
 
-            if (player.hasAuthority) connectionId = player.connectionToClient.connectionId;
-        }
+        //    if (player.hasAuthority) connectionId = player.connectionToClient.connectionId;
+        //}
 
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(connectionId, index);
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     /// <summary>
