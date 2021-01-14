@@ -135,18 +135,10 @@ public class HexGrid : NetworkBehaviour
     private void CmdUpdateCellData(NetworkIdentity playerIdentity, int index)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
+        if (!playerIdentity) return;
+        if (!playerIdentity.GetComponent<HumanPlayer>()) return;
 
-
-        //return HexCellData.Instantiate(cells[index]);
-
-        //Debug.Log($"Logging if connection is equal to var: {conn.Equals(connectionToClient)}");
-
-        Debug.Log("Hello?");
-
-        // HACK: hardcoded
-        //NetworkConnection conn = connectionToClient; // DNE
         //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-        //NetworkConnectionToClient conn = new NetworkConnectionToClient(connectionId); // DNE
         NetworkConnection conn = playerIdentity.connectionToClient;
 
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
@@ -231,13 +223,11 @@ public class HexGrid : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        Debug.Log("Attempt Map Update");
-
+        // HACK: a client should not be able to send a netIdentity
         NetworkIdentity playerIdentity = null;
         for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
         {
             HumanPlayer player = GameNetworkManager.HumanPlayers[i];
-
             if (player.hasAuthority) playerIdentity = player.netIdentity;
         }
         
@@ -465,6 +455,11 @@ public class HexGrid : NetworkBehaviour
         {
             units[i].Movement.Path.Clear();
         }
+    }
+
+    private void ClearMap()
+    {
+
     }
 
     void ClearUnits()
