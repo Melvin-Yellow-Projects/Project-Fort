@@ -11,10 +11,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class UnitMovement : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     // HACK: this needs to be configurable
@@ -25,13 +26,13 @@ public class UnitMovement : MonoBehaviour
     const int visionRange = 100;
     //const int movesPerStep = 1;
 
+    [SyncVar(hook = nameof(HookOnMyCell))]
     public HexCell myCell; // HACK: why is this public?
 
     float orientation;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public Unit MyUnit { get; private set; }
@@ -145,11 +146,10 @@ public class UnitMovement : MonoBehaviour
             }
             Path.Clear();
         }
-    } 
+    }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Awake()
@@ -170,8 +170,7 @@ public class UnitMovement : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void DoAction()
@@ -386,8 +385,7 @@ public class UnitMovement : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()
@@ -428,9 +426,13 @@ public class UnitMovement : MonoBehaviour
         Path.Clear();
     }
 
-    #endregion
+    private void HookOnMyCell(HexCell oldValue, HexCell newValue)
+    {
+        if (myCell) MyCell = myCell;
+    }
 
-    /********** MARK: Debug **********/
+    #endregion
+    /************************************************************/
     #region Debug
 
     ///// <summary>
@@ -467,5 +469,4 @@ public class UnitMovement : MonoBehaviour
     //}
 
     #endregion
-
 }

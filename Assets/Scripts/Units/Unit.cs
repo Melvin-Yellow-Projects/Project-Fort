@@ -26,14 +26,13 @@ using Mirror;
 [RequireComponent(typeof(UnitDisplay))]
 public class Unit : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     bool isSelected = false;
 
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -51,8 +50,7 @@ public class Unit : NetworkBehaviour
     public static event Action<Unit> OnUnitDepawned;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static Unit Prefab { get; set; }
@@ -91,8 +89,7 @@ public class Unit : NetworkBehaviour
     }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Awake()
@@ -114,8 +111,7 @@ public class Unit : NetworkBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void ValidateLocation()
@@ -131,8 +127,7 @@ public class Unit : NetworkBehaviour
     }
 
     #endregion
-
-    /********** MARK: Save/Load Functions **********/
+    /************************************************************/
     #region Save/Load Functions
 
     public void Save(BinaryWriter writer)
@@ -160,7 +155,6 @@ public class Unit : NetworkBehaviour
     }
 
     #endregion
-
 }
 
 
