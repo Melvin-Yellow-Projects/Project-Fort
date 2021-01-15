@@ -21,17 +21,16 @@ using Mirror;
 [RequireComponent(typeof(Team), typeof(ColorSetter))]
 public class Fort : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
-    //[SyncVar]
+    [SyncVar]
     HexCell myCell = null;
 
     float orientation;
 
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -49,8 +48,7 @@ public class Fort : NetworkBehaviour
     //public static event Action OnFortCaptured;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static Fort Prefab { get; set; }
@@ -63,11 +61,11 @@ public class Fort : NetworkBehaviour
         {
             return myCell;
         }
+
+        //[Server]
         set
         {
-            myCell = value;
-            myCell.MyFort = this;
-            ValidateLocation();
+            SetMyCell(value);
         }
     }
 
@@ -85,8 +83,7 @@ public class Fort : NetworkBehaviour
     }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Awake()
@@ -110,8 +107,27 @@ public class Fort : NetworkBehaviour
     }
 
     #endregion
+    /************************************************************/
+    #region Server Functions
 
-    /********** MARK: Class Functions **********/
+    //private void ServerSetMyCell(HexCell cell)
+    //{
+    //    // TODO: VALIDATION
+    //    RpcSetMyCell(cell);
+    //}
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    //[ClientRpc]
+    //private void RpcSetMyCell(HexCell cell)
+    //{
+    //    SetMyCell(cell);
+    //}
+
+    #endregion
+    /************************************************************/
     #region Class Functions
 
     public void ValidateLocation()
@@ -119,9 +135,15 @@ public class Fort : NetworkBehaviour
         transform.localPosition = myCell.Position;
     }
 
-    #endregion
+    private void SetMyCell(HexCell cell)
+    {
+        myCell = cell;
+        myCell.MyFort = this;
+        ValidateLocation();
+    }
 
-    /********** MARK: Save/Load Functions **********/
+    #endregion
+    /************************************************************/
     #region Save/Load Functions
 
     public void Save(BinaryWriter writer)
@@ -149,8 +171,7 @@ public class Fort : NetworkBehaviour
     }
 
     #endregion
-
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()

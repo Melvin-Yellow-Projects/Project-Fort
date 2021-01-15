@@ -17,7 +17,7 @@ using Mirror;
 
 public class HumanPlayer : Player
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     HexCell currentCell;
@@ -29,8 +29,7 @@ public class HumanPlayer : Player
     Controls controls;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     protected void Start()
@@ -47,10 +46,59 @@ public class HumanPlayer : Player
         UpdateCurrentCell();
         if (selectedUnit) DoPathfinding();
     }
-
     #endregion
 
-    /********** MARK: Input Functions **********/
+    /************************************************************/
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
+    [Command]
+    public void CmdStartGame() // HACK: i dont like this function here
+    {
+        if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+
+        GameNetworkManager.Singleton.ServerStartGame();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    public override void OnStartClient()
+    {
+        // HACK: idk which line works between the following two 
+        if (NetworkServer.active) return;
+        //if (!isClientOnly) return; 
+
+        // HACK: i think this prevents player from being deleted in the next scene
+        DontDestroyOnLoad(gameObject);
+
+        // HACK: this line will fail if the player is an AI
+        GameNetworkManager.HumanPlayers.Add(this);
+    }
+
+    public override void OnStopClient()
+    {
+        if (!isClientOnly) { return; }
+
+        // HACK: this line will fail if the player is an AI
+        GameNetworkManager.HumanPlayers.Remove(this);
+
+        if (!hasAuthority) { return; }
+
+        //Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
+        //Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
+        //Building.AuthorityOnBuildingSpawned -= AuthorityHandleBuildingSpawned;
+        //Building.AuthorityOnBuildingDespawned -= AuthorityHandleBuildingDespawned;
+
+    }
+
+    #endregion
+    /************************************************************/
     #region Input Functions
 
     private void DoSelection(InputAction.CallbackContext context)
@@ -75,8 +123,7 @@ public class HumanPlayer : Player
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     private void UpdateCurrentCell()
@@ -145,61 +192,7 @@ public class HumanPlayer : Player
         if (selectedUnit) selectedUnit.Movement.Path.Clear();
         DeselectUnit();
     }
-
     #endregion
-
-    /********** MARK: Server Functions **********/
-    #region Server Functions
-
-    public override void OnStartServer()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
-    [Command]
-    public void CmdStartGame() // HACK: i dont like this function here
-    {
-        if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
-
-        GameNetworkManager.Singleton.ServerStartGame();
-    }
-
-    #endregion
-
-    /********** MARK: Client Functions **********/
-    #region Client Functions
-
-    public override void OnStartClient()
-    {
-        // HACK: idk which line works between the following two 
-        if (NetworkServer.active) return;
-        //if (!isClientOnly) return; 
-
-        // HACK: i think this prevents player from being deleted in the next scene
-        DontDestroyOnLoad(gameObject);
-
-        // HACK: this line will fail if the player is an AI
-        GameNetworkManager.HumanPlayers.Add(this);
-    }
-
-    public override void OnStopClient()
-    {
-        if (!isClientOnly) { return; }
-
-        // HACK: this line will fail if the player is an AI
-        GameNetworkManager.HumanPlayers.Remove(this);
-
-        if (!hasAuthority) { return; }
-
-        //Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
-        //Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
-        //Building.AuthorityOnBuildingSpawned -= AuthorityHandleBuildingSpawned;
-        //Building.AuthorityOnBuildingDespawned -= AuthorityHandleBuildingDespawned;
-
-    }
-
-    #endregion
-
     /********** MARK: Event Handler Functions **********/
     #region Event Handler Functions
 

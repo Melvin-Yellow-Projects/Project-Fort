@@ -81,7 +81,6 @@ public class HexGrid : NetworkBehaviour
     int unitCount = 0;
 
     #endregion
-
     /************************************************************/
     #region Public Properties
 
@@ -105,7 +104,7 @@ public class HexGrid : NetworkBehaviour
     #region Server Functions
 
     [Server]
-    public static void SpawnMap()
+    public static void ServerSpawnMap()
     {
         Singleton = Instantiate(Prefab);
 
@@ -116,13 +115,22 @@ public class HexGrid : NetworkBehaviour
         else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");
 
+        // fixme: is this done on clients?
         Singleton.cellShaderData = Singleton.gameObject.GetComponent<HexCellShaderData>();
 
         Singleton.CreateMap(Singleton.cellCountX, Singleton.cellCountZ);
+        // HACK: might be a little faster to initialize map size with zero & create map w/ LoadMap()
+        //Singleton.cellCountX = 0;
+        //Singleton.cellCountZ = 0;
 
         SaveLoadMenu.LoadMapFromReader();
 
-        NetworkServer.Spawn(Singleton.gameObject);
+        NetworkServer.Spawn(Singleton.gameObject); 
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
     }
 
     [Command(ignoreAuthority = true)]
@@ -137,6 +145,8 @@ public class HexGrid : NetworkBehaviour
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
 
+    //override onser
+
     #endregion
     /************************************************************/
     #region Client Functions
@@ -145,7 +155,6 @@ public class HexGrid : NetworkBehaviour
     public override void OnStartClient()
     {
         if (!isClientOnly) return;
-
         Singleton = this;
 
         GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
@@ -157,7 +166,8 @@ public class HexGrid : NetworkBehaviour
 
         CreateMap(cellCountX, cellCountZ);
 
-        UpdateMap();
+        Debug.Log("I am a client and I'm fetching the Map!");
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     [TargetRpc]
@@ -207,21 +217,6 @@ public class HexGrid : NetworkBehaviour
         CreateCells(); // create cells
 
         return true;
-    }
-
-    private void UpdateMap()
-    {
-        if (!isClientOnly) return;
-
-        // HACK: a client should not be able to send a netIdentity
-        //NetworkIdentity playerIdentity = null;
-        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        //{
-        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
-        //    if (player.hasAuthority) playerIdentity = player.netIdentity;
-        //}
-        Debug.Log("I am a client and I'm fetching the Map!");
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     /// <summary>

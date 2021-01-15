@@ -115,7 +115,7 @@ public class GameNetworkManager : NetworkManager
     public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
     {
         Debug.Log("It's time to spawn a map!");
-        HexGrid.SpawnMap();
+        HexGrid.ServerSpawnMap();
 
         if (!SceneLoader.IsGameScene) return;
 
