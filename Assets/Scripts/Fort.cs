@@ -24,7 +24,9 @@ public class Fort : NetworkBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
+    [SyncVar]
     HexCell myCell = null;
+
     float orientation;
 
     #endregion
