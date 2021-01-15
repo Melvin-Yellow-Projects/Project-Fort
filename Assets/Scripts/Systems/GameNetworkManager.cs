@@ -17,14 +17,13 @@ using UnityEngine.SceneManagement;
 
 public class GameNetworkManager : NetworkManager
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     bool isGameInProgress = false;
 
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -41,8 +40,7 @@ public class GameNetworkManager : NetworkManager
     public static event Action OnClientDisconnectEvent;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static GameNetworkManager Singleton
@@ -53,29 +51,28 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
-    public List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
+    public static List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
-    #region Unity Functions
-
-    #endregion
-
-    /********** MARK: Server Functions **********/
+    /************************************************************/
     #region Server Functions
 
     [Server]
     public override void OnServerConnect(NetworkConnection conn)
     {
+        if (!GameSession.Singleton.IsOnline) return;
+
         // TODO: make player a spectator
         if (!isGameInProgress) return;
+
         conn.Disconnect();
     }
 
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        if (!autoCreatePlayer) return;
+
         HumanPlayers.Remove(conn.identity.GetComponent<HumanPlayer>());
 
         base.OnServerDisconnect(conn);
@@ -99,14 +96,15 @@ public class GameNetworkManager : NetworkManager
 
         HumanPlayers.Add(player);
 
+        player.MyTeam.TeamIndex = HumanPlayers.Count; // TODO: move to playerInfo
         playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
         playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
     }
 
     [Server]
-    public void ServerStartGame()
+    public void ServerStartGame() // HACK move this into SceneLoader?
     {
-        if (HumanPlayers.Count < 2) return;
+        if (HumanPlayers.Count < 1) return;
 
         isGameInProgress = true;
 
@@ -114,38 +112,25 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public override void OnServerSceneChanged(string sceneName)
+    public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
     {
-        // HACK: string reference
-        if (!SceneManager.GetActiveScene().name.StartsWith("Game Scene")) return;
+        Debug.Log("It's time to spawn a map!");
+        HexGrid.SpawnMap();
+
+        if (!SceneLoader.IsGameScene) return;
 
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
 
-        Debug.Log("It's time to spawn a map!");
-
-        //foreach (RTSPlayer player in Players)
-        //{
-        //    // spawning unit base on server
-        //    Vector3 pos = GetStartPosition().position;
-        //    Quaternion rot = Quaternion.identity;
-        //    GameObject unitBaseInstance = Instantiate(unitBasePrefab, pos, rot);
-        //    UnitBase unitBase = unitBaseInstance.GetComponent<UnitBase>();
-        //    unitBase.SteamId = player.GetComponent<RTSPlayerInfo>().SteamId;
-
-        //    // spawning the small car on server
-        //    pos = unitBase.SpawnPoint.position;
-        //    GameObject smallCarInstance = Instantiate(smallCarPrefab, pos, rot);
-
-        //    // server tells all clients to spawn instance, and sets authority to a connection
-        //    NetworkServer.Spawn(unitBaseInstance, player.connectionToClient);
-        //    NetworkServer.Spawn(smallCarInstance, player.connectionToClient);
-        //}
+        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
+        for (int i = 0; i < HumanPlayers.Count; i++)
+        {
+            if (HumanPlayers[i].hasAuthority) HumanPlayers[i].enabled = true;
+        }
+        // FIXME: this is probably wrong on client ^^^ static event that logs to clients to enable player
     }
-
     #endregion
-
-    /********** MARK: Client Functions **********/
+    /************************************************************/
     #region Client Functions
 
     [Client]
@@ -153,9 +138,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
-        OnClientConnectEvent?.Invoke();
-
-        Debug.Log("Hello! I have connected!"); // HACK: remove this code
+        if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
     [Client]
@@ -163,7 +146,7 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientDisconnect(conn);
 
-        OnClientDisconnectEvent?.Invoke();
+        if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
     public override void OnStopClient()

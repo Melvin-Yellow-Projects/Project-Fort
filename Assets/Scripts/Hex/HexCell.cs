@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      HACK: some public variables shoudln't be public 
  **/
 
 using System.Collections;
@@ -220,7 +222,16 @@ public class HexCell : MonoBehaviour
             return myUnitQueue;
         }
     }
-    
+
+    public HexCellData Data
+    {
+        get
+        {
+            HexCellData data = new HexCellData();
+            return data;
+        }
+    }
+
     /// <summary>
     /// TODO: comment ShaderData
     /// </summary>
@@ -389,10 +400,20 @@ public class HexCell : MonoBehaviour
     /// Enables the HexCellOutline Sprite
     /// </summary>
     /// <param name="color">Color to set the Sprite</param>
-    public void EnableHighlight(Color color)
+    public void EnableHighlight(Color color, bool useColorSetter=false)
     {
         Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
-        highlight.color = color;
+
+        if (useColorSetter)
+        {
+            ColorSetter setter = uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+            StartCoroutine(setter.SetColor(highlight, color));
+        }
+        else
+        {
+            highlight.color = color;
+        }
+
         highlight.enabled = true;
     }
 
@@ -445,7 +466,9 @@ public class HexCell : MonoBehaviour
     public void Save(BinaryWriter writer)
     {
         writer.Write((byte)terrainTypeIndex);
+        //hexBuffer.Write(terrainTypeIndex);
         writer.Write((byte)elevation);
+        //hexBuffer.Write(elevation);
         writer.Write(IsExplored);
     }
 
@@ -462,7 +485,8 @@ public class HexCell : MonoBehaviour
         elevation = reader.ReadByte();
 
         // HACK: hardcoded value
-        IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        //IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        IsExplored = reader.ReadBoolean(); IsExplored = true; // FIXME: removed IsExplored value
         ShaderData.RefreshVisibility(this);
 
         RefreshPosition();

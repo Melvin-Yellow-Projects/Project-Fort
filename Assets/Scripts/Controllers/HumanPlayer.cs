@@ -149,10 +149,15 @@ public class HumanPlayer : Player
     #endregion
 
     /********** MARK: Server Functions **********/
-    #region Client Functions Functions
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     [Command]
-    public void CmdStartGame()
+    public void CmdStartGame() // HACK: i dont like this function here
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
@@ -162,7 +167,7 @@ public class HumanPlayer : Player
     #endregion
 
     /********** MARK: Client Functions **********/
-    #region Client Functions Functions
+    #region Client Functions
 
     public override void OnStartClient()
     {
@@ -174,7 +179,7 @@ public class HumanPlayer : Player
         DontDestroyOnLoad(gameObject);
 
         // HACK: this line will fail if the player is an AI
-        GameNetworkManager.Singleton.HumanPlayers.Add(this);
+        GameNetworkManager.HumanPlayers.Add(this);
     }
 
     public override void OnStopClient()
@@ -182,7 +187,7 @@ public class HumanPlayer : Player
         if (!isClientOnly) { return; }
 
         // HACK: this line will fail if the player is an AI
-        GameNetworkManager.Singleton.HumanPlayers.Remove(this);
+        GameNetworkManager.HumanPlayers.Remove(this);
 
         if (!hasAuthority) { return; }
 
@@ -227,6 +232,8 @@ public class HumanPlayer : Player
 
         myUnits.Add(unit);
         unit.Movement.Display.ToggleMovementDisplay();
+
+        //Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
     }
 
     protected override void HandleOnStartTurn()

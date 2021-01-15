@@ -41,7 +41,7 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int MoveCount { get; set; } = 1;
+    public int MoveCount { get; [Server] set; } = 1;
 
     #endregion
 

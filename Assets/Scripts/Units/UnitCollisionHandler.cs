@@ -44,7 +44,7 @@ public class UnitCollisionHandler : MonoBehaviour
         // HACK: this should be 100% guarenteed because other collisions are disabled
         if (!otherUnit) return;
 
-        Debug.Log($"{MyUnit.name} has collided with {otherUnit.name}");
+        //Debug.Log($"{MyUnit.name} has collided with {otherUnit.name}");
 
         // is the unit on my team?
         if (otherUnit.MyTeam == MyUnit.MyTeam)

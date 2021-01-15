@@ -17,13 +17,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using Mirror;
 
 /// <summary>
 /// Map/grid of HexCells
 /// </summary>
-public class HexGrid : MonoBehaviour
+public class HexGrid : NetworkBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     /* Cached References */
@@ -39,14 +40,14 @@ public class HexGrid : MonoBehaviour
 
     /* Settings */
     [Header("Settings")]
-    [Tooltip("whether or not the game is set to editor mode")]
-    public bool isEditorMode = false;
-
     [Tooltip("number of cell in the x direction; effectively width")]
     public int cellCountX = 20;
 
     [Tooltip("number of cell in the z direction; effectively height")]
     public int cellCountZ = 15;
+
+    [Tooltip("layers to ignore when raycasting")]
+    [SerializeField] LayerMask layersToIgnore; // TODO: this would probably be better as a cell layer
 
     /* Variables */
     public List<Unit> units = new List<Unit>(); // HACK: should not be public
@@ -54,18 +55,19 @@ public class HexGrid : MonoBehaviour
     List<Fort> forts = new List<Fort>();
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
     /// number of chunk columns
     /// </summary>
+    [SyncVar] // TODO: verify this works
     private int chunkCountX;
 
     /// <summary>
     /// number of chunk rows
     /// </summary>
+    [SyncVar]
     private int chunkCountZ;
 
     // references to the grid's chunks and cells
@@ -78,43 +80,18 @@ public class HexGrid : MonoBehaviour
 
     #endregion
 
-    /********** MARK: Public Properties **********/
+    /************************************************************/
     #region Public Properties
 
-    public static HexGrid Singleton { get; set; }
+    public static HexGrid Prefab { get; set; }
+
+    public static HexGrid Singleton { get; private set; }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
-        
-    protected void Awake()
-    {
-        if (isEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE"); ;
-        //terrainMaterial.DisableKeyword("GRID_ON");
 
-        cellShaderData = gameObject.AddComponent<HexCellShaderData>();
-
-        CreateMap(cellCountX, cellCountZ);
-
-        Subscribe();
-
-        Singleton = this;
-    }
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    protected void OnEnable()
-    {
-        //HexMetrics.InitializeHashGrid(seed);
-        ResetVisibility();
-
-        Singleton = this;
-    }
-
-    protected void OnDestroy()
+    private void OnDestroy()
     {
         Unsubscribe();
 
@@ -122,14 +99,88 @@ public class HexGrid : MonoBehaviour
     }
 
     #endregion
+    /************************************************************/
+    #region Server Functions
 
-    /********** MARK: Class Functions **********/
+    [Server]
+    public static void SpawnMap()
+    {
+        Singleton = Instantiate(Prefab);
+
+        Singleton.Subscribe();
+
+        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
+        Singleton.cellShaderData = Singleton.gameObject.GetComponent<HexCellShaderData>();
+
+        Singleton.CreateMap(Singleton.cellCountX, Singleton.cellCountZ);
+
+        SaveLoadMenu.LoadMapFromReader();
+
+        NetworkServer.Spawn(Singleton.gameObject);
+
+        //// HACK: there should be a better way to do this through maybe the Unit Class
+        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        //{
+        //    Debug.Log($"{GameNetworkManager.HumanPlayers[i]}");
+        //    NetworkConnection conn = GameNetworkManager.HumanPlayers[i].connectionToClient;
+        //    Singleton.netIdentity.AssignClientAuthority(conn);
+        //}
+    }
+
+    [Command(ignoreAuthority = true)]
+    private void CmdUpdateCellData(int index, NetworkConnectionToClient conn = null)
+    {
+        // TODO: Validation Logic, can this connection see this cell? if not return
+
+        //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
+        //NetworkConnection conn = playerIdentity.connectionToClient; 
+
+        // HACK: this function could be inside of the HexCell class
+        TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    [Client]
+    public override void OnStartClient()
+    {
+        if (!isClientOnly) return;
+
+        Singleton = this;
+
+        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
+        cellShaderData = gameObject.GetComponent<HexCellShaderData>();
+
+        CreateMap(cellCountX, cellCountZ);
+
+        UpdateMap();
+    }
+
+    [TargetRpc]
+    private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
+    {
+        cells[data.index].Elevation = data.elevation;
+        cells[data.index].TerrainTypeIndex = data.terrainTypeIndex;
+        //cells[data.index].IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
+    }
+
+    #endregion
+    /************************************************************/
     #region Class Functions
 
     public bool CreateMap(int x, int z)
     {
-        ClearForts();
-        ClearUnits();
+        ClearMap();
 
         // destroy previous cells and chunks
         if (chunks != null)
@@ -162,6 +213,21 @@ public class HexGrid : MonoBehaviour
         CreateCells(); // create cells
 
         return true;
+    }
+
+    private void UpdateMap()
+    {
+        if (!isClientOnly) return;
+
+        // HACK: a client should not be able to send a netIdentity
+        //NetworkIdentity playerIdentity = null;
+        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        //{
+        //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
+        //    if (player.hasAuthority) playerIdentity = player.netIdentity;
+        //}
+        Debug.Log("I am a client and I'm fetching the Map!");
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     /// <summary>
@@ -302,6 +368,11 @@ public class HexGrid : MonoBehaviour
         chunk.AddCell(localCellIndex, cell);
     }
 
+    public HexCell GetCell(int index)
+    {
+        return cells[index];
+    }
+
     /// <summary>
     /// Gets the cell within the hex grid given a world position; assumes the position is a legal
     /// position
@@ -343,11 +414,6 @@ public class HexGrid : MonoBehaviour
         return cells[index];
     }
 
-    public HexCell GetCellUnderMouse()
-    {
-        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-    }
-
     /// <summary>
     /// TODO: comment GetCell and touch up vars
     /// </summary>
@@ -357,16 +423,17 @@ public class HexGrid : MonoBehaviour
         RaycastHit hit;
 
         // did we hit anything? then return that HexCell
-        if (Physics.Raycast(inputRay, out hit))
-        {
-            // draw line for 1 second
-            Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
+        if (!Physics.Raycast(inputRay, out hit, 1000, ~layersToIgnore)) return null;
 
-            return GetCell(hit.point);
-        }
+        // draw line for 1 second
+        Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-        // nothing was found
-        return null;
+        return GetCell(hit.point);
+    }
+
+    public HexCell GetCellUnderMouse()
+    {
+        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
     }
 
     // TODO: comment SetCellLabel
@@ -391,21 +458,19 @@ public class HexGrid : MonoBehaviour
         }
     }
 
-    void ClearUnits()
+    private void ClearMap()
     {
         for (int i = 0; i < units.Count; i++)
         {
             units[i].Die(isPlayingAnimation: false);
         }
         units.Clear();
-    }
 
-    void ClearForts()
-    {
         for (int i = 0; i < forts.Count; i++)
         {
             Destroy(forts[i].gameObject);
         }
+        forts.Clear();
     }
 
     public void ResetVisibility()
@@ -423,8 +488,7 @@ public class HexGrid : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Save/Load Functions **********/
+    /************************************************************/
     #region Save/Load Functions
 
     /// <summary>
@@ -458,13 +522,13 @@ public class HexGrid : MonoBehaviour
     /// TODO comment load
     /// </summary>
     /// <param name="reader"></param>
-    public void Load(BinaryReader reader, int header)
+    public void Load(BinaryReader mapReader, int header)
     {
-        ClearUnits();
+        ClearMap();
 
         int x = 20, z = 15;
-        x = reader.ReadInt32();
-        z = reader.ReadInt32();
+        x = mapReader.ReadInt32();
+        z = mapReader.ReadInt32();
 
         // we dont need to make another map if it's the same size as the existing one
         if (x != cellCountX || z != cellCountZ)
@@ -478,30 +542,29 @@ public class HexGrid : MonoBehaviour
 
         for (int i = 0; i < cells.Length; i++)
         {
-            cells[i].Load(reader, header);
+            cells[i].Load(mapReader, header);
         }
         for (int i = 0; i < chunks.Length; i++)
         {
             chunks[i].Refresh();
         }
-        int fortCount = reader.ReadInt32();
+        int fortCount = mapReader.ReadInt32();
         for (int i = 0; i < fortCount; i++)
         {
-            Fort.Load(reader, header);
+            Fort.Load(mapReader, header);
         }
 
-        int unitCount = reader.ReadInt32();
+        int unitCount = mapReader.ReadInt32();
         for (int i = 0; i < unitCount; i++)
         {
-            Unit.Load(reader, header);
+            Unit.Load(mapReader, header);
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;
     }
 
     #endregion
-
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()

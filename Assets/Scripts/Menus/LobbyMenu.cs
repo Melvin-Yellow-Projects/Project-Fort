@@ -33,25 +33,23 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    private void Awake()
-    {
-        Subscribe();
-    }
+    // HACK: Since awake and on destroy are only called on previously active game objects, the
+    // sub and unsub methods are called by MainMenu.cs. This is jank, but it works. maybe do over?
 
-    private void OnDestroy()
-    {
-        Unsubscribe();
-    }
+    //private void Awake()
+    //{
+    //    Subscribe();
+    //}
+
+    //private void OnDestroy()
+    //{
+    //    Unsubscribe();
+    //}
 
     #endregion
 
     /********** MARK: Class Functions **********/
     #region Class Functions
-
-    //public void StartGame()
-    //{
-    //    NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
-    //}
 
     public void LeaveLobby()
     {
@@ -65,7 +63,7 @@ public class LobbyMenu : MonoBehaviour
         }
 
         // this reloads the start menu, it's the lazy way rather than turning on/off various UI
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        SceneLoader.LoadStartScene();
     }
 
     #endregion
@@ -83,7 +81,7 @@ public class LobbyMenu : MonoBehaviour
         PlayerInfo.OnClientPlayerInfoUpdate += HandlePartyOwnerStateChange;
     }
 
-    private void Unsubscribe()
+    public void Unsubscribe()
     {
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
         PlayerInfo.OnClientPlayerInfoUpdate -= UpdatePlayerTags;
@@ -97,9 +95,7 @@ public class LobbyMenu : MonoBehaviour
 
     private void UpdatePlayerTags()
     {
-        List<HumanPlayer> players = GameNetworkManager.Singleton.HumanPlayers;
-
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
         {
             // TODO: add player avatar and name
             playerNameTexts[i].text = $"Player {i + 1}";
@@ -108,14 +104,14 @@ public class LobbyMenu : MonoBehaviour
             //playerSteamImages[i].texture = players[i].GetComponent<RTSPlayerInfo>().DisplayTexture;
         }
 
-        for (int i = players.Count; i < playerNameTexts.Length; i++)
+        for (int i = GameNetworkManager.HumanPlayers.Count; i < playerNameTexts.Length; i++)
         {
             playerNameTexts[i].text = "Waiting For Player";
             playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = true;
             //playerSteamImages[i].texture = null;
         }
 
-        startGameButton.interactable = (players.Count >= 2);
+        startGameButton.interactable = (GameNetworkManager.HumanPlayers.Count >= 1);
     }
 
     private void HandlePartyOwnerStateChange()

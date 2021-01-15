@@ -156,7 +156,7 @@ public class UnitMovement : MonoBehaviour
     {
         MyUnit = GetComponent<Unit>();
         Display = GetComponent<UnitDisplay>();
-        Path = new UnitPath(MyUnit);
+        Path = GetComponent<UnitPath>();
 
         currentMovement = maxMovement;
         Display.RefreshMovementDisplay(currentMovement);

@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    public static GameManager Singleton { get; set; }
+    public static GameManager Singleton { get; private set; }
 
     public int RoundCount { get; private set; } = 0;
 
@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
             Unit unit = HexGrid.Singleton.units[i];
             if (unit.Movement.IsEnRoute)
             {
-                i = 0;
+                i = -1;
                 yield return null;
             }
         }

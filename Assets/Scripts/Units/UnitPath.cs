@@ -12,13 +12,15 @@
  *      Previously known as HexPath.cs
  **/
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 
 /// </summary>
-public class UnitPath
+public class UnitPath : MonoBehaviour
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
@@ -100,13 +102,13 @@ public class UnitPath
 
     #endregion
 
-    /********** MARK: Constructors **********/
-    #region Constructor
+    /********** MARK: Public Properties **********/
+    #region Public Properties
 
-    public UnitPath(Unit unit)
+    private void Awake()
     {
-        this.unit = unit;
-        movement = unit.Movement;
+        unit = GetComponent<Unit>();
+        movement = GetComponent<UnitMovement>();
     }
 
     #endregion
@@ -144,7 +146,7 @@ public class UnitPath
         }
         else
         {
-            cells.Clear();
+            Clear(clearCursor:false);
             cells = UnitPathfinding.FindPath(unit, StartCell, cell);
         }
     }
@@ -153,7 +155,11 @@ public class UnitPath
     {
         if (numberToRemove > cells.Count) Debug.LogError("Removing more cells than in Path!");
 
-        for (int i = 0; i < numberToRemove; i++) cells.RemoveAt(0);
+        for (int i = 0; i < numberToRemove; i++)
+        {
+            //cells[0].DisableHighlight();
+            cells.RemoveAt(0);
+        }
 
         if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell is not Unit's cell!");
     }
@@ -165,11 +171,12 @@ public class UnitPath
     /// <param name="speed"></param>
     public void Show()
     {
+        //StopAllCoroutines();
+
         if (!HasPath)
         {
             if (cursor != null) cursor.DestroyCursor();
             return;
-            
         }
 
         List<Vector3> points = new List<Vector3>();
@@ -185,11 +192,32 @@ public class UnitPath
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (cursor) cursor.Redraw(points); 
+        if (cursor) cursor.Redraw(points);
         else cursor = UnitCursor.Initialize(points);
 
         cursor.IsSelected = unit.IsSelected;
         cursor.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > movement.MaxMovement);
+
+        //StartCoroutine(AnimatePath());
+    }
+
+    private IEnumerator AnimatePath()
+    {
+        Image highlight;
+        ColorSetter setter;
+        int i = 0;
+        while (HasPath && unit.IsSelected)
+        {
+            highlight = cells[i].uiRectTransform.GetChild(0).GetComponent<Image>();
+            setter = cells[i].uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+
+            yield return setter.SetColor(highlight, Color.red, cutoff:0.3f);
+            Debug.Log("Helo");
+            StartCoroutine(setter.SetColor(highlight, Color.white));
+
+            i++;
+            if (i >= cells.Count) i = 0;
+        }
     }
 
     ///// <summary>
@@ -205,12 +233,17 @@ public class UnitPath
     //    }
     //}
 
-    public void Clear()
+    public void Clear(bool clearCursor=true)
     {
         //Hide(); // TODO: i think there needs to be a hide function for the cursor
-        if (cursor != null) cursor.DestroyCursor(); 
+        if (clearCursor && cursor != null) cursor.DestroyCursor();
 
         //moveCost = 0;
+
+        //for (int i = 0; i < cells.Count; i++)
+        //{
+        //    cells[i].DisableHighlight();
+        //}
 
         cells.Clear();
     }

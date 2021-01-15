@@ -16,6 +16,7 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 using UnityEngine.InputSystem;
+using Mirror;
 
 /// <summary>
 /// 
@@ -51,6 +52,13 @@ public class SaveLoadMenu : MonoBehaviour
     int menuMode;
 
     Controls controls;
+
+    #endregion
+
+    /********** MARK: Properties **********/
+    #region Properties
+
+    private static BinaryReader MapReader;
 
     #endregion
 
@@ -124,41 +132,40 @@ public class SaveLoadMenu : MonoBehaviour
         }
         else if (menuMode == 2)
         {
-            PrepareReaderForNextScene();
+            PrepareReaderForLocalGame();
         }
         else if (menuMode == 3)
         {
-            PrepareReaderForServer();
+            PrepareReaderForOnlineGame();
         }
 
         // exit menu
         Close();
     }
 
-    private void PrepareReaderForNextScene()
+    private void PrepareReaderForLocalGame()
     {
-        string path = GetSelectedPath();
+        PrepareReader();
 
-        // if the path is empty or invalid, exit
-        if (path == null || !IsPathValid(path)) return;
-
-        BinaryReader reader = new BinaryReader(File.OpenRead(path));
-        GameSession.BinaryReaderBuffer = reader;
-
-        SceneLoader.LoadSceneByName("Game Scene");
+        SceneLoader.LoadLocalGame();
     }
 
-    private void PrepareReaderForServer()
+    private void PrepareReaderForOnlineGame() 
+    {
+        PrepareReader();
+
+        // HACK: This line is kinda fishy
+        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+    }
+
+    private void PrepareReader()
     {
         string path = GetSelectedPath();
 
         // if the path is empty or invalid, exit
         if (path == null || !IsPathValid(path)) return;
 
-        BinaryReader reader = new BinaryReader(File.OpenRead(path));
-        GameSession.BinaryReaderBuffer = reader;
-
-        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+        MapReader = new BinaryReader(File.OpenRead(path));
     }
 
     public void SelectItem(string name)
@@ -210,15 +217,17 @@ public class SaveLoadMenu : MonoBehaviour
     /// </summary>
 	public void Save(string path)
     {
-        // creates a file stream object encapsulated within the BinaryWriter; the using block then
-        // defines where this object will exist; "these objects have a Dispose method, which is
-        // implicitly invoked when exiting the using scope"; c#/visual studio also struggle to make
-        // sense of this... so ignore warnings or any editor suggestions outside of Unity Editor
-        using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
-        {
-            writer.Write(mapFileVersion);
-            FindObjectOfType<HexGrid>().Save(writer);
-        }
+        BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
+        //GameSession.Singleton.MapHexBuffer.WriteTo(File.Open(path, FileMode.Create));
+
+        writer.Write(mapFileVersion);
+        //GameSession.Singleton.MapHexBuffer.Write(mapFileVersion);
+
+        HexGrid.Singleton.Save(writer);
+        //HexGrid.Singleton.Save(GameSession.Singleton.MapHexBuffer);
+
+        //GameSession.Singleton.MapHexBuffer.Close();
+        writer.Close();
     }
 
     /// <summary>
@@ -229,20 +238,23 @@ public class SaveLoadMenu : MonoBehaviour
         // check to see if the path exists
         if (!IsPathValid(path)) return;
 
-        // creates a file stream object encapsulated within the BinaryReader; the using block then
-        // defines where this object will exist
-        using (BinaryReader reader = new BinaryReader(File.OpenRead(path)))
-        {
-            LoadMapFromReader(reader);
-        }
+        MapReader = new BinaryReader(File.OpenRead(path));
+        //GameSession.Singleton.MapHexBuffer.ReadFrom(File.OpenRead(path));
+
+        LoadMapFromReader();
     }
 
-    public static void LoadMapFromReader(BinaryReader reader)
+    public static void LoadMapFromReader()
     {
-        int header = reader.ReadInt32();
+        if (MapReader == null) return;
+        //if (GameSession.Singleton.MapHexBuffer.IsEmpty()) return;
+
+        int header = MapReader.ReadInt32();
+        //int header = GameSession.Singleton.MapHexBuffer.ReadInt32();
         if (header <= mapFileVersion)
         {
-            FindObjectOfType<HexGrid>().Load(reader, header);
+            HexGrid.Singleton.Load(MapReader, header);
+            //HexGrid.Singleton.Load(GameSession.Singleton.MapHexBuffer, header);
 
             MapCamera.ValidatePosition();
         }
@@ -250,6 +262,10 @@ public class SaveLoadMenu : MonoBehaviour
         {
             Debug.LogWarning("Unknown map format " + header);
         }
+
+        MapReader.Close();
+        MapReader = null;
+        //GameSession.Singleton.MapHexBuffer.Clear();
     }
 
     private bool IsPathValid(string path)

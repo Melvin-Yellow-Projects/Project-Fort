@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using Mirror;
 
 /// <summary>
 /// a unit that is able to interact with a hex map 
@@ -23,7 +24,7 @@ using System;
 [RequireComponent(typeof(Team))]
 [RequireComponent(typeof(ColorSetter))]
 [RequireComponent(typeof(UnitDisplay))]
-public class Unit : MonoBehaviour
+public class Unit : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
@@ -152,7 +153,11 @@ public class Unit : MonoBehaviour
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;
 
-        HexGrid.Singleton.ParentTransformToGrid(unit.transform);
+
+        // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
+        //HexGrid.Singleton.ParentTransformToGrid(unit.transform);
+
+        NetworkServer.Spawn(unit.gameObject);
     }
 
     #endregion

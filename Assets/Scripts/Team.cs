@@ -11,13 +11,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [RequireComponent(typeof(ColorSetter))]
-public class Team : MonoBehaviour
+public class Team : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
+    [SyncVar(hook = nameof(HookOnTeamIndex))]
     int teamIndex = 0;
 
     #endregion
@@ -29,12 +31,13 @@ public class Team : MonoBehaviour
     {
         get
         {
-            return teamIndex;
+            return teamIndex; 
         }
+
+        [Server]
         set
         {
             teamIndex = value;
-            GetComponent<ColorSetter>().SetColor(MyColor);
         }
     }
 
@@ -42,14 +45,28 @@ public class Team : MonoBehaviour
     {
         get
         {
-            return (teamIndex == 0) ? Color.blue : Color.red;
+            return (teamIndex == 1) ? Color.blue : Color.red;
+        }
+    }
+
+    // HACK: this might not be present on a GameObject that doesn't need to have it's color set
+    public ColorSetter MyColorSetter 
+    {
+        get
+        {
+            return GetComponent<ColorSetter>();
         }
     }
 
     #endregion
 
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /********** MARK: Event Handler Functions **********/
+    #region Event Handler Functions
+
+    private void HookOnTeamIndex(int oldValue, int newValue)
+    {
+        if (MyColorSetter) MyColorSetter.SetColor(MyColor);
+    }
 
     #endregion
 

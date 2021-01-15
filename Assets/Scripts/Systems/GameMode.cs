@@ -22,8 +22,6 @@ public class GameMode : ScriptableObject
 
     //[SerializeField] int maxRounds = 0;
 
-    [SerializeField] bool isOnline = false;
-
     [Tooltip("turnsPerRound")]
     [SerializeField] int turnsPerRound = 3;
 
@@ -54,14 +52,6 @@ public class GameMode : ScriptableObject
     #region Class Properties
 
     public static GameMode Singleton { get; set; }
-
-    public bool IsOnline
-    {
-        get
-        {
-            return isOnline;
-        }
-    }
 
     public bool IsUsingTurnTimer
     {

@@ -27,7 +27,7 @@ using UnityEngine;
 /// </summary>
 public class DebugComments : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     /* Cached References */
@@ -41,8 +41,7 @@ public class DebugComments : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] public float val2 = 0f;
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -51,8 +50,7 @@ public class DebugComments : MonoBehaviour
     protected float val3 = 0f;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     /// <summary>
@@ -71,8 +69,7 @@ public class DebugComments : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -168,13 +165,11 @@ public class DebugComments : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     #endregion
-
-    /********** MARK: Debug **********/
+    /************************************************************/
     #region Debug
 
     /// <summary>

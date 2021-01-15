@@ -13,17 +13,20 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System;
+using Mirror;
 
 /// <summary>
 /// 
 /// </summary>
 [RequireComponent(typeof(Team), typeof(ColorSetter))]
-public class Fort : MonoBehaviour
+public class Fort : NetworkBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
+    [SyncVar]
     HexCell myCell = null;
+
     float orientation;
 
     #endregion
@@ -139,7 +142,10 @@ public class Fort : MonoBehaviour
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;
 
-        HexGrid.Singleton.ParentTransformToGrid(fort.transform);
+        // HACK: figure out to do with ParentTransformToGrid line (Fort.cs)
+        //HexGrid.Singleton.ParentTransformToGrid(fort.transform);
+
+        NetworkServer.Spawn(fort.gameObject);
     }
 
     #endregion
