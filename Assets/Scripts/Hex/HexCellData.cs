@@ -49,10 +49,10 @@ public struct HexCellData
 /// <summary>
 /// 
 /// </summary>
-public static class HexCellDataSerializer
+public static class HexCellSerializer
 {
     /************************************************************/
-    #region Class Functions
+    #region HexCellData
 
     public static void WriteHexCellData(this NetworkWriter writer, HexCellData data)
     {
@@ -74,5 +74,36 @@ public static class HexCellDataSerializer
 
         return data;
     }
+    #endregion
+
+    /************************************************************/
+    #region HexCell Indices
+
+    public static void WriteHexCellIndex(this NetworkWriter writer, HexCell cell)
+    {
+        writer.WriteInt32(cell.Index);
+    }
+
+    public static HexCell ReadHexCellIndex(this NetworkReader reader)
+    {
+        return HexGrid.Singleton.GetCell(reader.ReadInt32());
+    }
+
+    public static void WriteHexCellIndices(this NetworkWriter writer, List<HexCell> cells)
+    {
+        writer.WriteInt32(cells.Count);
+        for (int i = 0; i < cells.Count; i++) writer.WriteInt32(cells[i].Index);
+    }
+
+    public static List<HexCell> ReadHexCellIndices(this NetworkReader reader)
+    {
+        List<HexCell> cells = new List<HexCell>();
+
+        int count = reader.ReadInt32();
+        for (int i = 0; i < count; i++) cells.Add(HexGrid.Singleton.GetCell(reader.ReadInt32()));
+
+        return cells;
+    }
+
     #endregion
 }

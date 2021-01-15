@@ -370,6 +370,11 @@ public class HexGrid : NetworkBehaviour
         chunk.AddCell(localCellIndex, cell);
     }
 
+    public HexCell GetCell(int index)
+    {
+        return cells[index];
+    }
+
     /// <summary>
     /// Gets the cell within the hex grid given a world position; assumes the position is a legal
     /// position

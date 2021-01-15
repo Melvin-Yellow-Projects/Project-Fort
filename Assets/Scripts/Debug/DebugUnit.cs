@@ -63,6 +63,7 @@ public class DebugUnit : NetworkBehaviour
     private void CmdMoveUnit(float direction)
     {
         // validation logic would go here
+        //if (!hasAuthority) return;
 
         MoveUnit(direction);
         RpcMoveUnit(direction);
@@ -89,8 +90,8 @@ public class DebugUnit : NetworkBehaviour
     [ClientRpc]
     private void RpcMoveUnit(float direction)
     {
-        if (!isClientOnly) return;
-        MoveUnit(direction);
+        //if (!isClientOnly) return;
+        //MoveUnit(direction);
     }
     #endregion
     /************************************************************/
