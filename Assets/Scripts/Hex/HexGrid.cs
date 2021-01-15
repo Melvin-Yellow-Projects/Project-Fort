@@ -152,6 +152,14 @@ public class HexGrid : NetworkBehaviour
     [Client]
     public override void OnStartClient()
     {
+        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
+        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        {
+            if (GameNetworkManager.HumanPlayers[i].hasAuthority)
+                GameNetworkManager.HumanPlayers[i].enabled = true;
+        }
+        // HACK: perhaps a static event that logs to clients to enable player is better
+
         if (!isClientOnly) return;
 
         InitializeMap();
@@ -165,7 +173,7 @@ public class HexGrid : NetworkBehaviour
     {
         cells[data.index].Elevation = data.elevation;
         cells[data.index].TerrainTypeIndex = data.terrainTypeIndex;
-        //cells[data.index].IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
+        cells[data.index].IsExplored = data.isExplored;
     }
 
     #endregion
@@ -181,7 +189,7 @@ public class HexGrid : NetworkBehaviour
         else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");
 
-        cellShaderData = gameObject.GetComponent<HexCellShaderData>();
+        cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
         CreateMap(cellCountX, cellCountZ);
 

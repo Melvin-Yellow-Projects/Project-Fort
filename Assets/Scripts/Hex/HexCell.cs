@@ -254,7 +254,7 @@ public class HexCell : MonoBehaviour
         {
             return explored && Explorable;
         }
-        private set
+        set
         {
             explored = value;
         }

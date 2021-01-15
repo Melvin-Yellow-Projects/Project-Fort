@@ -127,13 +127,6 @@ public class GameNetworkManager : NetworkManager
 
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
-
-        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
-        for (int i = 0; i < HumanPlayers.Count; i++)
-        {
-            if (HumanPlayers[i].hasAuthority) HumanPlayers[i].enabled = true;
-        }
-        // FIXME: this is probably wrong on client ^^^ static event that logs to clients to enable player
     }
 
     [Server]
