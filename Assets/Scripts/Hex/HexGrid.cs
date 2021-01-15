@@ -104,7 +104,7 @@ public class HexGrid : NetworkBehaviour
     #region Server Functions
 
     [Server]
-    public static void ServerSpawnMap()
+    public static void ServerSpawnMapTerrain()
     {
         Singleton = Instantiate(Prefab);
 
@@ -128,15 +128,12 @@ public class HexGrid : NetworkBehaviour
         NetworkServer.Spawn(Singleton.gameObject); 
     }
 
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-    }
-
     [Command(ignoreAuthority = true)]
     private void CmdUpdateCellData(int index, NetworkConnectionToClient conn = null)
     {
         // TODO: Validation Logic, can this connection see this cell? if not return
+        HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
+        GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
 
         //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
         //NetworkConnection conn = playerIdentity.connectionToClient; 
@@ -145,7 +142,18 @@ public class HexGrid : NetworkBehaviour
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
 
-    //override onser
+    [Server]
+    public static void ServerSpawnMapEntities()
+    {
+        for (int i = 0; i < Singleton.units.Count; i++)
+        {
+            NetworkServer.Spawn(Singleton.units[i].gameObject);
+        }
+        for (int i = 0; i < Singleton.forts.Count; i++)
+        {
+            NetworkServer.Spawn(Singleton.forts[i].gameObject);
+        }
+    }
 
     #endregion
     /************************************************************/
@@ -184,7 +192,7 @@ public class HexGrid : NetworkBehaviour
 
     public bool CreateMap(int x, int z)
     {
-        ClearMap();
+        ClearEntities();
 
         // destroy previous cells and chunks
         if (chunks != null)
@@ -447,7 +455,7 @@ public class HexGrid : NetworkBehaviour
         }
     }
 
-    private void ClearMap()
+    private void ClearEntities()
     {
         for (int i = 0; i < units.Count; i++)
         {
@@ -513,7 +521,7 @@ public class HexGrid : NetworkBehaviour
     /// <param name="reader"></param>
     public void Load(BinaryReader mapReader, int header)
     {
-        ClearMap();
+        ClearEntities();
 
         //int x = 20, z = 15; // HACK: <- line not needed
         int x = mapReader.ReadInt32();

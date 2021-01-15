@@ -20,7 +20,12 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Variables
 
+    [Tooltip("how long to wait for a player to load the map terrain")]
+    [SerializeField, Range(0f, 60f)] float waitForPlayerToSpawnTerrain = 30f;
+
     bool isGameInProgress = false;
+
+    Coroutine waitCoroutine;
 
     #endregion
     /************************************************************/
@@ -115,9 +120,10 @@ public class GameNetworkManager : NetworkManager
     public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
     {
         Debug.Log("It's time to spawn a map!");
-        HexGrid.ServerSpawnMap();
+        HexGrid.ServerSpawnMapTerrain();
 
-        if (!SceneLoader.IsGameScene) return;
+        // HACK: server should exclusively be in game scene, line not needed
+        //if (!SceneLoader.IsGameScene) return; 
 
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
@@ -129,6 +135,30 @@ public class GameNetworkManager : NetworkManager
         }
         // FIXME: this is probably wrong on client ^^^ static event that logs to clients to enable player
     }
+
+    [Server]
+    public void ServerPlayerHasCreatedMap(HumanPlayer player)
+    {
+        if (player.HasCreatedMap) return;
+        player.HasCreatedMap = true;
+
+        bool isReady = true;
+        foreach (HumanPlayer p in HumanPlayers) isReady &= p.HasCreatedMap;
+
+        if (waitCoroutine != null) StopCoroutine(waitCoroutine);
+
+        if (isReady) HexGrid.ServerSpawnMapEntities();
+        else waitCoroutine = StartCoroutine(WaitToSpawnMapEntities());
+    }
+
+    [Server]
+    private IEnumerator WaitToSpawnMapEntities()
+    {
+        yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
+
+        HexGrid.ServerSpawnMapEntities();
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions

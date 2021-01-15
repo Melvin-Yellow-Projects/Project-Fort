@@ -30,6 +30,12 @@ public class HumanPlayer : Player
 
     #endregion
     /************************************************************/
+    #region Properties
+
+    public bool HasCreatedMap { get; [Server] set; } = false;
+
+    #endregion
+    /************************************************************/
     #region Unity Functions
 
     protected void Start()

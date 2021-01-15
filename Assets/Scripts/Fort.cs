@@ -140,7 +140,7 @@ public class Fort : NetworkBehaviour
         // HACK: figure out to do with ParentTransformToGrid line (Fort.cs)
         //HexGrid.Singleton.ParentTransformToGrid(fort.transform);
 
-        NetworkServer.Spawn(fort.gameObject);
+        //NetworkServer.Spawn(fort.gameObject);
     }
 
     #endregion
