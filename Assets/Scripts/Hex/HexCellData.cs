@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
+using System.Timers;
 
 /// <summary>
 /// 
@@ -85,22 +86,35 @@ public static class HexCellSerializer
         writer.WriteInt32(cell.Index);
     }
 
-    public static HexCell ReadHexCellIndex(this NetworkReader reader)
+    public static IEnumerator<HexCell> ReadHexCellIndex(this NetworkReader reader)
     {
         //reader.ReadInt32();
-        HexCell cell = null;
         int index = reader.ReadInt32();
+
+        HexCell cell = TryGetCell(index);
+
+        while (!cell)
+        {
+            //System.Timers.Timer aTimer;
+
+            yield return null; // FIXME: this is a LOT of network overhead
+            cell = TryGetCell(index);
+        }
+
+        yield return cell;
+    }
+
+    private static HexCell TryGetCell(int index)
+    {
         try
         {
-            cell = HexGrid.Singleton.GetCell(index);
+            return HexGrid.Singleton.GetCell(index);
         }
         catch (Exception e)
         {
-            Debug.LogWarning("client has not loaded map yet and cannot deserialize HexCell");
-            //System.Timers.Timer aTimer;
+            Debug.LogWarning("client has not loaded map, cannot deserialize HexCell index");
+            return null;
         }
-
-        return cell;
     }
 
     public static void WriteHexCellIndices(this NetworkWriter writer, List<HexCell> cells)
@@ -118,6 +132,5 @@ public static class HexCellSerializer
 
         return cells;
     }
-
     #endregion
 }

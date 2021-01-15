@@ -24,8 +24,8 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    [SyncVar]
-    HexCell myCell = null;
+    [SyncVar(hook = nameof(HookOnMyCell))]
+    HexCell myCell;
 
     float orientation;
 
@@ -61,11 +61,11 @@ public class Fort : NetworkBehaviour
         {
             return myCell;
         }
-
-        //[Server]
         set
         {
-            SetMyCell(value);
+            myCell = value;
+            myCell.MyFort = this;
+            ValidateLocation();
         }
     }
 
@@ -108,38 +108,11 @@ public class Fort : NetworkBehaviour
 
     #endregion
     /************************************************************/
-    #region Server Functions
-
-    //private void ServerSetMyCell(HexCell cell)
-    //{
-    //    // TODO: VALIDATION
-    //    RpcSetMyCell(cell);
-    //}
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    //[ClientRpc]
-    //private void RpcSetMyCell(HexCell cell)
-    //{
-    //    SetMyCell(cell);
-    //}
-
-    #endregion
-    /************************************************************/
     #region Class Functions
 
     public void ValidateLocation()
     {
         transform.localPosition = myCell.Position;
-    }
-
-    private void SetMyCell(HexCell cell)
-    {
-        myCell = cell;
-        myCell.MyFort = this;
-        ValidateLocation();
     }
 
     #endregion
@@ -191,6 +164,11 @@ public class Fort : NetworkBehaviour
         if (!unit) return;
 
         MyTeam.TeamIndex = unit.MyTeam.TeamIndex;
+    }
+
+    private void HookOnMyCell(HexCell oldValue, HexCell newValue)
+    {
+        if (myCell) MyCell = myCell;
     }
 
     #endregion

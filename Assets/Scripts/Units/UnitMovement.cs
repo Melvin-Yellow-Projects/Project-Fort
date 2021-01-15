@@ -25,7 +25,7 @@ public class UnitMovement : MonoBehaviour
     const int visionRange = 100;
     //const int movesPerStep = 1;
 
-    public HexCell myCell;
+    public HexCell myCell; // HACK: why is this public?
 
     float orientation;
 
