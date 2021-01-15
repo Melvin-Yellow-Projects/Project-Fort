@@ -169,8 +169,6 @@ public class HexGrid : NetworkBehaviour
     [TargetRpc]
     private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
     {
-        Debug.Log("Oh! Hi!");
-
         cells[data.index].Elevation = data.elevation;
         cells[data.index].TerrainTypeIndex = data.terrainTypeIndex;
         //cells[data.index].IsExplored = data.isExplored; // FIXME: cell's isExlpored data is toggled off
@@ -228,7 +226,7 @@ public class HexGrid : NetworkBehaviour
         //    HumanPlayer player = GameNetworkManager.HumanPlayers[i];
         //    if (player.hasAuthority) playerIdentity = player.netIdentity;
         //}
-        
+        Debug.Log("I am a client and I'm fetching the Map!");
         for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
