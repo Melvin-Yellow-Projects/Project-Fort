@@ -110,6 +110,9 @@ public class HexGrid : NetworkBehaviour
 
         SaveLoadMenu.LoadMapFromReader();
 
+        if (NetworkServer.localConnection != null)
+            NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
+
         NetworkServer.Spawn(Singleton.gameObject); 
     }
 
