@@ -89,30 +89,6 @@ public static class HexCellSerializer
     public static HexCell ReadHexCellIndex(this NetworkReader reader)
     {
         int index = reader.ReadInt32();
-        Debug.LogWarning("just get rid of this when it works");
-        return TryGetCell(index); // HACK: just get rid of this when it works
-    }
-
-    //public static IEnumerator<HexCell> ReadHexCellIndex(this NetworkReader reader)
-    //{
-    //    //reader.ReadInt32();
-    //    int index = reader.ReadInt32();
-
-    //    HexCell cell = TryGetCell(index);
-
-    //    while (!cell)
-    //    {
-    //        //System.Timers.Timer aTimer;
-
-    //        yield return null; // FIXME: this is a LOT of network overhead
-    //        cell = TryGetCell(index);
-    //    }
-
-    //    yield return cell;
-    //}
-
-    private static HexCell TryGetCell(int index)
-    {
         try
         {
             return HexGrid.Singleton.GetCell(index);
