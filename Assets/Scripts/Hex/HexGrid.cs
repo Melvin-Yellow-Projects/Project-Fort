@@ -41,9 +41,11 @@ public class HexGrid : NetworkBehaviour
     /* Settings */
     [Header("Settings")]
     [Tooltip("number of cell in the x direction; effectively width")]
+    [SyncVar]
     public int cellCountX = 20;
 
     [Tooltip("number of cell in the z direction; effectively height")]
+    [SyncVar]
     public int cellCountZ = 15;
 
     [Tooltip("layers to ignore when raycasting")]
