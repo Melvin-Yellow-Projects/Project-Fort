@@ -113,6 +113,8 @@ public class GameNetworkManager : NetworkManager
 
         isGameInProgress = true;
 
+        Debug.Log("Changing scene");
+
         ServerChangeScene("Game Scene");
     }
 
@@ -122,9 +124,9 @@ public class GameNetworkManager : NetworkManager
         Debug.Log("It's time to spawn a map!");
         HexGrid.ServerSpawnMapTerrain();
 
-        // HACK: server should exclusively be in game scene, line not needed
-        //if (!SceneLoader.IsGameScene) return; 
+        if (!SceneLoader.IsGameScene) return;
 
+        // TODO: Add Game Over Handler to Scene
         //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
         //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
     }

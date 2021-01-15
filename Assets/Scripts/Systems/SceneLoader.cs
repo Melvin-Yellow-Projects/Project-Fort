@@ -64,6 +64,7 @@ public class SceneLoader : MonoBehaviour
         NetworkManager.singleton.autoCreatePlayer = false;
         NetworkManager.singleton.StartHost();
 
+        Debug.Log("Loading Map Editor Scene");
         LoadSceneByName("Map Editor Scene");
     }
 
@@ -73,6 +74,7 @@ public class SceneLoader : MonoBehaviour
     /// <param name="sceneName">name of the scene to be loaded</param>
     public static void LoadSceneByName(string sceneName)
     {
+        Debug.Log($"LoadSceneByName {sceneName}");
         GameNetworkManager.Singleton.ServerChangeScene(sceneName);
     }
 

@@ -110,7 +110,7 @@ public class HexGrid : NetworkBehaviour
 
         SaveLoadMenu.LoadMapFromReader();
 
-        if (NetworkServer.localConnection != null)
+        if (!GameSession.Singleton.IsEditorMode)
             NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
 
         NetworkServer.Spawn(Singleton.gameObject); 
@@ -171,9 +171,14 @@ public class HexGrid : NetworkBehaviour
     [TargetRpc]
     private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
     {
-        cells[data.index].Elevation = data.elevation;
-        cells[data.index].TerrainTypeIndex = data.terrainTypeIndex;
-        cells[data.index].IsExplored = data.isExplored;
+        int index = data.index;
+        cells[index].Elevation = data.elevation;
+        cells[index].TerrainTypeIndex = data.terrainTypeIndex;
+        cells[index].IsExplored = data.isExplored;
+
+        // FIXME: VALIDATE LOGIC
+        cells[index].ShaderData.RefreshTerrain(cells[index]);
+        cells[index].ShaderData.RefreshVisibility(cells[index]);
     }
 
     #endregion
@@ -184,7 +189,7 @@ public class HexGrid : NetworkBehaviour
     {
         Singleton = this;
 
-        //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
         if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
         else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");

@@ -247,6 +247,7 @@ public class SaveLoadMenu : MonoBehaviour
     public static void LoadMapFromReader()
     {
         if (MapReader == null) return;
+        Debug.Log("MapReader is not null, loading map from reader");
         //if (GameSession.Singleton.MapHexBuffer.IsEmpty()) return;
 
         int header = MapReader.ReadInt32();
