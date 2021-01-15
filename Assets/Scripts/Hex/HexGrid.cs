@@ -120,17 +120,9 @@ public class HexGrid : NetworkBehaviour
 
         Singleton.CreateMap(Singleton.cellCountX, Singleton.cellCountZ);
 
-        NetworkServer.Spawn(Singleton.gameObject);
-
         SaveLoadMenu.LoadMapFromReader();
 
-        //// HACK: there should be a better way to do this through maybe the Unit Class
-        //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        //{
-        //    Debug.Log($"{GameNetworkManager.HumanPlayers[i]}");
-        //    NetworkConnection conn = GameNetworkManager.HumanPlayers[i].connectionToClient;
-        //    Singleton.netIdentity.AssignClientAuthority(conn);
-        //}
+        NetworkServer.Spawn(Singleton.gameObject);
     }
 
     [Command(ignoreAuthority = true)]
