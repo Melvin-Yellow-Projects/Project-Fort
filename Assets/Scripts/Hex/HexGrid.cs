@@ -106,22 +106,7 @@ public class HexGrid : NetworkBehaviour
     [Server]
     public static void ServerSpawnMapTerrain()
     {
-        Singleton = Instantiate(Prefab);
-
-        Singleton.Subscribe();
-
-        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
-        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
-        //terrainMaterial.DisableKeyword("GRID_ON");
-
-        // fixme: is this done on clients?
-        Singleton.cellShaderData = Singleton.gameObject.GetComponent<HexCellShaderData>();
-
-        Singleton.CreateMap(Singleton.cellCountX, Singleton.cellCountZ);
-        // HACK: might be a little faster to initialize map size with zero & create map w/ LoadMap()
-        //Singleton.cellCountX = 0;
-        //Singleton.cellCountZ = 0;
+        Instantiate(Prefab).InitializeMap();
 
         SaveLoadMenu.LoadMapFromReader();
 
@@ -145,6 +130,8 @@ public class HexGrid : NetworkBehaviour
     [Server]
     public static void ServerSpawnMapEntities()
     {
+        Debug.Log("Spawning Map Entities");
+
         for (int i = 0; i < Singleton.units.Count; i++)
         {
             NetworkServer.Spawn(Singleton.units[i].gameObject);
@@ -163,16 +150,8 @@ public class HexGrid : NetworkBehaviour
     public override void OnStartClient()
     {
         if (!isClientOnly) return;
-        Singleton = this;
 
-        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
-        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
-        //terrainMaterial.DisableKeyword("GRID_ON");
-
-        cellShaderData = gameObject.GetComponent<HexCellShaderData>();
-
-        CreateMap(cellCountX, cellCountZ);
+        InitializeMap();
 
         Debug.Log("I am a client and I'm fetching the Map!");
         for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
@@ -189,6 +168,22 @@ public class HexGrid : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Class Functions
+
+    private void InitializeMap()
+    {
+        Singleton = this;
+
+        GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
+        cellShaderData = gameObject.GetComponent<HexCellShaderData>();
+
+        CreateMap(cellCountX, cellCountZ);
+
+        Subscribe();
+    }
 
     public bool CreateMap(int x, int z)
     {
