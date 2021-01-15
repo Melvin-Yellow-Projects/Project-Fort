@@ -118,9 +118,9 @@ public class HexGrid : NetworkBehaviour
 
         Singleton.CreateMap(Singleton.cellCountX, Singleton.cellCountZ);
 
-        SaveLoadMenu.LoadMapFromReader();
-
         NetworkServer.Spawn(Singleton.gameObject);
+
+        SaveLoadMenu.LoadMapFromReader();
 
         //// HACK: there should be a better way to do this through maybe the Unit Class
         //for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
@@ -526,9 +526,9 @@ public class HexGrid : NetworkBehaviour
     {
         ClearMap();
 
-        int x = 20, z = 15;
-        x = mapReader.ReadInt32();
-        z = mapReader.ReadInt32();
+        //int x = 20, z = 15; // HACK: <- line not needed
+        int x = mapReader.ReadInt32();
+        int z = mapReader.ReadInt32();
 
         // we dont need to make another map if it's the same size as the existing one
         if (x != cellCountX || z != cellCountZ)

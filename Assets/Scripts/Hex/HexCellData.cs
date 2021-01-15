@@ -86,9 +86,9 @@ public static class HexCellSerializer
 
     public static HexCell ReadHexCellIndex(this NetworkReader reader)
     {
-        reader.ReadInt32();
-        //return HexGrid.Singleton.GetCell(reader.ReadInt32());
-        return null;
+        //reader.ReadInt32();
+        return HexGrid.Singleton.GetCell(reader.ReadInt32());
+        //return null;
     }
 
     public static void WriteHexCellIndices(this NetworkWriter writer, List<HexCell> cells)
