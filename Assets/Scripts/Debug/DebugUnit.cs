@@ -66,7 +66,7 @@ public class DebugUnit : NetworkBehaviour
         //if (!hasAuthority) return;
 
         MoveUnit(direction);
-        RpcMoveUnit(direction);
+        //RpcMoveUnit(direction); // Does Not Need This Line if NetworkTransform is attached
     }
 
     #endregion
@@ -90,8 +90,8 @@ public class DebugUnit : NetworkBehaviour
     [ClientRpc]
     private void RpcMoveUnit(float direction)
     {
-        //if (!isClientOnly) return;
-        //MoveUnit(direction);
+        if (!isClientOnly) return;
+        MoveUnit(direction);
     }
     #endregion
     /************************************************************/
