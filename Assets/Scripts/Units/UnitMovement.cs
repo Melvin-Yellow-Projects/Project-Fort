@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class UnitMovement : MonoBehaviour
+public class UnitMovement : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
