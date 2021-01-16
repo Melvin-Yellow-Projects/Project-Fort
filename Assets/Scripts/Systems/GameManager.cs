@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
 /// <summary>
 /// 
@@ -73,8 +74,17 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
-        Singleton = this;
+        if (NetworkServer.localConnection == null ||
+            NetworkServer.localConnection.connectionId != NetworkClient.connection.connectionId)
+        {
+
+            Destroy(gameObject);
+        }
+        else
+        {
+            turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+            Singleton = this;
+        }
     }
 
     private void Start()

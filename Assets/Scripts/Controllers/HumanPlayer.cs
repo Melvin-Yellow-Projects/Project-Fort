@@ -45,6 +45,8 @@ public class HumanPlayer : Player
 
     protected void Update()
     {
+        //if (!hasAuthority) return; // other human players should be disabled
+
         // HACK: is this still needed?
         // verify pointer is not on top of GUI
         if (EventSystem.current.IsPointerOverGameObject()) return;
@@ -56,11 +58,6 @@ public class HumanPlayer : Player
 
     /************************************************************/
     #region Server Functions
-
-    public override void OnStartServer()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
 
     [Command]
     public void CmdStartGame() // HACK: i dont like this function here
@@ -76,31 +73,20 @@ public class HumanPlayer : Player
 
     public override void OnStartClient()
     {
-        // HACK: idk which line works between the following two 
-        if (NetworkServer.active) return;
-        //if (!isClientOnly) return; 
-
-        // HACK: i think this prevents player from being deleted in the next scene
         DontDestroyOnLoad(gameObject);
 
         // HACK: this line will fail if the player is an AI
         GameNetworkManager.HumanPlayers.Add(this);
+
+        Subscribe();
     }
 
     public override void OnStopClient()
     {
-        if (!isClientOnly) { return; }
-
         // HACK: this line will fail if the player is an AI
         GameNetworkManager.HumanPlayers.Remove(this);
 
-        if (!hasAuthority) { return; }
-
-        //Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
-        //Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
-        //Building.AuthorityOnBuildingSpawned -= AuthorityHandleBuildingSpawned;
-        //Building.AuthorityOnBuildingDespawned -= AuthorityHandleBuildingDespawned;
-
+        Unsubscribe();
     }
 
     #endregion
@@ -118,14 +104,18 @@ public class HumanPlayer : Player
 
     private void DoCommand(InputAction.CallbackContext context)
     {
-        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+        if (selectedUnit) selectedUnit.Movement.CmdSetPath(selectedUnit.Movement.Path.Cells);
 
-        if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
-        {
-            DeselectUnit();
-            MoveCount++;
-            PlayerMenu.RefreshMoveCountText();
-        }
+
+        //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+
+        //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
+        //{
+        //    DeselectUnit();
+        //    MoveCount++;
+        //    PlayerMenu.RefreshMoveCountText();
+        //}
+        DeselectUnit();
     }
 
     #endregion
@@ -195,7 +185,7 @@ public class HumanPlayer : Player
 
     private void DeselectUnitAndClearItsPath()
     {
-        if (selectedUnit) selectedUnit.Movement.Path.Clear();
+        if (selectedUnit) selectedUnit.Movement.CmdClearPath();
         DeselectUnit();
     }
     #endregion
@@ -204,6 +194,8 @@ public class HumanPlayer : Player
 
     protected override void Subscribe()
     {
+        if (!hasAuthority) return;
+
         base.Subscribe();
 
         GameManager.OnPlayTurn += HandleOnPlayTurn;
@@ -217,6 +209,8 @@ public class HumanPlayer : Player
 
     protected override void Unsubscribe()
     {
+        if (!hasAuthority) return;
+
         base.Unsubscribe();
 
         GameManager.OnPlayTurn -= HandleOnPlayTurn;

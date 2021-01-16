@@ -45,29 +45,13 @@ public abstract class Player : NetworkBehaviour
 
     #endregion
 
-    /********** MARK: Unity Functions **********/
-    #region Unity Functions
-
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
-    protected virtual void Awake()
-    {
-        Subscribe();
-    }
-
-    protected virtual void OnDestroy()
-    {
-        Unsubscribe();
-    }
-
-    #endregion
-
     /********** MARK: Event Handler Functions **********/
     #region Event Handler Functions
 
     protected virtual void Subscribe()
     {
+        if (!hasAuthority) return;
+
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
@@ -76,6 +60,8 @@ public abstract class Player : NetworkBehaviour
 
     protected virtual void Unsubscribe()
     {
+        if (!hasAuthority) return;
+
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 

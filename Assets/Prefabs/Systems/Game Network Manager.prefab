@@ -64,6 +64,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 1936015192140806696, guid: 42403f62e5c024786b85537907da21f9, type: 3}
   - {fileID: 661696987785951891, guid: 79bda6422235f4e5aba76dd2ac926692, type: 3}
+  waitForPlayerToSpawnTerrain: 30
 --- !u!114 &-6134402128047789783
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -171,6 +171,51 @@ public class UnitMovement : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Server Functions
+
+    [Command]
+    public void CmdClearPath()
+    {
+        // TODO: Validation logic for CmdClearPath()
+        // This should already auto deny for units you dont have authority over
+        Path.Clear();
+        TargetClearPath();
+    }
+
+    [Command]
+    public bool CmdSetPath(List<HexCell> cells)
+    {
+        // TODO: Validation logic for CmdClearPath()
+
+        //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+
+        //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
+        //{
+        //    DeselectUnit();
+        //    MoveCount++;
+        //    PlayerMenu.RefreshMoveCountText();
+        //}
+
+        // Set the path for the Unit
+        Path.Cells = cells;
+        Path.Show();
+
+        // return true to alert connection itis a valid path
+        return false;
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    [TargetRpc]
+    private void TargetClearPath()
+    {
+        if (isClientOnly) Path.Clear();
+    }
+
+    #endregion
+    /************************************************************/
     #region Class Functions
 
     public void DoAction()
