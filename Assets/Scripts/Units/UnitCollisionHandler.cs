@@ -11,8 +11,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class UnitCollisionHandler : MonoBehaviour
+public class UnitCollisionHandler : NetworkBehaviour
 {
     /********** MARK: Properties **********/
     #region Properties
@@ -37,6 +38,7 @@ public class UnitCollisionHandler : MonoBehaviour
     /// another GameObject; The Colliders involved are not always at the point of initial contact
     /// </summary>
     /// <param name="other">other Collider/GameObject that the collision has occured with</param>
+    [ServerCallback]
     protected void OnTriggerEnter(Collider other)
     {
         Unit otherUnit = other.GetComponent<UnitCollisionHandler>().MyUnit;
