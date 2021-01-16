@@ -183,7 +183,7 @@ public class UnitMovement : NetworkBehaviour
     }
 
     [Command]
-    public bool CmdSetPath(List<HexCell> cells)
+    public void CmdSetPath(List<HexCell> cells)
     {
         // TODO: Validation logic for CmdClearPath()
 
@@ -201,7 +201,6 @@ public class UnitMovement : NetworkBehaviour
         Path.Show();
 
         // return true to alert connection itis a valid path
-        return false;
     }
 
     #endregion
