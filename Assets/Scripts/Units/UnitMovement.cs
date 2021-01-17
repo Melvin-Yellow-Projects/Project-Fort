@@ -187,6 +187,8 @@ public class UnitMovement : NetworkBehaviour
     {
         // TODO: Validation logic for CmdClearPath()
 
+        // FIXME: increment MountCount, refresh player UI
+
         //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
         //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
@@ -198,7 +200,7 @@ public class UnitMovement : NetworkBehaviour
 
         // Set the path for the Unit
         Path.Cells = cells;
-        Path.Show();
+        //Path.Show();
 
         // return true to alert connection itis a valid path
     }

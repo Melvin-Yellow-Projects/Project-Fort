@@ -101,6 +101,8 @@ public class HumanPlayer : Player
     {
         if (!currentCell) return;
 
+        if (currentCell.MyFort && currentCell.MyFort.hasAuthority) Debug.Log("My Fort!");
+
         DeselectUnitAndClearItsPath();
 
         SelectUnit(currentCell.MyUnit);
