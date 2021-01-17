@@ -69,12 +69,12 @@ public class Team : NetworkBehaviour
             {
                 if (teamIndex == GameNetworkManager.HumanPlayers[i].MyTeam.teamIndex)
                 {
-                    Debug.Log("Grabbing Authoritative Connection");
+                    Debug.Log($"Grabbing Authoritative Connection for {name}");
                     return GameNetworkManager.HumanPlayers[i].connectionToClient;
                 }
             }
 
-            Debug.Log("Why is Authoritative Connection null?");
+            Debug.LogWarning($"Authoritative Connection is null for {name}");
 
             return null;
         }
@@ -87,10 +87,10 @@ public class Team : NetworkBehaviour
     [Server]
     public void ServerRefreshAuthoritativeConnection()
     {
-        Debug.LogWarning("Attempting to refresh AuthoritativeConnection");
+        Debug.LogWarning($"Attempting to refresh AuthoritativeConnection for {name}");
         if (!isServer || GetComponent<HumanPlayer>()) return;
 
-        Debug.Log("Refreshing AuthoritativeConnection");
+        Debug.Log($"Refreshing AuthoritativeConnection for {name}");
 
         netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(AuthoritiveConnection);

@@ -78,6 +78,7 @@ public class HexGrid : NetworkBehaviour
 
     HexCellShaderData cellShaderData;
 
+    int fortCount = 0;
     int unitCount = 0;
 
     #endregion
@@ -605,6 +606,9 @@ public class HexGrid : NetworkBehaviour
     {
         // TODO: Server validation
 
+        fort.name = $"Fort {fortCount}";
+        fortCount += 1;
+
         forts.Add(fort);
     }
 
@@ -622,7 +626,7 @@ public class HexGrid : NetworkBehaviour
         unit.name = $"Unit {unitCount}";
         unitCount += 1;
 
-        //units.Add(unit); // FIXME: sub in hexgrid happens after spawn
+        units.Add(unit); // FIXME: sub in hexgrid happens after spawn
     }
 
     private void HandleOnUnitDepawned(Unit unit)

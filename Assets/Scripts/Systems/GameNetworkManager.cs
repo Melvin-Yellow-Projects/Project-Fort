@@ -144,14 +144,17 @@ public class GameNetworkManager : NetworkManager
 
         if (waitCoroutine != null) StopCoroutine(waitCoroutine);
 
-        if (isReady) HexGrid.ServerSpawnMapEntities();
-        else waitCoroutine = StartCoroutine(WaitToSpawnMapEntities());
+        // if players aren't ready, set function param "isWaiting" to true
+        waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(!isReady)); 
     }
 
     [Server]
-    private IEnumerator WaitToSpawnMapEntities()
+    private IEnumerator WaitToSpawnMapEntities(bool isWaiting)
     {
-        yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
+        Debug.Log($"am i waiting? {isWaiting}");
+        // forces wait for one frame so subscription methods can fire before units are spawned
+        if (isWaiting) yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
+        else yield return null;
 
         HexGrid.ServerSpawnMapEntities();
     }
