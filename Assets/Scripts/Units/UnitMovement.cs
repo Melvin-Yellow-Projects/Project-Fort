@@ -185,9 +185,9 @@ public class UnitMovement : NetworkBehaviour
     [Command]
     public void CmdSetPath(List<HexCell> cells)
     {
-        // TODO: Validation logic for CmdClearPath()
+        // TODO: Validation logic for CmdClearPath(), check if client info is valid
 
-        // FIXME: increment MountCount, refresh player UI
+        // TODO: increment MountCount, refresh player UI
 
         //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
@@ -201,8 +201,6 @@ public class UnitMovement : NetworkBehaviour
         // Set the path for the Unit
         Path.Cells = cells;
         //Path.Show();
-
-        // return true to alert connection itis a valid path
     }
 
     #endregion

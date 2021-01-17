@@ -147,7 +147,6 @@ public class HexGrid : NetworkBehaviour
         }
         for (int i = 0; i < Singleton.forts.Count; i++)
         {
-            // FIXME: fort subscription is not getting fired before this point, list forts is empty
             NetworkServer.Spawn(Singleton.forts[i].gameObject,
                 Singleton.forts[i].MyTeam.AuthoritiveConnection);
         }
@@ -184,7 +183,7 @@ public class HexGrid : NetworkBehaviour
         cells[index].TerrainTypeIndex = data.terrainTypeIndex;
         cells[index].IsExplored = data.isExplored;
 
-        // FIXME: VALIDATE LOGIC
+        // FIXME: Is this code correct?
         cells[index].ShaderData.RefreshTerrain(cells[index]);
         cells[index].ShaderData.RefreshVisibility(cells[index]);
     }
@@ -626,7 +625,7 @@ public class HexGrid : NetworkBehaviour
         unit.name = $"Unit {unitCount}";
         unitCount += 1;
 
-        units.Add(unit); // FIXME: sub in hexgrid happens after spawn
+        units.Add(unit);
     }
 
     private void HandleOnUnitDepawned(Unit unit)

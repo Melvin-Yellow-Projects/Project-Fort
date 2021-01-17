@@ -69,12 +69,12 @@ public class Team : NetworkBehaviour
             {
                 if (teamIndex == GameNetworkManager.HumanPlayers[i].MyTeam.teamIndex)
                 {
-                    Debug.Log($"Grabbing Authoritative Connection for {name}");
+                    //Debug.Log($"Grabbing Authoritative Connection for {name}");
                     return GameNetworkManager.HumanPlayers[i].connectionToClient;
                 }
             }
 
-            Debug.LogWarning($"Authoritative Connection is null for {name}");
+            //Debug.LogWarning($"Authoritative Connection is null for {name}");
 
             return null;
         }
