@@ -19,14 +19,13 @@ using Mirror;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     float turnTimer = 0f;
 
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -57,8 +56,7 @@ public class GameManager : MonoBehaviour
     public static event Action OnStopTurn;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static GameManager Singleton { get; private set; }
@@ -68,8 +66,7 @@ public class GameManager : MonoBehaviour
     public int TurnCount { get; private set; } = 0;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Awake()
@@ -118,8 +115,7 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Game Flow Functions **********/
+    /************************************************************/
     #region Game Flow Functions
 
     public void StartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
@@ -153,8 +149,7 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     // HACK:  units are looped over several times

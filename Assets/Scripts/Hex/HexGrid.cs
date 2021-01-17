@@ -111,7 +111,11 @@ public class HexGrid : NetworkBehaviour
         SaveLoadMenu.LoadMapFromReader();
 
         if (!GameSession.Singleton.IsEditorMode)
-            NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
+        {
+            HumanPlayer player = NetworkServer.localConnection.identity.GetComponent<HumanPlayer>();
+            GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
+            //NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
+        }
 
         NetworkServer.Spawn(Singleton.gameObject); 
     }
@@ -137,11 +141,14 @@ public class HexGrid : NetworkBehaviour
 
         for (int i = 0; i < Singleton.units.Count; i++)
         {
-            NetworkServer.Spawn(Singleton.units[i].gameObject);
+            NetworkServer.Spawn(Singleton.units[i].gameObject,
+                Singleton.units[i].MyTeam.AuthoritiveConnection);
         }
         for (int i = 0; i < Singleton.forts.Count; i++)
         {
-            NetworkServer.Spawn(Singleton.forts[i].gameObject);
+            // FIXME: fort subscription is not getting fired before this point, list forts is empty
+            NetworkServer.Spawn(Singleton.forts[i].gameObject,
+                Singleton.forts[i].MyTeam.AuthoritiveConnection);
         }
     }
 
@@ -577,6 +584,7 @@ public class HexGrid : NetworkBehaviour
 
     private void Subscribe()
     {
+        Debug.Log("HexMap is subbing");
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
 
@@ -614,7 +622,7 @@ public class HexGrid : NetworkBehaviour
         unit.name = $"Unit {unitCount}";
         unitCount += 1;
 
-        units.Add(unit);
+        //units.Add(unit); // FIXME: sub in hexgrid happens after spawn
     }
 
     private void HandleOnUnitDepawned(Unit unit)

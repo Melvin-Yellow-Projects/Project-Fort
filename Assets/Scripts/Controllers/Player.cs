@@ -23,14 +23,13 @@ using Mirror;
 /// </summary>
 public abstract class Player : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     protected List<Unit> myUnits = new List<Unit>();
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public Team MyTeam
@@ -44,8 +43,30 @@ public abstract class Player : NetworkBehaviour
     public int MoveCount { get; [Server] set; } = 1;
 
     #endregion
+    /************************************************************/
+    #region Unity Functions
 
-    /********** MARK: Event Handler Functions **********/
+    public override void OnStartAuthority()
+    {
+        // HACK: this probably doesn't belong here, but calling it on awake causes authority errors
+        Subscribe(); 
+    }
+
+    ///// <summary>
+    ///// Unity Method; Awake() is called before Start() upon GameObject creation
+    ///// </summary>
+    //protected virtual void Awake()
+    //{
+    //    Subscribe();
+    //}
+
+    protected virtual void OnDestroy()
+    {
+        Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
     #region Event Handler Functions
 
     protected virtual void Subscribe()

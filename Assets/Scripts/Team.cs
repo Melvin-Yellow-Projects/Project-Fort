@@ -12,19 +12,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 [RequireComponent(typeof(ColorSetter))]
 public class Team : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     [SyncVar(hook = nameof(HookOnTeamIndex))]
     int teamIndex = 0;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public int TeamIndex
@@ -37,7 +37,10 @@ public class Team : NetworkBehaviour
         [Server]
         set
         {
+            if (teamIndex == value) return;
+
             teamIndex = value;
+            ServerRefreshAuthoritativeConnection();
         }
     }
 
@@ -58,19 +61,53 @@ public class Team : NetworkBehaviour
         }
     }
 
-    #endregion
+    public NetworkConnection AuthoritiveConnection
+    {
+        get
+        {
+            for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+            {
+                if (teamIndex == GameNetworkManager.HumanPlayers[i].MyTeam.teamIndex)
+                {
+                    Debug.Log("Grabbing Authoritative Connection");
+                    return GameNetworkManager.HumanPlayers[i].connectionToClient;
+                }
+            }
 
-    /********** MARK: Event Handler Functions **********/
+            Debug.Log("Why is Authoritative Connection null?");
+
+            return null;
+        }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    [Server]
+    public void ServerRefreshAuthoritativeConnection()
+    {
+        Debug.LogWarning("Attempting to refresh AuthoritativeConnection");
+        if (!isServer || GetComponent<HumanPlayer>()) return;
+
+        Debug.Log("Refreshing AuthoritativeConnection");
+
+        netIdentity.RemoveClientAuthority();
+        netIdentity.AssignClientAuthority(AuthoritiveConnection);
+    }
+
+    #endregion
+    /************************************************************/
     #region Event Handler Functions
 
     private void HookOnTeamIndex(int oldValue, int newValue)
     {
         if (MyColorSetter) MyColorSetter.SetColor(MyColor);
+
     }
 
     #endregion
-
-    /********** MARK: Comparison Functions **********/
+    /************************************************************/
     #region Comparison Functions
 
     public static bool operator == (Team team1, Team team2)

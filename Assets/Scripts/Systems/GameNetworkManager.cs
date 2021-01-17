@@ -137,6 +137,8 @@ public class GameNetworkManager : NetworkManager
         if (player.HasCreatedMap) return;
         player.HasCreatedMap = true;
 
+        Debug.Log("New Player Has Created Map.");
+
         bool isReady = true;
         foreach (HumanPlayer p in HumanPlayers) isReady &= p.HasCreatedMap;
 

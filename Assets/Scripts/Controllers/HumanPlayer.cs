@@ -59,6 +59,11 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Server Functions
 
+    public override void OnStartServer()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     [Command]
     public void CmdStartGame() // HACK: i dont like this function here
     {
@@ -73,20 +78,19 @@ public class HumanPlayer : Player
 
     public override void OnStartClient()
     {
+        if (NetworkServer.active) return; // FIXME: this cant be right
+        //if (!isClientOnly) return; 
+
         DontDestroyOnLoad(gameObject);
 
-        // HACK: this line will fail if the player is an AI
+        // HACK: this line will fail if the player is an AI; do all connections need this info?
         GameNetworkManager.HumanPlayers.Add(this);
-
-        Subscribe();
     }
 
     public override void OnStopClient()
     {
         // HACK: this line will fail if the player is an AI
         GameNetworkManager.HumanPlayers.Remove(this);
-
-        Unsubscribe();
     }
 
     #endregion
@@ -189,7 +193,7 @@ public class HumanPlayer : Player
         DeselectUnit();
     }
     #endregion
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     protected override void Subscribe()
