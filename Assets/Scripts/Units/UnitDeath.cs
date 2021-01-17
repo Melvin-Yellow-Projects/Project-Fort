@@ -46,7 +46,7 @@ public class UnitDeath : MonoBehaviour
         IsDying = true;
 
         if (isPlayingAnimation) StartCoroutine(DeathAnim());
-        else Destroy(gameObject);
+        else NetworkServer.Destroy(gameObject);
     }
 
     [Server]
@@ -60,7 +60,7 @@ public class UnitDeath : MonoBehaviour
             DisplacementUpdate();
             yield return null;
         }
-        Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
     }
 
     [Server]

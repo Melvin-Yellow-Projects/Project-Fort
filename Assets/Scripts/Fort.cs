@@ -66,8 +66,7 @@ public class Fort : NetworkBehaviour
             myCell = value;
             myCell.MyFort = this;
 
-            if (isServer) ServerValidateLocation();
-            //ServerValidateLocation(); // FIXME: Why doesn't this work?
+            ValidateLocation();
         }
     }
 
@@ -91,8 +90,6 @@ public class Fort : NetworkBehaviour
     private void Awake()
     {
         MyTeam = GetComponent<Team>();
-
-        Subscribe();
     }
 
     private void Start()
@@ -104,7 +101,19 @@ public class Fort : NetworkBehaviour
     {
         myCell.MyFort = null;
         OnFortDespawned?.Invoke(this);
+    }
 
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        Subscribe();
+    }
+
+    public override void OnStopServer()
+    {
         Unsubscribe();
     }
 
@@ -112,8 +121,7 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Class Functions
 
-    [Server]
-    public void ServerValidateLocation()
+    public void ValidateLocation()
     {
         transform.localPosition = myCell.Position;
     }
@@ -150,16 +158,16 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Event Handler Functions
 
+    [Server]
     private void Subscribe()
     {
-        Debug.LogWarning("Attempting Fort Subscription");
-        if (isServer) GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
-        Debug.Log("Fort Subscribed");
+        GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
+    [Server]
     private void Unsubscribe()
     {
-        if (isServer) GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
+        GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
     [Server]
