@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
 public class UnitDeath : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     [SerializeField] [Range(0, 1f)] float maxJitter = 0.2f;
@@ -18,31 +19,29 @@ public class UnitDeath : MonoBehaviour
     Vector3 originalPosition;
 
     #endregion
-
     /********** MARK: Public Variables **********/
     #region Public Variables
 
-    public bool IsDying { get; private set; } = false;
+    public bool IsDying { get; [Server] private set; } = false;
 
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
     /// Event for when a unit is killed/destroyed
     /// </summary>
     /// <subscriber class="UnitMovement">clears movement data and removes visibility</subscriber>
-    public event Action OnDeath;
+    public event Action ServerOnDeath;
 
     #endregion
+    /************************************************************/
+    #region Server Functions
 
-    /********** MARK: Class Functions **********/
-    #region Class Functions
-
+    [Server]
     public void Die(bool isPlayingAnimation = true)
     {
-        OnDeath?.Invoke();
+        ServerOnDeath?.Invoke();
 
         IsDying = true;
 
@@ -50,6 +49,7 @@ public class UnitDeath : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    [Server]
     private IEnumerator DeathAnim()
     {
         originalPosition = transform.position;
@@ -63,6 +63,7 @@ public class UnitDeath : MonoBehaviour
         Destroy(gameObject);
     }
 
+    [Server]
     private void DisplacementUpdate()
     {
         float jitter = UnityEngine.Random.Range(-maxJitter, maxJitter);
@@ -73,8 +74,7 @@ public class UnitDeath : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Debug Functions **********/
+    /************************************************************/
     #region Debug Functions
 
     //private void Update()

@@ -149,15 +149,16 @@ public class Fort : NetworkBehaviour
 
     private void Subscribe()
     {
-        GameManager.OnStopTurn += HandleOnStopTurn;
+        if (isServerOnly) GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
     private void Unsubscribe()
     {
-        GameManager.OnStopTurn -= HandleOnStopTurn;
+        if (isServerOnly) GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
-    public void HandleOnStopTurn()
+    [Server]
+    public void HandleServerOnStopTurn()
     {
         Unit unit = myCell.MyUnit;
 

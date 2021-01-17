@@ -204,8 +204,8 @@ public class HumanPlayer : Player
 
         base.Subscribe();
 
-        GameManager.OnPlayTurn += HandleOnPlayTurn;
-        GameManager.OnStopTurn += HandleOnStopTurn;
+        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
+        GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
         controls = new Controls();
         controls.Player.Selection.performed += DoSelection;
@@ -219,8 +219,8 @@ public class HumanPlayer : Player
 
         base.Unsubscribe();
 
-        GameManager.OnPlayTurn -= HandleOnPlayTurn;
-        GameManager.OnStopTurn -= HandleOnStopTurn;
+        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
+        GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
         controls.Dispose();
     }
@@ -235,19 +235,21 @@ public class HumanPlayer : Player
         //Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
     }
 
-    protected override void HandleOnStartTurn()
+    [Client]
+    protected void HandleClientOnStartTurn()
     {
-        base.HandleOnStartTurn();
         PlayerMenu.RefreshMoveCountText();
     }
 
-    private void HandleOnPlayTurn()
+    [Client]
+    private void HandleClientOnPlayTurn()
     {
-        DeselectUnitAndClearItsPath();
+        // HACK: i dont think you need to clear it's path, the path shouldn't be set
+        DeselectUnitAndClearItsPath(); 
         controls.Disable();
     }
 
-    private void HandleOnStopTurn()
+    private void HandleClientOnStopTurn()
     {
         controls.Enable();
     }

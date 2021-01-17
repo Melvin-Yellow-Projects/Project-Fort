@@ -76,7 +76,7 @@ public abstract class Player : NetworkBehaviour
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
-        GameManager.OnStartTurn += HandleOnStartTurn;
+        GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
     }
 
     protected virtual void Unsubscribe()
@@ -86,7 +86,7 @@ public abstract class Player : NetworkBehaviour
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
-        GameManager.OnStartTurn -= HandleOnStartTurn;
+        GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
     }
 
     protected virtual void HandleOnUnitSpawned(Unit unit)
@@ -101,7 +101,8 @@ public abstract class Player : NetworkBehaviour
         myUnits.Remove(unit);
     }
 
-    protected virtual void HandleOnStartTurn()
+    [Server]
+    protected virtual void HandleServerOnStartTurn()
     {
         MoveCount = 0;
     }

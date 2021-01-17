@@ -434,30 +434,33 @@ public class UnitMovement : NetworkBehaviour
 
     private void Subscribe()
     {
-        GameManager.OnStartRound += HandleOnStartRound;
-        GameManager.OnStopTurn += HandleOnStopTurn;
-        GetComponent<UnitDeath>().OnDeath += HandleOnDeath;
+        GameManager.ServerOnStartRound += HandleServerOnStartRound;
+        GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
+        GetComponent<UnitDeath>().ServerOnDeath += HandleServerOnDeath;
     }
 
     private void Unsubscribe()
     {
-        GameManager.OnStartRound -= HandleOnStartRound;
-        GameManager.OnStopTurn -= HandleOnStopTurn;
-        GetComponent<UnitDeath>().OnDeath -= HandleOnDeath;
+        GameManager.ServerOnStartRound -= HandleServerOnStartRound;
+        GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
+        GetComponent<UnitDeath>().ServerOnDeath -= HandleServerOnDeath;
     }
 
-    private void HandleOnStartRound()
+    [Server]
+    private void HandleServerOnStartRound()
     {
         CanMove = true;
     }
 
-    private void HandleOnStopTurn()
+    [Server]
+    private void HandleServerOnStopTurn()
     {
         // TODO: this might change for units
         if (currentMovement < maxMovement) CanMove = false;
     }
 
-    private void HandleOnDeath()
+    [Server]
+    private void HandleServerOnDeath()
     {
         StopAllCoroutines();
 
@@ -467,7 +470,7 @@ public class UnitMovement : NetworkBehaviour
 
         UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
-        Path.Clear();
+        Path.Clear(); // TODO: Clear path on client as well
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

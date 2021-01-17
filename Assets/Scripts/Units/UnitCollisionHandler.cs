@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class UnitCollisionHandler : NetworkBehaviour
+public class UnitCollisionHandler : MonoBehaviour
 {
     /********** MARK: Properties **********/
     #region Properties
