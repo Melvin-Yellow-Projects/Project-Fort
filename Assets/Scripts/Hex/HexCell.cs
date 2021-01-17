@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using Mirror;
 
 /// <summary>
 /// Class for a specific hex cell or tile
@@ -349,8 +350,8 @@ public class HexCell : MonoBehaviour
         }
 
         // refresh unit location
-        if (MyUnit) MyUnit.ValidateLocation();
-        if (MyFort) MyFort.ValidateLocation();
+        if (MyUnit) MyUnit.ServerValidateLocation(); // HACK: this will generate warnings
+        if (MyFort) MyFort.ServerValidateLocation(); // TODO: verify that this doesn't mess up things
     }
 
     //void RefreshSelfOnly()

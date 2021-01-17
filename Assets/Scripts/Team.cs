@@ -87,10 +87,10 @@ public class Team : NetworkBehaviour
     [Server]
     public void ServerRefreshAuthoritativeConnection()
     {
-        Debug.LogWarning($"Attempting to refresh AuthoritativeConnection for {name}");
+        //Debug.LogWarning($"Attempting to refresh AuthoritativeConnection for {name}");
         if (!isServer || GetComponent<HumanPlayer>()) return;
 
-        Debug.Log($"Refreshing AuthoritativeConnection for {name}");
+        //Debug.Log($"Refreshing AuthoritativeConnection for {name}");
 
         netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(AuthoritiveConnection);

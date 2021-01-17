@@ -144,11 +144,13 @@ public class HexGrid : NetworkBehaviour
         {
             NetworkServer.Spawn(Singleton.units[i].gameObject,
                 Singleton.units[i].MyTeam.AuthoritiveConnection);
+            Singleton.units[i].ServerValidateLocation();
         }
         for (int i = 0; i < Singleton.forts.Count; i++)
         {
             NetworkServer.Spawn(Singleton.forts[i].gameObject,
                 Singleton.forts[i].MyTeam.AuthoritiveConnection);
+            Singleton.forts[i].ServerValidateLocation();
         }
     }
 

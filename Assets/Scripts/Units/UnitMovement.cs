@@ -59,8 +59,9 @@ public class UnitMovement : NetworkBehaviour
             // update for new location
             myCell = value;
             myCell.MyUnit = MyUnit; // sets this hex cell's unit to this one
-            UnitPathfinding.IncreaseVisibility(myCell, visionRange);
-            MyUnit.ValidateLocation();
+
+            if (isServer) MyUnit.ServerValidateLocation(); // FIXME: Why doesn't this work?
+            //MyUnit.ServerValidateLocation();
         }
     }
 

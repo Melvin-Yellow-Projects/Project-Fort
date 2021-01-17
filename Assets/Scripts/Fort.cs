@@ -65,7 +65,9 @@ public class Fort : NetworkBehaviour
         {
             myCell = value;
             myCell.MyFort = this;
-            ValidateLocation();
+
+            if (isServer) ServerValidateLocation();
+            //ServerValidateLocation(); // FIXME: Why doesn't this work?
         }
     }
 
@@ -110,7 +112,8 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Class Functions
 
-    public void ValidateLocation()
+    [Server]
+    public void ServerValidateLocation()
     {
         transform.localPosition = myCell.Position;
     }
@@ -149,12 +152,14 @@ public class Fort : NetworkBehaviour
 
     private void Subscribe()
     {
-        if (isServerOnly) GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
+        Debug.LogWarning("Attempting Fort Subscription");
+        if (isServer) GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
+        Debug.Log("Fort Subscribed");
     }
 
     private void Unsubscribe()
     {
-        if (isServerOnly) GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
+        if (isServer) GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
     [Server]

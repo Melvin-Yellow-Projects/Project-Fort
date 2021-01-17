@@ -114,8 +114,10 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Class Functions
 
-    public void ValidateLocation()
+    [Server]
+    public void ServerValidateLocation()
     {
+        UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange);
         transform.localPosition = MyCell.Position;
     }
 
