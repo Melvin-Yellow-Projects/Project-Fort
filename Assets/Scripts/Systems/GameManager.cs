@@ -28,7 +28,7 @@ public class GameManager : NetworkBehaviour
     /************************************************************/
     #region Class Events
 
-    // HACK: rewrite comments here
+    // FIXME: Verify Player Menu
 
     /// <summary>
     /// Server event for when a new round has begun

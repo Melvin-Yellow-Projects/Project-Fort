@@ -11,6 +11,8 @@
  *      series: Hex Map; this file has been updated it to better fit this project
  *      
  *      Previously known as HexPathfinding.cs
+ *      
+ *      TODO: Display A* calculation
  **/
 
 using System.Collections;
@@ -327,6 +329,8 @@ public class UnitPathfinding : MonoBehaviour
     {
         Debug.Log("HexPathfinding DisplayPath() IEnumerator Checking In");
         yield return null;
+
+        // TODO: Make this class have a debug option to display A* algo
     }
 
     #endregion

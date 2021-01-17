@@ -218,6 +218,7 @@ public class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Class Functions
 
+    [Server]
     public void DoAction()
     {
         if (!HasAction) return;
@@ -229,6 +230,7 @@ public class UnitMovement : NetworkBehaviour
         StartCoroutine(Route(cells));
     }
 
+    [Server]
     public void CompleteAction()
     {
         if (!EnRouteCell) return;
@@ -253,6 +255,7 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
+    [Server]
     public void CancelAction()
     {
         if (!EnRouteCell) return;
@@ -269,6 +272,7 @@ public class UnitMovement : NetworkBehaviour
     /// why?
     /// </summary>
     /// <returns></returns>
+    [Server]
     private IEnumerator Route(List<HexCell> cells)
     {
         IsEnRoute = true;
@@ -332,6 +336,7 @@ public class UnitMovement : NetworkBehaviour
         IsEnRoute = false;
     }
 
+    [Server]
     private IEnumerator RouteCanceled()
     {
         IsEnRoute = true;
@@ -361,6 +366,7 @@ public class UnitMovement : NetworkBehaviour
         IsEnRoute = false;
     }
 
+    [Server]
     public void LookAt(HexDirection direction)
     {
         // HACK: yea dis is weird, coroutine needs to probably be stopped first
@@ -368,6 +374,7 @@ public class UnitMovement : NetworkBehaviour
         StartCoroutine(LookAt(myCell.Position + localPoint));
     }
 
+    [Server]
     IEnumerator LookAt(Vector3 point)
     {
         // locks the y dimension
