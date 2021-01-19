@@ -6,28 +6,32 @@
  * Date Created: October 18, 2020
  * 
  * Additional Comments:
- *      HACK: this class creates a lot of instances, and then deletes them very fast
+ *      TODO: Update Path to better track the pathing of the unit, in particular the tail of the
+ *              path does a poor job in showing where the unit is moving during its move
  *      
  *      Previously known as HexPath.cs
  **/
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 
 /// </summary>
-public class UnitPath
+public class UnitPath : MonoBehaviour
 {
     /********** MARK: Private Variables **********/
     #region Private Variables
 
     Unit unit;
+    UnitMovement movement;
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells = new List<HexCell>();
 
-    UnitCursor curser;
+    UnitCursor cursor;
 
     #endregion
 
@@ -50,13 +54,17 @@ public class UnitPath
         }
     }
 
-    public bool IsNextStepValid { get; set; } = false;
-
     public List<HexCell> Cells // HACK: this could be simplified with the variable cells
     {
         get
         {
             return cells;
+        }
+        [Mirror.Server]
+        set
+        {
+            // HACK: does this work?
+            cells = value;
         }
     }
 
@@ -100,12 +108,13 @@ public class UnitPath
 
     #endregion
 
-    /********** MARK: Constructors **********/
-    #region Constructor
+    /********** MARK: Public Properties **********/
+    #region Public Properties
 
-    public UnitPath(Unit unit)
+    private void Awake()
     {
-        this.unit = unit;
+        unit = GetComponent<Unit>();
+        movement = GetComponent<UnitMovement>();
     }
 
     #endregion
@@ -130,7 +139,7 @@ public class UnitPath
             {
                 cells.Add(cell);
 
-                if (UnitPathfinding.GetMoveCostCalculation(cells) <= unit.MaxMovement)
+                if (UnitPathfinding.GetMoveCostCalculation(cells) <= movement.MaxMovement)
                 {
                     return; // ...otherwise reset the path if the path is too long
                 }
@@ -143,7 +152,7 @@ public class UnitPath
         }
         else
         {
-            cells.Clear();
+            Clear(clearCursor: false);
             cells = UnitPathfinding.FindPath(unit, StartCell, cell);
         }
     }
@@ -152,9 +161,14 @@ public class UnitPath
     {
         if (numberToRemove > cells.Count) Debug.LogError("Removing more cells than in Path!");
 
-        for (int i = 0; i < numberToRemove; i++) cells.RemoveAt(0);
+        for (int i = 0; i < numberToRemove; i++)
+        {
+            //cells[0].DisableHighlight();
+            cells.RemoveAt(0);
+        }
 
-        if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell is not Unit's cell!");
+        if (unit.isServer && unit.MyCell != cells[0])
+            Debug.LogWarning("Tail cell is not Unit's cell!");
     }
 
     /// <summary>
@@ -164,11 +178,12 @@ public class UnitPath
     /// <param name="speed"></param>
     public void Show()
     {
+        //StopAllCoroutines();
+
         if (!HasPath)
         {
-            if (curser != null) curser.DestroyCurser();
+            if (cursor != null) cursor.DestroyCursor();
             return;
-            
         }
 
         List<Vector3> points = new List<Vector3>();
@@ -184,11 +199,32 @@ public class UnitPath
         //StartCell.EnableHighlight(Color.blue);
         //endCell.EnableHighlight(Color.red);
 
-        if (curser) curser.Redraw(points); 
-        else curser = UnitCursor.Initialize(points);
+        if (cursor) cursor.Redraw(points);
+        else cursor = UnitCursor.Initialize(points);
 
-        curser.IsSelected = unit.IsSelected;
-        curser.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > unit.MaxMovement);
+        cursor.IsSelected = unit.IsSelected;
+        cursor.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > movement.MaxMovement);
+
+        //StartCoroutine(AnimatePath());
+    }
+
+    private IEnumerator AnimatePath()
+    {
+        Image highlight;
+        ColorSetter setter;
+        int i = 0;
+        while (HasPath && unit.IsSelected)
+        {
+            highlight = cells[i].uiRectTransform.GetChild(0).GetComponent<Image>();
+            setter = cells[i].uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+
+            yield return setter.SetColor(highlight, Color.red, cutoff:0.3f);
+            Debug.Log("Helo");
+            StartCoroutine(setter.SetColor(highlight, Color.white));
+
+            i++;
+            if (i >= cells.Count) i = 0;
+        }
     }
 
     ///// <summary>
@@ -204,12 +240,17 @@ public class UnitPath
     //    }
     //}
 
-    public void Clear()
+    public void Clear(bool clearCursor=true)
     {
-        //Hide();
-        if (curser != null) curser.DestroyCurser(); // TODO: i think there needs to be a hide function for the curser
+        //Hide(); // TODO: i think there needs to be a hide function for the cursor
+        if (clearCursor && cursor != null) cursor.DestroyCursor();
 
         //moveCost = 0;
+
+        //for (int i = 0; i < cells.Count; i++)
+        //{
+        //    cells[i].DisableHighlight();
+        //}
 
         cells.Clear();
     }

@@ -1,96 +1,270 @@
 fileFormatVersion: 2
 guid: 9e6073695a19a02438f379f968446795
-timeCreated: 1518851603
-licenseType: Store
 ModelImporter:
-  serializedVersion: 22
-  fileIDToRecycleName:
-    100000: polySurface1459
-    100002: polySurface1460
-    100004: polySurface1461
-    100006: polySurface1462
-    100008: polySurface1463
-    100010: polySurface1464
-    100012: polySurface1465
-    100014: //RootNode
-    100016: Stone_Bishop
-    100018: transform5
-    100020: Stone_Bishop_Element_1
-    100022: Stone_Bishop_Element_2
-    100024: Stone_Bishop_Element_3
-    100026: Stone_Bishop_Element_4
-    100028: Stone_Bishop_Element_5
-    100030: Stone_Bishop_Element_6
-    100032: Stone_Bishop_Element_7
-    100034: Stone_Bishop_Element_8
-    400000: polySurface1459
-    400002: polySurface1460
-    400004: polySurface1461
-    400006: polySurface1462
-    400008: polySurface1463
-    400010: polySurface1464
-    400012: polySurface1465
-    400014: //RootNode
-    400016: Stone_Bishop
-    400018: transform5
-    400020: Stone_Bishop_Element_1
-    400022: Stone_Bishop_Element_2
-    400024: Stone_Bishop_Element_3
-    400026: Stone_Bishop_Element_4
-    400028: Stone_Bishop_Element_5
-    400030: Stone_Bishop_Element_6
-    400032: Stone_Bishop_Element_7
-    400034: Stone_Bishop_Element_8
-    2100000: Stone_Bishop_mtl
-    2100002: Stone_Queen_mtl
-    2300000: polySurface1459
-    2300002: polySurface1460
-    2300004: polySurface1461
-    2300006: polySurface1462
-    2300008: polySurface1463
-    2300010: polySurface1464
-    2300012: polySurface1465
-    2300014: Stone_Bishop_Element_1
-    2300016: Stone_Bishop_Element_2
-    2300018: Stone_Bishop_Element_3
-    2300020: Stone_Bishop_Element_4
-    2300022: Stone_Bishop_Element_5
-    2300024: Stone_Bishop_Element_6
-    2300026: Stone_Bishop_Element_7
-    2300028: Stone_Bishop_Element_8
-    3300000: polySurface1459
-    3300002: polySurface1460
-    3300004: polySurface1461
-    3300006: polySurface1462
-    3300008: polySurface1463
-    3300010: polySurface1464
-    3300012: polySurface1465
-    3300014: Stone_Bishop_Element_1
-    3300016: Stone_Bishop_Element_2
-    3300018: Stone_Bishop_Element_3
-    3300020: Stone_Bishop_Element_4
-    3300022: Stone_Bishop_Element_5
-    3300024: Stone_Bishop_Element_6
-    3300026: Stone_Bishop_Element_7
-    3300028: Stone_Bishop_Element_8
-    4300000: polySurface1459
-    4300002: polySurface1460
-    4300004: polySurface1461
-    4300006: polySurface1462
-    4300008: polySurface1463
-    4300010: polySurface1464
-    4300012: polySurface1465
-    4300014: Stone_Bishop_Element_1
-    4300016: Stone_Bishop_Element_2
-    4300018: Stone_Bishop_Element_3
-    4300020: Stone_Bishop_Element_4
-    4300022: Stone_Bishop_Element_5
-    4300024: Stone_Bishop_Element_6
-    4300026: Stone_Bishop_Element_7
-    4300028: Stone_Bishop_Element_8
-  externalObjects: {}
+  serializedVersion: 20101
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: polySurface1459
+  - first:
+      1: 100002
+    second: polySurface1460
+  - first:
+      1: 100004
+    second: polySurface1461
+  - first:
+      1: 100006
+    second: polySurface1462
+  - first:
+      1: 100008
+    second: polySurface1463
+  - first:
+      1: 100010
+    second: polySurface1464
+  - first:
+      1: 100012
+    second: polySurface1465
+  - first:
+      1: 100014
+    second: //RootNode
+  - first:
+      1: 100016
+    second: Stone_Bishop
+  - first:
+      1: 100018
+    second: transform5
+  - first:
+      1: 100020
+    second: Stone_Bishop_Element_1
+  - first:
+      1: 100022
+    second: Stone_Bishop_Element_2
+  - first:
+      1: 100024
+    second: Stone_Bishop_Element_3
+  - first:
+      1: 100026
+    second: Stone_Bishop_Element_4
+  - first:
+      1: 100028
+    second: Stone_Bishop_Element_5
+  - first:
+      1: 100030
+    second: Stone_Bishop_Element_6
+  - first:
+      1: 100032
+    second: Stone_Bishop_Element_7
+  - first:
+      1: 100034
+    second: Stone_Bishop_Element_8
+  - first:
+      4: 400000
+    second: polySurface1459
+  - first:
+      4: 400002
+    second: polySurface1460
+  - first:
+      4: 400004
+    second: polySurface1461
+  - first:
+      4: 400006
+    second: polySurface1462
+  - first:
+      4: 400008
+    second: polySurface1463
+  - first:
+      4: 400010
+    second: polySurface1464
+  - first:
+      4: 400012
+    second: polySurface1465
+  - first:
+      4: 400014
+    second: //RootNode
+  - first:
+      4: 400016
+    second: Stone_Bishop
+  - first:
+      4: 400018
+    second: transform5
+  - first:
+      4: 400020
+    second: Stone_Bishop_Element_1
+  - first:
+      4: 400022
+    second: Stone_Bishop_Element_2
+  - first:
+      4: 400024
+    second: Stone_Bishop_Element_3
+  - first:
+      4: 400026
+    second: Stone_Bishop_Element_4
+  - first:
+      4: 400028
+    second: Stone_Bishop_Element_5
+  - first:
+      4: 400030
+    second: Stone_Bishop_Element_6
+  - first:
+      4: 400032
+    second: Stone_Bishop_Element_7
+  - first:
+      4: 400034
+    second: Stone_Bishop_Element_8
+  - first:
+      21: 2100000
+    second: Stone_Bishop_mtl
+  - first:
+      21: 2100002
+    second: Stone_Queen_mtl
+  - first:
+      23: 2300000
+    second: polySurface1459
+  - first:
+      23: 2300002
+    second: polySurface1460
+  - first:
+      23: 2300004
+    second: polySurface1461
+  - first:
+      23: 2300006
+    second: polySurface1462
+  - first:
+      23: 2300008
+    second: polySurface1463
+  - first:
+      23: 2300010
+    second: polySurface1464
+  - first:
+      23: 2300012
+    second: polySurface1465
+  - first:
+      23: 2300014
+    second: Stone_Bishop_Element_1
+  - first:
+      23: 2300016
+    second: Stone_Bishop_Element_2
+  - first:
+      23: 2300018
+    second: Stone_Bishop_Element_3
+  - first:
+      23: 2300020
+    second: Stone_Bishop_Element_4
+  - first:
+      23: 2300022
+    second: Stone_Bishop_Element_5
+  - first:
+      23: 2300024
+    second: Stone_Bishop_Element_6
+  - first:
+      23: 2300026
+    second: Stone_Bishop_Element_7
+  - first:
+      23: 2300028
+    second: Stone_Bishop_Element_8
+  - first:
+      33: 3300000
+    second: polySurface1459
+  - first:
+      33: 3300002
+    second: polySurface1460
+  - first:
+      33: 3300004
+    second: polySurface1461
+  - first:
+      33: 3300006
+    second: polySurface1462
+  - first:
+      33: 3300008
+    second: polySurface1463
+  - first:
+      33: 3300010
+    second: polySurface1464
+  - first:
+      33: 3300012
+    second: polySurface1465
+  - first:
+      33: 3300014
+    second: Stone_Bishop_Element_1
+  - first:
+      33: 3300016
+    second: Stone_Bishop_Element_2
+  - first:
+      33: 3300018
+    second: Stone_Bishop_Element_3
+  - first:
+      33: 3300020
+    second: Stone_Bishop_Element_4
+  - first:
+      33: 3300022
+    second: Stone_Bishop_Element_5
+  - first:
+      33: 3300024
+    second: Stone_Bishop_Element_6
+  - first:
+      33: 3300026
+    second: Stone_Bishop_Element_7
+  - first:
+      33: 3300028
+    second: Stone_Bishop_Element_8
+  - first:
+      43: 4300000
+    second: polySurface1459
+  - first:
+      43: 4300002
+    second: polySurface1460
+  - first:
+      43: 4300004
+    second: polySurface1461
+  - first:
+      43: 4300006
+    second: polySurface1462
+  - first:
+      43: 4300008
+    second: polySurface1463
+  - first:
+      43: 4300010
+    second: polySurface1464
+  - first:
+      43: 4300012
+    second: polySurface1465
+  - first:
+      43: 4300014
+    second: Stone_Bishop_Element_1
+  - first:
+      43: 4300016
+    second: Stone_Bishop_Element_2
+  - first:
+      43: 4300018
+    second: Stone_Bishop_Element_3
+  - first:
+      43: 4300020
+    second: Stone_Bishop_Element_4
+  - first:
+      43: 4300022
+    second: Stone_Bishop_Element_5
+  - first:
+      43: 4300024
+    second: Stone_Bishop_Element_6
+  - first:
+      43: 4300026
+    second: Stone_Bishop_Element_7
+  - first:
+      43: 4300028
+    second: Stone_Bishop_Element_8
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stone_Bishop_mtl
+    second: {fileID: 2100000, guid: 70afa98d78e7d462099b2dab85f6068e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stone_Queen_mtl
+    second: {fileID: 2100000, guid: 70afa98d78e7d462099b2dab85f6068e, type: 2}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -107,6 +281,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -121,21 +296,31 @@ ModelImporter:
     globalScale: 110
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
   tangentSpace:
@@ -143,10 +328,13 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -156,14 +344,16 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 110
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 0
   humanoidOversampling: 1
+  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

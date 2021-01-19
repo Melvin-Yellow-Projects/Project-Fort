@@ -17,13 +17,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using Mirror;
 
 /// <summary>
 /// Map/grid of HexCells
 /// </summary>
-public class HexGrid : MonoBehaviour
+public class HexGrid : NetworkBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     /* Cached References */
@@ -40,10 +41,15 @@ public class HexGrid : MonoBehaviour
     /* Settings */
     [Header("Settings")]
     [Tooltip("number of cell in the x direction; effectively width")]
+    [SyncVar]
     public int cellCountX = 20;
 
     [Tooltip("number of cell in the z direction; effectively height")]
+    [SyncVar]
     public int cellCountZ = 15;
+
+    [Tooltip("layers to ignore when raycasting")]
+    [SerializeField] LayerMask layersToIgnore; // TODO: this would probably be better as a cell layer
 
     /* Variables */
     public List<Unit> units = new List<Unit>(); // HACK: should not be public
@@ -51,18 +57,19 @@ public class HexGrid : MonoBehaviour
     List<Fort> forts = new List<Fort>();
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
     /// number of chunk columns
     /// </summary>
+    [SyncVar] // TODO: verify this works
     private int chunkCountX;
 
     /// <summary>
     /// number of chunk rows
     /// </summary>
+    [SyncVar]
     private int chunkCountZ;
 
     // references to the grid's chunks and cells
@@ -71,64 +78,139 @@ public class HexGrid : MonoBehaviour
 
     HexCellShaderData cellShaderData;
 
-    #endregion
+    int fortCount = 0;
+    int unitCount = 0;
 
-    /********** MARK: Public Properties **********/
+    #endregion
+    /************************************************************/
     #region Public Properties
 
-    public static HexGrid Singleton { get; set; }
+    public static HexGrid Prefab { get; set; }
+
+    public static HexGrid Singleton { get; private set; }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
-        
-    protected void Awake()
+
+    private void OnDestroy()
     {
-        cellShaderData = gameObject.AddComponent<HexCellShaderData>();
-
-        CreateMap(cellCountX, cellCountZ);
-
-        Fort.OnFortSpawned += HandleOnFortSpawned;
-        Fort.OnFortDespawned += HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
-        Unit.OnUnitDepawned += HandleOnUnitDepawned;
-
-        Singleton = this;
-    }
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    protected void OnEnable()
-    {
-        //HexMetrics.InitializeHashGrid(seed);
-        ResetVisibility();
-
-        Singleton = this;
-    }
-
-    protected void OnDestroy()
-    {
-        Fort.OnFortSpawned -= HandleOnFortSpawned;
-        Fort.OnFortDespawned -= HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
-        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+        Unsubscribe();
 
         Singleton = null;
     }
 
     #endregion
+    /************************************************************/
+    #region Server Functions
 
-    /********** MARK: Class Functions **********/
+    [Server]
+    public static void ServerSpawnMapTerrain()
+    {
+        Instantiate(Prefab).InitializeMap();
+
+        SaveLoadMenu.LoadMapFromReader();
+
+        if (!GameSession.Singleton.IsEditorMode)
+        {
+            HumanPlayer player = NetworkServer.localConnection.identity.GetComponent<HumanPlayer>();
+            GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
+            //NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
+        }
+
+        NetworkServer.Spawn(Singleton.gameObject); 
+    }
+
+    [Command(ignoreAuthority = true)]
+    private void CmdUpdateCellData(int index, NetworkConnectionToClient conn = null)
+    {
+        // TODO: Validation Logic, can this connection see this cell? if not return
+        HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
+        GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
+
+        //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
+        //NetworkConnection conn = playerIdentity.connectionToClient; 
+
+        // HACK: this function could be inside of the HexCell class
+        TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
+    }
+
+    [Server]
+    public static void ServerSpawnMapEntities()
+    {
+        //Debug.Log("Spawning Map Entities");
+
+        for (int i = 0; i < Singleton.units.Count; i++)
+        {
+            NetworkServer.Spawn(Singleton.units[i].gameObject,
+                Singleton.units[i].MyTeam.AuthoritiveConnection);
+        }
+        for (int i = 0; i < Singleton.forts.Count; i++)
+        {
+            NetworkServer.Spawn(Singleton.forts[i].gameObject,
+                Singleton.forts[i].MyTeam.AuthoritiveConnection);
+        }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    [Client]
+    public override void OnStartClient()
+    {
+        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
+        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        {
+            if (GameNetworkManager.HumanPlayers[i].hasAuthority)
+                GameNetworkManager.HumanPlayers[i].enabled = true;
+        }
+        // HACK: perhaps a static event that logs to clients to enable player is better
+
+        if (!isClientOnly) return;
+
+        InitializeMap();
+
+        Debug.Log("I am a client and I'm fetching the Map!");
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+    }
+
+    [TargetRpc]
+    private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
+    {
+        int index = data.index;
+        cells[index].Elevation = data.elevation;
+        cells[index].TerrainTypeIndex = data.terrainTypeIndex;
+        cells[index].IsExplored = data.isExplored;
+
+        // FIXME: Is this code correct?
+        cells[index].ShaderData.RefreshTerrain(cells[index]);
+        cells[index].ShaderData.RefreshVisibility(cells[index]);
+    }
+
+    #endregion
+    /************************************************************/
     #region Class Functions
+
+    private void InitializeMap()
+    {
+        Singleton = this;
+
+        //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
+        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        //terrainMaterial.DisableKeyword("GRID_ON");
+
+        cellShaderData = gameObject.AddComponent<HexCellShaderData>();
+
+        CreateMap(cellCountX, cellCountZ);
+
+        Subscribe();
+    }
 
     public bool CreateMap(int x, int z)
     {
-        ClearForts();
-        ClearUnits();
+        ClearEntities();
 
         // destroy previous cells and chunks
         if (chunks != null)
@@ -301,6 +383,11 @@ public class HexGrid : MonoBehaviour
         chunk.AddCell(localCellIndex, cell);
     }
 
+    public HexCell GetCell(int index)
+    {
+        return cells[index];
+    }
+
     /// <summary>
     /// Gets the cell within the hex grid given a world position; assumes the position is a legal
     /// position
@@ -319,7 +406,7 @@ public class HexGrid : MonoBehaviour
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
         // return cell using index
-        return cells[index]; // FIXME: out of bounds error when editing top most cells
+        return cells[index];
     }
 
     /// <summary>
@@ -342,11 +429,6 @@ public class HexGrid : MonoBehaviour
         return cells[index];
     }
 
-    public HexCell GetCellUnderMouse()
-    {
-        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
-    }
-
     /// <summary>
     /// TODO: comment GetCell and touch up vars
     /// </summary>
@@ -356,16 +438,17 @@ public class HexGrid : MonoBehaviour
         RaycastHit hit;
 
         // did we hit anything? then return that HexCell
-        if (Physics.Raycast(inputRay, out hit))
-        {
-            // draw line for 1 second
-            Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
+        if (!Physics.Raycast(inputRay, out hit, 1000, ~layersToIgnore)) return null;
 
-            return GetCell(hit.point);
-        }
+        // draw line for 1 second
+        Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);
 
-        // nothing was found
-        return null;
+        return GetCell(hit.point);
+    }
+
+    public HexCell GetCellUnderMouse()
+    {
+        return GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
     }
 
     // TODO: comment SetCellLabel
@@ -386,27 +469,23 @@ public class HexGrid : MonoBehaviour
     {
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Path.Clear();
+            units[i].Movement.Path.Clear();
         }
     }
 
-    void ClearUnits()
+    private void ClearEntities()
     {
         for (int i = 0; i < units.Count; i++)
         {
-            units[i].Path.Clear();
-
-            units[i].Die();
+            units[i].Die(isPlayingAnimation: false);
         }
         units.Clear();
-    }
 
-    void ClearForts()
-    {
         for (int i = 0; i < forts.Count; i++)
         {
             Destroy(forts[i].gameObject);
         }
+        forts.Clear();
     }
 
     public void ResetVisibility()
@@ -419,13 +498,12 @@ public class HexGrid : MonoBehaviour
         for (int i = 0; i < units.Count; i++)
         {
             Unit unit = units[i];
-            UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.VisionRange);
+            UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.Movement.VisionRange);
         }
     }
 
     #endregion
-
-    /********** MARK: Save/Load Functions **********/
+    /************************************************************/
     #region Save/Load Functions
 
     /// <summary>
@@ -459,13 +537,13 @@ public class HexGrid : MonoBehaviour
     /// TODO comment load
     /// </summary>
     /// <param name="reader"></param>
-    public void Load(BinaryReader reader, int header)
+    public void Load(BinaryReader mapReader, int header)
     {
-        ClearUnits();
+        ClearEntities();
 
-        int x = 20, z = 15;
-        x = reader.ReadInt32();
-        z = reader.ReadInt32();
+        //int x = 20, z = 15; // HACK: <- line not needed
+        int x = mapReader.ReadInt32();
+        int z = mapReader.ReadInt32();
 
         // we dont need to make another map if it's the same size as the existing one
         if (x != cellCountX || z != cellCountZ)
@@ -479,42 +557,62 @@ public class HexGrid : MonoBehaviour
 
         for (int i = 0; i < cells.Length; i++)
         {
-            cells[i].Load(reader, header);
+            cells[i].Load(mapReader, header);
         }
         for (int i = 0; i < chunks.Length; i++)
         {
             chunks[i].Refresh();
         }
-        int fortCount = reader.ReadInt32();
+        int fortCount = mapReader.ReadInt32();
         for (int i = 0; i < fortCount; i++)
         {
-            Fort.Load(reader, header);
+            Fort.Load(mapReader, header);
         }
 
-        int unitCount = reader.ReadInt32();
+        int unitCount = mapReader.ReadInt32();
         for (int i = 0; i < unitCount; i++)
         {
-            Unit.Load(reader, header);
+            Unit.Load(mapReader, header);
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;
     }
 
     #endregion
+    /************************************************************/
+    #region Event Handler Functions
 
-    /********** MARK: Handler Functions **********/
-    #region Handler Functions
+    private void Subscribe()
+    {
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
+
+        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Unit.OnUnitDepawned += HandleOnUnitDepawned;
+    }
+
+    private void Unsubscribe()
+    {
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
+
+        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
+    }
 
     private void HandleOnFortSpawned(Fort fort)
     {
         // TODO: Server validation
+
+        fort.name = $"Fort {fortCount}";
+        fortCount += 1;
 
         forts.Add(fort);
     }
 
     private void HandleOnFortDespawned(Fort fort)
     {
-        // TODO: Server validation
+        // FIXME: this needs to be replaced with a manual event rather than handle
 
         forts.Remove(fort);
     }
@@ -523,11 +621,15 @@ public class HexGrid : MonoBehaviour
     {
         // TODO: Server validation
 
+        unit.name = $"Unit {unitCount}";
+        unitCount += 1;
+
         units.Add(unit);
     }
 
     private void HandleOnUnitDepawned(Unit unit)
     {
+        // FIXME: this needs to be replaced with a manual event rather than handle
         units.Remove(unit);
     }
 

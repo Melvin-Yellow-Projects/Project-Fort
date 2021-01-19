@@ -11,6 +11,8 @@
  *      series: Hex Map; this file has been updated it to better fit this project
  *      
  *      Previously known as HexPathfinding.cs
+ *      
+ *      TODO: Display A* calculation
  **/
 
 using System.Collections;
@@ -19,7 +21,7 @@ using UnityEngine;
 
 public class UnitPathfinding : MonoBehaviour
 {
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -39,8 +41,7 @@ public class UnitPathfinding : MonoBehaviour
     static int searchFrontierPhase;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -53,18 +54,17 @@ public class UnitPathfinding : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /************************************************************/
+    #region Pathing Functions
 
     public static bool CanAddCellToPath(Unit unit, HexCell cell)
     {
-        UnitPath path = unit.Path;
+        UnitPath path = unit.Movement.Path;
         if (!path.EndCell.IsNeighbor(cell)) return false;
 
         if (!IsValidCellForSearch(unit, path.EndCell, cell, isUsingQueue: false)) return false;
 
-        if (!unit.IsValidEdgeForPath(path.EndCell, cell)) return false;
+        if (!unit.Movement.IsValidEdgeForPath(path.EndCell, cell)) return false;
 
         return true;
     }
@@ -113,7 +113,7 @@ public class UnitPathfinding : MonoBehaviour
                 return GetPathCells(startCell, endCell);
             }
 
-            int currentTurn = (current.Distance - 1) / unit.MaxMovement;
+            int currentTurn = (current.Distance - 1) / unit.Movement.MaxMovement;
 
             // search all neighbors of the current cell
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
@@ -121,18 +121,13 @@ public class UnitPathfinding : MonoBehaviour
                 // check if the neighbors are valid cells to search
                 HexCell neighbor = current.GetNeighbor(d);
                 if (IsValidCellForSearch(unit, current, neighbor, isUsingQueue: true) &&
-                    unit.IsValidEdgeForPath(current, neighbor))
+                    unit.Movement.IsValidEdgeForPath(current, neighbor))
                 {
                     // if they are valid, calculate distance and add them to the queue
                     int moveCost = GetMoveCostCalculation(current, neighbor);
 
                     // distance is calculated from move cost
                     int distance = current.Distance + moveCost;
-                    int turn = (distance - 1) / unit.MaxMovement;
-
-                    // this adjusts the distance if there is left over movement
-                    // TODO: is this the system we want?
-                    if (turn > currentTurn) distance = turn * unit.MaxMovement + moveCost;
 
                     // adding a new cell that hasn't been updated
                     if (neighbor.SearchPhase < searchFrontierPhase)
@@ -175,7 +170,7 @@ public class UnitPathfinding : MonoBehaviour
     }
 
     /// <summary>
-    /// todo: comment IsValidCellForSearch; UNDONE: add rivers and water
+    /// todo: comment IsValidCellForSearch;
     /// </summary>
     /// <param name="current"></param>
     /// <param name="neighbor"></param>
@@ -186,7 +181,7 @@ public class UnitPathfinding : MonoBehaviour
         // invalid if neighbor is null or if the cell is already out of the queue
         if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase)) return false;
 
-        return unit.IsValidCellForPath(current, neighbor);
+        return unit.Movement.IsValidCellForPath(current, neighbor);
     }
 
     /// <summary>
@@ -230,10 +225,47 @@ public class UnitPathfinding : MonoBehaviour
         return moveCost;
     }
 
+    public static List<HexCell> GetValidCells(Unit unit, List<HexCell> cells)
+    {
+        //unit.Movement.Path.Clear();
+        //for (int i = 1; i < cells.Count; i++)
+        //{
+        //    unit.Movement.Path.AddCellToPath(cells[i], canBackTrack: true);
+        //}
+
+        // HACK: this function isn't really great
+        
+        List<HexCell> validCells = new List<HexCell>();
+        if (unit.MyCell == cells[0]) validCells.Add(cells[0]);
+
+        HexCell current, next;
+        
+        for (int i = 1; i < cells.Count; i++)
+        {
+            current = cells[i - 1];
+            next = cells[i];
+
+            if (!current.IsNeighbor(next)) return validCells;
+
+            if (!IsValidCellForSearch(unit, current, next, isUsingQueue: false)) return validCells;
+
+            if (!unit.Movement.IsValidEdgeForPath(current, next)) return validCells;
+
+            validCells.Add(next);
+        }
+
+        return validCells;
+    }
+
+    #endregion
+    /************************************************************/
+    #region Visibility Functions
+
     /// <summary>
     /// TODO: comment GetVisibleCells
     /// HACK: this is also soooo close to Search
     /// HACK: verify visibility calculations, will most likely need an update
+    /// FIXME: this breaks if the number is very large
     /// </summary>
     /// <param name="fromCell"></param>
     /// <param name="range"></param>
@@ -302,6 +334,7 @@ public class UnitPathfinding : MonoBehaviour
 
     public static void IncreaseVisibility(HexCell fromCell, int range)
     {
+        return; // FIXME: visibility is broken
         List<HexCell> cells = GetVisibleCells(fromCell, range);
         for (int i = 0; i < cells.Count; i++)
         {
@@ -312,6 +345,7 @@ public class UnitPathfinding : MonoBehaviour
 
     public static void DecreaseVisibility(HexCell fromCell, int range)
     {
+        return; // FIXME: visibility is broken
         List<HexCell> cells = GetVisibleCells(fromCell, range);
         for (int i = 0; i < cells.Count; i++)
         {
@@ -319,6 +353,10 @@ public class UnitPathfinding : MonoBehaviour
         }
         ListPool<HexCell>.Add(cells);
     }
+
+    #endregion
+    /************************************************************/
+    #region Debug Functions
 
     private static void SayHi()
     {
@@ -329,6 +367,8 @@ public class UnitPathfinding : MonoBehaviour
     {
         Debug.Log("HexPathfinding DisplayPath() IEnumerator Checking In");
         yield return null;
+
+        // TODO: Make this class have a debug option to display A* algo
     }
 
     #endregion

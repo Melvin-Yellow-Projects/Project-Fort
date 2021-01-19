@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      HACK: some public variables shoudln't be public 
  **/
 
 using System.Collections;
@@ -16,6 +18,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using Mirror;
 
 /// <summary>
 /// Class for a specific hex cell or tile
@@ -220,7 +223,16 @@ public class HexCell : MonoBehaviour
             return myUnitQueue;
         }
     }
-    
+
+    public HexCellData Data
+    {
+        get
+        {
+            HexCellData data = new HexCellData();
+            return data;
+        }
+    }
+
     /// <summary>
     /// TODO: comment ShaderData
     /// </summary>
@@ -243,7 +255,7 @@ public class HexCell : MonoBehaviour
         {
             return explored && Explorable;
         }
-        private set
+        set
         {
             explored = value;
         }
@@ -326,24 +338,20 @@ public class HexCell : MonoBehaviour
     /// </summary>
     void Refresh()
     {
-        if (chunk != null)
+        if (!chunk) return;
+
+        chunk.Refresh();
+
+        // retriangulate neighbors' chunks if updating cell is from a different chunks
+        for (int i = 0; i < neighbors.Length; i++)
         {
-            chunk.Refresh();
-
-            // retriangulate neighbors' chunks if updating cell is from a different chunks
-            for (int i = 0; i < neighbors.Length; i++)
-            {
-                HexCell neighbor = neighbors[i];
-                if (neighbor != null && neighbor.chunk != chunk)
-                {
-                    neighbor.chunk.Refresh();
-                }
-            }
-
-            // refresh unit location
-            if (MyUnit) MyUnit.ValidateLocation();
-            if (MyFort) MyFort.ValidateLocation();
+            HexCell neighbor = neighbors[i];
+            if (neighbor != null && neighbor.chunk != chunk) neighbor.chunk.Refresh();
         }
+
+        // refresh unit location
+        if (MyUnit) MyUnit.ValidateLocation();
+        if (MyFort) MyFort.ValidateLocation();
     }
 
     //void RefreshSelfOnly()
@@ -393,10 +401,20 @@ public class HexCell : MonoBehaviour
     /// Enables the HexCellOutline Sprite
     /// </summary>
     /// <param name="color">Color to set the Sprite</param>
-    public void EnableHighlight(Color color)
+    public void EnableHighlight(Color color, bool useColorSetter=false)
     {
         Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
-        highlight.color = color;
+
+        if (useColorSetter)
+        {
+            ColorSetter setter = uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+            StartCoroutine(setter.SetColor(highlight, color));
+        }
+        else
+        {
+            highlight.color = color;
+        }
+
         highlight.enabled = true;
     }
 
@@ -449,7 +467,9 @@ public class HexCell : MonoBehaviour
     public void Save(BinaryWriter writer)
     {
         writer.Write((byte)terrainTypeIndex);
+        //hexBuffer.Write(terrainTypeIndex);
         writer.Write((byte)elevation);
+        //hexBuffer.Write(elevation);
         writer.Write(IsExplored);
     }
 
@@ -466,99 +486,12 @@ public class HexCell : MonoBehaviour
         elevation = reader.ReadByte();
 
         // HACK: hardcoded value
-        IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        //IsExplored = header >= 3 ? reader.ReadBoolean() : false;
+        IsExplored = reader.ReadBoolean();
+        IsExplored = true; // FIXME: removed IsExplored value
         ShaderData.RefreshVisibility(this);
 
         RefreshPosition();
-    }
-
-    #endregion
-
-    /********** MARK: Unit Functions **********/
-    #region Unit Functions
-
-    public void AddUnitToCellQueue(Unit newUnit)
-    {
-        myUnitQueue.Add(newUnit);
-
-        if (myUnitQueue.Count == 1)
-        {
-            GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
-            GameManager.OnMoveUnits += HandleOnMoveUnits;
-        }
-    }
-
-    #endregion
-
-    /********** MARK: Class Handler Functions **********/
-    #region Class Functions
-
-    private void HandleOnStartMoveUnits()
-    {
-        // Check for friendly collisions or pieces that can return another piece
-        for (int i = 0; i < myUnitQueue.Count; i++)
-        {
-            Unit unit1 = myUnitQueue[i];
-            Unit incomingUnit = (unit1.ToCell) ? unit1.ToCell.MyUnit : null;
-            bool hasRemovedUnit1 = false;
-            if (incomingUnit && incomingUnit.ToCell == unit1.MyCell)
-            {
-                incomingUnit.Path.IsNextStepValid = false;
-                incomingUnit.ToCell.myUnitQueue.Remove(incomingUnit);
-                incomingUnit.MyCell.AddUnitToCellQueue(incomingUnit);
-                hasRemovedUnit1 = true;
-                unit1.Path.IsNextStepValid = false;
-                myUnitQueue.Remove(unit1);
-                unit1.MyCell.AddUnitToCellQueue(unit1);
-            }
-
-            for (int j = i + 1; j < myUnitQueue.Count; j++)
-            {
-                Unit unit2 = myUnitQueue[j];
-                if (unit1.MyTeam == unit2.MyTeam) // friendly collision, both units return
-                {
-                    if (!hasRemovedUnit1)
-                    {
-                        unit1.Path.IsNextStepValid = false;
-                        myUnitQueue.Remove(unit1);
-                        unit1.MyCell.AddUnitToCellQueue(unit1);
-                    }
-                    unit2.Path.IsNextStepValid = false;
-                    myUnitQueue.Remove(unit2);
-                    unit2.MyCell.AddUnitToCellQueue(unit2);
-                }
-            }
-        }
-
-        GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
-    }
-
-    private void HandleOnMoveUnits()
-    {
-        for (int i = 0; i < myUnitQueue.Count - 1; i++)
-        {
-            Unit unit1 = myUnitQueue[i];
-            for (int j = i + 1; j < myUnitQueue.Count; j++)
-            {
-                Unit unit2 = myUnitQueue[j];
-                if (unit1.MyTeam == unit2.MyTeam) // friendly collision, both units return
-                {
-                    unit1.Path.IsNextStepValid = false;
-                    unit2.Path.IsNextStepValid = false;
-                }
-            }
-        }
-
-        // TODO: kill enemy units
-        // TODO: update unit's mycell
-        // I think this would work better as three events
-        // OnPrepareMoveUnits
-        // OnAllyUnitsReturn
-        // OnUnitCombat
-
-        myUnitQueue.Clear();
-
-        GameManager.OnMoveUnits -= HandleOnMoveUnits;
     }
 
     #endregion

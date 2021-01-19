@@ -11,15 +11,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ColorSetter : MonoBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
-    [Header("Other Settings")]
+    [Header("Settings")]
     [Tooltip("speed in which to change the unit's color")]
     [SerializeField, Range(0, 10f)] float changeColorSpeed = 0.1f;
+
+    [Tooltip("percentage to saturate the color when saturation is toggled")]
+    [SerializeField, Range(0, 1f)] float saturation = 0.3f;
 
     #endregion
 
@@ -30,9 +34,12 @@ public class ColorSetter : MonoBehaviour
     /// Sets the color of all the materials under this GameObject
     /// </summary>
     /// <param name="color"></param>
-    public void SetColor(Color color)
+    /// <param name="isSaturating">whether or not this color is getting saturated</param>
+    public void SetColor(Color color, bool isSaturating = false)
     {
         StopAllCoroutines();
+
+        if (isSaturating) color *= saturation;
 
         foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
         {
@@ -46,11 +53,27 @@ public class ColorSetter : MonoBehaviour
     /// <param name="material">material to change the color of</param>
     /// <param name="color">what color to change the material to</param>
     /// <returns>yields every frame</returns>
-    private IEnumerator SetColor(Material material, Color color)
+    public IEnumerator SetColor(Material material, Color color)
     {
         for (float t = 0; t < 1f; t += Time.deltaTime * changeColorSpeed)
         {
             material.color = Color.Lerp(material.color, color, t);
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// Coroutine for setting a image's color
+    /// </summary>
+    /// <param name="image">image to change the color of</param>
+    /// <param name="color">what color to change the image to</param>
+    /// <returns>yields every frame</returns>
+    public IEnumerator SetColor(Image image, Color color, float cutoff=1f)
+    {
+        for (float t = 0; t < cutoff; t += Time.deltaTime * changeColorSpeed)
+        {
+            Debug.Log(t);
+            image.color = Color.Lerp(image.color, color, t);
             yield return null;
         }
     }

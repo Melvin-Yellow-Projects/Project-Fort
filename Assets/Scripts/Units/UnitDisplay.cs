@@ -6,6 +6,10 @@
  * Date Created: December 13, 2020
  * 
  * Additional Comments: 
+ * 
+ *      TODO: change authority to show ally info as well
+ *      TODO: slowly fade display in and out
+ *      TODO: resize display given screen zoom
  **/
 
 using System.Collections;
@@ -18,7 +22,7 @@ using TMPro;
 /// </summary>
 public class UnitDisplay : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     [Header("Cached References")]
@@ -27,41 +31,41 @@ public class UnitDisplay : MonoBehaviour
     [Tooltip("movement text within the movement display")]
     [SerializeField] TMP_Text currentMovementText = null;
 
+    Unit unit = null;
+
     #endregion
+    /************************************************************/
+    #region Unity Functions
 
-    /********** MARK: Properties **********/
-    #region Properties
-
-    /// <summary>
-    /// Referenece to this display's unit
-    /// </summary>
-    public Unit MyUnit
+    private void Awake()
     {
-        get
-        {
-            return GetComponent<Unit>();
-        }
+        unit = GetComponent<Unit>();
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
-    /// <summary>
-    /// Toggles the unit's movement display on or off
-    /// </summary>
-    public void ToggleMovementDisplay()
+    // HACK: we don't need all three of these functions
+    public void ShowDisplay()
     {
-        movementDisplay.SetActive(!movementDisplay.activeSelf);
+        if (!unit.hasAuthority) return;
+        movementDisplay.SetActive(true);
+    }
+
+    public void HideDisplay()
+    {
+        if (!unit.hasAuthority) return;
+        movementDisplay.SetActive(false);
     }
 
     /// <summary>
     /// Refreshes the movement display text
     /// </summary>
-    public void RefreshMovementDisplay()
+    public void RefreshMovementDisplay(int movement)
     {
-        currentMovementText.text = $"{MyUnit.CurrentMovement}";
+        if (!unit.hasAuthority) return;
+        currentMovementText.text = $"{movement}";
     }
 
     #endregion

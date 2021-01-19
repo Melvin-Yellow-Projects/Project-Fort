@@ -45,7 +45,7 @@ public class MapEditor : MonoBehaviour
     int activeTerrainTypeIndex;
     int activeUnitTypeIndex = -1;
 
-    int teamIndex;
+    int teamIndex = 1;
 
     Controls controls;
     bool isSelectionPressed = false;
@@ -95,9 +95,6 @@ public class MapEditor : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        terrainMaterial.DisableKeyword("GRID_ON");
-        Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-
         controls = new Controls();
 
         controls.MapEditor.Selection.performed += OnSelection;
@@ -169,13 +166,8 @@ public class MapEditor : MonoBehaviour
         else if (isSelectionPressed) // do selection
         {
             if (IsSettingForts) CreateFort(currentCell);
-            if (IsSettingUnits) CreateUnit(currentCell);
-            if (IsSettingTerrain) EditCells(currentCell);
-        }
-        else
-        {
-            // HACK: delete this line after testing
-            Debug.LogError("This line should never run");
+            else if (IsSettingUnits) CreateUnit(currentCell);
+            else EditCells(currentCell);
         }
     }
 
@@ -301,11 +293,11 @@ public class MapEditor : MonoBehaviour
     {
         if (cell.MyUnit) return;
 
-        Unit unit = Instantiate(Unit.prefab);
+        Unit unit = Instantiate(Unit.Prefab);
 
         unit.MyCell = cell;
         unit.MyTeam.TeamIndex = teamIndex;
-        unit.Orientation = Random.Range(0, 360f);
+        unit.Movement.Orientation = Random.Range(0, 360f);
 
         HexGrid.Singleton.ParentTransformToGrid(unit.transform);
     }
@@ -314,7 +306,7 @@ public class MapEditor : MonoBehaviour
     {
         if (cell.MyFort) return;
 
-        Fort fort = Instantiate(Fort.prefab);
+        Fort fort = Instantiate(Fort.Prefab);
 
         fort.MyCell = cell;
         fort.MyTeam.TeamIndex = teamIndex;
@@ -325,7 +317,7 @@ public class MapEditor : MonoBehaviour
 
     private void ClearCellOfUnitsAndForts(HexCell cell)
     {
-        if (cell.MyUnit) cell.MyUnit.Die();
+        if (cell.MyUnit) cell.MyUnit.Die(isPlayingAnimation: false);
         if (cell.MyFort) Destroy(cell.MyFort.gameObject);
     }
 

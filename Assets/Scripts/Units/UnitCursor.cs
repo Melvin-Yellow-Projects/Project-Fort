@@ -17,22 +17,13 @@ using UnityEngine;
 
 public class UnitCursor : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
-    #region Public Variables
-
-    public static UnitCursor prefab = null;
-
-    public static Material material = null;
-
-    #endregion
-
     /********** MARK: Private Variables **********/
     #region Private Variables
 
     /* Cached References */
     [Header("Cached References")]
-    [Tooltip("head GameObject of the hex curser")]
-    [SerializeField] GameObject curserHead = null;
+    [Tooltip("head GameObject of the hex cursor")]
+    [SerializeField] GameObject cursorHead = null;
 
     Transform bodyTransform;
 
@@ -58,6 +49,10 @@ public class UnitCursor : MonoBehaviour
 
     /********** MARK: Public Properties **********/
     #region Public Properties
+
+    public static UnitCursor Prefab { get; set; }
+
+    public static Material MyMaterial { get; set; }
 
     public Vector3 HeadPoint
     {
@@ -140,35 +135,35 @@ public class UnitCursor : MonoBehaviour
 
     public static UnitCursor Initialize(List<Vector3> points)
     {
-        if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
+        if (!Prefab || !MyMaterial) Debug.LogError("UnitCursor prefab and material are not found");
 
-        UnitCursor curser = Instantiate<UnitCursor>(prefab);
+        UnitCursor cursor = Instantiate<UnitCursor>(Prefab);
 
-        curser.bodyTransform = curser.transform.Find("Body");
+        cursor.bodyTransform = cursor.transform.Find("Body");
 
-        curser.points = points;
+        cursor.points = points;
 
-        curser.alpha = curser.maxAlpha;
+        cursor.alpha = cursor.maxAlpha;
 
         // TODO: i think this line is so the first frame doesn't incorrectly display the head?
-        curser.UpdateHead();
+        cursor.UpdateHead();
 
-        return curser;
+        return cursor;
     }
 
     public static UnitCursor Initialize(Vector3 tail, Vector3 head)
     {
-        if (!prefab || !material) Debug.LogError("HexCurser prefab and material are not found");
+        if (!Prefab || !MyMaterial) Debug.LogError("UnitCursor prefab and material are not found");
 
-        UnitCursor curser = Instantiate<UnitCursor>(prefab);
+        UnitCursor cursor = Instantiate<UnitCursor>(Prefab);
 
-        curser.bodyTransform = curser.transform.Find("Body");
+        cursor.bodyTransform = cursor.transform.Find("Body");
 
-        curser.points.Add(tail);
+        cursor.points.Add(tail);
 
-        curser.points.Add(head);
+        cursor.points.Add(head);
 
-        return curser;
+        return cursor;
     }
 
     public void Redraw(List<Vector3> points)
@@ -199,18 +194,18 @@ public class UnitCursor : MonoBehaviour
     protected void UpdateHead()
     {
         // set position
-        curserHead.transform.position = HeadPoint;
+        cursorHead.transform.position = HeadPoint;
 
         // set rotation
-        curserHead.transform.rotation = Quaternion.LookRotation(HeadPoint - PenultimatePoint);
-        Vector3 eulerAngles = curserHead.transform.eulerAngles;
+        cursorHead.transform.rotation = Quaternion.LookRotation(HeadPoint - PenultimatePoint);
+        Vector3 eulerAngles = cursorHead.transform.eulerAngles;
         eulerAngles.x = 90;
-        curserHead.transform.eulerAngles = eulerAngles;
+        cursorHead.transform.eulerAngles = eulerAngles;
 
         // set color
-        curserHead.GetComponent<SpriteRenderer>().color = Color;
-        //if (collisionIndex == -1) curserHead.GetComponent<SpriteRenderer>().color = DefaultColor;
-        //else curserHead.GetComponent<SpriteRenderer>().color = ErrorColor;
+        cursorHead.GetComponent<SpriteRenderer>().color = Color;
+        //if (collisionIndex == -1) cursorHead.GetComponent<SpriteRenderer>().color = DefaultColor;
+        //else cursorHead.GetComponent<SpriteRenderer>().color = ErrorColor;
     }
 
     protected void UpdateBody()
@@ -249,7 +244,7 @@ public class UnitCursor : MonoBehaviour
         LineRenderer lr = myLine.GetComponent<LineRenderer>();
         //lr.material = new Material(Shader.Find("Particles/Standard Unlit"));
         //material.color = Color;
-        lr.material = material;
+        lr.material = MyMaterial;
         //lr.SetColors(Color, Color);
         lr.startColor = Color;
         lr.endColor = Color;
@@ -273,7 +268,7 @@ public class UnitCursor : MonoBehaviour
         enabled = true;
     }
 
-    public void DestroyCurser()
+    public void DestroyCursor()
     {
         Destroy(gameObject);
     }

@@ -13,21 +13,24 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System;
+using Mirror;
 
+/// <summary>
+/// 
+/// </summary>
 [RequireComponent(typeof(Team), typeof(ColorSetter))]
-public class Fort : MonoBehaviour
+public class Fort : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
-    HexCell myCell = null;
+    [SyncVar(hook = nameof(HookOnMyCell))]
+    HexCell myCell;
+
     float orientation;
 
-    public static Fort prefab;
-
     #endregion
-
-    /********** MARK: Class Events **********/
+    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -45,17 +48,12 @@ public class Fort : MonoBehaviour
     //public static event Action OnFortCaptured;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
-    public Team MyTeam
-    {
-        get
-        {
-            return GetComponent<Team>();
-        }
-    }
+    public static Fort Prefab { get; set; }
+
+    public Team MyTeam { get; private set; }
 
     public HexCell MyCell
     {
@@ -67,6 +65,7 @@ public class Fort : MonoBehaviour
         {
             myCell = value;
             myCell.MyFort = this;
+
             ValidateLocation();
         }
     }
@@ -85,13 +84,12 @@ public class Fort : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Awake()
     {
-        Subscribe();
+        MyTeam = GetComponent<Team>();
     }
 
     private void Start()
@@ -103,13 +101,24 @@ public class Fort : MonoBehaviour
     {
         myCell.MyFort = null;
         OnFortDespawned?.Invoke(this);
+    }
 
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        Subscribe();
+    }
+
+    public override void OnStopServer()
+    {
         Unsubscribe();
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void ValidateLocation()
@@ -118,8 +127,7 @@ public class Fort : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Save/Load Functions **********/
+    /************************************************************/
     #region Save/Load Functions
 
     public void Save(BinaryWriter writer)
@@ -134,37 +142,47 @@ public class Fort : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        Fort fort = Instantiate(prefab);
+        Fort fort = Instantiate(Prefab);
         if (header >= 4) fort.MyTeam.TeamIndex = reader.ReadByte();
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;
 
-        HexGrid.Singleton.ParentTransformToGrid(fort.transform);
+        // HACK: figure out to do with ParentTransformToGrid line (Fort.cs)
+        //HexGrid.Singleton.ParentTransformToGrid(fort.transform);
+
+        //NetworkServer.Spawn(fort.gameObject);
     }
 
     #endregion
+    /************************************************************/
+    #region Event Handler Functions
 
-    /********** MARK: Handle Functions **********/
-    #region Handle Functions
-
+    [Server]
     private void Subscribe()
     {
-        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
+        GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
+    [Server]
     private void Unsubscribe()
     {
-        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
+        GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
-    public void HandleOnStopMoveUnits()
+    [Server]
+    public void HandleServerOnStopTurn()
     {
         Unit unit = myCell.MyUnit;
 
         if (!unit) return;
 
         MyTeam.TeamIndex = unit.MyTeam.TeamIndex;
+    }
+
+    private void HookOnMyCell(HexCell oldValue, HexCell newValue)
+    {
+        if (myCell) MyCell = myCell;
     }
 
     #endregion

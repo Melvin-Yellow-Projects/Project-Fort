@@ -4,7 +4,7 @@
  * 
  * Authors: XXXX [Youtube Channel], Will Lacey
  * Date Created: August 18, 2020
- * Last Updated: October 8, 2020
+ * Last Updated: January 15, 2020
  * 
  * Additional Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
@@ -27,7 +27,7 @@ using UnityEngine;
 /// </summary>
 public class DebugComments : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     /* Cached References */
@@ -41,8 +41,7 @@ public class DebugComments : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] public float val2 = 0f;
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -51,8 +50,7 @@ public class DebugComments : MonoBehaviour
     protected float val3 = 0f;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     /// <summary>
@@ -71,8 +69,7 @@ public class DebugComments : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -150,6 +147,16 @@ public class DebugComments : MonoBehaviour
     }
 
     /// <summary>
+    /// Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides with
+    /// another GameObject; The Colliders involved are not always at the point of initial contact
+    /// </summary>
+    /// <param name="other">other Collider/GameObject that the collision has occured with</param>
+    protected void OnTriggerEnter(Collider otherCollider)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
     /// Unity Method; Called when the GameObject is destroyed
     /// </summary>
     private void OnDestroy()
@@ -157,24 +164,12 @@ public class DebugComments : MonoBehaviour
         throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Unity Method; OnTriggerEnter() is called in FixedUpdate() when a GameObject collides with
-    /// another GameObject; The Colliders involved are not always at the point of initial contact
-    /// </summary>
-    /// <param name="otherCollider">other GameObject that the collision has occured with</param>
-    protected void OnTriggerEnter(Collider otherCollider)
-    {
-        throw new NotImplementedException();
-    }
-
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     #endregion
-
-    /********** MARK: Debug **********/
+    /************************************************************/
     #region Debug
 
     /// <summary>

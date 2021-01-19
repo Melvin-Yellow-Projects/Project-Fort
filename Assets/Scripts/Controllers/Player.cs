@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: HexGameUI.cs
+ * File Name: Player.cs
  * Description: TODO: comment script
  * 
  * Authors: Catlike Coding, Will Lacey
@@ -9,39 +9,27 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      Previously known as HexGameUI.cs
  **/
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using System;
+using Mirror;
 
 /// <summary>
 /// TODO: comment class
 /// </summary>
-public class Player : MonoBehaviour
+public abstract class Player : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
-    /* Cached References */
-
-    HexCell currentCell;
-
-    Unit selectedUnit;
-
-    HexDirection selectedDirection;
-
-    bool hasCurrentCellUpdated = false;
-
-    List<Unit> myUnits = new List<Unit>();
-
-    Controls controls;
+    protected List<Unit> myUnits = new List<Unit>();
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public Team MyTeam
@@ -52,207 +40,71 @@ public class Player : MonoBehaviour
         }
     }
 
-    public int MoveCount { get; set; } = 1;
+    public int MoveCount { get; [Server] set; } = 1;
 
     #endregion
-
-    /********** MARK: Class Events **********/
-    #region Class Events
-
-    /// <summary>
-    /// Event for when a command has been invoked or revoked
-    /// </summary>
-    /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    public event Action OnCommandChange;
-
-    #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
-    protected void Awake()
+    public override void OnStartAuthority()
     {
-        //terrainMaterial.DisableKeyword("GRID_ON");
-        Shader.DisableKeyword("HEX_MAP_EDIT_MODE"); // HACK: this class should not have access to this line
+        // HACK: this probably doesn't belong here, but calling it on awake causes authority errors
+        Subscribe(); 
+    }
+
+    ///// <summary>
+    ///// Unity Method; Awake() is called before Start() upon GameObject creation
+    ///// </summary>
+    //protected virtual void Awake()
+    //{
+    //    Subscribe();
+    //}
+
+    protected virtual void OnDestroy()
+    {
+        Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Event Handler Functions
+
+    protected virtual void Subscribe()
+    {
+        if (!hasAuthority) return;
 
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
-        GameManager.OnStartTurn += HandleOnStartTurn;
-        GameManager.OnStartMoveUnits += HandleOnStartMoveUnits;
-        GameManager.OnStopMoveUnits += HandleOnStopMoveUnits;
-
-        // HACK: this should be done some other way
-        PlayerMenu menu = FindObjectOfType<PlayerMenu>();
-        menu.player = this;
-
-        controls = new Controls();
-        controls.Player.Selection.performed += DoSelection;
-
-        controls.Player.Command.performed += DoCommand;
-
-        controls.Enable();
+        GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
     }
 
-    private void OnDestroy()
+    protected virtual void Unsubscribe()
     {
+        if (!hasAuthority) return;
+
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
-        GameManager.OnStartTurn -= HandleOnStartTurn;
-        GameManager.OnStartMoveUnits -= HandleOnStartMoveUnits;
-        GameManager.OnStopMoveUnits -= HandleOnStopMoveUnits;
-
-        controls.Dispose();
+        GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
     }
 
-    protected void Update()
+    protected virtual void HandleOnUnitSpawned(Unit unit)
     {
-        // HACK: is this still needed?
+        if (unit.MyTeam != MyTeam) return;
 
-        if (!EventSystem.current.IsPointerOverGameObject()) // verify pointer is not on top of GUI
-        {
-            UpdateCurrentCell();
-            if (selectedUnit) DoPathfinding();
-        }
+        myUnits.Add(unit);
     }
 
-    #endregion
-
-    /********** MARK: Input Functions **********/
-    #region Input Functions
-
-    private void DoSelection(InputAction.CallbackContext context)
-    {
-        if (currentCell)
-        {
-            DeselectUnitAndClearItsPath();
-
-            SelectUnit(currentCell.MyUnit);
-        }
-    }
-
-    private void DoCommand(InputAction.CallbackContext context)
-    {
-        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
-
-        if (currentCell && selectedUnit)
-        {
-            DeselectUnit();
-            MoveCount++;
-            OnCommandChange?.Invoke();
-        }
-    }
-
-    #endregion
-
-    /********** MARK: Class Functions **********/
-    #region Class Functions
-
-    private void UpdateCurrentCell()
-    {
-        HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
-        if (cell != currentCell)
-        {
-            if (currentCell) currentCell.DisableHighlight();
-            if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
-
-            currentCell = cell;
-            hasCurrentCellUpdated = true; // whether or not current cell has updated
-        }
-        else
-        {
-            hasCurrentCellUpdated = false;
-        }
-    }
-
-    private void DoPathfinding()
-    {
-        if (!hasCurrentCellUpdated || currentCell == null) return;
-
-        if (Input.GetKey("left shift"))
-        {
-            // can backtrack
-            selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: true);
-        }
-        else
-        {
-            // can't backtrack
-            selectedUnit.Path.AddCellToPath(currentCell, canBackTrack: false);
-        }
-
-        selectedUnit.Path.Show();
-    }
-
-    private void SelectUnit(Unit unit)
-    {
-        // if this unit does not belong to the player, exit
-        if (!myUnits.Contains(unit)) return;
-
-        if (!unit.CanMove) return;
-
-        selectedUnit = unit;
-        if (selectedUnit.HasAction)
-        {
-            selectedUnit.Path.Clear();
-            MoveCount--;
-            OnCommandChange?.Invoke();
-        }
-        selectedUnit.IsSelected = true;
-    }
-
-    private void DeselectUnit()
-    {
-        if (selectedUnit)
-        {
-            selectedUnit.IsSelected = false;
-            selectedUnit = null;
-        }
-    }
-
-    private void DeselectUnitAndClearItsPath()
-    {
-        if (selectedUnit) selectedUnit.Path.Clear();
-        DeselectUnit();
-    }
-
-    #endregion
-
-    /********** MARK: Handler Functions **********/
-    #region Handler Functions
-
-    private void HandleOnStartTurn()
-    {
-        MoveCount = 1;
-        OnCommandChange?.Invoke(); // HACK: there has to be a better way
-    }
-
-    private void HandleOnUnitSpawned(Unit unit)
-    {
-        if (unit.MyTeam == MyTeam)
-        {
-            myUnits.Add(unit);
-            unit.Display.ToggleMovementDisplay();
-        }
-    }
-
-    private void HandleOnUnitDepawned(Unit unit)
+    protected virtual void HandleOnUnitDepawned(Unit unit)
     {
         myUnits.Remove(unit);
     }
 
-    private void HandleOnStartMoveUnits()
+    [Server]
+    protected virtual void HandleServerOnStartTurn()
     {
-        DeselectUnitAndClearItsPath();
-        controls.Disable();
-    }
-
-    private void HandleOnStopMoveUnits()
-    {
-        controls.Enable();
+        MoveCount = 0;
     }
 
     #endregion

@@ -102,7 +102,12 @@ ModelImporter:
   - first:
       43: 4300010
     second: Stone_Rook_Element_6
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stone_Rook_mtl
+    second: {fileID: 2100000, guid: 70afa98d78e7d462099b2dab85f6068e, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

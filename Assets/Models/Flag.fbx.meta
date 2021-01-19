@@ -21,7 +21,12 @@ ModelImporter:
   - first:
       43: 4300000
     second: Flag
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Flagpole_mtl
+    second: {fileID: 2100000, guid: 70afa98d78e7d462099b2dab85f6068e, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
