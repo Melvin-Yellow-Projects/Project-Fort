@@ -482,6 +482,15 @@ public class UnitMovement : NetworkBehaviour
     private void HandleServerOnStartRound()
     {
         CanMove = true;
+        HandleTargetOnStartRound(connectionToClient);
+    }
+
+    [TargetRpc]
+    private void HandleTargetOnStartRound(NetworkConnection conn)
+    {
+        if (!isClientOnly) return;
+
+        CanMove = true;
     }
 
     [Server]
@@ -489,9 +498,16 @@ public class UnitMovement : NetworkBehaviour
     {
         // TODO: this might change for units
         if (currentMovement < maxMovement) CanMove = false;
+        HandleTargetOnStopTurn(connectionToClient);
     }
 
-    //private void Handle
+    [TargetRpc]
+    private void HandleTargetOnStopTurn(NetworkConnection conn)
+    {
+        if (!isClientOnly) return;
+
+        if (currentMovement < maxMovement) CanMove = false;
+    }
 
     [Server]
     private void HandleServerOnDeath()
