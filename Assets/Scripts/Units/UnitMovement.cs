@@ -251,6 +251,8 @@ public class UnitMovement : NetworkBehaviour
             {
                 Path.RemoveTailCells(numberToRemove: 1);
                 Path.Show();
+                // FIXME: target rpc call to remove path
+                // TODO: might want to relay this message to ally connections too
             }
         }
     }
