@@ -152,7 +152,7 @@ public class UnitPath : MonoBehaviour
         }
         else
         {
-            Clear(clearCursor:false);
+            Clear(clearCursor: false);
             cells = UnitPathfinding.FindPath(unit, StartCell, cell);
         }
     }

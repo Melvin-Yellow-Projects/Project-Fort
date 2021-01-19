@@ -138,7 +138,7 @@ public class HexGrid : NetworkBehaviour
     [Server]
     public static void ServerSpawnMapEntities()
     {
-        Debug.Log("Spawning Map Entities");
+        //Debug.Log("Spawning Map Entities");
 
         for (int i = 0; i < Singleton.units.Count; i++)
         {
@@ -584,7 +584,6 @@ public class HexGrid : NetworkBehaviour
 
     private void Subscribe()
     {
-        Debug.Log("HexMap is subbing");
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
 

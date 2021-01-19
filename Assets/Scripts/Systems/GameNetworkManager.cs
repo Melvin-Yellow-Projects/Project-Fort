@@ -113,7 +113,7 @@ public class GameNetworkManager : NetworkManager
 
         isGameInProgress = true;
 
-        Debug.Log("Changing scene");
+        //Debug.Log("Changing scene");
 
         ServerChangeScene("Game Scene");
     }
@@ -137,7 +137,7 @@ public class GameNetworkManager : NetworkManager
         if (player.HasCreatedMap) return;
         player.HasCreatedMap = true;
 
-        Debug.Log("New Player Has Created Map.");
+        //Debug.Log("New Player Has Created Map.");
 
         bool isReady = true;
         foreach (HumanPlayer p in HumanPlayers) isReady &= p.HasCreatedMap;
@@ -151,7 +151,6 @@ public class GameNetworkManager : NetworkManager
     [Server] // HACK: maybe this could be named better
     private IEnumerator WaitToSpawnMapEntities(bool isWaiting)
     {
-        Debug.Log($"am i waiting? {isWaiting}");
         // forces wait for one frame so subscription methods can fire before units are spawned
         if (isWaiting) yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
         else yield return null;

@@ -225,17 +225,36 @@ public class UnitPathfinding : MonoBehaviour
         return moveCost;
     }
 
-    public static bool IsPathValid(Unit unit, List<HexCell> cells)
+    public static List<HexCell> GetValidCells(Unit unit, List<HexCell> cells)
     {
-        HexCell current, neighbor;
-        bool isValid = true;
-        for (int i = 1; isValid && i < cells.Count; i++)
+        //unit.Movement.Path.Clear();
+        //for (int i = 1; i < cells.Count; i++)
+        //{
+        //    unit.Movement.Path.AddCellToPath(cells[i], canBackTrack: true);
+        //}
+
+        // HACK: this function isn't really great
+        
+        List<HexCell> validCells = new List<HexCell>();
+        if (unit.MyCell == cells[0]) validCells.Add(cells[0]);
+
+        HexCell current, next;
+        
+        for (int i = 1; i < cells.Count; i++)
         {
             current = cells[i - 1];
-            neighbor = cells[i];
-            isValid &= IsValidCellForSearch(unit, current, neighbor, isUsingQueue: false);
+            next = cells[i];
+
+            if (!current.IsNeighbor(next)) return validCells;
+
+            if (!IsValidCellForSearch(unit, current, next, isUsingQueue: false)) return validCells;
+
+            if (!unit.Movement.IsValidEdgeForPath(current, next)) return validCells;
+
+            validCells.Add(next);
         }
-        return isValid;
+
+        return validCells;
     }
 
     #endregion

@@ -211,7 +211,7 @@ public class UnitMovement : NetworkBehaviour
             if (HasAction)
             {
                 Path.RemoveTailCells(numberToRemove: 1);
-                Path.Show();
+                if (hasAuthority) Path.Show(); // FIXME: this might be a problem
 
                 TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
             }
@@ -381,13 +381,14 @@ public class UnitMovement : NetworkBehaviour
     [Command]
     public void CmdSetPath(List<HexCell> cells)
     {
+        if (hasAuthority) return; // return if this is the server calling this function
         if (!CanMove) return;
+
+        // TODO: verify that a player can't send the cell theyre currently on
 
         // TODO: //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
-        if (!UnitPathfinding.IsPathValid(MyUnit, cells)) return;
-
-        // TODO: verify that a player can't send the cell theyre currently on
+        cells = UnitPathfinding.GetValidCells(MyUnit, cells);
 
         // TODO: increment MountCount, refresh player UI
 
@@ -445,7 +446,7 @@ public class UnitMovement : NetworkBehaviour
         //if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
 
         // invalid if cell is unexplored
-        if (!neighbor.IsExplored) return false;
+        if (!neighbor.Explorable) return false;
 
         //isValid &= !cell.IsUnderwater; // cell is not underwater
 
