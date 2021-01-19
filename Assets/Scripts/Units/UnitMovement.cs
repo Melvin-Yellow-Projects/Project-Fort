@@ -140,7 +140,7 @@ public class UnitMovement : NetworkBehaviour
             if (value)
             {
                 CurrentMovement = maxMovement;
-                Display.ShowDisplay();
+                Display.ShowDisplay(); // FIXME: this is showing enemy movement
             }
             else
             {
@@ -177,7 +177,7 @@ public class UnitMovement : NetworkBehaviour
     #region Server Functions
 
     [Server]
-    public void DoAction()
+    public void ServerDoAction()
     {
         if (!HasAction) return;
 
@@ -189,7 +189,7 @@ public class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    public void CompleteAction()
+    public void ServerCompleteAction()
     {
         if (!EnRouteCell) return;
 
@@ -223,7 +223,7 @@ public class UnitMovement : NetworkBehaviour
         CanMove = false;
         HadActionCanceled = true;
 
-        TargetCancelAction(connectionToClient); // TODO: relay this message to allies too
+        RpcCancelAction(); // TODO: relay this message to allies too
 
         StopAllCoroutines();
         StartCoroutine(RouteCanceled());
@@ -417,7 +417,8 @@ public class UnitMovement : NetworkBehaviour
         Path.Show();
     }
 
-    public void TargetCancelAction(NetworkConnection conn)
+    [ClientRpc]
+    public void RpcCancelAction()
     {
         if (!isClientOnly) return;
 
@@ -482,11 +483,11 @@ public class UnitMovement : NetworkBehaviour
     private void HandleServerOnStartRound()
     {
         CanMove = true;
-        HandleTargetOnStartRound(connectionToClient);
+        HandleRpcOnStartRound();
     }
 
-    [TargetRpc]
-    private void HandleTargetOnStartRound(NetworkConnection conn)
+    [ClientRpc]
+    private void HandleRpcOnStartRound()
     {
         if (!isClientOnly) return;
 
@@ -498,11 +499,11 @@ public class UnitMovement : NetworkBehaviour
     {
         // TODO: this might change for units
         if (currentMovement < maxMovement) CanMove = false;
-        HandleTargetOnStopTurn(connectionToClient);
+        HandleRpcOnStopTurn();
     }
 
-    [TargetRpc]
-    private void HandleTargetOnStopTurn(NetworkConnection conn)
+    [ClientRpc]
+    private void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
 
@@ -520,7 +521,6 @@ public class UnitMovement : NetworkBehaviour
 
         UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
-        Path.Clear();
         CanMove = false; // FIXME: this wont work if unit dies right before new Round 
 
         HandleRpcOnDeath();
@@ -531,7 +531,6 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        Path.Clear();
         CanMove = false;
     }
 

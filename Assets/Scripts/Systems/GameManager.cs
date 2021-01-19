@@ -213,7 +213,7 @@ public class GameManager : NetworkBehaviour
         for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
         {
             Unit unit = HexGrid.Singleton.units[i];
-            unit.Movement.DoAction(); // TODO: correct number of steps
+            unit.Movement.ServerDoAction(); // TODO: correct number of steps
         }
     }
 
@@ -239,7 +239,7 @@ public class GameManager : NetworkBehaviour
         for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
         {
             Unit unit = HexGrid.Singleton.units[i];
-            unit.Movement.CompleteAction();
+            unit.Movement.ServerCompleteAction();
         }
     }
 
