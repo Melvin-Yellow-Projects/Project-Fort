@@ -381,22 +381,17 @@ public class UnitMovement : NetworkBehaviour
     [Command]
     public void CmdSetPath(List<HexCell> cells)
     {
-        // TODO: Validation logic for CmdClearPath(), check if client info is valid
+        if (!CanMove) return;
+
+        // TODO: //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+
+        if (!UnitPathfinding.IsPathValid(MyUnit, cells)) return;
+
+        // TODO: verify that a player can't send the cell theyre currently on
 
         // TODO: increment MountCount, refresh player UI
 
-        //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
-
-        //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
-        //{
-        //    DeselectUnit();
-        //    MoveCount++;
-        //    PlayerMenu.RefreshMoveCountText();
-        //}
-
-        // Set the path for the Unit
         Path.Cells = cells;
-        //Path.Show();
     }
 
     #endregion

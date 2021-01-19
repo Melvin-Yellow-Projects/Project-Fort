@@ -21,7 +21,7 @@ using UnityEngine;
 
 public class UnitPathfinding : MonoBehaviour
 {
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -41,8 +41,7 @@ public class UnitPathfinding : MonoBehaviour
     static int searchFrontierPhase;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -55,9 +54,8 @@ public class UnitPathfinding : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
-    #region Class Functions
+    /************************************************************/
+    #region Pathing Functions
 
     public static bool CanAddCellToPath(Unit unit, HexCell cell)
     {
@@ -227,6 +225,23 @@ public class UnitPathfinding : MonoBehaviour
         return moveCost;
     }
 
+    public static bool IsPathValid(Unit unit, List<HexCell> cells)
+    {
+        HexCell current, neighbor;
+        bool isValid = true;
+        for (int i = 1; isValid && i < cells.Count; i++)
+        {
+            current = cells[i - 1];
+            neighbor = cells[i];
+            isValid &= IsValidCellForSearch(unit, current, neighbor, isUsingQueue: false);
+        }
+        return isValid;
+    }
+
+    #endregion
+    /************************************************************/
+    #region Visibility Functions
+
     /// <summary>
     /// TODO: comment GetVisibleCells
     /// HACK: this is also soooo close to Search
@@ -319,6 +334,10 @@ public class UnitPathfinding : MonoBehaviour
         }
         ListPool<HexCell>.Add(cells);
     }
+
+    #endregion
+    /************************************************************/
+    #region Debug Functions
 
     private static void SayHi()
     {
