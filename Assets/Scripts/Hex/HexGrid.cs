@@ -613,7 +613,7 @@ public class HexGrid : NetworkBehaviour
 
     private void HandleOnFortDespawned(Fort fort)
     {
-        // TODO: Server validation
+        // FIXME: this needs to be replaced with a manual event rather than handle
 
         forts.Remove(fort);
     }
@@ -630,6 +630,7 @@ public class HexGrid : NetworkBehaviour
 
     private void HandleOnUnitDepawned(Unit unit)
     {
+        // FIXME: this needs to be replaced with a manual event rather than handle
         units.Remove(unit);
     }
 

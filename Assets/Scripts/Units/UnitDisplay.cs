@@ -40,6 +40,12 @@ public class UnitDisplay : MonoBehaviour
         movementDisplay.SetActive(!movementDisplay.activeSelf);
     }
 
+    // HACK: we don't need all three of these functions
+    public void ShowDisplay()
+    {
+        movementDisplay.SetActive(true);
+    }
+
     public void HideDisplay()
     {
         movementDisplay.SetActive(false);

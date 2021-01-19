@@ -140,10 +140,12 @@ public class UnitMovement : NetworkBehaviour
             if (value)
             {
                 CurrentMovement = maxMovement;
+                Display.ShowDisplay();
             }
             else
             {
                 CurrentMovement = 0;
+                Display.HideDisplay();
             }
             Path.Clear();
         }
@@ -193,8 +195,8 @@ public class UnitMovement : NetworkBehaviour
 
         if (GetComponent<UnitDeath>().IsDying) // HACK: this is probably inefficient
         {
+            // TODO: tell client we dead
             MyUnit.CollisionHandler.gameObject.SetActive(false);
-            Display.HideDisplay();
         }
         else
         {
@@ -208,10 +210,7 @@ public class UnitMovement : NetworkBehaviour
                 Path.RemoveTailCells(numberToRemove: 1);
                 Path.Show();
 
-                TargetCompleteAction(connectionToClient);
-
-                // FIXME: target rpc call to remove path
-                // TODO: might want to relay this message to ally connections too
+                TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
             }
         }
     }
@@ -223,6 +222,8 @@ public class UnitMovement : NetworkBehaviour
 
         CanMove = false;
         HadActionCanceled = true;
+
+        TargetCancelAction(connectionToClient); // TODO: relay this message to allies too
 
         StopAllCoroutines();
         StartCoroutine(RouteCanceled());
@@ -410,8 +411,17 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
+        CurrentMovement--;
+
         Path.RemoveTailCells(numberToRemove: 1);
         Path.Show();
+    }
+
+    public void TargetCancelAction(NetworkConnection conn)
+    {
+        if (!isClientOnly) return;
+
+        CanMove = false;
     }
 
     #endregion
@@ -492,7 +502,19 @@ public class UnitMovement : NetworkBehaviour
 
         UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
-        Path.Clear(); // TODO: Clear path on client as well
+        Path.Clear();
+        CanMove = false; // FIXME: this wont work if unit dies right before new Round 
+
+        HandleRpcOnDeath();
+    }
+
+    [ClientRpc]
+    private void HandleRpcOnDeath()
+    {
+        if (!isClientOnly) return;
+
+        Path.Clear();
+        CanMove = false;
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

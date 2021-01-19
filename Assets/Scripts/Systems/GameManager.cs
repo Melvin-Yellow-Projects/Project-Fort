@@ -57,25 +57,25 @@ public class GameManager : NetworkBehaviour
     /// Client event for when a new round has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    public static event Action ClientOnStartRound;
+    public static event Action RpcOnStartRound;
 
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    public static event Action ClientOnStartTurn;
+    public static event Action RpcOnStartTurn;
     
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
     /// <subscriber class="Player">disables controls when units are moving</subscriber>
-    public static event Action ClientOnPlayTurn;
+    public static event Action RpcOnPlayTurn;
     
     /// <summary>
     /// Client event for turn has stopped playing
     /// </summary>
     /// <subscriber class="Player">enables controls when units are moving</subscriber>
-    public static event Action ClientOnStopTurn;
+    public static event Action RpcOnStopTurn;
 
     #endregion
     /************************************************************/
@@ -150,7 +150,7 @@ public class GameManager : NetworkBehaviour
         TurnCount = 0;
 
         ServerOnStartRound?.Invoke();
-        InvokeClientOnStartRound();
+        InvokeRpcOnStartRound();
 
         StartTurn();
     }
@@ -161,7 +161,7 @@ public class GameManager : NetworkBehaviour
         TurnCount++;
 
         ServerOnStartTurn?.Invoke();
-        InvokeClientOnStartTurn();
+        InvokeRpcOnStartTurn();
 
         // update timer and its text
         if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
@@ -186,7 +186,7 @@ public class GameManager : NetworkBehaviour
     private IEnumerator PlayTurn(int numberOfTurnSteps) 
     {
         ServerOnPlayTurn?.Invoke();
-        InvokeClientOnPlayTurn();
+        InvokeRpcOnPlayTurn();
 
         // How many Moves/Steps Units can Utilize
         for (int step = 0; step < numberOfTurnSteps; step++)
@@ -199,7 +199,7 @@ public class GameManager : NetworkBehaviour
         }
 
         ServerOnStopTurn?.Invoke();
-        InvokeClientOnStopTurn();
+        InvokeRpcOnStopTurn();
 
         // Finished Turn, either start new one or start a new round
         if (TurnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
@@ -255,27 +255,27 @@ public class GameManager : NetworkBehaviour
     #region Client Functions
 
     [ClientRpc]
-    private void InvokeClientOnStartRound()
+    private void InvokeRpcOnStartRound()
     {
-        ClientOnStartRound?.Invoke();
+        RpcOnStartRound?.Invoke();
     }
 
     [ClientRpc]
-    private void InvokeClientOnStartTurn()
+    private void InvokeRpcOnStartTurn()
     {
-        ClientOnStartTurn?.Invoke();
+        RpcOnStartTurn?.Invoke();
     }
 
     [ClientRpc]
-    private void InvokeClientOnPlayTurn()
+    private void InvokeRpcOnPlayTurn()
     {
-        ClientOnPlayTurn?.Invoke();
+        RpcOnPlayTurn?.Invoke();
     }
 
     [ClientRpc]
-    private void InvokeClientOnStopTurn()
+    private void InvokeRpcOnStopTurn()
     {
-        ClientOnStopTurn?.Invoke();
+        RpcOnStopTurn?.Invoke();
     }
 
     #endregion

@@ -98,14 +98,14 @@ public class PlayerMenu : MonoBehaviour
 
     private void Subscribe()
     {
-        GameManager.ClientOnStartRound += RefreshMoveCountText;
-        GameManager.ClientOnStartTurn += RefreshMoveCountText;
+        GameManager.RpcOnStartRound += RefreshMoveCountText;
+        GameManager.RpcOnStartTurn += RefreshMoveCountText;
     }
 
     private void Unsubscribe()
     {
-        GameManager.ClientOnStartRound -= RefreshMoveCountText;
-        GameManager.ClientOnStartTurn -= RefreshMoveCountText;
+        GameManager.RpcOnStartRound -= RefreshMoveCountText;
+        GameManager.RpcOnStartTurn -= RefreshMoveCountText;
     }
     #endregion
 }

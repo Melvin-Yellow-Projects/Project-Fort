@@ -204,8 +204,8 @@ public class HumanPlayer : Player
 
         base.Subscribe();
 
-        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
-        GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
+        GameManager.RpcOnPlayTurn += HandleRpcOnPlayTurn;
+        GameManager.RpcOnStopTurn += HandleRpcOnStopTurn;
 
         controls = new Controls();
         controls.Player.Selection.performed += DoSelection;
@@ -219,8 +219,8 @@ public class HumanPlayer : Player
 
         base.Unsubscribe();
 
-        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
-        GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
+        GameManager.RpcOnPlayTurn -= HandleRpcOnPlayTurn;
+        GameManager.RpcOnStopTurn -= HandleRpcOnStopTurn;
 
         controls.Dispose();
     }
@@ -236,20 +236,20 @@ public class HumanPlayer : Player
     }
 
     [Client]
-    protected void HandleClientOnStartTurn()
+    protected void HandleRpcOnStartTurn()
     {
         PlayerMenu.RefreshMoveCountText();
     }
 
     [Client]
-    private void HandleClientOnPlayTurn()
+    private void HandleRpcOnPlayTurn()
     {
         // HACK: i dont think you need to clear it's path, the path shouldn't be set
         DeselectUnitAndClearItsPath(); 
         controls.Disable();
     }
 
-    private void HandleClientOnStopTurn()
+    private void HandleRpcOnStopTurn()
     {
         controls.Enable();
     }

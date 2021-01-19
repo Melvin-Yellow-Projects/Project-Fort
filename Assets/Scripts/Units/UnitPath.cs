@@ -167,7 +167,8 @@ public class UnitPath : MonoBehaviour
             cells.RemoveAt(0);
         }
 
-        if (unit.MyCell != cells[0]) Debug.LogWarning("Tail cell is not Unit's cell!");
+        if (unit.isClientOnly && unit.MyCell != cells[0])
+            Debug.LogWarning("Tail cell is not Unit's cell!");
     }
 
     /// <summary>
