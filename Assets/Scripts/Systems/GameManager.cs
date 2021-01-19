@@ -111,7 +111,7 @@ public class GameManager : NetworkBehaviour
     private void Start()
     {
         enabled = GameMode.Singleton.IsUsingTurnTimer;
-        StartRound();
+        ServerStartRound();
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public class GameManager : NetworkBehaviour
         // if Timer is done...
         if (Time.time > turnTimer)
         {
-            PlayTurn();
+            ServerPlayTurn();
         }
         else
         {
@@ -144,7 +144,7 @@ public class GameManager : NetworkBehaviour
     #region Server Game Flow Functions
 
     [Server]
-    public void StartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
+    public void ServerStartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
     {
         RoundCount++;
         TurnCount = 0;
@@ -152,11 +152,11 @@ public class GameManager : NetworkBehaviour
         ServerOnStartRound?.Invoke();
         InvokeRpcOnStartRound();
 
-        StartTurn();
+        ServerStartTurn();
     }
 
     [Server]
-    private void StartTurn()
+    private void ServerStartTurn()
     {
         TurnCount++;
 
@@ -164,26 +164,26 @@ public class GameManager : NetworkBehaviour
         InvokeRpcOnStartTurn();
 
         // update timer and its text
-        if (GameMode.Singleton.IsUsingTurnTimer) ResetTimer();
+        if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer();
         else PlayerMenu.UpdateTimerText("Your Turn");
     }
 
     [Server]
-    public void PlayTurn()
+    public void ServerPlayTurn()
     {
         enabled = false;
         PlayerMenu.UpdateTimerText("Executing Turn");
 
         StopAllCoroutines();
-        StartCoroutine(PlayTurn(8));
+        StartCoroutine(ServerPlayTurn(8));
     }
 
     #endregion
     /************************************************************/
-    #region Server Functions
+    #region Other Server Functions
 
     [Server] // HACK:  units are looped over several times
-    private IEnumerator PlayTurn(int numberOfTurnSteps) 
+    private IEnumerator ServerPlayTurn(int numberOfTurnSteps) 
     {
         ServerOnPlayTurn?.Invoke();
         InvokeRpcOnPlayTurn();
@@ -191,23 +191,23 @@ public class GameManager : NetworkBehaviour
         // How many Moves/Steps Units can Utilize
         for (int step = 0; step < numberOfTurnSteps; step++)
         {
-            MoveUnits();
+            ServerMoveUnits();
 
-            yield return WaitForUnits();
+            yield return ServerWaitForUnits();
 
-            CompleteTurnStep();
+            ServerCompleteTurnStep();
         }
 
         ServerOnStopTurn?.Invoke();
         InvokeRpcOnStopTurn();
 
         // Finished Turn, either start new one or start a new round
-        if (TurnCount >= GameMode.Singleton.TurnsPerRound) StartRound();
-        else StartTurn();
+        if (TurnCount >= GameMode.Singleton.TurnsPerRound) ServerStartRound();
+        else ServerStartTurn();
     }
 
     [Server]
-    private void MoveUnits()
+    private void ServerMoveUnits()
     {
         // Moving Units
         for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
@@ -218,7 +218,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    private IEnumerator WaitForUnits()
+    private IEnumerator ServerWaitForUnits()
     {
         // Waiting for Units
         for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
@@ -233,7 +233,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    private void CompleteTurnStep()
+    private void ServerCompleteTurnStep()
     {
         // Setting new cell for Units now that they moved
         for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
@@ -244,7 +244,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    private void ResetTimer()
+    private void ServerResetTimer()
     {
         //timeOfNextMove += GameMode.Singleton.TurnTimerLength;
         turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;

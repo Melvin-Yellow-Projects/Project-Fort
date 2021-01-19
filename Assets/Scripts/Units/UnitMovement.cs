@@ -491,6 +491,8 @@ public class UnitMovement : NetworkBehaviour
         if (currentMovement < maxMovement) CanMove = false;
     }
 
+    //private void Handle
+
     [Server]
     private void HandleServerOnDeath()
     {
