@@ -174,50 +174,6 @@ public class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Command]
-    public void CmdClearPath()
-    {
-        // TODO: Validation logic for CmdClearPath()
-        // This should already auto deny for units you dont have authority over
-        Path.Clear();
-        TargetClearPath();
-    }
-
-    [Command]
-    public void CmdSetPath(List<HexCell> cells)
-    {
-        // TODO: Validation logic for CmdClearPath(), check if client info is valid
-
-        // TODO: increment MountCount, refresh player UI
-
-        //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
-
-        //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
-        //{
-        //    DeselectUnit();
-        //    MoveCount++;
-        //    PlayerMenu.RefreshMoveCountText();
-        //}
-
-        // Set the path for the Unit
-        Path.Cells = cells;
-        //Path.Show();
-    }
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    [TargetRpc]
-    private void TargetClearPath()
-    {
-        if (isClientOnly) Path.Clear();
-    }
-
-    #endregion
-    /************************************************************/
-    #region Class Functions
-
     [Server]
     public void DoAction()
     {
@@ -251,6 +207,9 @@ public class UnitMovement : NetworkBehaviour
             {
                 Path.RemoveTailCells(numberToRemove: 1);
                 Path.Show();
+
+                TargetCompleteAction(connectionToClient);
+
                 // FIXME: target rpc call to remove path
                 // TODO: might want to relay this message to ally connections too
             }
@@ -405,6 +364,59 @@ public class UnitMovement : NetworkBehaviour
         orientation = transform.localRotation.eulerAngles.y;
 
     }
+
+    [Command]
+    public void CmdClearPath()
+    {
+        // TODO: Validation logic for CmdClearPath()
+        // This should already auto deny for units you dont have authority over
+        Path.Clear();
+        TargetClearPath();
+    }
+
+    [Command]
+    public void CmdSetPath(List<HexCell> cells)
+    {
+        // TODO: Validation logic for CmdClearPath(), check if client info is valid
+
+        // TODO: increment MountCount, refresh player UI
+
+        //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+
+        //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
+        //{
+        //    DeselectUnit();
+        //    MoveCount++;
+        //    PlayerMenu.RefreshMoveCountText();
+        //}
+
+        // Set the path for the Unit
+        Path.Cells = cells;
+        //Path.Show();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    [TargetRpc]
+    private void TargetClearPath()
+    {
+        if (isClientOnly) Path.Clear();
+    }
+
+    [TargetRpc]
+    public void TargetCompleteAction(NetworkConnection conn)
+    {
+        if (!isClientOnly) return;
+
+        Path.RemoveTailCells(numberToRemove: 1);
+        Path.Show();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
 
     public bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
     {
