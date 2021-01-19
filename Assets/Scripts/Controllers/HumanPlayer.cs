@@ -230,7 +230,7 @@ public class HumanPlayer : Player
         if (unit.MyTeam != MyTeam) return;
 
         myUnits.Add(unit);
-        unit.Movement.Display.ToggleMovementDisplay();
+        unit.Movement.Display.ShowDisplay();
 
         //Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
     }

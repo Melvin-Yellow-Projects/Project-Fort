@@ -148,7 +148,7 @@ public class GameNetworkManager : NetworkManager
         waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(!isReady)); 
     }
 
-    [Server]
+    [Server] // HACK: maybe this could be named better
     private IEnumerator WaitToSpawnMapEntities(bool isWaiting)
     {
         Debug.Log($"am i waiting? {isWaiting}");
@@ -157,6 +157,10 @@ public class GameNetworkManager : NetworkManager
         else yield return null;
 
         HexGrid.ServerSpawnMapEntities();
+
+        yield return null;
+
+        GameManager.Singleton.ServerStartGame();
     }
 
     #endregion

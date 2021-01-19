@@ -314,6 +314,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 295c9eccc4c7d4371bec60b55884d311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   myCell: {fileID: 0}
 --- !u!114 &84704380307893259
 MonoBehaviour:

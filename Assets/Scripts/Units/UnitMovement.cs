@@ -162,9 +162,12 @@ public class UnitMovement : NetworkBehaviour
         Path = GetComponent<UnitPath>();
 
         currentMovement = maxMovement;
-        Display.RefreshMovementDisplay(currentMovement);
-
         Subscribe();
+    }
+
+    private void Start()
+    {
+        Display.RefreshMovementDisplay(currentMovement);
     }
 
     private void OnDestroy()

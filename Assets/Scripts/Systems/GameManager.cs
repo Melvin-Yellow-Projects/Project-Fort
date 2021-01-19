@@ -93,25 +93,14 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
-        if (NetworkServer.localConnection == null ||
-            NetworkServer.localConnection.connectionId != NetworkClient.connection.connectionId)
-        {
-            enabled = false;
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
-            
-            Subscribe();
-        }
-    }
+        gameObject.SetActive(false);
+        enabled = false;
+        Singleton = this;
 
-    [Server]
-    private void Start()
-    {
-        enabled = GameMode.Singleton.IsUsingTurnTimer;
-        ServerStartRound();
+        if (!isServer) return;
+
+        turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+        Subscribe();
     }
 
     /// <summary>
@@ -142,6 +131,14 @@ public class GameManager : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Server Game Flow Functions
+
+    [Server]
+    public void ServerStartGame()
+    {
+        gameObject.SetActive(true);
+        enabled = GameMode.Singleton.IsUsingTurnTimer;
+        ServerStartRound();
+    }
 
     [Server]
     public void ServerStartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
