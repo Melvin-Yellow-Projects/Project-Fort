@@ -59,7 +59,8 @@ public abstract class Player : NetworkBehaviour
     public override void OnStartAuthority()
     {
         // HACK: this probably doesn't belong here, but calling it on awake causes authority errors
-        Subscribe(); 
+        Subscribe();
+        Debug.Log("Player Subbing");
     }
 
     ///// <summary>
