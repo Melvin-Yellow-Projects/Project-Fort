@@ -163,7 +163,7 @@ public class HumanPlayer : Player
 
     private void SelectUnit(Unit unit)
     {
-        if (!myUnits.Contains(unit)) return;
+        if (!MyUnits.Contains(unit)) return;
         //if (!unit) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
 
         if (!unit.Movement.CanMove) return;
@@ -204,8 +204,8 @@ public class HumanPlayer : Player
 
         base.Subscribe();
 
-        GameManager.RpcOnPlayTurn += HandleRpcOnPlayTurn;
-        GameManager.RpcOnStopTurn += HandleRpcOnStopTurn;
+        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
+        GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
         controls = new Controls();
         controls.Player.Selection.performed += DoSelection;
@@ -219,37 +219,28 @@ public class HumanPlayer : Player
 
         base.Unsubscribe();
 
-        GameManager.RpcOnPlayTurn -= HandleRpcOnPlayTurn;
-        GameManager.RpcOnStopTurn -= HandleRpcOnStopTurn;
+        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
+        GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
         controls.Dispose();
     }
 
-    protected override void HandleOnUnitSpawned(Unit unit)
+    [Client]
+    protected void HandleClientOnStartTurn() // FIXME: this function is not called
     {
-        if (unit.MyTeam != MyTeam) return;
-
-        myUnits.Add(unit);
-        unit.Movement.Display.ShowDisplay();
-
-        //Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
+        PlayerMenu.RefreshMoveCountText(); 
     }
 
     [Client]
-    protected void HandleRpcOnStartTurn()
-    {
-        PlayerMenu.RefreshMoveCountText();
-    }
-
-    [Client]
-    private void HandleRpcOnPlayTurn()
+    private void HandleClientOnPlayTurn()
     {
         // HACK: i dont think you need to clear it's path, the path shouldn't be set
         DeselectUnitAndClearItsPath(); 
         controls.Disable();
     }
 
-    private void HandleRpcOnStopTurn()
+    [Client]
+    private void HandleClientOnStopTurn()
     {
         controls.Enable();
     }

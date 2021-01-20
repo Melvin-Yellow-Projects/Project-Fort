@@ -18,7 +18,7 @@ using TMPro;
 /// </summary>
 public class PlayerMenu : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     /* Cached References */
@@ -29,8 +29,7 @@ public class PlayerMenu : MonoBehaviour
     Player player = null;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static PlayerMenu Singleton { get; set; }
@@ -50,8 +49,7 @@ public class PlayerMenu : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     private void Awake()
@@ -68,8 +66,7 @@ public class PlayerMenu : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public static void UpdateTimerText(string text)
@@ -86,26 +83,25 @@ public class PlayerMenu : MonoBehaviour
         string moveCountString = (Singleton.MyPlayer.MoveCount >= gm.MovesPerTurn) ?
             "MXX" : $"M{Singleton.MyPlayer.MoveCount}";
 
-        Singleton.moveCountText.text = $"R{GameManager.Singleton.RoundCount}:" +
-            $"T{GameManager.Singleton.TurnCount}:" +
+        Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
+            $"T{GameManager.TurnCount}:" +
             moveCountString;
     }
 
     #endregion
-
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()
     {
-        GameManager.RpcOnStartRound += RefreshMoveCountText;
-        GameManager.RpcOnStartTurn += RefreshMoveCountText;
+        GameManager.ClientOnStartRound += RefreshMoveCountText;
+        GameManager.ClientOnStartTurn += RefreshMoveCountText;
     }
 
     private void Unsubscribe()
     {
-        GameManager.RpcOnStartRound -= RefreshMoveCountText;
-        GameManager.RpcOnStartTurn -= RefreshMoveCountText;
+        GameManager.ClientOnStartRound -= RefreshMoveCountText;
+        GameManager.ClientOnStartTurn -= RefreshMoveCountText;
     }
     #endregion
 }

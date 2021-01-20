@@ -26,8 +26,6 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    protected List<Unit> myUnits = new List<Unit>();
-
     #endregion
     /************************************************************/
     #region Properties
@@ -40,7 +38,11 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int MoveCount { get; [Server] set; } = 1;
+    public int MoveCount { get; [Server] set; } = 1; // FIXME: Change this such that it works
+
+    public List<Fort> MyForts { get; set; } = new List<Fort>();
+
+    public List<Unit> MyUnits { get; set; } = new List<Unit>();
 
     #endregion
     /************************************************************/
@@ -71,34 +73,52 @@ public abstract class Player : NetworkBehaviour
 
     protected virtual void Subscribe()
     {
-        if (!hasAuthority) return;
+        if (!isServer || !hasAuthority) return; // TODO: validate this works
 
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
+
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
     }
 
     protected virtual void Unsubscribe()
     {
-        if (!hasAuthority) return;
+        if (!isServer || !hasAuthority) return;
 
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
+
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
+    }
+
+    private void HandleOnFortSpawned(Fort fort)
+    {
+        if (fort.MyTeam != MyTeam) return;
+
+        MyForts.Add(fort);
+    }
+
+    private void HandleOnFortDespawned(Fort fort)
+    {
+        MyForts.Remove(fort);
     }
 
     protected virtual void HandleOnUnitSpawned(Unit unit)
     {
         if (unit.MyTeam != MyTeam) return;
 
-        myUnits.Add(unit);
+        MyUnits.Add(unit);
     }
 
     protected virtual void HandleOnUnitDepawned(Unit unit)
     {
-        myUnits.Remove(unit);
+        MyUnits.Remove(unit);
     }
 
     [Server]
