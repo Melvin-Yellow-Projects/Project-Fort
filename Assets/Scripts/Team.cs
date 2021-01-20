@@ -70,6 +70,7 @@ public class Team : NetworkBehaviour
                 if (teamIndex == GameNetworkManager.HumanPlayers[i].MyTeam.teamIndex)
                 {
                     //Debug.Log($"Grabbing Authoritative Connection for {name}");
+                    MyPlayer = GameNetworkManager.HumanPlayers[i]; // HACK: this won't work for long
                     return GameNetworkManager.HumanPlayers[i].connectionToClient;
                 }
             }
@@ -79,6 +80,8 @@ public class Team : NetworkBehaviour
             return null;
         }
     }
+
+    public Player MyPlayer { get; set; }
 
     #endregion
     /************************************************************/

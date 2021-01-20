@@ -19,16 +19,16 @@ public class GameOverMenu : MonoBehaviour
     /************************************************************/
     #region Variables
 
-    [SerializeField] private GameObject gameOverDisplayParent = null;
-    [SerializeField] private TMP_Text winnerNameText = null;
+    [SerializeField] private TMP_Text winnerText = null;
 
     #endregion
     /************************************************************/
     #region Unity Functions
 
-    private void Start()
+    private void Awake()
     {
         GameOverHandler.ClientOnGameOver += ClientHandleGameOver;
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -58,9 +58,9 @@ public class GameOverMenu : MonoBehaviour
 
     private void ClientHandleGameOver(string winner)
     {
-        winnerNameText.text = $"{winner} Has Won!";
+        winnerText.text = $"{winner} Has Won!";
 
-        gameOverDisplayParent.SetActive(true);
+        gameObject.SetActive(true);
     }
     #endregion
 }

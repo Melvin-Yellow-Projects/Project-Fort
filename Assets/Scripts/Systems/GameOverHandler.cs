@@ -47,6 +47,18 @@ public class GameOverHandler : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
+    [ClientRpc]
+    private void RpcGameOver(string winner)
+    {
+        ClientOnGameOver?.Invoke(winner);
+
+        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = false;
+    }
+
+    #endregion
+    /************************************************************/
+    #region Event Handler Functions
+
     [Server]
     private void Subscribe()
     {
@@ -74,20 +86,19 @@ public class GameOverHandler : NetworkBehaviour
     {
         Debug.LogWarning($"Fort \"{fort.name}\" has been captured by {fort.MyCell.MyUnit.name}");
 
-        //if (bases.Count != 1) { return; }
+        //Player player = fort.MyTeam.AuthoritiveConnection.identity.GetComponent<Player>();
+        Player player = fort.MyTeam.MyPlayer;
+
+        Debug.Log($"I am player, {player.name}");
+
+        //if (player.MyForts.Count != 0) return;
 
         //int playerId = bases[0].connectionToClient.connectionId;
-
         //RpcGameOver($"Player {playerId}");
+        RpcGameOver("Idk");
 
-        //ServerOnGameOver?.Invoke();
+        ServerOnGameOver?.Invoke();
     }
-
-    //[ClientRpc]
-    //private void RpcGameOver(string winner)
-    //{
-    //    ClientOnGameOver?.Invoke(winner);
-    //}
 
     #endregion
 }

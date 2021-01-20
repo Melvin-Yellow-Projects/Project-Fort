@@ -39,7 +39,7 @@ public class SceneLoader : MonoBehaviour
     /// </summary>
     public static void LoadStartScene()
     {
-        // HACK: i think this verifies that we are the host
+        // FIXME: This needs to work for host/server/client
         if (NetworkServer.active && NetworkClient.isConnected)
             GameNetworkManager.Singleton.StopHost();
 
