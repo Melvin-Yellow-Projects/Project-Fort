@@ -86,7 +86,7 @@ public abstract class Player : NetworkBehaviour
 
     protected virtual void Subscribe()
     {
-        if (!isClientOnly || !hasAuthority) return; // TODO: validate this works
+        if (!hasAuthority) return; // TODO: validate this works
 
         Debug.Log($"Player {name} is either server or has authority of it's own player object");
 
