@@ -56,6 +56,11 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
+    //public override void OnStartServer()
+    //{
+    //    base.OnStartServer();
+    //}
+
     public override void OnStartAuthority()
     {
         // HACK: this probably doesn't belong here, but calling it on awake causes authority errors

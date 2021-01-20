@@ -157,11 +157,7 @@ public class HexGrid : NetworkBehaviour
     public override void OnStartClient()
     {
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
-        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
-        {
-            if (GameNetworkManager.HumanPlayers[i].hasAuthority)
-                GameNetworkManager.HumanPlayers[i].enabled = true;
-        }
+        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
         // HACK: perhaps a static event that logs to clients to enable player is better
 
         if (!isClientOnly) return;
