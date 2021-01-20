@@ -65,7 +65,6 @@ public abstract class Player : NetworkBehaviour
     {
         // HACK: this probably doesn't belong here, but calling it on awake causes authority errors
         Subscribe();
-        Debug.Log("Player Subbing");
     }
 
     ///// <summary>
@@ -87,7 +86,9 @@ public abstract class Player : NetworkBehaviour
 
     protected virtual void Subscribe()
     {
-        if (!isServer || !hasAuthority) return; // TODO: validate this works
+        if (!isClientOnly || !hasAuthority) return; // TODO: validate this works
+
+        Debug.Log($"Player {name} is either server or has authority of it's own player object");
 
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
@@ -97,7 +98,9 @@ public abstract class Player : NetworkBehaviour
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
 
-        if (!isServer) return;
+        if (!isClientOnly) return;
+
+        Debug.Log($"Player is the server {name}");
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
     }
