@@ -63,6 +63,7 @@ public class Team : NetworkBehaviour
 
     public NetworkConnection AuthoritiveConnection
     {
+        [Server]
         get
         {
             for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)

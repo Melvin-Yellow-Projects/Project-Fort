@@ -98,15 +98,17 @@ public class Fort : NetworkBehaviour
 
     private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
     {
-        Subscribe();
         OnFortSpawned?.Invoke(this);
+
+        if (!isClientOnly) Subscribe();
     }
 
     private void OnDestroy()
     {
-        Unsubscribe();
         myCell.MyFort = null; // HACK: does this need to be transfered to the server?
         OnFortDespawned?.Invoke(this);
+
+        if (!isClientOnly) Unsubscribe();
     }
 
     #endregion
