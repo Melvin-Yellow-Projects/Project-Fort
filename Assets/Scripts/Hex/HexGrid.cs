@@ -604,7 +604,7 @@ public class HexGrid : NetworkBehaviour
     {
         // TODO: Server validation
 
-        fort.name = $"Fort {fortCount}";
+        fort.name = $"{fort.MyTeam.TeamIndex}fort{fortCount}";
         fortCount += 1;
 
         forts.Add(fort);
@@ -621,7 +621,7 @@ public class HexGrid : NetworkBehaviour
     {
         // TODO: Server validation
 
-        unit.name = $"Unit {unitCount}";
+        unit.name = $"{unit.MyTeam.TeamIndex}unit{unitCount}";
         unitCount += 1;
 
         units.Add(unit);

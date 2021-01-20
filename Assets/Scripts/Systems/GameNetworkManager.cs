@@ -126,9 +126,8 @@ public class GameNetworkManager : NetworkManager
 
         if (!SceneLoader.IsGameScene) return;
 
-        // TODO: Add Game Over Handler to Scene
-        //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
-        //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
+        GameOverHandler gameOverHandler = Instantiate(GameOverHandler.Prefab);
+        NetworkServer.Spawn(gameOverHandler.gameObject);
     }
 
     [Server]

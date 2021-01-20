@@ -100,7 +100,7 @@ public class Unit : NetworkBehaviour
         CollisionHandler = GetComponentInChildren<UnitCollisionHandler>();
     }
 
-    private void Start()
+    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
     {
         OnUnitSpawned?.Invoke(this);
     }
@@ -109,6 +109,22 @@ public class Unit : NetworkBehaviour
     {
         OnUnitDepawned?.Invoke(this);
     }
+
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    //[Server]
+    //public override void OnStartServer()
+    //{
+    //    OnUnitSpawned?.Invoke(this);
+    //}
+
+    //[Server]
+    //public override void OnStopServer()
+    //{
+    //    OnUnitDepawned?.Invoke(this);
+    //}
 
     #endregion
     /************************************************************/

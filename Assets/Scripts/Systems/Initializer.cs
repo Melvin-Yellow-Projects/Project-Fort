@@ -26,6 +26,10 @@ public class Initializer : MonoBehaviour
     [Tooltip("game mode settings load out")]
     [SerializeField] GameMode gameModeSettings = null;
 
+    [Header("GameOverHandler")]
+    [Tooltip("reference to the GameOverHandler prefab")]
+    [SerializeField] GameOverHandler gameOverHandlerPerfab = null;
+
     [Header("HexMetrics")]
     [Tooltip("noise source for Hex Metrics")]
     [SerializeField] Texture2D noiseSource;
@@ -61,6 +65,10 @@ public class Initializer : MonoBehaviour
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
+        // GameOverHandler
+        if (gameOverHandlerPerfab && !GameOverHandler.Prefab)
+            GameOverHandler.Prefab = gameOverHandlerPerfab;
+
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
@@ -86,6 +94,10 @@ public class Initializer : MonoBehaviour
     {
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
+
+        // GameOverHandler
+        if (gameOverHandlerPerfab && !GameOverHandler.Prefab)
+            GameOverHandler.Prefab = gameOverHandlerPerfab;
 
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;

@@ -45,7 +45,11 @@ public class Fort : NetworkBehaviour
     /// <subscriber class="Grid">removes the fort to the list of forts on the grid</subscriber>
     public static event Action<Fort> OnFortDespawned;
 
-    //public static event Action OnFortCaptured;
+    /// <summary>
+    /// Server event for when a fort is captured
+    /// </summary>
+    /// <subscriber class="GameOverHandler">checks if a player has lost</subscriber>
+    public static event Action<Fort> ServerOnFortCaptured;
 
     #endregion
     /************************************************************/
@@ -92,14 +96,16 @@ public class Fort : NetworkBehaviour
         MyTeam = GetComponent<Team>();
     }
 
-    private void Start()
+    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
     {
+        Subscribe();
         OnFortSpawned?.Invoke(this);
     }
 
     private void OnDestroy()
     {
-        myCell.MyFort = null;
+        Unsubscribe();
+        myCell.MyFort = null; // HACK: does this need to be transfered to the server?
         OnFortDespawned?.Invoke(this);
     }
 
@@ -107,15 +113,20 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    public override void OnStartServer()
-    {
-        Subscribe();
-    }
+    //[Server]
+    //public override void OnStartServer()
+    //{
+    //    Subscribe();
+    //    OnFortSpawned?.Invoke(this);
+    //}
 
-    public override void OnStopServer()
-    {
-        Unsubscribe();
-    }
+    //[Server]
+    //public override void OnStopServer()
+    //{
+    //    Unsubscribe();
+    //    myCell.MyFort = null; // HACK: does this need to be transfered to the server?
+    //    OnFortDespawned?.Invoke(this);
+    //}
 
     #endregion
     /************************************************************/
@@ -175,9 +186,10 @@ public class Fort : NetworkBehaviour
     {
         Unit unit = myCell.MyUnit;
 
-        if (!unit) return;
+        if (!unit || MyTeam == unit.MyTeam) return;
 
         MyTeam.TeamIndex = unit.MyTeam.TeamIndex;
+        ServerOnFortCaptured?.Invoke(this);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

@@ -470,14 +470,14 @@ public class UnitMovement : NetworkBehaviour
     {
         GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnDeath += HandleServerOnDeath;
+        GetComponent<UnitDeath>().ServerOnUnitDeath += HandleServerOnUnitDeath;
     }
 
     private void Unsubscribe()
     {
         GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnDeath -= HandleServerOnDeath;
+        GetComponent<UnitDeath>().ServerOnUnitDeath -= HandleServerOnUnitDeath;
     }
 
     [Server]
@@ -512,7 +512,7 @@ public class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnDeath()
+    private void HandleServerOnUnitDeath()
     {
         StopAllCoroutines();
 
