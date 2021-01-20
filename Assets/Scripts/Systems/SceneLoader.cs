@@ -41,7 +41,13 @@ public class SceneLoader : MonoBehaviour
     {
         // FIXME: This needs to work for host/server/client
         if (NetworkServer.active && NetworkClient.isConnected)
-            GameNetworkManager.Singleton.StopHost();
+        {
+            NetworkManager.singleton.StopHost();
+        }
+        else
+        {
+            NetworkManager.singleton.StopClient();
+        }
 
         NetworkManager.singleton.autoCreatePlayer = true;
         GameSession.Singleton.IsOnline = false;

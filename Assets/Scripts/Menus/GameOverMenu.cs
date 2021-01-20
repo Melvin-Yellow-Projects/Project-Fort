@@ -19,7 +19,8 @@ public class GameOverMenu : MonoBehaviour
     /************************************************************/
     #region Variables
 
-    [SerializeField] private TMP_Text winnerText = null;
+    [SerializeField] private TMP_Text defeatText = null;
+    [SerializeField] private TMP_Text victoryText = null;
 
     #endregion
     /************************************************************/
@@ -27,13 +28,16 @@ public class GameOverMenu : MonoBehaviour
 
     private void Awake()
     {
-        GameOverHandler.ClientOnGameOver += ClientHandleGameOver;
+        defeatText.gameObject.SetActive(false);
+        victoryText.gameObject.SetActive(false);
         gameObject.SetActive(false);
+
+        Subscribe();
     }
 
     private void OnDestroy()
     {
-        GameOverHandler.ClientOnGameOver -= ClientHandleGameOver;
+        Unsubscribe();
     }
 
     #endregion
@@ -56,9 +60,30 @@ public class GameOverMenu : MonoBehaviour
     /************************************************************/
     #region Event Handler Functions
 
-    private void ClientHandleGameOver(string winner)
+    private void Subscribe()
     {
-        winnerText.text = $"{winner} Has Won!";
+        GameOverHandler.TargetOnDefeat += HandleTargetOnDefeat;
+        GameOverHandler.ClientOnGameOver += HandleClientOnGameOver;
+    }
+
+    private void Unsubscribe()
+    {
+        GameOverHandler.TargetOnDefeat -= HandleTargetOnDefeat;
+        GameOverHandler.ClientOnGameOver -= HandleClientOnGameOver;
+    }
+
+    private void HandleTargetOnDefeat()
+    {
+        defeatText.gameObject.SetActive(true);
+
+        gameObject.SetActive(true);
+    }
+
+    private void HandleClientOnGameOver(string winnerName)
+    {
+        victoryText.gameObject.SetActive(true);
+
+        victoryText.text = $"{winnerName} Has Won!";
 
         gameObject.SetActive(true);
     }

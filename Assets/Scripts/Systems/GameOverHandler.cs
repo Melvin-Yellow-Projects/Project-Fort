@@ -19,8 +19,18 @@ public class GameOverHandler : NetworkBehaviour
     /************************************************************/
     #region Class Events
 
-    public static event Action ServerOnGameOver;
+    //public static event Action ServerOnGameOver;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <subscriber class="GameOverMenu">displays the loss to the losing client</subscriber>
+    public static event Action TargetOnDefeat;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <subscriber class="GameOverMenu">displays victory to all clients</subscriber>
     public static event Action<string> ClientOnGameOver;
 
     #endregion
@@ -33,11 +43,13 @@ public class GameOverHandler : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
+    [Server]
     public override void OnStartServer()
     {
         Subscribe();
     }
 
+    [Server]
     public override void OnStopServer()
     {
         Unsubscribe();
@@ -46,6 +58,14 @@ public class GameOverHandler : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Client Functions
+
+    [TargetRpc]
+    private void TargetDefeat(NetworkConnection conn)
+    {
+        TargetOnDefeat?.Invoke();
+
+        conn.identity.GetComponent<HumanPlayer>().enabled = false;
+    }
 
     [ClientRpc]
     private void RpcGameOver(string winner)
@@ -65,8 +85,7 @@ public class GameOverHandler : NetworkBehaviour
         // 1. Flag when a fort is captured (or at the end of the breaking state)
         // 2. Get a fort's team and then it's associated player
         // 3. check if a player has lost all of his forts, if so, player has lost 
-        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
-
+        Player.ServerOnPlayerDefeat += HandleServerOnPlayerDefeat;
 
         // 1. Flag when a unit dies
         // 2. Get a unit's team and then it's associated player
@@ -77,28 +96,34 @@ public class GameOverHandler : NetworkBehaviour
     [Server]
     private void Unsubscribe()
     {
-        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
+        Player.ServerOnPlayerDefeat -= HandleServerOnPlayerDefeat;
         //Unit.OnUnitDepawned -= null;
     }
 
-    [Server]
-    private void HandleServerOnFortCaptured(Fort fort)
+    private void HandleServerOnPlayerDefeat(Player player, WinConditionType type)
     {
-        Debug.LogWarning($"Fort \"{fort.name}\" has been captured by {fort.MyCell.MyUnit.name}");
+        // TODO: check if player is AI, if AI, skip connections
 
-        //Player player = fort.MyTeam.AuthoritiveConnection.identity.GetComponent<Player>();
-        Player player = fort.MyTeam.MyPlayer;
+        switch (type)
+        {
+            case WinConditionType.Armistice:
+                TargetDefeat(player.connectionToClient);
+                break;
+            case WinConditionType.Conquest:
+                TargetDefeat(player.connectionToClient);
+                break;
+            case WinConditionType.Annihilation:
+                TargetDefeat(player.connectionToClient);
+                break;
+            case WinConditionType.TEST:
+                break;
+        }
 
-        Debug.Log($"I am player, {player.name}");
+        // TODO: check for remaining players
 
-        //if (player.MyForts.Count != 0) return;
-
-        //int playerId = bases[0].connectionToClient.connectionId;
-        //RpcGameOver($"Player {playerId}");
-        RpcGameOver("Idk");
-
-        ServerOnGameOver?.Invoke();
+        // HACK: assumes two players
+        //ServerOnGameOver?.Invoke(); 
+        RpcGameOver("You");
     }
-
     #endregion
 }

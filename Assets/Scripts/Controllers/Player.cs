@@ -24,7 +24,15 @@ using Mirror;
 public abstract class Player : NetworkBehaviour
 {
     /************************************************************/
-    #region Variables
+    #region Class Events
+
+    // FIXME: Verify Player Menu
+
+    /// <summary>
+    /// Server event for when a player has been defeated
+    /// </summary>
+    /// <subscriber class="GameOverHandler">handles the defeated player</subscriber>
+    public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
 
     #endregion
     /************************************************************/
@@ -40,9 +48,9 @@ public abstract class Player : NetworkBehaviour
 
     public int MoveCount { get; [Server] set; } = 1; // FIXME: Change this such that it works
 
-    public List<Fort> MyForts { get; set; } = new List<Fort>();
+    public List<Unit> MyUnits { get; set; } = new List<Unit>(); // TODO: change it to be just server
 
-    public List<Unit> MyUnits { get; set; } = new List<Unit>();
+    public List<Fort> MyForts { [Server] get; [Server] set; } = new List<Fort>();
 
     #endregion
     /************************************************************/
@@ -82,6 +90,10 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned += HandleOnFortDespawned;
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
+
+        if (!isServer) return;
+
+        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
     }
 
     protected virtual void Unsubscribe()
@@ -93,8 +105,12 @@ public abstract class Player : NetworkBehaviour
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
-
+        
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
+
+        if (!isServer) return;
+
+        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
     }
 
     private void HandleOnFortSpawned(Fort fort)
@@ -104,9 +120,31 @@ public abstract class Player : NetworkBehaviour
         MyForts.Add(fort);
     }
 
+    // HACK: this is probably unneeded
     private void HandleOnFortDespawned(Fort fort)
     {
         MyForts.Remove(fort);
+    }
+
+    [Server]
+    private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
+    {
+        if (MyTeam == fort.MyTeam)
+        {
+            MyForts.Remove(fort);
+
+            if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
+        }
+        else if (MyTeam == newTeam)
+        {
+            MyForts.Add(fort);
+            //Debug.LogWarning($"team has {MyForts.Count} forts out of {HexGrid.Forts.Count} total");
+            // HACK: computer players are not yet handled
+            if (!GameSession.Singleton.IsOnline && MyForts.Count == HexGrid.Forts.Count)
+            {
+                ServerOnPlayerDefeat?.Invoke(null, WinConditionType.TEST);
+            }
+        }
     }
 
     protected virtual void HandleOnUnitSpawned(Unit unit)
@@ -116,9 +154,14 @@ public abstract class Player : NetworkBehaviour
         MyUnits.Add(unit);
     }
 
+    // HACK: on death would be more useful
     protected virtual void HandleOnUnitDepawned(Unit unit)
     {
         MyUnits.Remove(unit);
+
+        if (!isServer) return;
+
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Annihilation);
     }
 
     [Server]

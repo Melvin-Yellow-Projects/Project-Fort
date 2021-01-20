@@ -211,9 +211,9 @@ public class GameManager : NetworkBehaviour
     private void ServerMoveUnits()
     {
         // Moving Units
-        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        for (int i = 0; i < HexGrid.Units.Count; i++)
         {
-            Unit unit = HexGrid.Singleton.units[i];
+            Unit unit = HexGrid.Units[i];
             unit.Movement.ServerDoAction(); // TODO: correct number of steps
         }
     }
@@ -222,9 +222,9 @@ public class GameManager : NetworkBehaviour
     private IEnumerator ServerWaitForUnits()
     {
         // Waiting for Units
-        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        for (int i = 0; i < HexGrid.Units.Count; i++)
         {
-            Unit unit = HexGrid.Singleton.units[i];
+            Unit unit = HexGrid.Units[i];
             if (unit.Movement.IsEnRoute)
             {
                 i = -1;
@@ -237,9 +237,9 @@ public class GameManager : NetworkBehaviour
     private void ServerCompleteTurnStep()
     {
         // Setting new cell for Units now that they moved
-        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        for (int i = 0; i < HexGrid.Units.Count; i++)
         {
-            Unit unit = HexGrid.Singleton.units[i];
+            Unit unit = HexGrid.Units[i];
             unit.Movement.ServerCompleteAction();
         }
     }

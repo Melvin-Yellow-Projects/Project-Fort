@@ -51,11 +51,6 @@ public class HexGrid : NetworkBehaviour
     [Tooltip("layers to ignore when raycasting")]
     [SerializeField] LayerMask layersToIgnore; // TODO: this would probably be better as a cell layer
 
-    /* Variables */
-    public List<Unit> units = new List<Unit>(); // HACK: should not be public
-
-    List<Fort> forts = new List<Fort>();
-
     #endregion
     /************************************************************/
     #region Private Variables
@@ -88,6 +83,10 @@ public class HexGrid : NetworkBehaviour
     public static HexGrid Prefab { get; set; }
 
     public static HexGrid Singleton { get; private set; }
+
+    public static List<Unit> Units { get; private set; } = new List<Unit>();
+
+    public static List<Fort> Forts { get; private set; } = new List<Fort>();
 
     #endregion
     /************************************************************/
@@ -140,15 +139,13 @@ public class HexGrid : NetworkBehaviour
     {
         //Debug.Log("Spawning Map Entities");
 
-        for (int i = 0; i < Singleton.units.Count; i++)
+        for (int i = 0; i < Units.Count; i++)
         {
-            NetworkServer.Spawn(Singleton.units[i].gameObject,
-                Singleton.units[i].MyTeam.AuthoritiveConnection);
+            NetworkServer.Spawn(Units[i].gameObject, Units[i].MyTeam.AuthoritiveConnection);
         }
-        for (int i = 0; i < Singleton.forts.Count; i++)
+        for (int i = 0; i < Forts.Count; i++)
         {
-            NetworkServer.Spawn(Singleton.forts[i].gameObject,
-                Singleton.forts[i].MyTeam.AuthoritiveConnection);
+            NetworkServer.Spawn(Forts[i].gameObject, Forts[i].MyTeam.AuthoritiveConnection);
         }
     }
 
@@ -467,25 +464,25 @@ public class HexGrid : NetworkBehaviour
 
     public void ClearPaths()
     {
-        for (int i = 0; i < units.Count; i++)
+        for (int i = 0; i < Units.Count; i++)
         {
-            units[i].Movement.Path.Clear();
+            Units[i].Movement.Path.Clear();
         }
     }
 
     private void ClearEntities()
     {
-        for (int i = 0; i < units.Count; i++)
+        for (int i = 0; i < Units.Count; i++)
         {
-            units[i].Die(isPlayingAnimation: false);
+            Units[i].Die(isPlayingAnimation: false);
         }
-        units.Clear();
+        Units.Clear();
 
-        for (int i = 0; i < forts.Count; i++)
+        for (int i = 0; i < Forts.Count; i++)
         {
-            Destroy(forts[i].gameObject);
+            Destroy(Forts[i].gameObject);
         }
-        forts.Clear();
+        Forts.Clear();
     }
 
     public void ResetVisibility()
@@ -495,9 +492,9 @@ public class HexGrid : NetworkBehaviour
             cells[i].ResetVisibility();
         }
 
-        for (int i = 0; i < units.Count; i++)
+        for (int i = 0; i < Units.Count; i++)
         {
-            Unit unit = units[i];
+            Unit unit = Units[i];
             UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.Movement.VisionRange);
         }
     }
@@ -520,16 +517,16 @@ public class HexGrid : NetworkBehaviour
             cells[i].Save(writer);
         }
 
-        writer.Write(forts.Count);
-        for (int i = 0; i < forts.Count; i++)
+        writer.Write(Forts.Count);
+        for (int i = 0; i < Forts.Count; i++)
         {
-            forts[i].Save(writer);
+            Forts[i].Save(writer);
         }
 
-        writer.Write(units.Count);
-        for (int i = 0; i < units.Count; i++)
+        writer.Write(Units.Count);
+        for (int i = 0; i < Units.Count; i++)
         {
-            units[i].Save(writer);
+            Units[i].Save(writer);
         }
     }
 
@@ -607,30 +604,30 @@ public class HexGrid : NetworkBehaviour
         fort.name = $"{fort.MyTeam.TeamIndex}fort{fortCount}";
         fortCount += 1;
 
-        forts.Add(fort);
+        Forts.Add(fort);
     }
 
     private void HandleOnFortDespawned(Fort fort)
     {
         // FIXME: this needs to be replaced with a manual event rather than handle
 
-        forts.Remove(fort);
+        Forts.Remove(fort);
     }
 
     private void HandleOnUnitSpawned(Unit unit)
     {
         // TODO: Server validation
 
-        unit.name = $"{unit.MyTeam.TeamIndex}unit{unitCount}";
+        unit.name = $"{unit.MyTeam.TeamIndex}unit{unitCount}"; // FIXME: name should update
         unitCount += 1;
 
-        units.Add(unit);
+        Units.Add(unit);
     }
 
     private void HandleOnUnitDepawned(Unit unit)
     {
         // FIXME: this needs to be replaced with a manual event rather than handle
-        units.Remove(unit);
+        Units.Remove(unit);
     }
 
     #endregion

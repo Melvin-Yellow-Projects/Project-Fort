@@ -165,8 +165,6 @@ public class Unit : NetworkBehaviour
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;
 
-        //HexGrid.Singleton.units.Add(unit); // FIXME: sub in hexgrid happens after spawn
-
         // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
         //HexGrid.Singleton.ParentTransformToGrid(unit.transform);
 

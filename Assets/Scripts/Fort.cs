@@ -48,8 +48,8 @@ public class Fort : NetworkBehaviour
     /// <summary>
     /// Server event for when a fort is captured
     /// </summary>
-    /// <subscriber class="GameOverHandler">checks if a player has lost</subscriber>
-    public static event Action<Fort> ServerOnFortCaptured;
+    /// <subscriber class="Player">updates a player's forts</subscriber>
+    public static event Action<Fort, Team> ServerOnFortCaptured;
 
     #endregion
     /************************************************************/
@@ -188,8 +188,9 @@ public class Fort : NetworkBehaviour
 
         if (!unit || MyTeam == unit.MyTeam) return;
 
+        ServerOnFortCaptured?.Invoke(this, unit.MyTeam);
+
         MyTeam.TeamIndex = unit.MyTeam.TeamIndex;
-        ServerOnFortCaptured?.Invoke(this);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

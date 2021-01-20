@@ -111,7 +111,7 @@ public class LobbyMenu : MonoBehaviour
             //playerSteamImages[i].texture = null;
         }
 
-        startGameButton.interactable = (GameNetworkManager.HumanPlayers.Count >= 1);
+        startGameButton.interactable = (GameNetworkManager.HumanPlayers.Count >= 2);
     }
 
     private void HandlePartyOwnerStateChange()
