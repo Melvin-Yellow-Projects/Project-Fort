@@ -89,6 +89,8 @@ public class GameManager : NetworkBehaviour
 
     public static bool IsPlayingTurn { get; [Server] private set; } = false;
 
+    public static List<Player> Players { get; set; } = new List<Player>();
+
     #endregion
     /************************************************************/
     #region Unity Functions
@@ -136,6 +138,8 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerStartGame()
     {
+        Debug.Log("Starting Game");
+
         gameObject.SetActive(true);
         enabled = GameMode.Singleton.IsUsingTurnTimer;
         ServerStartRound();

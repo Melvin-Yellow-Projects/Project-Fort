@@ -72,12 +72,24 @@ public abstract class Player : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (isClientOnly && hasAuthority) Subscribe();
+        if (!isClientOnly) return;
+
+        GameManager.Players.Add(this);
+
+        if (!hasAuthority) return;
+
+        Subscribe();
     }
 
     public override void OnStopClient()
     {
-        if (isClientOnly && hasAuthority) Unsubscribe();
+        if (!isClientOnly) return;
+
+        GameManager.Players.Remove(this);
+
+        if (!hasAuthority) return;
+
+        Unsubscribe();
     }
 
     [TargetRpc]

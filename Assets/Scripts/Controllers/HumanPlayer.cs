@@ -90,17 +90,6 @@ public class HumanPlayer : Player
         //if (!isClientOnly) return; 
 
         DontDestroyOnLoad(gameObject);
-
-        // HACK: this line will fail if the player is an AI; do all connections need this info?
-        GameNetworkManager.HumanPlayers.Add(this);
-    }
-
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-
-        // HACK: this line will fail if the player is an AI
-        GameNetworkManager.HumanPlayers.Remove(this);
     }
 
     #endregion

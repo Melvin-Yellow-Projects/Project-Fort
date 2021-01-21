@@ -63,16 +63,16 @@ public class Team : NetworkBehaviour
 
     public NetworkConnection AuthoritiveConnection
     {
-        [Server]
+        [Server] //FIXME: This needs to be updated
         get
         {
-            for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+            for (int i = 0; i < GameManager.Players.Count; i++)
             {
-                if (teamIndex == GameNetworkManager.HumanPlayers[i].MyTeam.teamIndex)
+                if (teamIndex == GameManager.Players[i].MyTeam.teamIndex)
                 {
                     //Debug.Log($"Grabbing Authoritative Connection for {name}");
-                    MyPlayer = GameNetworkManager.HumanPlayers[i]; // HACK: this won't work for long
-                    return GameNetworkManager.HumanPlayers[i].connectionToClient;
+                    MyPlayer = GameManager.Players[i]; // HACK: this won't work for long
+                    return GameManager.Players[i].connectionToClient;
                 }
             }
 

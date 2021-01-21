@@ -137,7 +137,7 @@ public class HexGrid : NetworkBehaviour
     [Server]
     public static void ServerSpawnMapEntities()
     {
-        //Debug.Log("Spawning Map Entities");
+        Debug.Log("Spawning Map Entities");
 
         for (int i = 0; i < Units.Count; i++)
         {

@@ -123,7 +123,7 @@ public class GameOverHandler : NetworkBehaviour
 
         // HACK: assumes two players
         //ServerOnGameOver?.Invoke(); 
-        RpcGameOver("You");
+        RpcGameOver("The Winner");
     }
     #endregion
 }
