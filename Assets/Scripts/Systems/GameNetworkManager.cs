@@ -107,8 +107,6 @@ public class GameNetworkManager : NetworkManager
         player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
         playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
         playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
-
-        player.gameObject.name = $"Player {GameManager.Players.Count}";
     }
 
     [Server]

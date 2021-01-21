@@ -108,6 +108,7 @@ public class PlayerInfo : NetworkBehaviour
     private void HookOnPlayerName(string oldValue, string newValue)
     {
         OnClientPlayerInfoUpdate?.Invoke();
+        name = playerName;
     }
 
     #endregion
