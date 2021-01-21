@@ -57,25 +57,25 @@ public class GameManager : NetworkBehaviour
     /// Client event for when a new round has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    public static event Action RpcOnStartRound;
+    public static event Action ClientOnStartRound;
 
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    public static event Action RpcOnStartTurn;
-    
+    public static event Action ClientOnStartTurn;
+
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
-    /// <subscriber class="Player">disables controls when units are moving</subscriber>
-    public static event Action RpcOnPlayTurn;
+    /// <subscriber class="HumanPlayer">disables controls when units are moving</subscriber>
+    public static event Action ClientOnPlayTurn;
     
     /// <summary>
     /// Client event for turn has stopped playing
     /// </summary>
-    /// <subscriber class="Player">enables controls when units are moving</subscriber>
-    public static event Action RpcOnStopTurn;
+    /// <subscriber class="HumanPlayer">enables controls when units are moving</subscriber>
+    public static event Action ClientOnStopTurn;
 
     #endregion
     /************************************************************/
@@ -83,9 +83,13 @@ public class GameManager : NetworkBehaviour
 
     public static GameManager Singleton { get; private set; }
 
-    public int RoundCount { get; [Server] private set; } = 0;
+    public static int RoundCount { get; [Server] private set; } = 0;
 
-    public int TurnCount { get; [Server] private set; } = 0;
+    public static int TurnCount { get; [Server] private set; } = 0;
+
+    public static bool IsPlayingTurn { get; [Server] private set; } = false;
+
+    public static List<Player> Players { get; set; } = new List<Player>();
 
     #endregion
     /************************************************************/
@@ -100,7 +104,6 @@ public class GameManager : NetworkBehaviour
         if (!isServer) return;
 
         turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
-        Subscribe();
     }
 
     /// <summary>
@@ -135,6 +138,8 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerStartGame()
     {
+        Debug.Log($"Starting Game with {Players.Count} Players");
+
         gameObject.SetActive(true);
         enabled = GameMode.Singleton.IsUsingTurnTimer;
         ServerStartRound();
@@ -147,7 +152,7 @@ public class GameManager : NetworkBehaviour
         TurnCount = 0;
 
         ServerOnStartRound?.Invoke();
-        InvokeRpcOnStartRound();
+        RpcInvokeClientOnStartRound();
 
         ServerStartTurn();
     }
@@ -158,7 +163,7 @@ public class GameManager : NetworkBehaviour
         TurnCount++;
 
         ServerOnStartTurn?.Invoke();
-        InvokeRpcOnStartTurn();
+        RpcInvokeClientOnStartTurn();
 
         // update timer and its text
         if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer();
@@ -182,8 +187,9 @@ public class GameManager : NetworkBehaviour
     [Server] // HACK:  units are looped over several times
     private IEnumerator ServerPlayTurn(int numberOfTurnSteps) 
     {
+        IsPlayingTurn = true;
         ServerOnPlayTurn?.Invoke();
-        InvokeRpcOnPlayTurn();
+        RpcInvokeClientOnPlayTurn();
 
         // How many Moves/Steps Units can Utilize
         for (int step = 0; step < numberOfTurnSteps; step++)
@@ -196,7 +202,9 @@ public class GameManager : NetworkBehaviour
         }
 
         ServerOnStopTurn?.Invoke();
-        InvokeRpcOnStopTurn();
+        RpcInvokeClientOnStopTurn();
+
+        IsPlayingTurn = false;
 
         // Finished Turn, either start new one or start a new round
         if (TurnCount >= GameMode.Singleton.TurnsPerRound) ServerStartRound();
@@ -207,9 +215,9 @@ public class GameManager : NetworkBehaviour
     private void ServerMoveUnits()
     {
         // Moving Units
-        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        for (int i = 0; i < HexGrid.Units.Count; i++)
         {
-            Unit unit = HexGrid.Singleton.units[i];
+            Unit unit = HexGrid.Units[i];
             unit.Movement.ServerDoAction(); // TODO: correct number of steps
         }
     }
@@ -218,9 +226,9 @@ public class GameManager : NetworkBehaviour
     private IEnumerator ServerWaitForUnits()
     {
         // Waiting for Units
-        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        for (int i = 0; i < HexGrid.Units.Count; i++)
         {
-            Unit unit = HexGrid.Singleton.units[i];
+            Unit unit = HexGrid.Units[i];
             if (unit.Movement.IsEnRoute)
             {
                 i = -1;
@@ -233,9 +241,9 @@ public class GameManager : NetworkBehaviour
     private void ServerCompleteTurnStep()
     {
         // Setting new cell for Units now that they moved
-        for (int i = 0; i < HexGrid.Singleton.units.Count; i++)
+        for (int i = 0; i < HexGrid.Units.Count; i++)
         {
-            Unit unit = HexGrid.Singleton.units[i];
+            Unit unit = HexGrid.Units[i];
             unit.Movement.ServerCompleteAction();
         }
     }
@@ -252,41 +260,28 @@ public class GameManager : NetworkBehaviour
     #region Client Functions
 
     [ClientRpc]
-    private void InvokeRpcOnStartRound()
+    private void RpcInvokeClientOnStartRound()
     {
-        RpcOnStartRound?.Invoke();
+        ClientOnStartRound?.Invoke();
     }
 
     [ClientRpc]
-    private void InvokeRpcOnStartTurn()
+    private void RpcInvokeClientOnStartTurn()
     {
-        RpcOnStartTurn?.Invoke();
+        ClientOnStartTurn?.Invoke();
     }
 
     [ClientRpc]
-    private void InvokeRpcOnPlayTurn()
+    private void RpcInvokeClientOnPlayTurn()
     {
-        RpcOnPlayTurn?.Invoke();
+        ClientOnPlayTurn?.Invoke();
     }
 
     [ClientRpc]
-    private void InvokeRpcOnStopTurn()
+    private void RpcInvokeClientOnStopTurn()
     {
-        RpcOnStopTurn?.Invoke();
+        ClientOnStopTurn?.Invoke();
     }
 
-    #endregion
-    /************************************************************/
-    #region Event Handler Functions
-
-    private void Subscribe()
-    {
-        
-    }
-
-    private void Unsubscribe()
-    {
-        
-    }
     #endregion
 }

@@ -24,9 +24,15 @@ using Mirror;
 public abstract class Player : NetworkBehaviour
 {
     /************************************************************/
-    #region Variables
+    #region Class Events
 
-    protected List<Unit> myUnits = new List<Unit>();
+    // FIXME: Verify Player Menu
+
+    /// <summary>
+    /// Server event for when a player has been defeated
+    /// </summary>
+    /// <subscriber class="GameOverHandler">handles the defeated player</subscriber>
+    public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
 
     #endregion
     /************************************************************/
@@ -40,65 +46,151 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int MoveCount { get; [Server] set; } = 1;
+    public int MoveCount { get; [Server] set; } = 1; // FIXME: Change this such that it works
+
+    public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
+
+    public List<Fort> MyForts { get; set; } = new List<Fort>();
 
     #endregion
     /************************************************************/
-    #region Unity Functions
+    #region Server Functions
 
-    public override void OnStartAuthority()
+    public override void OnStartServer()
     {
-        // HACK: this probably doesn't belong here, but calling it on awake causes authority errors
-        Subscribe(); 
+        DontDestroyOnLoad(gameObject);
+        Subscribe();
     }
 
-    ///// <summary>
-    ///// Unity Method; Awake() is called before Start() upon GameObject creation
-    ///// </summary>
-    //protected virtual void Awake()
-    //{
-    //    Subscribe();
-    //}
-
-    protected virtual void OnDestroy()
+    public override void OnStopServer()
     {
         Unsubscribe();
     }
 
     #endregion
     /************************************************************/
-    #region Event Handler Functions
+    #region Client Functions
 
-    protected virtual void Subscribe()
+    public override void OnStartClient()
     {
+        if (!isClientOnly) return;
+
+        DontDestroyOnLoad(gameObject);
+
+        GameManager.Players.Add(this);
+
         if (!hasAuthority) return;
 
+        Subscribe();
+    }
+
+    public override void OnStopClient()
+    {
+        if (!isClientOnly) return;
+
+        GameManager.Players.Remove(this);
+
+        if (!hasAuthority) return;
+
+        Unsubscribe();
+    }
+
+    [TargetRpc]
+    public void RpcAddFort(NetworkConnection conn, NetworkIdentity fortNetId)
+    {
+        if (isServer) return;
+
+        MyForts.Add(fortNetId.GetComponent<Fort>());
+    }
+
+    [TargetRpc]
+    public void RpcRemoveFort(NetworkConnection conn, NetworkIdentity fortNetId)
+    {
+        if (isServer) return;
+
+        MyForts.Remove(fortNetId.GetComponent<Fort>());
+    }
+
+    #endregion
+    /************************************************************/
+    #region Event Handler Functions
+
+    // HACK this line does not work, subscribe needs to happen on server and authoritive client
+    protected virtual void Subscribe()
+    {  
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
+
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
+
+        if (!isServer) return;
+
+        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
     }
 
     protected virtual void Unsubscribe()
     {
-        if (!hasAuthority) return;
-
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
+
+        if (!isServer) return;
+
+        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
+
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
+    }
+
+    private void HandleOnFortSpawned(Fort fort)
+    {
+        if (fort.MyTeam != MyTeam) return;
+
+        MyForts.Add(fort);
+    }
+
+    // HACK: this is probably unneeded
+    private void HandleOnFortDespawned(Fort fort)
+    {
+        MyForts.Remove(fort);
+    }
+
+    [Server]
+    private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
+    {
+        if (MyTeam == fort.MyTeam)
+        {
+            MyForts.Remove(fort);
+            if (connectionToClient != null) RpcRemoveFort(connectionToClient, fort.netIdentity);
+
+            if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
+        }
+        else if (MyTeam == newTeam)
+        {
+            MyForts.Add(fort);
+            if (connectionToClient != null) RpcAddFort(connectionToClient, fort.netIdentity);
+        }
     }
 
     protected virtual void HandleOnUnitSpawned(Unit unit)
     {
         if (unit.MyTeam != MyTeam) return;
 
-        myUnits.Add(unit);
+        MyUnits.Add(unit);
     }
 
+    // HACK: on death would be more useful
     protected virtual void HandleOnUnitDepawned(Unit unit)
     {
-        myUnits.Remove(unit);
+        MyUnits.Remove(unit);
+
+        if (!isServer) return;
+
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Annihilation);
     }
 
     [Server]

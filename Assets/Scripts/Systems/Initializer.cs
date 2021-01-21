@@ -26,6 +26,14 @@ public class Initializer : MonoBehaviour
     [Tooltip("game mode settings load out")]
     [SerializeField] GameMode gameModeSettings = null;
 
+    [Header("ComputerPlayer")]
+    [Tooltip("reference to the ComputerPlayer prefab")]
+    [SerializeField] ComputerPlayer computerPlayerPrefab = null;
+
+    [Header("GameOverHandler")]
+    [Tooltip("reference to the GameOverHandler prefab")]
+    [SerializeField] GameOverHandler gameOverHandlerPrefab = null;
+
     [Header("HexMetrics")]
     [Tooltip("noise source for Hex Metrics")]
     [SerializeField] Texture2D noiseSource;
@@ -61,6 +69,14 @@ public class Initializer : MonoBehaviour
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
+        // ComputerPlayer
+        if (computerPlayerPrefab && !ComputerPlayer.Prefab)
+            ComputerPlayer.Prefab = computerPlayerPrefab;
+
+        // GameOverHandler
+        if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
+            GameOverHandler.Prefab = gameOverHandlerPrefab;
+
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
@@ -86,6 +102,10 @@ public class Initializer : MonoBehaviour
     {
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
+
+        // GameOverHandler
+        if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
+            GameOverHandler.Prefab = gameOverHandlerPrefab;
 
         // HexMetrics
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;

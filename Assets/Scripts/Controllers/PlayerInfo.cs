@@ -6,6 +6,8 @@
  * Date Created: December 22, 2020
  * 
  * Additional Comments: 
+ * 
+ *      HACK: Properties don't need to be server protected since SyncVar is from server to client
  **/
 
 using System.Collections;
@@ -106,6 +108,7 @@ public class PlayerInfo : NetworkBehaviour
     private void HookOnPlayerName(string oldValue, string newValue)
     {
         OnClientPlayerInfoUpdate?.Invoke();
+        name = playerName;
     }
 
     #endregion

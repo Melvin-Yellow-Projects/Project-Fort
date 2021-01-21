@@ -32,7 +32,7 @@ public class UnitDeath : MonoBehaviour
     /// Event for when a unit is killed/destroyed
     /// </summary>
     /// <subscriber class="UnitMovement">clears movement data and removes visibility</subscriber>
-    public event Action ServerOnDeath;
+    public event Action ServerOnUnitDeath;
 
     #endregion
     /************************************************************/
@@ -41,7 +41,7 @@ public class UnitDeath : MonoBehaviour
     [Server]
     public void Die(bool isPlayingAnimation = true)
     {
-        ServerOnDeath?.Invoke();
+        ServerOnUnitDeath?.Invoke();
 
         IsDying = true;
 

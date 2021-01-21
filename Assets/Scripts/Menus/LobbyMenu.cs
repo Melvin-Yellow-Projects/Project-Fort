@@ -95,7 +95,7 @@ public class LobbyMenu : MonoBehaviour
 
     private void UpdatePlayerTags()
     {
-        for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+        for (int i = 0; i < GameManager.Players.Count; i++)
         {
             // TODO: add player avatar and name
             playerNameTexts[i].text = $"Player {i + 1}";
@@ -104,14 +104,15 @@ public class LobbyMenu : MonoBehaviour
             //playerSteamImages[i].texture = players[i].GetComponent<RTSPlayerInfo>().DisplayTexture;
         }
 
-        for (int i = GameNetworkManager.HumanPlayers.Count; i < playerNameTexts.Length; i++)
+        for (int i = GameManager.Players.Count; i < playerNameTexts.Length; i++)
         {
             playerNameTexts[i].text = "Waiting For Player";
             playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = true;
             //playerSteamImages[i].texture = null;
         }
 
-        startGameButton.interactable = (GameNetworkManager.HumanPlayers.Count >= 1);
+        // HACK: hardcoded and tethered to GameNetworkManager.ServerStartGame()
+        startGameButton.interactable = (GameManager.Players.Count >= 2);
     }
 
     private void HandlePartyOwnerStateChange()

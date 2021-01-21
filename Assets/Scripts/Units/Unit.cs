@@ -100,7 +100,7 @@ public class Unit : NetworkBehaviour
         CollisionHandler = GetComponentInChildren<UnitCollisionHandler>();
     }
 
-    private void Start()
+    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
     {
         OnUnitSpawned?.Invoke(this);
     }
@@ -109,6 +109,22 @@ public class Unit : NetworkBehaviour
     {
         OnUnitDepawned?.Invoke(this);
     }
+
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    //[Server]
+    //public override void OnStartServer()
+    //{
+    //    OnUnitSpawned?.Invoke(this);
+    //}
+
+    //[Server]
+    //public override void OnStopServer()
+    //{
+    //    OnUnitDepawned?.Invoke(this);
+    //}
 
     #endregion
     /************************************************************/
@@ -148,8 +164,6 @@ public class Unit : NetworkBehaviour
 
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;
-
-        //HexGrid.Singleton.units.Add(unit); // FIXME: sub in hexgrid happens after spawn
 
         // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
         //HexGrid.Singleton.ParentTransformToGrid(unit.transform);

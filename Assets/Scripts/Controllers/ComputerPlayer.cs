@@ -14,5 +14,10 @@ using UnityEngine;
 
 public class ComputerPlayer : Player
 {
-    
+    /************************************************************/
+    #region Properties
+
+    public static ComputerPlayer Prefab { get; set; }
+
+    #endregion
 }

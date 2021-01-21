@@ -61,16 +61,18 @@ public class Team : NetworkBehaviour
         }
     }
 
-    public NetworkConnection AuthoritiveConnection
+    public NetworkConnection AuthoritiveConnection //FIXME: This needs to be updated
     {
+        [Server] 
         get
         {
-            for (int i = 0; i < GameNetworkManager.HumanPlayers.Count; i++)
+            for (int i = 0; i < GameManager.Players.Count; i++)
             {
-                if (teamIndex == GameNetworkManager.HumanPlayers[i].MyTeam.teamIndex)
+                if (teamIndex == GameManager.Players[i].MyTeam.teamIndex)
                 {
                     //Debug.Log($"Grabbing Authoritative Connection for {name}");
-                    return GameNetworkManager.HumanPlayers[i].connectionToClient;
+                    MyPlayer = GameManager.Players[i]; // HACK: this won't work for long
+                    return GameManager.Players[i].connectionToClient;
                 }
             }
 
@@ -79,6 +81,8 @@ public class Team : NetworkBehaviour
             return null;
         }
     }
+
+    public Player MyPlayer { get; set; }
 
     #endregion
     /************************************************************/

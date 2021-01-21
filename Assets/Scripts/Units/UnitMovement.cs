@@ -381,7 +381,9 @@ public class UnitMovement : NetworkBehaviour
     [Command]
     public void CmdSetPath(List<HexCell> cells)
     {
-        if (hasAuthority) return; // return if this is the server calling this function
+        if (hasAuthority) return; // return if this is the server/host calling this function
+
+        if (GameManager.IsPlayingTurn) return;
         if (!CanMove) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
@@ -468,14 +470,14 @@ public class UnitMovement : NetworkBehaviour
     {
         GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnDeath += HandleServerOnDeath;
+        GetComponent<UnitDeath>().ServerOnUnitDeath += HandleServerOnUnitDeath;
     }
 
     private void Unsubscribe()
     {
         GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnDeath -= HandleServerOnDeath;
+        GetComponent<UnitDeath>().ServerOnUnitDeath -= HandleServerOnUnitDeath;
     }
 
     [Server]
@@ -510,7 +512,7 @@ public class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnDeath()
+    private void HandleServerOnUnitDeath()
     {
         StopAllCoroutines();
 

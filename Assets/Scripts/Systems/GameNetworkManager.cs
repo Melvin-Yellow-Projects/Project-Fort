@@ -56,8 +56,6 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
-    public static List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
-
     #endregion
     /************************************************************/
     #region Server Functions
@@ -65,6 +63,13 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerConnect(NetworkConnection conn)
     {
+        foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
+        {
+            Debug.LogWarning($"{item.Key} has connection {item.Value}");
+        }
+
+        Debug.LogWarning($"Now there are a total of {NetworkServer.connections.Count} conns!");
+
         if (!GameSession.Singleton.IsOnline) return;
 
         // TODO: make player a spectator
@@ -76,9 +81,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (!autoCreatePlayer) return;
-
-        HumanPlayers.Remove(conn.identity.GetComponent<HumanPlayer>());
+        GameManager.Players.Remove(conn.identity.GetComponent<Player>());
 
         base.OnServerDisconnect(conn);
     }
@@ -86,7 +89,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnStopServer()
     {
-        HumanPlayers.Clear();
+        GameManager.Players.Clear();
 
         isGameInProgress = false;
     }
@@ -99,17 +102,18 @@ public class GameNetworkManager : NetworkManager
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
         PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
 
-        HumanPlayers.Add(player);
+        GameManager.Players.Add(player);
 
-        player.MyTeam.TeamIndex = HumanPlayers.Count; // TODO: move to playerInfo
-        playerInfo.IsPartyOwner = (HumanPlayers.Count == 1);
-        playerInfo.PlayerName = $"Player {HumanPlayers.Count}";
+        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
+        playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
     }
 
     [Server]
     public void ServerStartGame() // HACK move this into SceneLoader?
     {
-        if (HumanPlayers.Count < 1) return;
+        // HACK: hardcoded and tethered to LobbyMenu.UpdatePlayerTags()
+        if (GameManager.Players.Count < 2) return; 
 
         isGameInProgress = true;
 
@@ -119,16 +123,21 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
+    public override void OnServerSceneChanged(string sceneName) 
     {
+        // HACK: this code is really jank
+        // HACK: move this into SceneLoader?
+
+        if (SceneLoader.IsGameScene && GameManager.Players.Count < 2)
+            ServerSpawnComputerPlayer();
+
         Debug.Log("It's time to spawn a map!");
         HexGrid.ServerSpawnMapTerrain();
 
         if (!SceneLoader.IsGameScene) return;
 
-        // TODO: Add Game Over Handler to Scene
-        //GameOverHandler gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
-        //NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
+        GameOverHandler gameOverHandler = Instantiate(GameOverHandler.Prefab);
+        NetworkServer.Spawn(gameOverHandler.gameObject);
     }
 
     [Server]
@@ -137,15 +146,17 @@ public class GameNetworkManager : NetworkManager
         if (player.HasCreatedMap) return;
         player.HasCreatedMap = true;
 
-        //Debug.Log("New Player Has Created Map.");
-
+        // checks every connection to see if they are ready to load the rest of the map
         bool isReady = true;
-        foreach (HumanPlayer p in HumanPlayers) isReady &= p.HasCreatedMap;
+        foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
+        {
+            isReady &= item.Value.identity.GetComponent<HumanPlayer>().HasCreatedMap;
+        }
 
         if (waitCoroutine != null) StopCoroutine(waitCoroutine);
 
-        // if players aren't ready, set function param "isWaiting" to true
-        waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(!isReady)); 
+        // if connections aren't ready, set function param "isWaiting" to true
+        waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(isWaiting: !isReady)); 
     }
 
     [Server] // HACK: maybe this could be named better
@@ -157,9 +168,24 @@ public class GameNetworkManager : NetworkManager
 
         HexGrid.ServerSpawnMapEntities();
 
-        yield return null;
+        yield return null; // waits one frame for connections to spawn entities, then launches game
 
         GameManager.Singleton.ServerStartGame();
+    }
+
+    [Server]
+    public static void ServerSpawnComputerPlayer()
+    {
+        ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
+
+        PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
+
+        GameManager.Players.Add(player);
+
+        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        playerInfo.PlayerName = $"Computer Player {GameManager.Players.Count}";
+
+        NetworkServer.Spawn(player.gameObject);
     }
 
     #endregion
@@ -184,7 +210,7 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStopClient()
     {
-        HumanPlayers.Clear();
+        GameManager.Players.Clear();
     }
 
     #endregion

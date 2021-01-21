@@ -41,11 +41,15 @@ public class HumanPlayer : Player
     protected void Start()
     {
         //PlayerMenu.Singleton.MyPlayer = this; // TODO: this needs to occur on client
+
+        //if (!hasAuthority) enabled = false;
+        //gameObject.SetActive(false);
     }
 
     protected void Update()
     {
-        //if (!hasAuthority) return; // other human players should be disabled
+        // other human players should be disabled 
+        //if (!hasAuthority) return; 
 
         // HACK: is this still needed?
         // verify pointer is not on top of GUI
@@ -59,38 +63,12 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Server Functions
 
-    public override void OnStartServer()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
     [Command]
     public void CmdStartGame() // HACK: i dont like this function here
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
         GameNetworkManager.Singleton.ServerStartGame();
-    }
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    public override void OnStartClient()
-    {
-        if (NetworkServer.active) return; // FIXME: this cant be right
-        //if (!isClientOnly) return; 
-
-        DontDestroyOnLoad(gameObject);
-
-        // HACK: this line will fail if the player is an AI; do all connections need this info?
-        GameNetworkManager.HumanPlayers.Add(this);
-    }
-
-    public override void OnStopClient()
-    {
-        // HACK: this line will fail if the player is an AI
-        GameNetworkManager.HumanPlayers.Remove(this);
     }
 
     #endregion
@@ -163,7 +141,7 @@ public class HumanPlayer : Player
 
     private void SelectUnit(Unit unit)
     {
-        if (!myUnits.Contains(unit)) return;
+        if (!MyUnits.Contains(unit)) return;
         //if (!unit) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
 
         if (!unit.Movement.CanMove) return;
@@ -200,12 +178,12 @@ public class HumanPlayer : Player
 
     protected override void Subscribe()
     {
-        if (!hasAuthority) return;
-
         base.Subscribe();
 
-        GameManager.RpcOnPlayTurn += HandleRpcOnPlayTurn;
-        GameManager.RpcOnStopTurn += HandleRpcOnStopTurn;
+        if (!hasAuthority) return;
+
+        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
+        GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
         controls = new Controls();
         controls.Player.Selection.performed += DoSelection;
@@ -215,41 +193,32 @@ public class HumanPlayer : Player
 
     protected override void Unsubscribe()
     {
-        if (!hasAuthority) return;
-
         base.Unsubscribe();
 
-        GameManager.RpcOnPlayTurn -= HandleRpcOnPlayTurn;
-        GameManager.RpcOnStopTurn -= HandleRpcOnStopTurn;
+        if (!hasAuthority) return;
+
+        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
+        GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
         controls.Dispose();
     }
 
-    protected override void HandleOnUnitSpawned(Unit unit)
+    [Client]
+    protected void HandleClientOnStartTurn() // FIXME: this function is not called
     {
-        if (unit.MyTeam != MyTeam) return;
-
-        myUnits.Add(unit);
-        unit.Movement.Display.ShowDisplay();
-
-        //Debug.Log($"Unit {unit.name} is on my team! Team {MyTeam.TeamIndex}");
+        PlayerMenu.RefreshMoveCountText(); 
     }
 
     [Client]
-    protected void HandleRpcOnStartTurn()
-    {
-        PlayerMenu.RefreshMoveCountText();
-    }
-
-    [Client]
-    private void HandleRpcOnPlayTurn()
+    private void HandleClientOnPlayTurn()
     {
         // HACK: i dont think you need to clear it's path, the path shouldn't be set
         DeselectUnitAndClearItsPath(); 
         controls.Disable();
     }
 
-    private void HandleRpcOnStopTurn()
+    [Client]
+    private void HandleClientOnStopTurn()
     {
         controls.Enable();
     }
