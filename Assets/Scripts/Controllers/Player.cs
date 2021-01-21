@@ -48,76 +48,69 @@ public abstract class Player : NetworkBehaviour
 
     public int MoveCount { get; [Server] set; } = 1; // FIXME: Change this such that it works
 
-    public List<Unit> MyUnits { get; set; } = new List<Unit>(); // TODO: change it to be just server
+    public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
 
-    public List<Fort> MyForts { [Server] get; [Server] set; } = new List<Fort>();
+    public List<Fort> MyForts { get; set; } = new List<Fort>();
 
     #endregion
     /************************************************************/
-    #region Unity Functions
+    #region Server Functions
 
-    //public override void OnStartServer()
-    //{
-    //    base.OnStartServer();
-    //}
-
-    public override void OnStartAuthority()
+    public override void OnStartServer()
     {
-        // HACK: this probably doesn't belong here, but calling it on awake causes authority errors
         Subscribe();
     }
 
-    ///// <summary>
-    ///// Unity Method; Awake() is called before Start() upon GameObject creation
-    ///// </summary>
-    //protected virtual void Awake()
-    //{
-    //    Subscribe();
-    //}
-
-    protected virtual void OnDestroy()
+    public override void OnStopServer()
     {
         Unsubscribe();
     }
 
     #endregion
     /************************************************************/
+    #region Client Functions
+
+    public override void OnStartClient()
+    {
+        if (isClientOnly && hasAuthority) Subscribe();
+    }
+
+    public override void OnStopClient()
+    {
+        if (isClientOnly && hasAuthority) Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
     #region Event Handler Functions
 
+    // HACK this line does not work, subscribe needs to happen on server and authoritive client
     protected virtual void Subscribe()
-    {
-        if (!hasAuthority) return; // TODO: validate this works
-
-        Debug.Log($"Player {name} is either server or has authority of it's own player object");
-
+    {  
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
         Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
 
+        if (!isServer) return;
+
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
-
-        if (!isClientOnly) return;
-
-        Debug.Log($"Player is the server {name}");
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
     }
 
     protected virtual void Unsubscribe()
     {
-        if (!isServer || !hasAuthority) return;
-
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
         Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
-        
-        GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
 
         if (!isServer) return;
+
+        GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
 
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
     }
@@ -135,13 +128,14 @@ public abstract class Player : NetworkBehaviour
         MyForts.Remove(fort);
     }
 
-    [Server]
     private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
     {
         if (MyTeam == fort.MyTeam)
         {
             MyForts.Remove(fort);
 
+            // HACK: this is a temp fix
+            if (!isServer) return;
             if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
         }
         else if (MyTeam == newTeam)

@@ -41,11 +41,15 @@ public class HumanPlayer : Player
     protected void Start()
     {
         //PlayerMenu.Singleton.MyPlayer = this; // TODO: this needs to occur on client
+
+        //if (!hasAuthority) enabled = false;
+        //gameObject.SetActive(false);
     }
 
     protected void Update()
     {
-        //if (!hasAuthority) return; // other human players should be disabled
+        // other human players should be disabled 
+        //if (!hasAuthority) return; 
 
         // HACK: is this still needed?
         // verify pointer is not on top of GUI
@@ -59,8 +63,10 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Server Functions
 
+    [Server]
     public override void OnStartServer()
     {
+        base.OnStartServer();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -85,12 +91,16 @@ public class HumanPlayer : Player
 
         // HACK: this line will fail if the player is an AI; do all connections need this info?
         GameNetworkManager.HumanPlayers.Add(this);
+
+        base.OnStartClient();
     }
 
     public override void OnStopClient()
     {
         // HACK: this line will fail if the player is an AI
         GameNetworkManager.HumanPlayers.Remove(this);
+
+        base.OnStopClient();
     }
 
     #endregion
