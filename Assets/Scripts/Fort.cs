@@ -46,7 +46,7 @@ public class Fort : NetworkBehaviour
     public static event Action<Fort> OnFortDespawned;
 
     /// <summary>
-    /// Server event for when a fort is captured
+    /// Server event for when a fort is captured; passes captured fort and new capturing team
     /// </summary>
     /// <subscriber class="Player">updates a player's forts</subscriber>
     public static event Action<Fort, Team> ServerOnFortCaptured;

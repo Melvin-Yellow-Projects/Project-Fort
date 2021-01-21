@@ -80,6 +80,22 @@ public abstract class Player : NetworkBehaviour
         if (isClientOnly && hasAuthority) Unsubscribe();
     }
 
+    [TargetRpc]
+    public void RpcAddFort(NetworkConnection conn, NetworkIdentity fortNetId)
+    {
+        if (isServer) return;
+
+        MyForts.Add(fortNetId.GetComponent<Fort>());
+    }
+
+    [TargetRpc]
+    public void RpcRemoveFort(NetworkConnection conn, NetworkIdentity fortNetId)
+    {
+        if (isServer) return;
+
+        MyForts.Remove(fortNetId.GetComponent<Fort>());
+    }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions
@@ -92,9 +108,10 @@ public abstract class Player : NetworkBehaviour
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
-        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
         if (!isServer) return;
+
+        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
     }
@@ -106,9 +123,10 @@ public abstract class Player : NetworkBehaviour
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
-        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
         if (!isServer) return;
+
+        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
     }
@@ -126,11 +144,13 @@ public abstract class Player : NetworkBehaviour
         MyForts.Remove(fort);
     }
 
+    [Server]
     private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
     {
         if (MyTeam == fort.MyTeam)
         {
             MyForts.Remove(fort);
+            RpcRemoveFort(connectionToClient, fort.netIdentity);
 
             // HACK: this is a temp fix
             if (!isServer) return;
@@ -139,6 +159,8 @@ public abstract class Player : NetworkBehaviour
         else if (MyTeam == newTeam)
         {
             MyForts.Add(fort);
+            RpcAddFort(connectionToClient, fort.netIdentity);
+
             //Debug.LogWarning($"team has {MyForts.Count} forts out of {HexGrid.Forts.Count} total");
             // HACK: computer players are not yet handled
             if (!GameSession.Singleton.IsOnline && MyForts.Count == HexGrid.Forts.Count)
@@ -146,6 +168,7 @@ public abstract class Player : NetworkBehaviour
                 ServerOnPlayerDefeat?.Invoke(null, WinConditionType.TEST);
             }
         }
+
     }
 
     protected virtual void HandleOnUnitSpawned(Unit unit)
