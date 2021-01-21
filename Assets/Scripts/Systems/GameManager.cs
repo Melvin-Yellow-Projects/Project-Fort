@@ -97,10 +97,6 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.LogWarning("GM AWAKE!");
-        foreach (Player player in Players)
-            Debug.LogWarning($"Player: {player.name} with connection: {player.connectionToClient}");
-
         gameObject.SetActive(false);
         enabled = false;
         Singleton = this;

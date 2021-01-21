@@ -142,21 +142,17 @@ public class GameNetworkManager : NetworkManager
         if (player.HasCreatedMap) return;
         player.HasCreatedMap = true;
 
+        // checks every connection to see if they are ready to load the rest of the map
         bool isReady = true;
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
         {
-            Debug.LogWarning($"{item.Key} has connection {item.Value}");
-
-            if (item.Value.identity.TryGetComponent(out player))
-            isReady &= player.HasCreatedMap;
+            isReady &= item.Value.identity.GetComponent<HumanPlayer>().HasCreatedMap;
         }
-
-        Debug.LogError("TESTING!");
 
         if (waitCoroutine != null) StopCoroutine(waitCoroutine);
 
-        // if players aren't ready, set function param "isWaiting" to true
-        waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(!isReady)); 
+        // if connections aren't ready, set function param "isWaiting" to true
+        waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(isWaiting: !isReady)); 
     }
 
     [Server] // HACK: maybe this could be named better
@@ -168,7 +164,7 @@ public class GameNetworkManager : NetworkManager
 
         HexGrid.ServerSpawnMapEntities();
 
-        yield return null;
+        yield return null; // waits one frame for connections to spawn entities, then launches game
 
         GameManager.Singleton.ServerStartGame();
     }
