@@ -97,6 +97,9 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
+        Debug.LogWarning("GM AWAKE!");
+        foreach (Player player in Players) Debug.LogWarning($"Player: {player.name}");
+
         gameObject.SetActive(false);
         enabled = false;
         Singleton = this;
@@ -138,7 +141,7 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerStartGame()
     {
-        Debug.Log("Starting Game");
+        Debug.Log($"Starting Game with {Players.Count} Players");
 
         gameObject.SetActive(true);
         enabled = GameMode.Singleton.IsUsingTurnTimer;

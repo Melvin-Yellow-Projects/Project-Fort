@@ -56,8 +56,6 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
-    //public static List<HumanPlayer> HumanPlayers { get; } = new List<HumanPlayer>();
-
     #endregion
     /************************************************************/
     #region Server Functions
@@ -109,6 +107,8 @@ public class GameNetworkManager : NetworkManager
         player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
         playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
         playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
+
+        player.gameObject.name = $"Player {GameManager.Players.Count}";
     }
 
     [Server]
