@@ -58,6 +58,7 @@ public abstract class Player : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        DontDestroyOnLoad(gameObject);
         Subscribe();
     }
 
@@ -73,6 +74,8 @@ public abstract class Player : NetworkBehaviour
     public override void OnStartClient()
     {
         if (!isClientOnly) return;
+
+        DontDestroyOnLoad(gameObject);
 
         GameManager.Players.Add(this);
 
@@ -162,25 +165,15 @@ public abstract class Player : NetworkBehaviour
         if (MyTeam == fort.MyTeam)
         {
             MyForts.Remove(fort);
-            RpcRemoveFort(connectionToClient, fort.netIdentity);
+            if (connectionToClient != null) RpcRemoveFort(connectionToClient, fort.netIdentity);
 
-            // HACK: this is a temp fix
-            if (!isServer) return;
             if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
         }
         else if (MyTeam == newTeam)
         {
             MyForts.Add(fort);
-            RpcAddFort(connectionToClient, fort.netIdentity);
-
-            //Debug.LogWarning($"team has {MyForts.Count} forts out of {HexGrid.Forts.Count} total");
-            // HACK: computer players are not yet handled
-            if (!GameSession.Singleton.IsOnline && MyForts.Count == HexGrid.Forts.Count)
-            {
-                ServerOnPlayerDefeat?.Invoke(null, WinConditionType.TEST);
-            }
+            if (connectionToClient != null) RpcAddFort(connectionToClient, fort.netIdentity);
         }
-
     }
 
     protected virtual void HandleOnUnitSpawned(Unit unit)

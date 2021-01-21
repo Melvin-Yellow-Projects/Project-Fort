@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameModeSettings: {fileID: 11400000, guid: 90b669160dbf446a99964b6a2b407c7e, type: 2}
-  gameOverHandlerPerfab: {fileID: 128458814369925966, guid: 04738286589f8426782f751ddecc598b,
+  computerPlayerPrefab: {fileID: 641622084965352743, guid: e13c3345ac9a24999a438fe916ef8f24,
+    type: 3}
+  gameOverHandlerPrefab: {fileID: 128458814369925966, guid: 04738286589f8426782f751ddecc598b,
     type: 3}
   noiseSource: {fileID: 2800000, guid: 1e50e6ea9fe0e4d769145f832958c457, type: 3}
   hexGridPrefab: {fileID: 5510439269666843768, guid: 43caec3ffa22a400ebf8c051572d3235,

@@ -141,11 +141,13 @@ public class HexGrid : NetworkBehaviour
 
         for (int i = 0; i < Units.Count; i++)
         {
-            NetworkServer.Spawn(Units[i].gameObject, Units[i].MyTeam.AuthoritiveConnection);
+            NetworkServer.Spawn(Units[i].gameObject,
+                ownerConnection: Units[i].MyTeam.AuthoritiveConnection);
         }
         for (int i = 0; i < Forts.Count; i++)
         {
-            NetworkServer.Spawn(Forts[i].gameObject, Forts[i].MyTeam.AuthoritiveConnection);
+            NetworkServer.Spawn(Forts[i].gameObject,
+                ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
         }
     }
 

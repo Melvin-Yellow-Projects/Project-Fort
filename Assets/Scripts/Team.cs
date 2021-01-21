@@ -61,9 +61,9 @@ public class Team : NetworkBehaviour
         }
     }
 
-    public NetworkConnection AuthoritiveConnection
+    public NetworkConnection AuthoritiveConnection //FIXME: This needs to be updated
     {
-        [Server] //FIXME: This needs to be updated
+        [Server] 
         get
         {
             for (int i = 0; i < GameManager.Players.Count; i++)

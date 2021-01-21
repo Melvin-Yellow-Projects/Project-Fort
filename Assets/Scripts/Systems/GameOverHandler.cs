@@ -102,7 +102,12 @@ public class GameOverHandler : NetworkBehaviour
 
     private void HandleServerOnPlayerDefeat(Player player, WinConditionType type)
     {
+        // HACK: assumes two players
+        //ServerOnGameOver?.Invoke(); 
+        RpcGameOver("The Winner");
+
         // TODO: check if player is AI, if AI, skip connections
+        if (player.connectionToClient == null) return;
 
         switch (type)
         {
@@ -119,11 +124,8 @@ public class GameOverHandler : NetworkBehaviour
                 break;
         }
 
-        // TODO: check for remaining players
+        // TODO: check for remaining players, then broadcast RpcGameOver
 
-        // HACK: assumes two players
-        //ServerOnGameOver?.Invoke(); 
-        RpcGameOver("The Winner");
     }
     #endregion
 }

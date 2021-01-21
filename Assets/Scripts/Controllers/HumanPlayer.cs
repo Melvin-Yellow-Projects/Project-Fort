@@ -63,33 +63,12 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Server Functions
 
-    [Server]
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-        DontDestroyOnLoad(gameObject);
-    }
-
     [Command]
     public void CmdStartGame() // HACK: i dont like this function here
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
         GameNetworkManager.Singleton.ServerStartGame();
-    }
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-
-        if (NetworkServer.active) return; // FIXME: this cant be right
-        //if (!isClientOnly) return; 
-
-        DontDestroyOnLoad(gameObject);
     }
 
     #endregion

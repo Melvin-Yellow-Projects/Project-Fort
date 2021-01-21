@@ -123,8 +123,14 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public override void OnServerSceneChanged(string sceneName) // HACK move this into SceneLoader?
+    public override void OnServerSceneChanged(string sceneName) 
     {
+        // HACK: this code is really jank
+        // HACK: move this into SceneLoader?
+
+        if (SceneLoader.IsGameScene && GameManager.Players.Count < 2)
+            ServerSpawnComputerPlayer();
+
         Debug.Log("It's time to spawn a map!");
         HexGrid.ServerSpawnMapTerrain();
 
@@ -165,6 +171,21 @@ public class GameNetworkManager : NetworkManager
         yield return null; // waits one frame for connections to spawn entities, then launches game
 
         GameManager.Singleton.ServerStartGame();
+    }
+
+    [Server]
+    public static void ServerSpawnComputerPlayer()
+    {
+        ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
+
+        PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
+
+        GameManager.Players.Add(player);
+
+        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        playerInfo.PlayerName = $"Computer Player {GameManager.Players.Count}";
+
+        NetworkServer.Spawn(player.gameObject);
     }
 
     #endregion
