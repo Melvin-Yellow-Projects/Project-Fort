@@ -84,6 +84,8 @@ public class HumanPlayer : Player
 
     public override void OnStartClient()
     {
+        base.OnStartClient();
+
         if (NetworkServer.active) return; // FIXME: this cant be right
         //if (!isClientOnly) return; 
 
@@ -91,16 +93,14 @@ public class HumanPlayer : Player
 
         // HACK: this line will fail if the player is an AI; do all connections need this info?
         GameNetworkManager.HumanPlayers.Add(this);
-
-        base.OnStartClient();
     }
 
     public override void OnStopClient()
     {
+        base.OnStopClient();
+
         // HACK: this line will fail if the player is an AI
         GameNetworkManager.HumanPlayers.Remove(this);
-
-        base.OnStopClient();
     }
 
     #endregion
@@ -210,9 +210,9 @@ public class HumanPlayer : Player
 
     protected override void Subscribe()
     {
-        if (!hasAuthority) return;
-
         base.Subscribe();
+
+        if (!hasAuthority) return;
 
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
@@ -225,9 +225,9 @@ public class HumanPlayer : Player
 
     protected override void Unsubscribe()
     {
-        if (!hasAuthority) return;
-
         base.Unsubscribe();
+
+        if (!hasAuthority) return;
 
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;

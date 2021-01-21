@@ -92,12 +92,11 @@ public abstract class Player : NetworkBehaviour
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
+        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
         if (!isServer) return;
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
-
-        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
     }
 
     protected virtual void Unsubscribe()
@@ -107,12 +106,11 @@ public abstract class Player : NetworkBehaviour
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
+        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
         if (!isServer) return;
 
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
-
-        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
     }
 
     private void HandleOnFortSpawned(Fort fort)
