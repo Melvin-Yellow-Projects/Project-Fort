@@ -200,28 +200,27 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     public void ServerCompleteAction()
     {
+        if (GetComponent<UnitDeath>().IsDying)
+        {
+            // TODO: Brute Force repitition, this can be improved
+            MyUnit.CombatHandler.gameObject.SetActive(false);
+            Debug.Log("Disabling Combat Handler");
+        }
+
         if (!EnRouteCell) return;
 
-        if (GetComponent<UnitDeath>().IsDying) // HACK: this is probably inefficient
-        {
-            // TODO: tell client we dead
-            MyUnit.CombatHandler.gameObject.SetActive(false);
-        }
-        else
-        {
-            MyCell = EnRouteCell;
-            EnRouteCell = null;
-            HadActionCanceled = false;
+        MyCell = EnRouteCell;
+        EnRouteCell = null;
+        HadActionCanceled = false;
 
-            CurrentMovement--;
-            if (HasAction)
-            {
-                Path.RemoveTailCells(numberToRemove: 1);
-                if (hasAuthority) Path.Show(); // FIXME: this might be a problem
+        CurrentMovement--;
 
-                TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
-            }
-        }
+        if (!HasAction) return;
+
+        Path.RemoveTailCells(numberToRemove: 1);
+        if (hasAuthority) Path.Show(); // FIXME: this might be a problem
+
+        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
     }
 
     [Server]
@@ -476,14 +475,14 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnUnitDeath += HandleServerOnUnitDeath;
+        UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
     }
 
     private void Unsubscribe()
     {
         GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnUnitDeath -= HandleServerOnUnitDeath;
+        UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
     }
 
     [Server]
@@ -518,8 +517,10 @@ public abstract class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnUnitDeath()
+    private void HandleServerOnUnitDeath(Unit unit)
     {
+        if (unit != MyUnit) return;
+
         StopAllCoroutines();
 
         MyCell.MyUnit = null;

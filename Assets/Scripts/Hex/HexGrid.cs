@@ -174,7 +174,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
+    private void TargetUpdateCellData(NetworkConnection target, HexCellData data)
     {
         int index = data.index;
         cells[index].Elevation = data.elevation;

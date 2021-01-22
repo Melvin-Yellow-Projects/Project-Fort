@@ -46,7 +46,7 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int MoveCount { get; [Server] set; } = 1; // FIXME: Change this such that it works
+    public int MoveCount { get; set; } = 1; // FIXME: Change this such that it works
 
     public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
 
@@ -95,16 +95,20 @@ public abstract class Player : NetworkBehaviour
         Unsubscribe();
     }
 
-    [TargetRpc]
-    public void RpcAddFort(NetworkConnection conn, NetworkIdentity fortNetId)
+    // HACK: can probably replace with psuedo Handler function since it's specifically called by a
+    // handler
+    [TargetRpc] 
+    public void TargetAddFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
         if (isServer) return;
 
         MyForts.Add(fortNetId.GetComponent<Fort>());
     }
 
+    // HACK: can probably replace with psuedo Handler function since it's specifically called by a
+    // handler
     [TargetRpc]
-    public void RpcRemoveFort(NetworkConnection conn, NetworkIdentity fortNetId)
+    public void TargetRemoveFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
         if (isServer) return;
 
@@ -119,12 +123,13 @@ public abstract class Player : NetworkBehaviour
     protected virtual void Subscribe()
     {  
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
-        Unit.OnUnitDepawned += HandleOnUnitDepawned;
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
 
         if (!isServer) return;
+
+        UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
@@ -134,12 +139,13 @@ public abstract class Player : NetworkBehaviour
     protected virtual void Unsubscribe()
     {
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
-        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
 
         if (!isServer) return;
+
+        UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
 
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
@@ -160,19 +166,36 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server]
+    private void HandleServerOnUnitDeath(Unit unit)
+    {
+        MyUnits.Remove(unit);
+        if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
+
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Annihilation);
+    }
+
+    [TargetRpc]
+    private void HandleTargetOnUnitDeath(NetworkIdentity unitNetId)
+    {
+        if (isServer) return;
+
+        MyUnits.Remove(unitNetId.GetComponent<Unit>());
+    }
+
+    [Server] // HACK: this function is so jank
     private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
     {
         if (MyTeam == fort.MyTeam)
         {
             MyForts.Remove(fort);
-            if (connectionToClient != null) RpcRemoveFort(connectionToClient, fort.netIdentity);
+            if (connectionToClient != null) TargetRemoveFort(connectionToClient, fort.netIdentity);
 
             if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
         }
         else if (MyTeam == newTeam)
         {
             MyForts.Add(fort);
-            if (connectionToClient != null) RpcAddFort(connectionToClient, fort.netIdentity);
+            if (connectionToClient != null) TargetAddFort(connectionToClient, fort.netIdentity);
         }
     }
 
@@ -181,16 +204,6 @@ public abstract class Player : NetworkBehaviour
         if (unit.MyTeam != MyTeam) return;
 
         MyUnits.Add(unit);
-    }
-
-    // HACK: on death would be more useful
-    protected virtual void HandleOnUnitDepawned(Unit unit)
-    {
-        MyUnits.Remove(unit);
-
-        if (!isServer) return;
-
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Annihilation);
     }
 
     [Server]
