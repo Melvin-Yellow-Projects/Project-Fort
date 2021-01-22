@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class UnitMovement : NetworkBehaviour
+public abstract class UnitMovement : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
@@ -157,8 +157,6 @@ public class UnitMovement : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.Log(name);
-
         MyUnit = GetComponent<Unit>();
         Path = GetComponent<UnitPath>();
 

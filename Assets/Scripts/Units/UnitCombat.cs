@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class UnitCombat : MonoBehaviour
+public abstract class UnitCombat : MonoBehaviour
 {
     /********** MARK: Properties **********/
     #region Properties

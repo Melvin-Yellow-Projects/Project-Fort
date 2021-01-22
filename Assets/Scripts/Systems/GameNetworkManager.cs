@@ -128,10 +128,11 @@ public class GameNetworkManager : NetworkManager
         // HACK: this code is really jank
         // HACK: move this into SceneLoader?
 
+        Debug.Log($"Server has changed the Scene to {sceneName}");
+
         if (SceneLoader.IsGameScene && GameManager.Players.Count < 2)
             ServerSpawnComputerPlayer();
 
-        Debug.Log("It's time to spawn a map!");
         HexGrid.ServerSpawnMapTerrain();
 
         if (!SceneLoader.IsGameScene) return;

@@ -54,7 +54,6 @@ public class UnitDisplay : MonoBehaviour
 
     public void HideDisplay()
     {
-        Debug.Log("Hello");
         movementDisplay.SetActive(false);
     }
 

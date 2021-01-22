@@ -138,7 +138,7 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerStartGame()
     {
-        Debug.Log($"Starting Game with {Players.Count} Players");
+        Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
         gameObject.SetActive(true);
         enabled = GameMode.Singleton.IsUsingTurnTimer;

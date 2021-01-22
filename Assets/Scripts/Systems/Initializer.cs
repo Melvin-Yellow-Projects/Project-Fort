@@ -46,9 +46,13 @@ public class Initializer : MonoBehaviour
     [Tooltip("reference to the Fort prefab")]
     [SerializeField] Fort fortPrefab;
 
-    [Header("Unit")]
+    [Header("Units")]
     [Tooltip("reference to the Unit prefab")]
     [SerializeField] Unit unitPrefab;
+    [SerializeField] Unit pikePrefab;
+    [SerializeField] Unit axePrefab;
+    [SerializeField] Unit horsePrefab;
+    [SerializeField] Unit wallPrefab;
 
     [Header("UnitCursor")]
     [Tooltip("unit cursor prefab reference")]

@@ -106,6 +106,8 @@ public class HexGrid : NetworkBehaviour
     [Server]
     public static void ServerSpawnMapTerrain()
     {
+        Debug.Log("Spawning Map Terrain");
+
         Instantiate(Prefab).InitializeMap();
 
         SaveLoadMenu.LoadMapFromReader();
