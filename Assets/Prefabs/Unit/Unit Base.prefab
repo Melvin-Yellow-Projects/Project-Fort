@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 6564157193514000393}
   - component: {fileID: 8563784658003125489}
   m_Layer: 8
-  m_Name: Debug Unit
+  m_Name: Unit Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 1652237451625893466}
   - component: {fileID: 1696245315598889941}
   - component: {fileID: 5925862171732602801}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Combat Handler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
