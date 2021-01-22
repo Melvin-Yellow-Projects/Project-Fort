@@ -404,7 +404,7 @@ GameObject:
   - component: {fileID: 1696245315598889941}
   - component: {fileID: 5925862171732602801}
   m_Layer: 8
-  m_Name: Collision Handler
+  m_Name: Combat Handler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -813,7 +813,7 @@ PrefabInstance:
     - target: {fileID: 3679637525880972599, guid: c79296bc249854a01bd22b31cb536431,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4470872105502303275, guid: c79296bc249854a01bd22b31cb536431,
         type: 3}

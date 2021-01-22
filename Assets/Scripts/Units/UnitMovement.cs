@@ -18,7 +18,7 @@ public class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    // HACK: this needs to be configurable
+    // FIXME: this needs to be configurable
     const float travelSpeed = 6f;
     const float rotationSpeed = 360f;
     int currentMovement = 8;
@@ -99,7 +99,7 @@ public class UnitMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
 
-            Display.RefreshMovementDisplay(currentMovement);
+            if (hasAuthority) Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
             MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
@@ -140,12 +140,12 @@ public class UnitMovement : NetworkBehaviour
             if (value)
             {
                 CurrentMovement = maxMovement;
-                Display.ShowDisplay(); // FIXME: this is showing enemy movement
+                if (hasAuthority) Display.ShowDisplay();
             }
             else
             {
                 CurrentMovement = 0;
-                Display.HideDisplay();
+                if (hasAuthority) Display.HideDisplay();
             }
             Path.Clear();
         }
@@ -157,12 +157,15 @@ public class UnitMovement : NetworkBehaviour
 
     private void Awake()
     {
+        Debug.Log(name);
+
         MyUnit = GetComponent<Unit>();
-        Display = GetComponent<UnitDisplay>();
         Path = GetComponent<UnitPath>();
 
-        currentMovement = maxMovement;
-        Subscribe();
+        Display = GetComponent<UnitDisplay>();
+        Display.HideDisplay();
+
+        currentMovement = maxMovement; // TODO: create sync var for variable
     }
 
     private void Start()
@@ -170,14 +173,19 @@ public class UnitMovement : NetworkBehaviour
         Display.RefreshMovementDisplay(currentMovement);
     }
 
-    private void OnDestroy()
-    {
-        Unsubscribe();
-    }
-
     #endregion
     /************************************************************/
     #region Server Functions
+
+    public override void OnStartServer()
+    {
+        Subscribe();
+    }
+
+    public override void OnStopServer()
+    {
+        Unsubscribe();
+    }
 
     [Server]
     public void ServerDoAction()
@@ -412,7 +420,7 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        CurrentMovement--;
+        CurrentMovement--; // TODO: This isn't needed, this can be a sync var
 
         Path.RemoveTailCells(numberToRemove: 1);
         Path.Show();
@@ -423,14 +431,14 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        CanMove = false;
+        CanMove = false; // This isn't needed, this can be a sync var
     }
 
     #endregion
     /************************************************************/
     #region Class Functions
 
-    public bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
+    public virtual bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
     {
         // invalid if there is a river inbetween
         //if (current.GetEdgeType(neighbor) == river) return false;
@@ -442,7 +450,7 @@ public class UnitMovement : NetworkBehaviour
         return true;
     }
 
-    public bool IsValidCellForPath(HexCell current, HexCell neighbor)
+    public virtual bool IsValidCellForPath(HexCell current, HexCell neighbor)
     {
         // if a Unit exists on this cell
         //if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type

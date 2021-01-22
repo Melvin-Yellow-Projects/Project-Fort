@@ -61,7 +61,7 @@ public class Unit : NetworkBehaviour
 
     public UnitMovement Movement { get; private set; }
 
-    public UnitCollisionHandler CollisionHandler { get; private set; }
+    public UnitCombat CollisionHandler { get; private set; }
 
     public bool IsSelected
     {
@@ -97,7 +97,7 @@ public class Unit : NetworkBehaviour
         MyTeam = GetComponent<Team>();
         MyColorSetter = GetComponent<ColorSetter>();
         Movement = GetComponent<UnitMovement>();
-        CollisionHandler = GetComponentInChildren<UnitCollisionHandler>();
+        CollisionHandler = GetComponentInChildren<UnitCombat>();
     }
 
     private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions

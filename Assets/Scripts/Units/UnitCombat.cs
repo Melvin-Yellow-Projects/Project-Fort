@@ -1,11 +1,13 @@
 ﻿/**
- * File Name: UnitCollisionHandler.cs
+ * File Name: UnitCombat.cs
  * Description: 
  * 
  * Authors: Will Lacey
  * Date Created: December 15, 2020
  * 
  * Additional Comments: 
+ * 
+ *      Previously known as UnitCollisionHandler.cs
  **/
 
 using System.Collections;
@@ -13,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class UnitCollisionHandler : MonoBehaviour
+public class UnitCombat : MonoBehaviour
 {
     /********** MARK: Properties **********/
     #region Properties
@@ -41,7 +43,7 @@ public class UnitCollisionHandler : MonoBehaviour
     [ServerCallback]
     protected void OnTriggerEnter(Collider other)
     {
-        Unit otherUnit = other.GetComponent<UnitCollisionHandler>().MyUnit;
+        Unit otherUnit = other.GetComponent<UnitCombat>().MyUnit;
 
         // HACK: this should be 100% guarenteed because other collisions are disabled
         if (!otherUnit) return;
