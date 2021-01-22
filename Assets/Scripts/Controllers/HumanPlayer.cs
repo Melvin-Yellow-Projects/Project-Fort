@@ -63,27 +63,41 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Server Functions
 
-    [Command]
-    public void CmdStartGame() // HACK: i dont like this function here
+    [Command] // HACK: i dont like this function here
+    public void CmdStartGame() 
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
         GameNetworkManager.Singleton.ServerStartGame();
     }
 
-    [Command]
+    [Command] // HACK: this function might be universal for both Computer and Human players
     private void CmdDoCommand(NetworkIdentity unitNetId, List<HexCell> cells)
     {
         if (GameManager.IsPlayingTurn) return;
         if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
+        // does this unit belong to the player?
         Unit unit = unitNetId.GetComponent<Unit>();
-
-        if (!unit.hasAuthority) return; // HACK: this line might always be false
+        if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return; 
 
         // TODO: verify that a player can't send the cell theyre currently on
 
         if (unit.Movement.ServerSetPath(cells)) MoveCount++;
+    }
+
+    [Command]
+    private void CmdClearUnitPath(NetworkIdentity unitNetId)
+    {
+        // does this unit belong to the player?
+        Unit unit = unitNetId.GetComponent<Unit>();
+        if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
+
+        if (!unit.Movement.HasAction) return;
+
+        unit.Movement.ServerClearPath();
+
+        MoveCount--;
     }
 
     #endregion
@@ -154,12 +168,8 @@ public class HumanPlayer : Player
 
         if (!unit.Movement.CanMove) return;
 
-        if (unit.Movement.HasAction)
-        {
-            unit.Movement.Path.Clear();
-            MoveCount--;
-            PlayerMenu.RefreshMoveCountText();
-        }
+        CmdClearUnitPath(unit.netIdentity);
+
         if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
 
         selectedUnit = unit;
@@ -168,16 +178,18 @@ public class HumanPlayer : Player
 
     private void DeselectUnit()
     {
-        if (selectedUnit)
-        {
-            selectedUnit.IsSelected = false;
-            selectedUnit = null;
-        }
+        if (!selectedUnit) return;
+
+        selectedUnit.IsSelected = false;
+        selectedUnit = null;
     }
 
     private void DeselectUnitAndClearItsPath()
     {
-        if (selectedUnit) selectedUnit.Movement.CmdClearPath();
+        if (!selectedUnit) return;
+
+        CmdClearUnitPath(selectedUnit.netIdentity);
+
         DeselectUnit();
     }
     #endregion

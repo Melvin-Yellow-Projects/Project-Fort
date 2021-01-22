@@ -374,8 +374,8 @@ public abstract class UnitMovement : NetworkBehaviour
 
     }
 
-    [Command]
-    public void CmdClearPath()
+    [Server]
+    public void ServerClearPath()
     {
         // TODO: Validation logic for CmdClearPath()
         // This should already auto deny for units you dont have authority over
