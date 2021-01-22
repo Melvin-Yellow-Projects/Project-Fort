@@ -205,7 +205,7 @@ public abstract class UnitMovement : NetworkBehaviour
         if (GetComponent<UnitDeath>().IsDying) // HACK: this is probably inefficient
         {
             // TODO: tell client we dead
-            MyUnit.CollisionHandler.gameObject.SetActive(false);
+            MyUnit.CombatHandler.gameObject.SetActive(false);
         }
         else
         {

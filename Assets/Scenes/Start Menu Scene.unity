@@ -1355,18 +1355,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.data[3]
-      value: 
-      objectReference: {fileID: 661696987785951891, guid: 79bda6422235f4e5aba76dd2ac926692,
-        type: 3}
-    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: spawnPrefabs.Array.data[4]
-      value: 
-      objectReference: {fileID: 2400661251502749445, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
-        type: 3}
     - target: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: m_Name
@@ -2682,36 +2670,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: axePrefab
-      value: 
-      objectReference: {fileID: 2400661251502749442, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
-        type: 3}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: pikePrefab
-      value: 
-      objectReference: {fileID: 2400661251502749442, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
-        type: 3}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: unitPrefab
-      value: 
-      objectReference: {fileID: 2400661251502749442, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
-        type: 3}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: wallPrefab
-      value: 
-      objectReference: {fileID: 2400661251502749442, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
-        type: 3}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: horsePrefab
-      value: 
-      objectReference: {fileID: 2400661251502749442, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
-        type: 3}
     - target: {fileID: 1281260488067124436, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: m_Name

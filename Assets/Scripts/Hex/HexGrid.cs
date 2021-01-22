@@ -157,11 +157,12 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client]
+    [Client] // HACK: this function can be improved
     public override void OnStartClient()
     {
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
-        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
+        if (SceneLoader.IsGameScene)
+            NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
         // HACK: perhaps a static event that logs to clients to enable player is better
 
         if (!isClientOnly) return;

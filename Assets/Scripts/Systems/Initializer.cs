@@ -47,11 +47,10 @@ public class Initializer : MonoBehaviour
     [SerializeField] Fort fortPrefab;
 
     [Header("Units")]
-    [Tooltip("reference to the Unit prefab")]
-    [SerializeField] Unit unitPrefab;
-    [SerializeField] Unit pikePrefab;
+    [Tooltip("references to the Unit prefabs")]
     [SerializeField] Unit axePrefab;
     [SerializeField] Unit horsePrefab;
+    [SerializeField] Unit pikePrefab;
     [SerializeField] Unit wallPrefab;
 
     [Header("UnitCursor")]
@@ -70,6 +69,8 @@ public class Initializer : MonoBehaviour
     /// </summary>
     protected void Awake()
     {
+        Debug.Log("initializing classes with their respective prefabs");
+
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
@@ -91,40 +92,19 @@ public class Initializer : MonoBehaviour
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
 
         // Unit
-        if (unitPrefab && !Unit.Prefab) Unit.Prefab = unitPrefab;
+        if (Unit.Prefabs == null)
+        {
+            Unit.Prefabs = new List<Unit>
+            {
+                axePrefab,
+                horsePrefab,
+                pikePrefab,
+                wallPrefab
+            };
+        }
 
         // UnitCursor
-        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
-        if (unitCursorMaterial && !UnitCursor.MyMaterial)
-            UnitCursor.MyMaterial = unitCursorMaterial;
-    }
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    protected void OnEnable()
-    {
-        // GameMode
-        if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
-
-        // GameOverHandler
-        if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
-            GameOverHandler.Prefab = gameOverHandlerPrefab;
-
-        // HexMetrics
-        if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
-
-        // HexGrid
-        if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
-
-        // Fort
-        if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
-
-        // Unit
-        if (unitPrefab && !Unit.Prefab) Unit.Prefab = unitPrefab;
-
-        // UnitCursor
-        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
+            if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
         if (unitCursorMaterial && !UnitCursor.MyMaterial)
             UnitCursor.MyMaterial = unitCursorMaterial;
     }

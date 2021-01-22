@@ -293,7 +293,7 @@ public class MapEditor : MonoBehaviour
     {
         if (cell.MyUnit) return;
 
-        Unit unit = Instantiate(Unit.Prefab);
+        Unit unit = Instantiate(Unit.Prefabs[activeUnitTypeIndex]);
 
         unit.MyCell = cell;
         unit.MyTeam.TeamIndex = teamIndex;
