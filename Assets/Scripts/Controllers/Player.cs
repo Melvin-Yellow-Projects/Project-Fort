@@ -24,6 +24,13 @@ using Mirror;
 public abstract class Player : NetworkBehaviour
 {
     /************************************************************/
+    #region Variables
+
+    [SyncVar(hook = nameof(HookOnMoveCount))]
+    private int moveCount = 1;
+
+    #endregion
+    /************************************************************/
     #region Class Events
 
     // FIXME: Verify Player Menu
@@ -46,7 +53,17 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int MoveCount { get; set; } = 1; // FIXME: Change this such that it works
+    public int MoveCount
+    {
+        get
+        {
+            return moveCount;
+        }
+        set
+        {
+            moveCount = value;
+        }
+    }
 
     public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
 
@@ -199,7 +216,7 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    protected virtual void HandleOnUnitSpawned(Unit unit)
+    private void HandleOnUnitSpawned(Unit unit)
     {
         if (unit.MyTeam != MyTeam) return;
 
@@ -207,10 +224,13 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server]
-    protected virtual void HandleServerOnStartTurn()
+    private void HandleServerOnStartTurn()
     {
         MoveCount = 0;
     }
+
+    [Client]
+    protected virtual void HookOnMoveCount(int oldValue, int newValue) { }
 
     #endregion
 }

@@ -383,23 +383,16 @@ public abstract class UnitMovement : NetworkBehaviour
         TargetClearPath();
     }
 
-    [Command]
-    public void CmdSetPath(List<HexCell> cells)
+    [Server] // HACK: not sure if this is correct
+    public bool ServerSetPath(List<HexCell> cells)
     {
-        if (hasAuthority) return; // return if this is the server/host calling this function
-
-        if (GameManager.IsPlayingTurn) return;
-        if (!CanMove) return;
-
-        // TODO: verify that a player can't send the cell theyre currently on
-
-        // TODO: //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+        if (!CanMove) return false;
 
         cells = UnitPathfinding.GetValidCells(MyUnit, cells);
 
-        // TODO: increment MountCount, refresh player UI
-
         Path.Cells = cells;
+
+        return true;
     }
 
     #endregion

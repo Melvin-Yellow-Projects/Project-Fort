@@ -38,9 +38,9 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Unity Functions
 
-    protected void Start()
+    protected void OnEnable()
     {
-        //PlayerMenu.Singleton.MyPlayer = this; // TODO: this needs to occur on client
+        PlayerMenu.Singleton.MyPlayer = this;
 
         //if (!hasAuthority) enabled = false;
         //gameObject.SetActive(false);
@@ -71,6 +71,21 @@ public class HumanPlayer : Player
         GameNetworkManager.Singleton.ServerStartGame();
     }
 
+    [Command]
+    private void CmdDoCommand(NetworkIdentity unitNetId, List<HexCell> cells)
+    {
+        if (GameManager.IsPlayingTurn) return;
+        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+
+        Unit unit = unitNetId.GetComponent<Unit>();
+
+        if (!unit.hasAuthority) return; // HACK: this line might always be false
+
+        // TODO: verify that a player can't send the cell theyre currently on
+
+        if (unit.Movement.ServerSetPath(cells)) MoveCount++;
+    }
+
     #endregion
     /************************************************************/
     #region Input Functions
@@ -88,17 +103,10 @@ public class HumanPlayer : Player
 
     private void DoCommand(InputAction.CallbackContext context)
     {
-        if (selectedUnit) selectedUnit.Movement.CmdSetPath(selectedUnit.Movement.Path.Cells);
+        if (selectedUnit) CmdDoCommand(selectedUnit.netIdentity, selectedUnit.Movement.Path.Cells);
 
+        PlayerMenu.RefreshMoveCountText();
 
-        //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
-
-        //if (currentCell && selectedUnit && selectedUnit.Movement.HasAction)
-        //{
-        //    DeselectUnit();
-        //    MoveCount++;
-        //    PlayerMenu.RefreshMoveCountText();
-        //}
         DeselectUnit();
     }
 
@@ -221,6 +229,12 @@ public class HumanPlayer : Player
     private void HandleClientOnStopTurn()
     {
         controls.Enable();
+    }
+
+    [Client]
+    protected override void HookOnMoveCount(int oldValue, int newValue)
+    {
+        PlayerMenu.RefreshMoveCountText();
     }
 
     #endregion
