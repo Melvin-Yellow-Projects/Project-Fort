@@ -226,7 +226,7 @@ public abstract class Player : NetworkBehaviour
     [Server]
     private void HandleServerOnStartTurn()
     {
-        MoveCount = 0;
+        MoveCount = 1;
     }
 
     [Client]

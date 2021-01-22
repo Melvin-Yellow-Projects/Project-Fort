@@ -75,7 +75,7 @@ public class HumanPlayer : Player
     private void CmdDoCommand(NetworkIdentity unitNetId, List<HexCell> cells)
     {
         if (GameManager.IsPlayingTurn) return;
-        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
 
         // does this unit belong to the player?
         Unit unit = unitNetId.GetComponent<Unit>();
@@ -170,7 +170,7 @@ public class HumanPlayer : Player
 
         CmdClearUnitPath(unit.netIdentity);
 
-        if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
+        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
 
         selectedUnit = unit;
         selectedUnit.IsSelected = true;

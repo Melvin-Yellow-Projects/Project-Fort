@@ -80,7 +80,7 @@ public class PlayerMenu : MonoBehaviour
 
         if (!Singleton.MyPlayer) return;
 
-        string moveCountString = (Singleton.MyPlayer.MoveCount >= gm.MovesPerTurn) ?
+        string moveCountString = (Singleton.MyPlayer.MoveCount > gm.MovesPerTurn) ?
             "MXX" : $"M{Singleton.MyPlayer.MoveCount}";
 
         Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
