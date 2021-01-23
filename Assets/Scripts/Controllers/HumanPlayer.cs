@@ -76,26 +76,40 @@ public class HumanPlayer : Player
     {
         if (GameManager.IsPlayingTurn) return;
         if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
+        if (cells.Count < 2) return;
 
         // does this unit belong to the player?
         Unit unit = unitNetId.GetComponent<Unit>();
-        if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return; 
+        if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
+        if (!unit.Movement.ServerSetPath(cells)) return;
 
-        if (unit.Movement.ServerSetPath(cells)) MoveCount++;
+        MoveCount++;
+        unit.Movement.HasAction = true;
     }
 
     [Command]
     private void CmdClearUnitPath(NetworkIdentity unitNetId)
     {
-        // does this unit belong to the player?
+        Debug.Log("Calling CmdClearUnitPath");
+        // if this unit does not belong to this player, return
         Unit unit = unitNetId.GetComponent<Unit>();
         if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
 
+        Debug.Log("This unit belongs to this player");
+
+        if (!unit.Movement.Path.HasPath) return;
+
+        Debug.Log("This unit has a path");
+
+        unit.Movement.Path.Clear();
+
         if (!unit.Movement.HasAction) return;
 
-        unit.Movement.ServerClearPath();
+        unit.Movement.ServerClearAction();
+
+        Debug.Log("This unit has an action");
 
         MoveCount--;
     }
@@ -191,6 +205,8 @@ public class HumanPlayer : Player
         CmdClearUnitPath(selectedUnit.netIdentity);
 
         DeselectUnit();
+
+        Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
     }
     #endregion
     /************************************************************/
