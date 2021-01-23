@@ -118,13 +118,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
     public bool IsEnRoute { get; set; }
 
-    public bool HasAction
-    {
-        get
-        {
-            return Path.HasPath;
-        }
-    }
+    public bool HasAction { get; set; }
 
     public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
 
@@ -188,7 +182,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     public void ServerDoAction()
     {
-        if (!HasAction) return;
+        if (!Path.HasPath) return;
 
         List<HexCell> cells = new List<HexCell>();
         cells.Add(Path[0]);
@@ -215,7 +209,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         CurrentMovement--;
 
-        if (!HasAction) return;
+        if (!Path.HasPath) return;
 
         Path.RemoveTailCells(numberToRemove: 1);
         if (hasAuthority) Path.Show(); // FIXME: this might be a problem
@@ -380,6 +374,7 @@ public abstract class UnitMovement : NetworkBehaviour
         // TODO: Validation logic for CmdClearPath()
         // This should already auto deny for units you dont have authority over
         Path.Clear();
+        HasAction = false;
         TargetClearPath();
     }
 
@@ -402,7 +397,10 @@ public abstract class UnitMovement : NetworkBehaviour
     [TargetRpc]
     private void TargetClearPath()
     {
-        if (isClientOnly) Path.Clear();
+        if (!isClientOnly) return;
+
+        HasAction = false;
+        Path.Clear();
     }
 
     [TargetRpc]
@@ -498,6 +496,9 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         // TODO: this might change for units
         if (currentMovement < maxMovement) CanMove = false;
+
+        HasAction = false;
+
         HandleRpcOnStopTurn();
     }
 
@@ -507,6 +508,8 @@ public abstract class UnitMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         if (currentMovement < maxMovement) CanMove = false;
+
+        HasAction = false;
     }
 
     [Server]

@@ -254,7 +254,7 @@ public class UnitPathfinding : MonoBehaviour
             validCells.Add(next);
         }
 
-        return validCells;
+        return validCells; // FIXME: error when cells length is less than 2
     }
 
     #endregion
