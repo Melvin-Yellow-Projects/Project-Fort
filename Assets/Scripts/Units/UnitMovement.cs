@@ -182,8 +182,9 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     public void ServerDoAction()
     {
-        if (!Path.HasPath) return;
-
+        if (!HasAction) return;
+        if (!Path.HasPath) return; // HACK: removing this line causes errors, HasAction should
+                                            // better reflect the action status of the unit
         List<HexCell> cells = new List<HexCell>();
         cells.Add(Path[0]);
         cells.Add(Path[1]);

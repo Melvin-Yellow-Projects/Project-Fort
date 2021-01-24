@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dafec78f0a0fd47cda763a949d1b720a, type: 3}
   m_Name: Default Game Mode
   m_EditorClassIdentifier: 
-  isOnline: 0
   turnsPerRound: 3
   movesPerTurn: 5
-  isUsingTurnTimer: 0
+  isUsingTurnTimer: 1
   turnTimerLength: 10

@@ -24,6 +24,12 @@ public class GameManager : NetworkBehaviour
 
     float turnTimer = 0f;
 
+    [SyncVar]
+    int roundCount = 1;
+
+    [SyncVar]
+    int turnCount = 1;
+
     #endregion
     /************************************************************/
     #region Class Events
@@ -83,9 +89,29 @@ public class GameManager : NetworkBehaviour
 
     public static GameManager Singleton { get; private set; }
 
-    public static int RoundCount { get; [Server] private set; } = 0;
+    public static int RoundCount
+    {
+        get
+        {
+            return Singleton.roundCount;
+        }
+        set
+        {
+            Singleton.roundCount = value;
+        }
+    }
 
-    public static int TurnCount { get; [Server] private set; } = 0;
+    public static int TurnCount
+    {
+        get
+        {
+            return Singleton.turnCount;
+        }
+        set
+        {
+            Singleton.turnCount = value;
+        }
+    }
 
     public static bool IsPlayingTurn { get; [Server] private set; } = false;
 
