@@ -27,7 +27,7 @@ public abstract class Player : NetworkBehaviour
     #region Variables
 
     [SyncVar(hook = nameof(HookOnMoveCount))]
-    private int moveCount = 1;
+    private int moveCount = 5;
 
     #endregion
     /************************************************************/
@@ -85,23 +85,23 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Command]
-    public virtual void CmdSetAction(UnitData data)
+    public void CmdSetAction(UnitData data)
     {
         if (GameManager.IsPlayingTurn) return;
-        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
+        if (!CanMove()) return;
 
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
-        if (data.MyUnit.Movement.ServerSetAction(data)) MoveCount++;
+        if (data.MyUnit.Movement.ServerSetAction(data)) MoveCount--;
     }
 
     [Command]
-    public virtual void CmdClearAction(UnitData data)
+    public void CmdClearAction(UnitData data)
     {
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
-        if (data.MyUnit.Movement.ServerClearAction()) MoveCount--;
+        if (data.MyUnit.Movement.ServerClearAction()) MoveCount++;
     }
 
     #endregion
@@ -150,6 +150,15 @@ public abstract class Player : NetworkBehaviour
         if (isServer) return;
 
         MyForts.Remove(fortNetId.GetComponent<Fort>());
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    public bool CanMove()
+    {
+        return (MoveCount > 0);
     }
 
     #endregion
@@ -246,7 +255,7 @@ public abstract class Player : NetworkBehaviour
     [Server]
     private void HandleServerOnStartTurn()
     {
-        MoveCount = 1;
+        MoveCount = GameMode.Singleton.MovesPerTurn;
     }
 
     [Client]

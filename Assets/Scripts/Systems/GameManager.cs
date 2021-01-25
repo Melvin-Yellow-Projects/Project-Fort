@@ -25,7 +25,7 @@ public class GameManager : NetworkBehaviour
     float turnTimer = 0f;
 
     [SyncVar]
-    int roundCount = 1;
+    int roundCount = 0;
 
     [SyncVar]
     int turnCount = 1;

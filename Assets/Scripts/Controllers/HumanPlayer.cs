@@ -141,7 +141,7 @@ public class HumanPlayer : Player
 
         if (unit) CmdClearAction(UnitData.Instantiate(unit));
 
-        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
+        if (!CanMove()) return;
 
         selectedUnit = unit;
         selectedUnit.IsSelected = true;
