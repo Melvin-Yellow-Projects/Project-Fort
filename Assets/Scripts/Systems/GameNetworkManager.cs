@@ -123,16 +123,16 @@ public class GameNetworkManager : NetworkManager
 
         IsGameInProgress = true;
 
-        //Debug.Log("Changing scene");
+        Debug.Log("Changing scene");
 
-        ServerChangeScene("Game Scene");
+        ServerChangeScene(SceneLoader.GameSceneName);
     }
 
     [Server]
     public override void OnServerSceneChanged(string sceneName) 
     {
         // HACK: this code is really jank
-        // HACK: move this into SceneLoader?
+        // HACK: move part of this into SceneLoader?
 
         Debug.Log($"Server has changed the Scene to {sceneName}");
 

@@ -83,11 +83,11 @@ public class Initializer : MonoBehaviour
 
         // SceneLoader
         if (menuScene != null && SceneLoader.MenuSceneName == null)
-            SceneLoader.MenuSceneName = menuScene;
+            SceneLoader.MenuSceneName = System.IO.Path.GetFileNameWithoutExtension(menuScene);
         if (gameScene != null && SceneLoader.GameSceneName == null)
-            SceneLoader.GameSceneName = gameScene;
+            SceneLoader.GameSceneName = System.IO.Path.GetFileNameWithoutExtension(gameScene);
         if (editorScene != null && SceneLoader.EditorSceneName == null)
-            SceneLoader.EditorSceneName = editorScene;
+            SceneLoader.EditorSceneName = System.IO.Path.GetFileNameWithoutExtension(editorScene);
 
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
