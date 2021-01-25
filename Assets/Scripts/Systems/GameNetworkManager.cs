@@ -209,6 +209,7 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
+    [Client]
     public override void OnStopClient()
     {
         GameManager.Players.Clear();

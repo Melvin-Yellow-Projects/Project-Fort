@@ -100,7 +100,7 @@ public class Fort : NetworkBehaviour
     {
         OnFortSpawned?.Invoke(this);
 
-        if (!isClientOnly) Subscribe();
+        if (isServer) Subscribe();
     }
 
     private void OnDestroy()
@@ -108,7 +108,7 @@ public class Fort : NetworkBehaviour
         myCell.MyFort = null; // HACK: does this need to be transfered to the server?
         OnFortDespawned?.Invoke(this);
 
-        if (!isClientOnly) Unsubscribe();
+        if (isServer) Unsubscribe();
     }
 
     #endregion
