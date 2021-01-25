@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using TMPro;
 
 /// <summary>
@@ -27,6 +28,17 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] TMP_Text moveTimerText = null;
 
     Player player = null;
+
+    #endregion
+    /************************************************************/
+    #region Class Events
+
+    // FIXME: Verify Player Menu
+
+    /// <summary>
+    /// Server event for when a player has pressed their end turn button
+    /// </summary>
+    public static event Action ClientOnEndTurnButtonPressed;
 
     #endregion
     /************************************************************/
@@ -86,6 +98,11 @@ public class PlayerMenu : MonoBehaviour
         Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
             $"T{GameManager.TurnCount}:" +
             moveCountString;
+    }
+
+    public static void EndTurnButtonPressed()
+    {
+        ClientOnEndTurnButtonPressed?.Invoke();
     }
 
     #endregion

@@ -175,6 +175,8 @@ public class HumanPlayer : Player
 
         if (!hasAuthority) return;
 
+        PlayerMenu.ClientOnEndTurnButtonPressed += CmdEndTurn;
+
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
@@ -189,6 +191,8 @@ public class HumanPlayer : Player
         base.Unsubscribe();
 
         if (!hasAuthority) return;
+
+        PlayerMenu.ClientOnEndTurnButtonPressed -= CmdEndTurn;
 
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
