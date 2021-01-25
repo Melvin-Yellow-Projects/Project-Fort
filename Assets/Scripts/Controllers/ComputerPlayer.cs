@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 public class ComputerPlayer : Player
 {
@@ -18,6 +19,17 @@ public class ComputerPlayer : Player
     #region Properties
 
     public static ComputerPlayer Prefab { get; set; }
+
+    #endregion
+    /************************************************************/
+    #region Event Handler Functions
+
+    [Server]
+    protected override void HandleServerOnStartTurn()
+    {
+        base.HandleServerOnStartTurn();
+        HasEndedTurn = true;
+    }
 
     #endregion
 }

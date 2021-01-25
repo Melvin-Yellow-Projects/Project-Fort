@@ -6,6 +6,9 @@
  * Date Created: October 22, 2020
  * 
  * Additional Comments: 
+ * 
+ *      HACK: this maybe could be a Monobehaviour
+ *      HACK: functions can be updated to static methods
  **/
 
 using System.Collections;
@@ -41,11 +44,13 @@ public class GameManager : NetworkBehaviour
     /// <summary>
     /// Server event for when a new turn has begun
     /// </summary>
+    /// <subscriber class="Player">refreshes a player's turn/move status</subscriber>
     public static event Action ServerOnStartTurn;
 
     /// <summary>
     /// Server event for turn is playing
     /// </summary>
+    /// <subscriber class="Player">refreshes a player's turn status</subscriber>
     public static event Action ServerOnPlayTurn;
 
     /// <summary>
@@ -72,7 +77,7 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <subscriber class="HumanPlayer">disables controls when units are moving</subscriber>
     public static event Action ClientOnPlayTurn;
-    
+
     /// <summary>
     /// Client event for turn has stopped playing
     /// </summary>
@@ -190,6 +195,15 @@ public class GameManager : NetworkBehaviour
         // update timer and its text
         if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer();
         else PlayerMenu.UpdateTimerText("Your Turn");
+    }
+
+    [Server]
+    public void ServerTryPlayTurn()
+    {
+        bool playTurn = true;
+        foreach (Player player in Players) playTurn &= player.HasEndedTurn;
+
+        if (playTurn) ServerPlayTurn();
     }
 
     [Server]

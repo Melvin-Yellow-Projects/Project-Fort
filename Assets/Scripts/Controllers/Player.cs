@@ -27,7 +27,7 @@ public abstract class Player : NetworkBehaviour
     #region Variables
 
     [SyncVar(hook = nameof(HookOnMoveCount))]
-    private int moveCount = 0;
+    private int moveCount = 0; // HACK: this is wrong, other clients shouldnt know this data
 
     #endregion
     /************************************************************/
@@ -64,6 +64,8 @@ public abstract class Player : NetworkBehaviour
             moveCount = value;
         }
     }
+
+    public bool HasEndedTurn { get; set; } = false;
 
     public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
 
@@ -106,7 +108,20 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Command]
-    public void CmdSetAction(UnitData data)
+    protected void CmdEndTurn()
+    {
+        HasEndedTurn = true;
+        GameManager.Singleton.ServerTryPlayTurn();
+    }
+
+    [Command]
+    protected void CmdCancelEndTurn()
+    {
+        HasEndedTurn = false;
+    }
+
+    [Command]
+    protected void CmdSetAction(UnitData data)
     {
         if (GameManager.IsPlayingTurn) return;
         if (!CanMove()) return;
@@ -118,7 +133,7 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Command]
-    public void CmdClearAction(UnitData data)
+    protected void CmdClearAction(UnitData data)
     {
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
@@ -188,7 +203,7 @@ public abstract class Player : NetworkBehaviour
 
     // HACK this line does not work, subscribe needs to happen on server and authoritive client
     protected virtual void Subscribe()
-    {  
+    {
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
@@ -201,6 +216,7 @@ public abstract class Player : NetworkBehaviour
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
+        GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
     }
 
     protected virtual void Unsubscribe()
@@ -217,6 +233,7 @@ public abstract class Player : NetworkBehaviour
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
+        GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
     }
 
     private void HandleOnFortSpawned(Fort fort)
@@ -274,9 +291,16 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnStartTurn()
+    protected virtual void HandleServerOnStartTurn()
     {
         MoveCount = GameMode.Singleton.MovesPerTurn;
+        HasEndedTurn = false;
+    }
+
+    [Server]
+    protected virtual void HandleServerOnPlayTurn()
+    {
+        HasEndedTurn = true;
     }
 
     [Client]

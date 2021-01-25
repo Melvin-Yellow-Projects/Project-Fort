@@ -13,6 +13,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Mirror;
 
 /// <summary>
 /// Singleton MonoBehavior GameObject that initializes various static class references
@@ -21,6 +23,14 @@ public class Initializer : MonoBehaviour
 {
     /********** MARK: Public Variables **********/
     #region Public Variables
+
+    [Header("SceneLoader")]
+    [Tooltip("main menu scene")]
+    [SerializeField, Scene] string menuScene;
+    [Tooltip("core game scene")]
+    [SerializeField, Scene] string gameScene;
+    [Tooltip("map editor scene")]
+    [SerializeField, Scene] string editorScene;
 
     [Header("GameMode")]
     [Tooltip("game mode settings load out")]
@@ -71,6 +81,14 @@ public class Initializer : MonoBehaviour
     {
         Debug.Log("initializing classes with their respective prefabs");
 
+        // SceneLoader
+        if (menuScene != null && SceneLoader.MenuSceneName == null)
+            SceneLoader.MenuSceneName = menuScene;
+        if (gameScene != null && SceneLoader.GameSceneName == null)
+            SceneLoader.GameSceneName = gameScene;
+        if (editorScene != null && SceneLoader.EditorSceneName == null)
+            SceneLoader.EditorSceneName = editorScene;
+
         // GameMode
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
@@ -104,7 +122,7 @@ public class Initializer : MonoBehaviour
         }
 
         // UnitCursor
-            if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
+        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
         if (unitCursorMaterial && !UnitCursor.MyMaterial)
             UnitCursor.MyMaterial = unitCursorMaterial;
     }
