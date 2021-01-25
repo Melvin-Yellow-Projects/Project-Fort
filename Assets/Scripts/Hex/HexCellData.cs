@@ -6,6 +6,8 @@
  * Date Created: January 6, 2020
  * 
  * Additional Comments: 
+ * 
+ *      HACK: Move the serializer code into it's own class?
  **/
 
 using System.Collections;
@@ -13,7 +15,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
-using System.Timers;
 
 /// <summary>
 /// 

@@ -370,23 +370,27 @@ public abstract class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    public void ServerClearAction()
+    public bool ServerClearAction()
     {
-        // TODO: Validation logic for CmdClearPath()
-        // This should already auto deny for units you dont have authority over
+        bool hadAction = HasAction;
+
+        Debug.Log("Hello");
+
         Path.Clear();
         HasAction = false;
         TargetClearPath();
+
+        return hadAction;
     }
 
     [Server] // HACK: not sure if this is correct
-    public bool ServerSetPath(List<HexCell> cells)
+    public bool ServerSetAction(UnitData data)
     {
-        if (!CanMove) return false;
+        if (!CanMove || data.pathCells.Count < 2) return false;
 
-        cells = UnitPathfinding.GetValidCells(MyUnit, cells);
+        Path.Cells = UnitPathfinding.GetValidCells(MyUnit, data.pathCells);
 
-        Path.Cells = cells;
+        HasAction = true;
 
         return true;
     }

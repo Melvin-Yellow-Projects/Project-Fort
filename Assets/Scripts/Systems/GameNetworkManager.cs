@@ -65,7 +65,7 @@ public class GameNetworkManager : NetworkManager
     {
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
         {
-            Debug.LogWarning($"{item.Key} has connection {item.Value}");
+            Debug.LogWarning($"{item.Key} has connection {item.Value.connectionId}");
         }
 
         Debug.LogWarning($"Now there are a total of {NetworkServer.connections.Count} conns!");

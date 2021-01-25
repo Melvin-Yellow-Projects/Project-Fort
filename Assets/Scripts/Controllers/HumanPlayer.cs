@@ -71,49 +71,6 @@ public class HumanPlayer : Player
         GameNetworkManager.Singleton.ServerStartGame();
     }
 
-    [Command] // HACK: this function might be universal for both Computer and Human players
-    private void CmdDoCommand(NetworkIdentity unitNetId, List<HexCell> cells)
-    {
-        if (GameManager.IsPlayingTurn) return;
-        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
-        if (cells.Count < 2) return;
-
-        // does this unit belong to the player?
-        Unit unit = unitNetId.GetComponent<Unit>();
-        if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
-
-        // TODO: verify that a player can't send the cell theyre currently on
-        if (!unit.Movement.ServerSetPath(cells)) return;
-
-        MoveCount++;
-        unit.Movement.HasAction = true;
-    }
-
-    [Command]
-    private void CmdClearUnitPath(NetworkIdentity unitNetId)
-    {
-        Debug.Log("Calling CmdClearUnitPath");
-        // if this unit does not belong to this player, return
-        Unit unit = unitNetId.GetComponent<Unit>();
-        if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
-
-        Debug.Log("This unit belongs to this player");
-
-        if (!unit.Movement.Path.HasPath) return;
-
-        Debug.Log("This unit has a path");
-
-        unit.Movement.Path.Clear();
-
-        if (!unit.Movement.HasAction) return;
-
-        unit.Movement.ServerClearAction();
-
-        Debug.Log("This unit has an action");
-
-        MoveCount--;
-    }
-
     #endregion
     /************************************************************/
     #region Input Functions
@@ -131,7 +88,7 @@ public class HumanPlayer : Player
 
     private void DoCommand(InputAction.CallbackContext context)
     {
-        if (selectedUnit) CmdDoCommand(selectedUnit.netIdentity, selectedUnit.Movement.Path.Cells);
+        if (selectedUnit) CmdSetAction(UnitData.Instantiate(selectedUnit));
 
         PlayerMenu.RefreshMoveCountText();
 
@@ -182,7 +139,7 @@ public class HumanPlayer : Player
 
         if (!unit.Movement.CanMove) return;
 
-        CmdClearUnitPath(unit.netIdentity);
+        if (unit) CmdClearAction(UnitData.Instantiate(unit));
 
         if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
 
@@ -202,11 +159,11 @@ public class HumanPlayer : Player
     {
         if (!selectedUnit) return;
 
-        CmdClearUnitPath(selectedUnit.netIdentity);
+        selectedUnit.Movement.Path.Clear();
 
         DeselectUnit();
 
-        Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
+        //Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
     }
     #endregion
     /************************************************************/

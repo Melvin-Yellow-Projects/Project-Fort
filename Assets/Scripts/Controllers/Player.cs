@@ -84,6 +84,26 @@ public abstract class Player : NetworkBehaviour
         Unsubscribe();
     }
 
+    [Command]
+    public virtual void CmdSetAction(UnitData data)
+    {
+        if (GameManager.IsPlayingTurn) return;
+        if (MoveCount > GameMode.Singleton.MovesPerTurn) return;
+
+        if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+
+        // TODO: verify that a player can't send the cell theyre currently on
+        if (data.MyUnit.Movement.ServerSetAction(data)) MoveCount++;
+    }
+
+    [Command]
+    public virtual void CmdClearAction(UnitData data)
+    {
+        if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+
+        if (data.MyUnit.Movement.ServerClearAction()) MoveCount--;
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions
