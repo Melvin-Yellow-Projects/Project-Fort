@@ -83,7 +83,7 @@ public class GameNetworkManager : NetworkManager
     {
         GameManager.Players.Remove(conn.identity.GetComponent<Player>());
 
-        base.OnServerDisconnect(conn);
+        //base.OnServerDisconnect(conn);
     }
 
     [Server]
