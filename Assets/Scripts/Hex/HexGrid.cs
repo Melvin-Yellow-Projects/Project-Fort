@@ -95,6 +95,11 @@ public class HexGrid : NetworkBehaviour
     private void OnDestroy()
     {
         Debug.LogWarning("HexGrid calling OnDestroy()");
+
+        // HACK brute force clearing
+        Units.Clear();
+        Forts.Clear();
+
         Unsubscribe();
 
         Singleton = null;
