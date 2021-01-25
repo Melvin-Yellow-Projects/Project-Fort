@@ -43,6 +43,12 @@ public abstract class Player : NetworkBehaviour
     /// <subscriber class="GameOverHandler">handles the defeated player</subscriber>
     public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
 
+    /// <summary>
+    /// Client event for when a player has ended their turn
+    /// </summary>
+    /// <subscriber class="PlayerMenu">Updates the player menu status</subscriber>
+    public static event Action ClientOnHasEndedTurn;
+
     #endregion
     /************************************************************/
     #region Properties
@@ -76,7 +82,7 @@ public abstract class Player : NetworkBehaviour
         set
         {
             hasEndedTurn = value;
-            if (connectionToClient != null) TargetSetHasEndedTurn(value);
+            if (isServer && connectionToClient != null) TargetSetHasEndedTurn(value);
         }
     }
 
@@ -206,9 +212,8 @@ public abstract class Player : NetworkBehaviour
     [TargetRpc]
     public void TargetSetHasEndedTurn(bool status)
     {
-        if (isServer) return;
-
-        HasEndedTurn = status;
+        if (!isServer) HasEndedTurn = status;
+        ClientOnHasEndedTurn?.Invoke();
     }
 
     #endregion

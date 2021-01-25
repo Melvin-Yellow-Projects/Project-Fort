@@ -109,9 +109,6 @@ public class PlayerMenu : MonoBehaviour
         if (GameManager.IsPlayingTurn) return;
 
         ClientOnEndTurnButtonPressed?.Invoke();
-
-        if (MyPlayer.HasEndedTurn) Singleton.endTurnButtonText.text = "Cancel";
-        else Singleton.endTurnButtonText.text = "End Turn";
     }
 
     #endregion
@@ -123,6 +120,8 @@ public class PlayerMenu : MonoBehaviour
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
         GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
+
+        Player.ClientOnHasEndedTurn += HandleClientOnHasEndedTurn;
     }
 
     private void Unsubscribe()
@@ -130,6 +129,8 @@ public class PlayerMenu : MonoBehaviour
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
+
+        Player.ClientOnHasEndedTurn -= HandleClientOnHasEndedTurn;
     }
 
     private void HandleClientOnStartRound()
@@ -151,6 +152,12 @@ public class PlayerMenu : MonoBehaviour
     private void HandleClientOnPlayTurn()
     {
         endTurnButton.interactable = false;
+    }
+
+    private void HandleClientOnHasEndedTurn()
+    {
+        if (MyPlayer.HasEndedTurn) Singleton.endTurnButtonText.text = "Cancel";
+        else Singleton.endTurnButtonText.text = "End Turn";
     }
 
     #endregion
