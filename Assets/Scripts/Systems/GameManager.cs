@@ -284,6 +284,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcInvokeClientOnStartRound()
     {
+        Debug.LogWarning($"Game with {Players.Count} Players");
         Debug.Log("RpcInvokeClientOnStartRound");
         ClientOnStartRound?.Invoke();
     }
