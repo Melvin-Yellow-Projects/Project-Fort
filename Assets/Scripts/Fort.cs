@@ -115,6 +115,7 @@ public class Fort : NetworkBehaviour
     public override void OnStartServer()
     {
         Subscribe();
+        Show();
     }
 
     [Server]
@@ -134,6 +135,44 @@ public class Fort : NetworkBehaviour
     public void ValidateLocation()
     {
         transform.localPosition = myCell.Position;
+    }
+
+    public void Show()
+    {
+        StartCoroutine(HighlightCellNeighbors());
+    }
+
+    private IEnumerator HighlightCellNeighbors()
+    {
+        Debug.Log("Start");
+        Color startColor = Color.white;
+        Color endColor = Color.red;
+        Color color = startColor;
+        float interpolator = 0;
+        float speed = 2;
+
+        while (interpolator < 1)
+        {
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                MyCell.GetNeighbor(d).EnableHighlight(color);
+            }
+            color = Color.Lerp(startColor, endColor, interpolator);
+            interpolator += Time.deltaTime * speed;
+            yield return null;
+        }
+
+        while (interpolator > 0)
+        {
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                MyCell.GetNeighbor(d).EnableHighlight(color);
+            }
+            color = Color.Lerp(startColor, endColor, interpolator);
+            interpolator -= Time.deltaTime * speed;
+            yield return null;
+        }
+        Debug.Log("End");
     }
 
     #endregion
