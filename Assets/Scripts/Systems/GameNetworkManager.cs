@@ -23,8 +23,6 @@ public class GameNetworkManager : NetworkManager
     [Tooltip("how long to wait for a player to load the map terrain")]
     [SerializeField, Range(0f, 60f)] float waitForPlayerToSpawnTerrain = 30f;
 
-    bool isGameInProgress = false;
-
     Coroutine waitCoroutine;
 
     #endregion
@@ -56,6 +54,8 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
+    public static bool IsGameInProgress { get; set; }
+
     #endregion
     /************************************************************/
     #region Server Functions
@@ -73,7 +73,7 @@ public class GameNetworkManager : NetworkManager
         if (!GameSession.Singleton.IsOnline) return;
 
         // TODO: make player a spectator
-        if (!isGameInProgress) return;
+        if (!IsGameInProgress) return;
 
         conn.Disconnect();
     }
@@ -81,9 +81,15 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        if (!SceneLoader.IsGameScene) return;
+
         GameManager.Players.Remove(conn.identity.GetComponent<Player>());
 
         //base.OnServerDisconnect(conn);
+        NetworkServer.Destroy(conn.identity.gameObject);
+
+        // TODO: revoke authority and team on previously owned entities, see the code ->
+        //          base.OnServerDisconnect(conn);
     }
 
     [Server]
@@ -91,7 +97,7 @@ public class GameNetworkManager : NetworkManager
     {
         GameManager.Players.Clear();
 
-        isGameInProgress = false;
+        IsGameInProgress = false;
     }
 
     [Server]
@@ -113,9 +119,9 @@ public class GameNetworkManager : NetworkManager
     public void ServerStartGame() // HACK move this into SceneLoader?
     {
         // HACK: hardcoded and tethered to LobbyMenu.UpdatePlayerTags()
-        if (GameManager.Players.Count < 2) return; 
+        if (GameManager.Players.Count < 2) return;
 
-        isGameInProgress = true;
+        IsGameInProgress = true;
 
         //Debug.Log("Changing scene");
 

@@ -42,6 +42,20 @@ public class SceneLoader : MonoBehaviour
         // FIXME: This needs to work for host/server/client
         if (NetworkServer.active && NetworkClient.isConnected)
         {
+            // HACK: Add end game methods somewhere
+            //if (!GameSession.Singleton.IsOnline && IsGameScene)
+            //    NetworkServer.Destroy(GameManager.Players[1].gameObject); // HACK hardcoded val
+
+            GameNetworkManager.IsGameInProgress = false;
+
+            for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+            {
+                Player p = GameManager.Players[i];
+                if (p as ComputerPlayer) NetworkServer.Destroy(p.gameObject);
+            }
+
+            NetworkServer.Destroy(HexGrid.Singleton.gameObject);
+
             NetworkManager.singleton.StopHost();
         }
         else

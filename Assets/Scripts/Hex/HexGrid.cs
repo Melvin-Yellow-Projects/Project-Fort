@@ -94,6 +94,7 @@ public class HexGrid : NetworkBehaviour
 
     private void OnDestroy()
     {
+        Debug.LogWarning("HexGrid calling OnDestroy()");
         Unsubscribe();
 
         Singleton = null;
@@ -102,6 +103,14 @@ public class HexGrid : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Server Functions
+
+    [Server]
+    public override void OnStopServer()
+    {
+        ClearEntities();
+
+        Debug.LogWarning($"number of forts after OnStopServer(): {Forts.Count}");
+    }
 
     [Server]
     public static void ServerSpawnMapTerrain()
@@ -192,6 +201,8 @@ public class HexGrid : NetworkBehaviour
 
     private void InitializeMap()
     {
+        Debug.Log("Initializing HexGrid Map");
+
         Singleton = this;
 
         //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
@@ -475,13 +486,13 @@ public class HexGrid : NetworkBehaviour
     {
         for (int i = 0; i < Units.Count; i++)
         {
-            Units[i].Die(isPlayingAnimation: false);
+            NetworkServer.Destroy(Units[i].gameObject);
         }
         Units.Clear();
 
         for (int i = 0; i < Forts.Count; i++)
         {
-            Destroy(Forts[i].gameObject);
+            NetworkServer.Destroy(Forts[i].gameObject);
         }
         Forts.Clear();
     }

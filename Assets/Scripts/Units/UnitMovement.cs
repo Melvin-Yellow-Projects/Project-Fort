@@ -529,7 +529,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        UnitPathfinding.DecreaseVisibility(myCell, visionRange);
+        //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
         CanMove = false; // FIXME: this wont work if unit dies right before new Round 
 

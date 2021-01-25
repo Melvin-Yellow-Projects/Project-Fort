@@ -71,16 +71,37 @@ public abstract class Player : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Unity Functions
+
+    protected void Awake()
+    {
+        //DontDestroyOnLoad(gameObject);
+        //if (isServer || hasAuthority) Subscribe();
+    }
+
+    protected void OnDestroy()
+    {
+        //if (isServer || hasAuthority) Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
     #region Server Functions
 
+    [Server]
     public override void OnStartServer()
     {
         DontDestroyOnLoad(gameObject);
         Subscribe();
     }
 
+    [Server]
     public override void OnStopServer()
     {
+        // HACK: maybe event should fire after unsub()
+        // HACK: not certain this works
+        if (GameNetworkManager.IsGameInProgress)
+            ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
         Unsubscribe();
     }
 
@@ -217,7 +238,7 @@ public abstract class Player : NetworkBehaviour
         MyUnits.Remove(unit);
         if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
 
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Annihilation);
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
     }
 
     [TargetRpc]
