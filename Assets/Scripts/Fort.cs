@@ -99,36 +99,33 @@ public class Fort : NetworkBehaviour
     private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
     {
         OnFortSpawned?.Invoke(this);
-
-        if (isServer) Subscribe();
     }
 
     private void OnDestroy()
     {
         myCell.MyFort = null; // HACK: does this need to be transfered to the server?
         OnFortDespawned?.Invoke(this);
-
-        if (isServer) Unsubscribe();
     }
 
     #endregion
     /************************************************************/
     #region Server Functions
 
-    //[Server]
-    //public override void OnStartServer()
-    //{
-    //    Subscribe();
-    //    OnFortSpawned?.Invoke(this);
-    //}
+    [Server]
+    public override void OnStartServer()
+    {
+        Subscribe();
+    }
 
-    //[Server]
-    //public override void OnStopServer()
-    //{
-    //    Unsubscribe();
-    //    myCell.MyFort = null; // HACK: does this need to be transfered to the server?
-    //    OnFortDespawned?.Invoke(this);
-    //}
+    [Server]
+    public override void OnStopServer()
+    {
+        Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
 
     #endregion
     /************************************************************/
@@ -171,15 +168,17 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Event Handler Functions
 
-    [Server]
     private void Subscribe()
     {
+        if (!isServer) return;
+
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
-    [Server]
     private void Unsubscribe()
     {
+        if (!isServer) return;
+
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 

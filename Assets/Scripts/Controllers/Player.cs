@@ -111,7 +111,7 @@ public abstract class Player : NetworkBehaviour
     protected void CmdEndTurn()
     {
         HasEndedTurn = true;
-        GameManager.Singleton.ServerTryPlayTurn();
+        GameManager.Singleton.ServerTryEndTurn();
     }
 
     [Command]
@@ -215,6 +215,7 @@ public abstract class Player : NetworkBehaviour
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
+        GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
         GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
     }
@@ -232,6 +233,7 @@ public abstract class Player : NetworkBehaviour
 
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
+        GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
         GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
     }
@@ -288,6 +290,12 @@ public abstract class Player : NetworkBehaviour
         if (unit.MyTeam != MyTeam) return;
 
         MyUnits.Add(unit);
+    }
+
+    [Server]
+    protected virtual void HandleServerOnStartRound()
+    {
+        HasEndedTurn = false;
     }
 
     [Server]

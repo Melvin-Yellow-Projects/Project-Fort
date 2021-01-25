@@ -25,6 +25,8 @@ public class GameManager : NetworkBehaviour
     /************************************************************/
     #region Private Variables
 
+    bool isEconomyPhase = true;
+
     float turnTimer = 0f;
 
     int roundCount = 0;
@@ -172,16 +174,23 @@ public class GameManager : NetworkBehaviour
         ServerStartRound();
     }
 
-    [Server]
-    public void ServerStartRound() // HACK: maybe these functions should be reversed... i.e. RoundStart()
+    [Server] // HACK: maybe these functions should be reversed... i.e. RoundStart()
+    public void ServerStartRound() 
     {
         RoundCount++;
         TurnCount = 0;
+        isEconomyPhase = true;
 
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();
 
-        ServerStartTurn();
+        // Start Economy Phase/Turn
+
+        // update timer and its text // TODO: this should be the economy timer
+        if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer(); 
+        else PlayerMenu.UpdateTimerText("Economy Phase");
+
+        // TODO: WAIT FOR ECONOMY PHASE TO END
     }
 
     [Server]
@@ -198,15 +207,6 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    public void ServerTryPlayTurn()
-    {
-        bool playTurn = true;
-        foreach (Player player in Players) playTurn &= player.HasEndedTurn;
-
-        if (playTurn) ServerPlayTurn();
-    }
-
-    [Server]
     public void ServerPlayTurn()
     {
         enabled = false;
@@ -219,6 +219,20 @@ public class GameManager : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Other Server Functions
+
+    [Server]
+    public void ServerTryEndTurn()
+    {
+        bool playTurn = true;
+        foreach (Player player in Players) playTurn &= player.HasEndedTurn;
+
+        if (playTurn)
+        {
+            if (isEconomyPhase) ServerStartTurn();
+            else ServerPlayTurn();
+            isEconomyPhase = false;
+        }
+    }
 
     [Server] // HACK:  units are looped over several times
     private IEnumerator ServerPlayTurn(int numberOfTurnSteps) 

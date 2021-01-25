@@ -25,6 +25,13 @@ public class ComputerPlayer : Player
     #region Event Handler Functions
 
     [Server]
+    protected override void HandleServerOnStartRound()
+    {
+        base.HandleServerOnStartRound();
+        HasEndedTurn = true;
+    }
+
+    [Server]
     protected override void HandleServerOnStartTurn()
     {
         base.HandleServerOnStartTurn();
