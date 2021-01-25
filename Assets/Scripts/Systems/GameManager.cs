@@ -184,8 +184,6 @@ public class GameManager : NetworkBehaviour
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();
 
-        // Start Economy Phase/Turn
-
         // update timer and its text // TODO: this should be the economy timer
         if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer(); 
         else PlayerMenu.UpdateTimerText("Economy Phase");

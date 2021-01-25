@@ -27,7 +27,9 @@ public abstract class Player : NetworkBehaviour
     #region Variables
 
     [SyncVar(hook = nameof(HookOnMoveCount))]
-    private int moveCount = 0; // HACK: this is wrong, other clients shouldnt know this data
+    int moveCount = 0; // HACK: this is wrong, other clients shouldnt know this data
+
+    bool hasEndedTurn = false;
 
     #endregion
     /************************************************************/
@@ -65,7 +67,18 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public bool HasEndedTurn { get; set; } = false;
+    public bool HasEndedTurn
+    {
+        get
+        {
+            return hasEndedTurn;
+        }
+        set
+        {
+            hasEndedTurn = value;
+            if (connectionToClient != null) TargetSetHasEndedTurn(value);
+        }
+    }
 
     public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
 
@@ -144,6 +157,7 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
+    [Client]
     public override void OnStartClient()
     {
         if (!isClientOnly) return;
@@ -157,6 +171,7 @@ public abstract class Player : NetworkBehaviour
         Subscribe();
     }
 
+    [Client]
     public override void OnStopClient()
     {
         if (!isClientOnly) return;
@@ -186,6 +201,14 @@ public abstract class Player : NetworkBehaviour
         if (isServer) return;
 
         MyForts.Remove(fortNetId.GetComponent<Fort>());
+    }
+
+    [TargetRpc]
+    public void TargetSetHasEndedTurn(bool status)
+    {
+        if (isServer) return;
+
+        HasEndedTurn = status;
     }
 
     #endregion
