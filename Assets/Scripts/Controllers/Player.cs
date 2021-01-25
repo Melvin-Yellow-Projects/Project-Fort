@@ -295,6 +295,7 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartRound()
     {
+        MoveCount = 0;
         HasEndedTurn = false;
     }
 
