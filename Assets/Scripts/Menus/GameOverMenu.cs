@@ -46,14 +46,7 @@ public class GameOverMenu : MonoBehaviour
 
     public void LeaveGame()
     {
-        if (NetworkServer.active && NetworkClient.isConnected)
-        {
-            NetworkManager.singleton.StopHost();
-        }
-        else
-        {
-            NetworkManager.singleton.StopClient();
-        }
+        SceneLoader.LoadStartScene();
     }
 
     #endregion
