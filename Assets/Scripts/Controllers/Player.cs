@@ -27,7 +27,7 @@ public abstract class Player : NetworkBehaviour
     #region Variables
 
     [SyncVar(hook = nameof(HookOnMoveCount))]
-    private int moveCount = 5;
+    private int moveCount = 0;
 
     #endregion
     /************************************************************/

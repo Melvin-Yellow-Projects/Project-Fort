@@ -26,13 +26,11 @@ public class GameManager : NetworkBehaviour
 
     int roundCount = 0;
 
-    int turnCount = 1;
+    int turnCount = 0;
 
     #endregion
     /************************************************************/
     #region Class Events
-
-    // FIXME: Verify Player Menu
 
     /// <summary>
     /// Server event for when a new round has begun
@@ -48,14 +46,14 @@ public class GameManager : NetworkBehaviour
     /// <summary>
     /// Server event for turn is playing
     /// </summary>
-    public static event Action ServerOnPlayTurn; // TODO: add validation for player command during turn
+    public static event Action ServerOnPlayTurn;
 
     /// <summary>
     /// Server event for turn has stopped playing
     /// </summary>
     /// <subscriber class="Fort">checks to see if team has updated</subscriber>
     /// <subscriber class="UnitMovement">sets a unit's movement to 0 if it has moved</subscriber>
-    public static event Action ServerOnStopTurn; // TODO: add validation for player command during turn
+    public static event Action ServerOnStopTurn; 
 
     /// <summary>
     /// Client event for when a new round has begun
@@ -111,7 +109,7 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public static bool IsPlayingTurn { get; [Server] private set; } = false;
+    public static bool IsPlayingTurn { get; private set; } = false;
 
     public static List<Player> Players { get; set; } = new List<Player>();
 
