@@ -284,30 +284,34 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcInvokeClientOnStartRound()
     {
-        if (isClientOnly) RoundCount++;
-        Debug.Log("RpcInvokeClientOnStartRound");
+        //Debug.Log("RpcInvokeClientOnStartRound");
+        if (isClientOnly)
+        {
+            RoundCount++;
+            TurnCount = 0;
+        }
         ClientOnStartRound?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnStartTurn()
     {
+        //Debug.Log("RpcInvokeClientOnStartTurn");
         if (isClientOnly) TurnCount++;
-        Debug.Log("RpcInvokeClientOnStartTurn");
         ClientOnStartTurn?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnPlayTurn()
     {
-        Debug.Log("RpcInvokeClientOnPlayTurn");
+        //Debug.Log("RpcInvokeClientOnPlayTurn");
         ClientOnPlayTurn?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnStopTurn()
     {
-        Debug.Log("RpcInvokeClientOnStopTurn");
+        //Debug.Log("RpcInvokeClientOnStopTurn");
         ClientOnStopTurn?.Invoke();
     }
 

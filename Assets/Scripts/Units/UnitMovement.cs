@@ -102,7 +102,8 @@ public abstract class UnitMovement : NetworkBehaviour
             if (hasAuthority) Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
-            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+            if (hasAuthority)
+                MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
         }
     }
 
