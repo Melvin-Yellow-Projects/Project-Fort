@@ -73,16 +73,16 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
-    protected void Awake()
-    {
-        //DontDestroyOnLoad(gameObject);
-        //if (isServer || hasAuthority) Subscribe();
-    }
+    //protected void Awake()
+    //{
+    //    DontDestroyOnLoad(gameObject);
+    //    if (isServer || hasAuthority) Subscribe();
+    //}
 
-    protected void OnDestroy()
-    {
-        //if (isServer || hasAuthority) Unsubscribe();
-    }
+    //protected void OnDestroy()
+    //{
+    //    if (isServer || hasAuthority) Unsubscribe();
+    //}
 
     #endregion
     /************************************************************/

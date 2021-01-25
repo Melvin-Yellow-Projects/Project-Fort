@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  myCell: {fileID: 0}
+  maxMovement: 8
+  visionRange: 100
+  movesPerStep: 1
+  travelSpeed: 6
+  rotationSpeed: 360
 --- !u!114 &1834397099575140324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,6 +97,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: id
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: title
+      value: Draught
       objectReference: {fileID: 0}
     - target: {fileID: 9140632859970485494, guid: 42403f62e5c024786b85537907da21f9,
         type: 3}

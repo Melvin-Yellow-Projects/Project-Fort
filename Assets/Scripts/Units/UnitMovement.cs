@@ -18,18 +18,30 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    // FIXME: this needs to be configurable
-    const float travelSpeed = 6f;
-    const float rotationSpeed = 360f;
-    int currentMovement = 8;
-    const int maxMovement = 8;
-    const int visionRange = 100;
-    //const int movesPerStep = 1;
+    /** Class Parameters **/
+    [Header("Gameplay Settings")]
+    [Tooltip("ID for this unit")]
+    [SerializeField] int maxMovement = 4;
+
+    [Tooltip("ID for this unit")]
+    [SerializeField] int visionRange = 100;
+
+    [Tooltip("ID for this unit")]
+    [SerializeField] int movesPerStep = 1;
+
+    [Header("Aesthetic Settings")]
+    [Tooltip("ID for this unit")]
+    [SerializeField] float travelSpeed = 6f;
+
+    [Tooltip("ID for this unit")]
+    [SerializeField] float rotationSpeed = 360f;
+
+    /** Other Variables **/
+    float orientation;
+    int currentMovement;
 
     [SyncVar(hook = nameof(HookOnMyCell))]
-    public HexCell myCell; // HACK: why is this public?
-
-    float orientation;
+    HexCell myCell;
 
     #endregion
     /************************************************************/

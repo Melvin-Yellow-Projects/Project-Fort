@@ -11,12 +11,12 @@ GameObject:
   - component: {fileID: 1936015192140806702}
   - component: {fileID: 9140632859970485494}
   - component: {fileID: 7051667398381807812}
-  - component: {fileID: 1936015192140806703}
   - component: {fileID: 3860982319881106542}
   - component: {fileID: 84704380307893259}
   - component: {fileID: -8430565718618303378}
   - component: {fileID: 6564157193514000393}
   - component: {fileID: 8563784658003125489}
+  - component: {fileID: 1936015192140806703}
   m_Layer: 8
   m_Name: Unit Base
   m_TagString: Untagged
@@ -74,20 +74,6 @@ MonoBehaviour:
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
---- !u!114 &1936015192140806703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1936015192140806696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6108e35af64b44b1adb6842b0b37c0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
 --- !u!114 &3860982319881106542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,6 +143,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   changeColorSpeed: 0.1
   saturation: 0.3
+--- !u!114 &1936015192140806703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1936015192140806696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6108e35af64b44b1adb6842b0b37c0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  id: 0
+  title: 
+  cost: 100
 --- !u!1 &5279317163333848885
 GameObject:
   m_ObjectHideFlags: 0

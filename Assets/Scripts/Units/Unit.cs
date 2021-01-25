@@ -29,6 +29,19 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Variables
 
+    [Header("Settings")]
+    [Tooltip("ID for this unit")]
+    [SerializeField] int id = 0;
+
+    [Tooltip("title name for this unit")]
+    [SerializeField] string title = null;
+
+    [Tooltip("how much this unit costs")]
+    [SerializeField] int cost = 0;
+
+    //[Tooltip("sprite asset for the unit")]
+    //[SerializeField] Sprite artwork = null;
+
     bool isSelected = false;
 
     #endregion
