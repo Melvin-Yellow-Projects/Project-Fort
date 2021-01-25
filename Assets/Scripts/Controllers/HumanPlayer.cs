@@ -40,7 +40,7 @@ public class HumanPlayer : Player
 
     protected void OnEnable()
     {
-        PlayerMenu.Singleton.MyPlayer = this;
+        PlayerMenu.MyPlayer = this;
 
         //if (!hasAuthority) enabled = false;
         //gameObject.SetActive(false);
@@ -67,6 +67,8 @@ public class HumanPlayer : Player
     public void CmdStartGame() 
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+
+        if (GameNetworkManager.IsGameInProgress) return;
 
         GameNetworkManager.Singleton.ServerStartGame();
     }
@@ -175,7 +177,7 @@ public class HumanPlayer : Player
 
         if (!hasAuthority) return;
 
-        PlayerMenu.ClientOnEndTurnButtonPressed += CmdEndTurn;
+        PlayerMenu.ClientOnEndTurnButtonPressed += HandleClientOnEndTurnButtonPressed;
 
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
@@ -192,7 +194,7 @@ public class HumanPlayer : Player
 
         if (!hasAuthority) return;
 
-        PlayerMenu.ClientOnEndTurnButtonPressed -= CmdEndTurn;
+        PlayerMenu.ClientOnEndTurnButtonPressed -= HandleClientOnEndTurnButtonPressed;
 
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
@@ -218,6 +220,14 @@ public class HumanPlayer : Player
     private void HandleClientOnStopTurn()
     {
         controls.Enable();
+    }
+
+    [Client]
+    private void HandleClientOnEndTurnButtonPressed()
+    {
+        // HasEndedTurn has not been updated yet, it's a state behind
+        if (HasEndedTurn) CmdCancelEndTurn(); 
+        else CmdEndTurn();
     }
 
     [Client]

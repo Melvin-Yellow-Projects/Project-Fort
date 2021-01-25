@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -26,8 +27,10 @@ public class PlayerMenu : MonoBehaviour
     [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
     [SerializeField] TMP_Text moveTimerText = null;
+    [SerializeField] Button endTurnButton = null;
+    [SerializeField] TMP_Text endTurnButtonText = null;
 
-    Player player = null;
+    static Player player = null;
 
     #endregion
     /************************************************************/
@@ -38,6 +41,7 @@ public class PlayerMenu : MonoBehaviour
     /// <summary>
     /// Server event for when a player has pressed their end turn button
     /// </summary>
+    /// <subscriber class="HumanPlayer">sends client button press data to the server</subscriber>
     public static event Action ClientOnEndTurnButtonPressed;
 
     #endregion
@@ -46,7 +50,7 @@ public class PlayerMenu : MonoBehaviour
 
     public static PlayerMenu Singleton { get; set; }
 
-    public Player MyPlayer
+    public static Player MyPlayer 
     {
         get
         {
@@ -54,9 +58,9 @@ public class PlayerMenu : MonoBehaviour
         }
         set
         {
-            if (!value) return;
+            if (!value) return; // HACK: is this line needed
             player = value;
-            enabled = true;
+            Singleton.enabled = true;
         }
     }
 
@@ -90,10 +94,12 @@ public class PlayerMenu : MonoBehaviour
     {
         GameMode gm = GameMode.Singleton;
 
-        if (!Singleton.MyPlayer) return;
+        if (!MyPlayer) return;
 
-        string moveCountString = (Singleton.MyPlayer.MoveCount > gm.MovesPerTurn) ?
-            "MXX" : $"M{Singleton.MyPlayer.MoveCount}";
+        Singleton.endTurnButtonText.text = "End Turn";
+
+        string moveCountString = (MyPlayer.MoveCount > gm.MovesPerTurn) ?
+            "MXX" : $"M{MyPlayer.MoveCount}";
 
         Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
             $"T{GameManager.TurnCount}:" +
@@ -103,6 +109,9 @@ public class PlayerMenu : MonoBehaviour
     public static void EndTurnButtonPressed()
     {
         ClientOnEndTurnButtonPressed?.Invoke();
+
+        if (MyPlayer.HasEndedTurn) Singleton.endTurnButtonText.text = "Cancel";
+        else Singleton.endTurnButtonText.text = "End Turn";
     }
 
     #endregion

@@ -504,6 +504,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveCountText: {fileID: 3349601793530250214}
   moveTimerText: {fileID: 222441539091241718}
+  endTurnButton: {fileID: 3050329159846015767}
+  endTurnButtonText: {fileID: 5777944978535289457}
 --- !u!1 &3657478079484230698
 GameObject:
   m_ObjectHideFlags: 0
