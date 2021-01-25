@@ -288,24 +288,28 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcInvokeClientOnStartRound()
     {
+        Debug.Log("RpcInvokeClientOnStartRound");
         ClientOnStartRound?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnStartTurn()
     {
+        Debug.Log("RpcInvokeClientOnStartTurn");
         ClientOnStartTurn?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnPlayTurn()
     {
+        Debug.Log("RpcInvokeClientOnPlayTurn");
         ClientOnPlayTurn?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnStopTurn()
     {
+        Debug.Log("RpcInvokeClientOnStopTurn");
         ClientOnStopTurn?.Invoke();
     }
 
