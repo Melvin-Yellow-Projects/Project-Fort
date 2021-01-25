@@ -96,8 +96,6 @@ public class PlayerMenu : MonoBehaviour
 
         if (!MyPlayer) return;
 
-        Singleton.endTurnButtonText.text = "End Turn";
-
         string moveCountString = (MyPlayer.MoveCount > gm.MovesPerTurn) ?
             "MXX" : $"M{MyPlayer.MoveCount}";
 
@@ -120,14 +118,29 @@ public class PlayerMenu : MonoBehaviour
 
     private void Subscribe()
     {
-        GameManager.ClientOnStartRound += RefreshMoveCountText;
-        GameManager.ClientOnStartTurn += RefreshMoveCountText;
+        GameManager.ClientOnStartRound += HandleClientOnStartRound;
+        GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
     }
 
     private void Unsubscribe()
     {
-        GameManager.ClientOnStartRound -= RefreshMoveCountText;
-        GameManager.ClientOnStartTurn -= RefreshMoveCountText;
+        GameManager.ClientOnStartRound -= HandleClientOnStartRound;
+        GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
     }
+
+    private void HandleClientOnStartRound()
+    {
+        Singleton.endTurnButtonText.text = "End Turn";
+
+        RefreshMoveCountText();
+    }
+
+    private void HandleClientOnStartTurn()
+    {
+        Singleton.endTurnButtonText.text = "End Turn";
+
+        RefreshMoveCountText();
+    }
+
     #endregion
 }
