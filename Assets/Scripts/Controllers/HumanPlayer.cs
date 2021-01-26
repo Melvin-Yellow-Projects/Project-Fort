@@ -81,20 +81,26 @@ public class HumanPlayer : Player
     {
         if (!currentCell) return;
 
-        if (currentCell.MyFort && currentCell.MyFort.hasAuthority) Debug.Log("My Fort!");
-
         DeselectUnitAndClearItsPath();
-
         SelectUnit(currentCell.MyUnit);
     }
 
     private void DoCommand(InputAction.CallbackContext context)
     {
-        if (selectedUnit) CmdSetAction(UnitData.Instantiate(selectedUnit));
+        if (GameManager.IsEconomyPhase)
+        {
+            if (!currentCell) return;
 
-        PlayerMenu.RefreshMoveCountText();
+            CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
+        }
+        else
+        {
+            if (selectedUnit) CmdSetAction(UnitData.Instantiate(selectedUnit));
 
-        DeselectUnit();
+            PlayerMenu.RefreshMoveCountText();
+
+            DeselectUnit();
+        }
     }
 
     #endregion
@@ -170,6 +176,7 @@ public class HumanPlayer : Player
 
         //Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
     }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions
@@ -182,6 +189,8 @@ public class HumanPlayer : Player
 
         PlayerMenu.ClientOnEndTurnButtonPressed += HandleClientOnEndTurnButtonPressed;
 
+        GameManager.ClientOnStartRound += HandleClientOnStartRound;
+        GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
@@ -199,6 +208,8 @@ public class HumanPlayer : Player
 
         PlayerMenu.ClientOnEndTurnButtonPressed -= HandleClientOnEndTurnButtonPressed;
 
+        GameManager.ClientOnStartRound -= HandleClientOnStartRound;
+        GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
@@ -206,9 +217,18 @@ public class HumanPlayer : Player
     }
 
     [Client]
-    protected void HandleClientOnStartTurn() // FIXME: this function is not called
+    private void HandleClientOnStartRound()
     {
-        PlayerMenu.RefreshMoveCountText(); 
+        foreach (Fort fort in MyForts) fort.ShowBuyCells();
+    }
+
+    [Client]
+    protected void HandleClientOnStartTurn() 
+    {
+        // HACK: this line is so a player knows eco phase has ended
+        if (!GameManager.IsEconomyPhase) return; 
+       
+        foreach (Fort fort in MyForts) fort.HideBuyCells();
     }
 
     [Client]

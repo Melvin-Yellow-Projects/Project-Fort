@@ -65,6 +65,8 @@ public class PlayerMenu : MonoBehaviour
         }
     }
 
+    public static int UnitId { get; } kjgafhkjafkhjafhkj
+
     #endregion
     /************************************************************/
     #region Class Functions
@@ -142,6 +144,8 @@ public class PlayerMenu : MonoBehaviour
 
     private void HandleClientOnStartRound()
     {
+        UpdateTimerText("Economy Phase");
+
         buyPanel.SetActive(true);
 
         Singleton.endTurnButtonText.text = "End Turn";

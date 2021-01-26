@@ -179,6 +179,40 @@ public abstract class Player : NetworkBehaviour
         if (data.MyUnit.Movement.ServerClearAction()) MoveCount++;
     }
 
+    /// <summary>
+    /// HACK: is unitId Validation needed?
+    /// HACK: should this return bool?
+    /// </summary>
+    /// <param name="unitId"></param>
+    /// <param name="cell"></param>
+    [Command] 
+    protected void CmdTryBuyUnit(int unitId, HexCell cell)
+    {
+        if (!GameManager.IsEconomyPhase) return;
+        if (cell.MyUnit) return;
+
+        //if (0 <= unitId && unitId < Unit.Prefabs.Count)
+        Unit unit = Unit.Prefabs[unitId];
+        if (Resources < unit.Resources) return;
+
+        bool canBuy = false;
+        for (int i = 0; !canBuy && i < MyForts.Count; i++)
+        {
+            Fort fort = MyForts[i];
+            canBuy = fort.IsBuyCell(cell);
+        }
+
+        if (!canBuy) return;
+
+        Unit instance = Instantiate(unit);
+        instance.MyCell = cell;
+        instance.MyTeam.SetTeam(MyTeam);
+
+        NetworkServer.Spawn(instance.gameObject, connectionToClient);
+
+        Resources -= unit.Resources;
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions

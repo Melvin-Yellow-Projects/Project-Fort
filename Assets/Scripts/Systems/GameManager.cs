@@ -25,13 +25,7 @@ public class GameManager : NetworkBehaviour
     /************************************************************/
     #region Private Variables
 
-    bool isEconomyPhase = true;
-
     float turnTimer = 0f;
-
-    int roundCount = 0;
-
-    int turnCount = 0;
 
     #endregion
     /************************************************************/
@@ -60,18 +54,21 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <subscriber class="Fort">checks to see if team has updated</subscriber>
     /// <subscriber class="UnitMovement">sets a unit's movement to 0 if it has moved</subscriber>
-    public static event Action ServerOnStopTurn; 
+    public static event Action ServerOnStopTurn;
 
     /// <summary>
     /// Client event for when a new round has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
+    /// <subscriber class="HumanPlayer">shows the player's available buy cells</subscriber>
     public static event Action ClientOnStartRound;
 
     /// <summary>
     /// Client event for when a new turn has begun
+    /// HACK: maybe the player should listen to an event for when the economy phase ends
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
+    /// <subscriber class="HumanPlayer">hides the player's available buy cells</subscriber>
     public static event Action ClientOnStartTurn;
 
     /// <summary>
@@ -92,29 +89,11 @@ public class GameManager : NetworkBehaviour
 
     public static GameManager Singleton { get; private set; }
 
-    public static int RoundCount
-    {
-        get
-        {
-            return Singleton.roundCount;
-        }
-        set
-        {
-            Singleton.roundCount = value;
-        }
-    }
+    public static int RoundCount { get; private set; }
 
-    public static int TurnCount
-    {
-        get
-        {
-            return Singleton.turnCount;
-        }
-        set
-        {
-            Singleton.turnCount = value;
-        }
-    }
+    public static int TurnCount { get; private set; }
+
+    public static bool IsEconomyPhase { get; private set; } = true;
 
     public static bool IsPlayingTurn { get; private set; } = false;
 
@@ -174,21 +153,19 @@ public class GameManager : NetworkBehaviour
         ServerStartRound();
     }
 
-    [Server] // HACK: maybe these functions should be reversed... i.e. RoundStart()
+    [Server]
     public void ServerStartRound() 
     {
         RoundCount++;
         TurnCount = 0;
-        isEconomyPhase = true;
+        IsEconomyPhase = true;
 
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();
 
         // update timer and its text // TODO: this should be the economy timer
-        if (GameMode.IsUsingTurnTimer) ServerResetTimer(); 
-        else PlayerMenu.UpdateTimerText("Economy Phase");
-
-        // TODO: WAIT FOR ECONOMY PHASE TO END
+        if (GameMode.IsUsingTurnTimer) ServerResetTimer();  // HACK: i think this line can be moved
+                                                                        // to PlayerMenu
     }
 
     [Server]
@@ -226,9 +203,16 @@ public class GameManager : NetworkBehaviour
 
         if (playTurn)
         {
-            if (isEconomyPhase) ServerStartTurn();
-            else ServerPlayTurn();
-            isEconomyPhase = false;
+            if (IsEconomyPhase)
+            {
+                foreach (Fort f in HexGrid.Forts) f.HideBuyCells();
+                ServerStartTurn();
+            }
+            else
+            {
+                ServerPlayTurn();
+            }
+            IsEconomyPhase = false;
         }
     }
 
@@ -315,6 +299,8 @@ public class GameManager : NetworkBehaviour
         {
             RoundCount++;
             TurnCount = 0;
+            // HACK: this is at the start so connection know that the economy phase 'just' started
+            GameManager.IsEconomyPhase = true;
         }
         ClientOnStartRound?.Invoke();
     }
@@ -323,8 +309,13 @@ public class GameManager : NetworkBehaviour
     private void RpcInvokeClientOnStartTurn()
     {
         //Debug.Log("RpcInvokeClientOnStartTurn");
-        if (isClientOnly) TurnCount++;
         ClientOnStartTurn?.Invoke();
+        if (isClientOnly)
+        {
+            TurnCount++;
+            // HACK: this is at the end so connection know that the economy phase 'just' ended
+            GameManager.IsEconomyPhase = false;
+        }
     }
 
     [ClientRpc]

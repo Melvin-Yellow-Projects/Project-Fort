@@ -24,10 +24,17 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Variables
 
+    [Header("Settings")]
+    [Tooltip("speed to highlight buy cells")]
+    [SerializeField] float highlightSpeed = 1;
+
     [SyncVar(hook = nameof(HookOnMyCell))]
     HexCell myCell;
 
     float orientation;
+
+    float interpolator;
+    Color currentColor;
 
     #endregion
     /************************************************************/
@@ -87,9 +94,7 @@ public class Fort : NetworkBehaviour
         }
     }
 
-    public static Color StartingHighlightColor { get; set; }
-
-    public static Color EndingHighlightColor { get; set; }
+    public static Color HighlightColor { get; set; }
 
     #endregion
     /************************************************************/
@@ -119,7 +124,6 @@ public class Fort : NetworkBehaviour
     public override void OnStartServer()
     {
         Subscribe();
-        ShowBuyCells();
     }
 
     [Server]
@@ -141,42 +145,81 @@ public class Fort : NetworkBehaviour
         transform.localPosition = myCell.Position;
     }
 
+    public bool IsBuyCell(HexCell cell)
+    {
+        bool isBuyCell = (cell == MyCell);
+        for (HexDirection d = HexDirection.NE; !isBuyCell && d <= HexDirection.NW; d++)
+        {
+            isBuyCell = (cell == MyCell.GetNeighbor(d));
+        }
+
+        return isBuyCell;
+    }
+
     public void ShowBuyCells()
     {
+        StopAllCoroutines();
+
         StartCoroutine(HighlightCellNeighbors());
     }
 
+    public void HideBuyCells()
+    {
+        StopAllCoroutines();
+
+        StartCoroutine(UnhighlightCellNeighbors());
+    }
+
+    // HACK: maybe we could shorted some code here
     private IEnumerator HighlightCellNeighbors()
     {
-        Color color = StartingHighlightColor;
-        float interpolator = 0;
-        float speed = 1;
+        currentColor = HighlightColor;
+        currentColor.a = 0;
+        interpolator = 0;
 
         while (true)
         {
             while (interpolator < 1)
             {
+                MyCell.EnableHighlight(currentColor);
                 for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                 {
-                    MyCell.GetNeighbor(d).EnableHighlight(color);
+                    MyCell.GetNeighbor(d).EnableHighlight(currentColor);
                 }
-                color = Color.Lerp(StartingHighlightColor, EndingHighlightColor, interpolator);
-                interpolator += Time.deltaTime * speed;
+                currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
+                interpolator += Time.deltaTime * highlightSpeed;
                 yield return null;
             }
 
             while (interpolator > 0)
             {
+                MyCell.EnableHighlight(currentColor);
                 for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                 {
-                    MyCell.GetNeighbor(d).EnableHighlight(color);
+                    MyCell.GetNeighbor(d).EnableHighlight(currentColor);
                 }
-                color = Color.Lerp(StartingHighlightColor, EndingHighlightColor, interpolator);
-                interpolator -= Time.deltaTime * speed;
+                currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
+                interpolator -= Time.deltaTime * highlightSpeed;
                 yield return null;
             }
         }
+    }
 
+    private IEnumerator UnhighlightCellNeighbors()
+    {
+        while (interpolator > 0)
+        {
+            MyCell.EnableHighlight(currentColor);
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+            }
+            currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
+            interpolator -= Time.deltaTime * highlightSpeed;
+            yield return null;
+        }
+
+        MyCell.DisableHighlight();
         for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
         {
             MyCell.GetNeighbor(d).DisableHighlight();
@@ -200,7 +243,7 @@ public class Fort : NetworkBehaviour
         float orientation = reader.ReadSingle();
 
         Fort fort = Instantiate(Prefab);
-        if (header >= 4) fort.MyTeam.TeamIndex = reader.ReadByte();
+        if (header >= 4) fort.MyTeam.SetTeam(reader.ReadByte());
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;
@@ -238,7 +281,7 @@ public class Fort : NetworkBehaviour
 
         ServerOnFortCaptured?.Invoke(this, unit.MyTeam);
 
-        MyTeam.TeamIndex = unit.MyTeam.TeamIndex;
+        MyTeam.SetTeam(unit.MyTeam);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

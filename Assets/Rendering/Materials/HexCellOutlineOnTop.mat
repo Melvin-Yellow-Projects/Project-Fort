@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HexCellOutline
-  m_Shader: {fileID: 4800000, guid: 4f767904fc54c440b958ed87da77f03b, type: 3}
+  m_Name: HexCellOutlineOnTop
+  m_Shader: {fileID: 4800000, guid: 66f9b23ceedd47044b76c906ec2d2633, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

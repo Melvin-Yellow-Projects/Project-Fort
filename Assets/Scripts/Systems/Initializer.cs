@@ -59,10 +59,8 @@ public class Initializer : MonoBehaviour
     [Header("Fort")]
     [Tooltip("reference to the Fort prefab")]
     [SerializeField] Fort fortPrefab;
-    [Tooltip("starting highlight color that shows buy area for economy phase")]
-    [SerializeField] Color startingHighlightColor;
-    [Tooltip("ending highlight color that shows buy area for economy phase")]
-    [SerializeField] Color endingHighlightColor;
+    [Tooltip("highlight color that shows buy area for economy phase")]
+    [SerializeField] Color fortHighlightColor;
 
     [Header("Units")]
     [Tooltip("references to the Unit prefabs")]
@@ -115,10 +113,8 @@ public class Initializer : MonoBehaviour
 
         /** Fort **/
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
-        if (startingHighlightColor != null && Fort.StartingHighlightColor != null)
-            Fort.StartingHighlightColor = startingHighlightColor;
-        if (endingHighlightColor != null && Fort.EndingHighlightColor != null)
-            Fort.EndingHighlightColor = endingHighlightColor;
+        if (fortHighlightColor != null && Fort.HighlightColor != null)
+            Fort.HighlightColor = fortHighlightColor;
 
         /** Unit **/
         if (Unit.Prefabs == null)
