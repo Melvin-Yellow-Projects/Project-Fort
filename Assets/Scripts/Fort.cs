@@ -119,7 +119,7 @@ public class Fort : NetworkBehaviour
     public override void OnStartServer()
     {
         Subscribe();
-        Show();
+        ShowBuyCells();
     }
 
     [Server]
@@ -141,7 +141,7 @@ public class Fort : NetworkBehaviour
         transform.localPosition = myCell.Position;
     }
 
-    public void Show()
+    public void ShowBuyCells()
     {
         StartCoroutine(HighlightCellNeighbors());
     }

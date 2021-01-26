@@ -41,13 +41,13 @@ public class HumanPlayer : Player
     protected void OnEnable()
     {
         PlayerMenu.MyPlayer = this;
-
-        //if (!hasAuthority) enabled = false;
-        //gameObject.SetActive(false);
+        PlayerMenu.RefreshResourcesText();
     }
 
-    protected void Update()
+    protected void LateUpdate() 
     {
+        // this is in late update so the player cursor always shows on top of hexes
+
         // other human players should be disabled 
         //if (!hasAuthority) return; 
 
@@ -104,10 +104,13 @@ public class HumanPlayer : Player
     private void UpdateCurrentCell()
     {
         HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
+
+        // HACK: this color is hardcoded, it should probably reflect the team color?
+        if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+
         if (cell != currentCell)
         {
             if (currentCell) currentCell.DisableHighlight();
-            if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
 
             currentCell = cell;
             hasCurrentCellUpdated = true; // whether or not current cell has updated
@@ -228,6 +231,12 @@ public class HumanPlayer : Player
         // HasEndedTurn has not been updated yet, it's a state behind
         if (HasEndedTurn) CmdCancelEndTurn(); 
         else CmdEndTurn();
+    }
+
+    [Client]
+    protected override void HookOnResources(int oldValue, int newValue)
+    {
+        if (PlayerMenu.MyPlayer) PlayerMenu.RefreshResourcesText();
     }
 
     [Client]

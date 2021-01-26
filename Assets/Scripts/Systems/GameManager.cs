@@ -132,7 +132,7 @@ public class GameManager : NetworkBehaviour
 
         if (!isServer) return;
 
-        turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+        turnTimer = Time.time + GameMode.TurnTimerLength;
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public class GameManager : NetworkBehaviour
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
         gameObject.SetActive(true);
-        enabled = GameMode.Singleton.IsUsingTurnTimer;
+        enabled = GameMode.IsUsingTurnTimer;
         ServerStartRound();
     }
 
@@ -185,7 +185,7 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartRound();
 
         // update timer and its text // TODO: this should be the economy timer
-        if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer(); 
+        if (GameMode.IsUsingTurnTimer) ServerResetTimer(); 
         else PlayerMenu.UpdateTimerText("Economy Phase");
 
         // TODO: WAIT FOR ECONOMY PHASE TO END
@@ -200,7 +200,7 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartTurn();
 
         // update timer and its text
-        if (GameMode.Singleton.IsUsingTurnTimer) ServerResetTimer();
+        if (GameMode.IsUsingTurnTimer) ServerResetTimer();
         else PlayerMenu.UpdateTimerText("Your Turn");
     }
 
@@ -255,7 +255,7 @@ public class GameManager : NetworkBehaviour
         IsPlayingTurn = false;
 
         // Finished Turn, either start new one or start a new round
-        if (TurnCount >= GameMode.Singleton.TurnsPerRound) ServerStartRound();
+        if (TurnCount >= GameMode.TurnsPerRound) ServerStartRound();
         else ServerStartTurn();
     }
 
@@ -300,7 +300,7 @@ public class GameManager : NetworkBehaviour
     private void ServerResetTimer()
     {
         //timeOfNextMove += GameMode.Singleton.TurnTimerLength;
-        turnTimer = Time.time + GameMode.Singleton.TurnTimerLength;
+        turnTimer = Time.time + GameMode.TurnTimerLength;
         enabled = true;
     }
     #endregion

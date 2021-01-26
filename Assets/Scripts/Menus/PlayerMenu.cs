@@ -26,23 +26,24 @@ public class PlayerMenu : MonoBehaviour
     /* Cached References */
     [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
+    [SerializeField] TMP_Text resourcesText = null;
     [SerializeField] TMP_Text moveTimerText = null;
+    [SerializeField] GameObject buyPanel = null;
     [SerializeField] Button endTurnButton = null;
     [SerializeField] TMP_Text endTurnButtonText = null;
 
-    static Player player = null;
+    static Player player = null; // FIXME: this could be a HumanPlayer, right?
 
     #endregion
     /************************************************************/
     #region Class Events
 
-    // FIXME: Verify Player Menu
-
     /// <summary>
     /// Server event for when a player has pressed their end turn button
+    /// FIXME: this could probably report directly to the HumanPlayer
     /// </summary>
     /// <subscriber class="HumanPlayer">sends client button press data to the server</subscriber>
-    public static event Action ClientOnEndTurnButtonPressed;
+    public static event Action ClientOnEndTurnButtonPressed; 
 
     #endregion
     /************************************************************/
@@ -58,7 +59,7 @@ public class PlayerMenu : MonoBehaviour
         }
         set
         {
-            if (!value) return; // HACK: is this line needed
+            if (!value) return; // HACK: is this line needed?
             player = value;
             Singleton.enabled = true;
         }
@@ -85,23 +86,27 @@ public class PlayerMenu : MonoBehaviour
     /************************************************************/
     #region Class Functions
 
-    public static void UpdateTimerText(string text)
-    {
-        Singleton.moveTimerText.text = text;
-    }
-
     public static void RefreshMoveCountText()
     {
-        GameMode gm = GameMode.Singleton;
-
         if (!MyPlayer) return;
 
-        string moveCountString = (MyPlayer.MoveCount > gm.MovesPerTurn) ?
+        string moveCountString = (MyPlayer.MoveCount > GameMode.MovesPerTurn) ?
             "MXX" : $"M{MyPlayer.MoveCount}";
 
         Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
             $"T{GameManager.TurnCount}:" +
             moveCountString;
+    }
+
+    public static void RefreshResourcesText()
+    {
+        Singleton.resourcesText.text = $"{MyPlayer.Resources}";
+    }
+
+    // HACK: this should fetch the timer from the Game Manager
+    public static void UpdateTimerText(string text)
+    {
+        Singleton.moveTimerText.text = text;
     }
 
     public static void EndTurnButtonPressed()
@@ -121,6 +126,7 @@ public class PlayerMenu : MonoBehaviour
         GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
 
+        //Player.ClientOnResourcesUpdated += null;
         Player.ClientOnHasEndedTurn += HandleClientOnHasEndedTurn;
     }
 
@@ -130,11 +136,14 @@ public class PlayerMenu : MonoBehaviour
         GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
 
+        //Player.ClientOnResourcesUpdated -= null;
         Player.ClientOnHasEndedTurn -= HandleClientOnHasEndedTurn;
     }
 
     private void HandleClientOnStartRound()
     {
+        buyPanel.SetActive(true);
+
         Singleton.endTurnButtonText.text = "End Turn";
         endTurnButton.interactable = true;
 
@@ -143,6 +152,8 @@ public class PlayerMenu : MonoBehaviour
 
     private void HandleClientOnStartTurn()
     {
+        buyPanel.SetActive(false);
+
         Singleton.endTurnButtonText.text = "End Turn";
         endTurnButton.interactable = true;
 

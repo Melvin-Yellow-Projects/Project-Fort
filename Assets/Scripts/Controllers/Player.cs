@@ -27,15 +27,16 @@ public abstract class Player : NetworkBehaviour
     #region Variables
 
     [SyncVar(hook = nameof(HookOnMoveCount))]
-    int moveCount = 0; // HACK: this is wrong, other clients shouldnt know this data
+    int moveCount = 0; // HACK: wrong, other clients shouldnt know this data.
+
+    [SyncVar(hook = nameof(HookOnResources))]
+    int resources = 0; // HACK: wrong, other clients shouldnt know this data, or should they? 
 
     bool hasEndedTurn = false;
 
     #endregion
     /************************************************************/
     #region Class Events
-
-    // FIXME: Verify Player Menu
 
     /// <summary>
     /// Server event for when a player has been defeated
@@ -44,10 +45,16 @@ public abstract class Player : NetworkBehaviour
     public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
 
     /// <summary>
+    /// Client event for when a player's resources have updated
+    /// </summary>
+    //public static event Action ClientOnResourcesUpdated;
+
+    /// <summary>
     /// Client event for when a player has ended their turn
+    /// FIXME: shouldnt this event just be for the Human Player?
     /// </summary>
     /// <subscriber class="PlayerMenu">Updates the player menu status</subscriber>
-    public static event Action ClientOnHasEndedTurn;
+    public static event Action ClientOnHasEndedTurn; 
 
     #endregion
     /************************************************************/
@@ -70,6 +77,18 @@ public abstract class Player : NetworkBehaviour
         set
         {
             moveCount = value;
+        }
+    }
+
+    public int Resources
+    {
+        get
+        {
+            return resources;
+        }
+        set
+        {
+            resources = value;
         }
     }
 
@@ -114,6 +133,7 @@ public abstract class Player : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
         Subscribe();
+        resources = GameMode.StartingPlayerResources;
     }
 
     [Server]
@@ -213,7 +233,7 @@ public abstract class Player : NetworkBehaviour
     public void TargetSetHasEndedTurn(bool status)
     {
         if (!isServer) HasEndedTurn = status;
-        ClientOnHasEndedTurn?.Invoke();
+        ClientOnHasEndedTurn?.Invoke(); 
     }
 
     #endregion
@@ -330,7 +350,7 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartTurn()
     {
-        MoveCount = GameMode.Singleton.MovesPerTurn;
+        MoveCount = GameMode.MovesPerTurn;
         HasEndedTurn = false;
     }
 
@@ -339,6 +359,9 @@ public abstract class Player : NetworkBehaviour
     {
         HasEndedTurn = true;
     }
+
+    [Client]
+    protected virtual void HookOnResources(int oldValue, int newValue) { }
 
     [Client]
     protected virtual void HookOnMoveCount(int oldValue, int newValue) { }
