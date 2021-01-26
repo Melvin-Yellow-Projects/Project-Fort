@@ -2705,6 +2705,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: endingHighlightColor.a
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: endingHighlightColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: endingHighlightColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: endingHighlightColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: startingHighlightColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: startingHighlightColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: startingHighlightColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1281260488067124436, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: m_Name

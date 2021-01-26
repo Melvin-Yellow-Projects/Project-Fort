@@ -87,6 +87,10 @@ public class Fort : NetworkBehaviour
         }
     }
 
+    public static Color StartingHighlightColor { get; set; }
+
+    public static Color EndingHighlightColor { get; set; }
+
     #endregion
     /************************************************************/
     #region Unity Functions
@@ -144,35 +148,39 @@ public class Fort : NetworkBehaviour
 
     private IEnumerator HighlightCellNeighbors()
     {
-        Debug.Log("Start");
-        Color startColor = Color.white;
-        Color endColor = Color.red;
-        Color color = startColor;
+        Color color = StartingHighlightColor;
         float interpolator = 0;
-        float speed = 2;
+        float speed = 1;
 
-        while (interpolator < 1)
+        while (true)
         {
-            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            while (interpolator < 1)
             {
-                MyCell.GetNeighbor(d).EnableHighlight(color);
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {
+                    MyCell.GetNeighbor(d).EnableHighlight(color);
+                }
+                color = Color.Lerp(StartingHighlightColor, EndingHighlightColor, interpolator);
+                interpolator += Time.deltaTime * speed;
+                yield return null;
             }
-            color = Color.Lerp(startColor, endColor, interpolator);
-            interpolator += Time.deltaTime * speed;
-            yield return null;
+
+            while (interpolator > 0)
+            {
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {
+                    MyCell.GetNeighbor(d).EnableHighlight(color);
+                }
+                color = Color.Lerp(StartingHighlightColor, EndingHighlightColor, interpolator);
+                interpolator -= Time.deltaTime * speed;
+                yield return null;
+            }
         }
 
-        while (interpolator > 0)
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
         {
-            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
-            {
-                MyCell.GetNeighbor(d).EnableHighlight(color);
-            }
-            color = Color.Lerp(startColor, endColor, interpolator);
-            interpolator -= Time.deltaTime * speed;
-            yield return null;
+            MyCell.GetNeighbor(d).DisableHighlight();
         }
-        Debug.Log("End");
     }
 
     #endregion

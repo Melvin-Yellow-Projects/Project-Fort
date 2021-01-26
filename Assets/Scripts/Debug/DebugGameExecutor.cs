@@ -1,11 +1,13 @@
 ﻿/**
- * File Name: DebugTempExecute.cs
+ * File Name: DebugGameExecutor.cs
  * Description: 
  * 
  * Authors: Will Lacey
  * Date Created: January 23, 2020
  * 
  * Additional Comments: 
+ * 
+ *      Previously known as DebugTempExecute.cs
  * 
  *      TODO: Delete this file after game UI is done
  **/
@@ -15,7 +17,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class DebugTempExecute : MonoBehaviour
+public class DebugGameExecutor : MonoBehaviour
 {
     private void Start()
     {
