@@ -195,14 +195,12 @@ public class GameManager : NetworkBehaviour
 
         // update timer and its text
         if (GameMode.IsUsingTurnTimer) ServerResetTimer();
-        else PlayerMenu.UpdateTimerText("Your Turn"); // HACK: this does nothing
     }
 
     [Server]
     public void ServerPlayTurn()
     {
         enabled = false;
-        PlayerMenu.UpdateTimerText("Executing Turn");
 
         StopAllCoroutines();
         StartCoroutine(ServerPlayTurn(8));
@@ -351,9 +349,10 @@ public class GameManager : NetworkBehaviour
         ClientOnStopTurn?.Invoke();
     }
 
+    [Client]
     private void HookOnIsEconomyPhase(bool oldValue, bool newValue)
     {
-
+        // HACK: is this function ever needed?
     }
 
     #endregion

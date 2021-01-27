@@ -167,6 +167,8 @@ public class PlayerMenu : MonoBehaviour
 
     private void HandleClientOnStartTurn()
     {
+        UpdateTimerText("Your Turn");
+
         buyPanel.SetActive(false);
 
         Singleton.endTurnButtonText.text = "End Turn";
@@ -177,6 +179,8 @@ public class PlayerMenu : MonoBehaviour
 
     private void HandleClientOnPlayTurn()
     {
+        UpdateTimerText("Executing Turn");
+
         endTurnButton.interactable = false;
     }
 

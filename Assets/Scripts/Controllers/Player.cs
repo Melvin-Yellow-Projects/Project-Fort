@@ -162,7 +162,7 @@ public abstract class Player : NetworkBehaviour
     [Command]
     protected void CmdSetAction(UnitData data)
     {
-        if (GameManager.IsPlayingTurn) return;
+        if (GameManager.IsEconomyPhase || GameManager.IsPlayingTurn) return;
         if (!CanMove()) return;
 
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
