@@ -97,6 +97,10 @@ public class GameNetworkManager : NetworkManager
     {
         GameManager.Players.Clear();
 
+        autoCreatePlayer = true;
+        GameSession.Singleton.IsOnline = false;
+        GameSession.Singleton.IsEditorMode = false;
+
         IsGameInProgress = false;
     }
 
@@ -183,6 +187,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public static void ServerSpawnComputerPlayer()
     {
+        Debug.LogWarning("Spawning Computer Player");
         ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
 
         PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
