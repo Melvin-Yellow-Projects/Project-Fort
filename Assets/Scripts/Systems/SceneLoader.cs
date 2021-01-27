@@ -59,13 +59,14 @@ public class SceneLoader : MonoBehaviour
             if (IsGameScene) NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
 
             NetworkManager.singleton.StopHost();
+            //Application.Quit();
         }
         else
         {
             NetworkManager.singleton.StopClient();
         }
 
-        SceneManager.LoadScene(MenuSceneName); // FIXME
+        //SceneManager.LoadScene(MenuSceneName); // FIXME
     }
 
     public static void LoadLocalGame()
