@@ -132,6 +132,12 @@ public class Fort : NetworkBehaviour
         Unsubscribe();
     }
 
+    [Server]
+    public void ValidateLocation()
+    {
+        transform.localPosition = myCell.Position;
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions
@@ -139,11 +145,6 @@ public class Fort : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Class Functions
-
-    public void ValidateLocation()
-    {
-        transform.localPosition = myCell.Position;
-    }
 
     public bool IsBuyCell(HexCell cell)
     {

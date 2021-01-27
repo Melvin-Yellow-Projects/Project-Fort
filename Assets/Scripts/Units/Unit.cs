@@ -154,28 +154,16 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    //[Server]
-    //public override void OnStartServer()
-    //{
-    //    OnUnitSpawned?.Invoke(this);
-    //}
-
-    //[Server]
-    //public override void OnStopServer()
-    //{
-    //    OnUnitDepawned?.Invoke(this);
-    //}
+    [Server]
+    public void ValidateLocation()
+    {
+        //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
+        transform.localPosition = MyCell.Position;
+    }
 
     #endregion
     /************************************************************/
     #region Class Functions
-
-    public void ValidateLocation()
-    {
-        if (!isServer) return;
-        //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
-        transform.localPosition = MyCell.Position;
-    }
 
     public void Die(bool isPlayingAnimation = true)
     {
