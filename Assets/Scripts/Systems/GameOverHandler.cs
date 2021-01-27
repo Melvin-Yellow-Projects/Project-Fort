@@ -39,6 +39,8 @@ public class GameOverHandler : NetworkBehaviour
 
     public static GameOverHandler Prefab { get; set; }
 
+    public static GameOverHandler Singleton { get; private set; }
+
     #endregion
     /************************************************************/
     #region Server Functions
@@ -46,6 +48,7 @@ public class GameOverHandler : NetworkBehaviour
     [Server]
     public override void OnStartServer()
     {
+        Singleton = this;
         Subscribe();
     }
 

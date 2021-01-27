@@ -56,7 +56,9 @@ public class SceneLoader : MonoBehaviour
                 if (p as ComputerPlayer) NetworkServer.Destroy(p.gameObject);
             }
 
+            // HACK you shouldn't manually have to destroy these
             NetworkServer.Destroy(HexGrid.Singleton.gameObject);
+            NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
 
             NetworkManager.singleton.StopHost();
         }
