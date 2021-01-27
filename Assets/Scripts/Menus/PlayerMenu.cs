@@ -33,6 +33,7 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] TMP_Text endTurnButtonText = null;
 
     static Player player = null; // FIXME: this could be a HumanPlayer, right?
+    static int unitId = 0;
 
     #endregion
     /************************************************************/
@@ -65,7 +66,17 @@ public class PlayerMenu : MonoBehaviour
         }
     }
 
-    public static int UnitId { get; } kjgafhkjafkhjafhkj
+    public static int UnitId
+    {
+        get
+        {
+            return unitId;
+        }
+        set
+        {
+            unitId = Mathf.Clamp(value, 0, Unit.Prefabs.Count);
+        }
+    } 
 
     #endregion
     /************************************************************/

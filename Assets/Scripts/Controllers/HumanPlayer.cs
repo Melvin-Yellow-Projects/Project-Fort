@@ -190,7 +190,7 @@ public class HumanPlayer : Player
         PlayerMenu.ClientOnEndTurnButtonPressed += HandleClientOnEndTurnButtonPressed;
 
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
-        GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
+        GameManager.ClientOnStopEconomyPhase += HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
@@ -209,7 +209,7 @@ public class HumanPlayer : Player
         PlayerMenu.ClientOnEndTurnButtonPressed -= HandleClientOnEndTurnButtonPressed;
 
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
-        GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
+        GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
@@ -220,15 +220,14 @@ public class HumanPlayer : Player
     private void HandleClientOnStartRound()
     {
         foreach (Fort fort in MyForts) fort.ShowBuyCells();
+        foreach (Unit unit in MyUnits) unit.Movement.Display.HideDisplay();
     }
 
     [Client]
-    protected void HandleClientOnStartTurn() 
+    private void HandleClientOnStopEconomyPhase()
     {
-        // HACK: this line is so a player knows eco phase has ended
-        if (!GameManager.IsEconomyPhase) return; 
-       
         foreach (Fort fort in MyForts) fort.HideBuyCells();
+        foreach (Unit unit in MyUnits) unit.Movement.Display.ShowDisplay();
     }
 
     [Client]
@@ -245,7 +244,7 @@ public class HumanPlayer : Player
         controls.Enable();
     }
 
-    [Client]
+    [Client] // Hack this is probably not needed
     private void HandleClientOnEndTurnButtonPressed()
     {
         // HasEndedTurn has not been updated yet, it's a state behind

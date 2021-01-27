@@ -333,23 +333,6 @@ public abstract class Player : NetworkBehaviour
         MyForts.Remove(fort);
     }
 
-    [Server]
-    private void HandleServerOnUnitDeath(Unit unit)
-    {
-        MyUnits.Remove(unit);
-        if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
-
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
-    }
-
-    [TargetRpc]
-    private void HandleTargetOnUnitDeath(NetworkIdentity unitNetId)
-    {
-        if (isServer) return;
-
-        MyUnits.Remove(unitNetId.GetComponent<Unit>());
-    }
-
     [Server] // HACK: this function is so jank
     private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
     {
@@ -372,6 +355,23 @@ public abstract class Player : NetworkBehaviour
         if (unit.MyTeam != MyTeam) return;
 
         MyUnits.Add(unit);
+    }
+
+    [Server]
+    private void HandleServerOnUnitDeath(Unit unit)
+    {
+        MyUnits.Remove(unit);
+        if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
+
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
+    }
+
+    [TargetRpc] // HACK: this could be UnitData? ...but i mean it is coming from the server so idk
+    private void HandleTargetOnUnitDeath(NetworkIdentity unitNetId)
+    {
+        if (isServer) return;
+
+        MyUnits.Remove(unitNetId.GetComponent<Unit>());
     }
 
     [Server]

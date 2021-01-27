@@ -60,15 +60,19 @@ public class GameManager : NetworkBehaviour
     /// Client event for when a new round has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    /// <subscriber class="HumanPlayer">shows the player's available buy cells</subscriber>
+    /// <subscriber class="HumanPlayer">updates player's buy cells and unit displays</subscriber>
     public static event Action ClientOnStartRound;
 
     /// <summary>
+    /// Client event for when the Economy Phase ends
+    /// </summary>
+    /// <subscriber class="HumanPlayer">updates player's buy cells and unit displays</subscriber>
+    public static event Action ClientOnStopEconomyPhase;
+
+    /// <summary>
     /// Client event for when a new turn has begun
-    /// HACK: maybe the player should listen to an event for when the economy phase ends
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    /// <subscriber class="HumanPlayer">hides the player's available buy cells</subscriber>
     public static event Action ClientOnStartTurn;
 
     /// <summary>
@@ -205,14 +209,14 @@ public class GameManager : NetworkBehaviour
         {
             if (IsEconomyPhase)
             {
-                foreach (Fort f in HexGrid.Forts) f.HideBuyCells();
+                IsEconomyPhase = false;
+                RpcInvokeClientOnStopEconomyPhase();
                 ServerStartTurn();
             }
             else
             {
                 ServerPlayTurn();
             }
-            IsEconomyPhase = false;
         }
     }
 
@@ -294,27 +298,29 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcInvokeClientOnStartRound()
     {
-        //Debug.Log("RpcInvokeClientOnStartRound");
+        Debug.Log("RpcInvokeClientOnStartRound");
         if (isClientOnly)
         {
             RoundCount++;
             TurnCount = 0;
-            // HACK: this is at the start so connection know that the economy phase 'just' started
-            GameManager.IsEconomyPhase = true;
         }
         ClientOnStartRound?.Invoke();
     }
 
     [ClientRpc]
+    private void RpcInvokeClientOnStopEconomyPhase()
+    {
+        ClientOnStopEconomyPhase?.Invoke();
+    }
+
+    [ClientRpc]
     private void RpcInvokeClientOnStartTurn()
     {
-        //Debug.Log("RpcInvokeClientOnStartTurn");
+        Debug.Log("RpcInvokeClientOnStartTurn");
         ClientOnStartTurn?.Invoke();
         if (isClientOnly)
         {
             TurnCount++;
-            // HACK: this is at the end so connection know that the economy phase 'just' ended
-            GameManager.IsEconomyPhase = false;
         }
     }
 
