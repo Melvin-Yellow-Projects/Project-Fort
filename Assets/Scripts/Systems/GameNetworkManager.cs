@@ -97,6 +97,10 @@ public class GameNetworkManager : NetworkManager
     {
         GameManager.Players.Clear();
 
+        autoCreatePlayer = true;
+        GameSession.Singleton.IsOnline = false;
+        GameSession.Singleton.IsEditorMode = false;
+
         IsGameInProgress = false;
     }
 

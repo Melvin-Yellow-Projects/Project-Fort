@@ -55,6 +55,8 @@ public class GameOverHandler : NetworkBehaviour
     [Server]
     public override void OnStopServer()
     {
+        Debug.LogWarning("Server is Unsubbing the GameOverHandler");
+        Singleton = null;
         Unsubscribe();
     }
 

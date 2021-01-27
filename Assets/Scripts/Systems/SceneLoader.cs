@@ -48,8 +48,6 @@ public class SceneLoader : MonoBehaviour
         // FIXME: This needs to work for host/server/client
         if (NetworkServer.active && NetworkClient.isConnected)
         {
-            GameNetworkManager.IsGameInProgress = false;
-
             for (int i = GameManager.Players.Count - 1; i >= 0; i--)
             {
                 Player p = GameManager.Players[i];
@@ -58,7 +56,7 @@ public class SceneLoader : MonoBehaviour
 
             // HACK you shouldn't manually have to destroy these
             NetworkServer.Destroy(HexGrid.Singleton.gameObject);
-            NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
+            if (IsGameScene) NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
 
             NetworkManager.singleton.StopHost();
         }
@@ -66,10 +64,6 @@ public class SceneLoader : MonoBehaviour
         {
             NetworkManager.singleton.StopClient();
         }
-
-        NetworkManager.singleton.autoCreatePlayer = true;
-        GameSession.Singleton.IsOnline = false;
-        GameSession.Singleton.IsEditorMode = false;
 
         SceneManager.LoadScene(MenuSceneName); // FIXME
     }
