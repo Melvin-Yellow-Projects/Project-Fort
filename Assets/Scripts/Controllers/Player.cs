@@ -278,6 +278,7 @@ public abstract class Player : NetworkBehaviour
     #region Event Handler Functions
 
     // HACK this line does not work, subscribe needs to happen on server and authoritive client
+    [Server]
     protected virtual void ServerSubscribe()
     {
         Debug.LogWarning($"ServerSubscribe on {name}");
