@@ -124,6 +124,7 @@ public class Fort : NetworkBehaviour
     public override void OnStartServer()
     {
         Subscribe();
+        ValidateLocation();
     }
 
     [Server]

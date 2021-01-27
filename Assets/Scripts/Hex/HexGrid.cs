@@ -122,6 +122,8 @@ public class HexGrid : NetworkBehaviour
     {
         Debug.Log("Spawning Map Terrain");
 
+        LoadingDisplay.IsFillProgressFake = true;
+
         Instantiate(Prefab).InitializeMap();
 
         SaveLoadMenu.LoadMapFromReader();
@@ -159,14 +161,13 @@ public class HexGrid : NetworkBehaviour
         {
             NetworkServer.Spawn(Units[i].gameObject,
                 ownerConnection: Units[i].MyTeam.AuthoritiveConnection);
-            Units[i].ValidateLocation();
         }
         for (int i = 0; i < Forts.Count; i++)
         {
             NetworkServer.Spawn(Forts[i].gameObject,
                 ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
-            Forts[i].ValidateLocation();
         }
+        LoadingDisplay.Done();
     }
 
     #endregion
@@ -186,7 +187,14 @@ public class HexGrid : NetworkBehaviour
         InitializeMap();
 
         Debug.Log("I am a client and I'm fetching the Map!");
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+        for (int index = 0; index < cells.Length; index++)
+        {
+            // HACK: I think this doesnt work and it needs to be called when data is received
+            float percent = (float)index / cells.Length;
+            LoadingDisplay.SetFillProgress(percent); 
+            CmdUpdateCellData(index); 
+            LoadingDisplay.Done();
+        }
     }
 
     [TargetRpc]

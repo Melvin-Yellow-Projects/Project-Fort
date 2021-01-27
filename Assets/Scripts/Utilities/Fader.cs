@@ -26,6 +26,9 @@ public class Fader : MonoBehaviour
     #region Variables
 
     [Header("Settings")]
+    [Tooltip("whether or not to set the gameObject's images to be visible on Awake()")]
+    [SerializeField] bool isVisible = true;
+
     [Tooltip("speed in which to fade in or out")]
     [SerializeField, Range(0, 5f)] float fadeSpeed = 1f;
 
@@ -34,6 +37,14 @@ public class Fader : MonoBehaviour
     #endregion
     /************************************************************/
     #region Unity Functions
+
+    public bool IsVisible
+    {
+        get
+        {
+            return isVisible;
+        }
+    }
 
     private Image[] Images
     {
@@ -44,6 +55,21 @@ public class Fader : MonoBehaviour
                 images = GetComponentsInChildren<Image>();
             }
             return images;
+        }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Unity Functions
+
+    private void Awake()
+    {
+        if (isVisible) return;
+
+        for (int i = 0; i < 0; i++)
+        {
+            Color color = Images[i].color;
+            Images[i].color = new Color(color.r, color.g, color.b, 0);
         }
     }
 
@@ -76,6 +102,8 @@ public class Fader : MonoBehaviour
             image.color = new Color(color.r, color.g, color.b, color.a);
             color = image.color;
         }
+
+        isVisible = true;
     }
 
     public void FadeOut()
@@ -103,6 +131,8 @@ public class Fader : MonoBehaviour
             image.color = new Color(color.r, color.g, color.b, color.a);
             color = image.color;
         }
+
+        isVisible = false;
     }
 
     #endregion

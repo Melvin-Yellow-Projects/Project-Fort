@@ -386,7 +386,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
-  m_FillAmount: 0.845
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 2
   m_UseSpriteMesh: 0
@@ -479,6 +479,7 @@ GameObject:
   - component: {fileID: 6699787192381901189}
   - component: {fileID: 6699787192381901188}
   - component: {fileID: 3316116432781608841}
+  - component: {fileID: 231159704}
   m_Layer: 5
   m_Name: Loading Display
   m_TagString: Untagged
@@ -580,4 +581,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42ef8dc8bee0e449eab11625d66a260f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fader: {fileID: 231159704}
   fillProgressImage: {fileID: 1594795264}
+  isFillProgressFake: 0
+  fakeFillSpeed: 1
+--- !u!114 &231159704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6699787192381901195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fead8c3e832d4340a3303d449c4c5c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isVisible: 1
+  fadeSpeed: 1

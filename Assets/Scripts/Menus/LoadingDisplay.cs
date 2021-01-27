@@ -27,8 +27,13 @@ public class LoadingDisplay : MonoBehaviour
     [Tooltip("image that manages the fill progress for the loading display")]
     [SerializeField] Image fillProgressImage = null;
 
-    float t = 0;
-    float speed = 1;
+    [Header("Settings")]
+    [Tooltip("whether or not to use a fake loading wheel")]
+    [SerializeField] bool isFillProgressFake = false;
+    [Tooltip("fake loading progress speed")]
+    [SerializeField] float fakeFillSpeed = 1f;
+
+    float interpolator = 0;
 
     #endregion
     /************************************************************/
@@ -36,11 +41,16 @@ public class LoadingDisplay : MonoBehaviour
 
     public static LoadingDisplay Singleton { get; private set; }
 
-    private static Image FillProgressImage
+    public static bool IsFillProgressFake
     {
         get
         {
-            return Singleton.fillProgressImage;
+            return Singleton.isFillProgressFake;
+        }
+        set
+        {
+            Singleton.isFillProgressFake = value;
+            if (value) Singleton.enabled = true;
         }
     }
 
@@ -51,19 +61,21 @@ public class LoadingDisplay : MonoBehaviour
     private void Awake()
     {
         Singleton = this;
+        enabled = isFillProgressFake;
+    }
+
+    private void OnEnable()
+    {
+        interpolator = 0;
     }
 
     private void Update()
     {
-        SetFillProgress(t);
+        SetFillProgress(interpolator);
 
-        t += Time.deltaTime * speed;
+        interpolator += Time.deltaTime * fakeFillSpeed;
 
-        if (t > 1)
-        {
-            enabled = false;
-            Done();
-        }
+        if (interpolator > 1) enabled = false;
     }
 
     #endregion
@@ -72,12 +84,27 @@ public class LoadingDisplay : MonoBehaviour
 
     public static void SetFillProgress(float percent)
     {
-        FillProgressImage.fillAmount = percent;
+        Singleton.fillProgressImage.fillAmount = percent;
     }
 
-    private void Done()
+    public static void Done()
+    {
+        Singleton.Done(dummy: false);
+
+        // HACK: for some bizarre reason this doesn't work 
+        //Singleton.StartCoroutine(FadeOutAndDestroyDisplay());
+    }
+
+    private void Done(bool dummy)
+    {
+        Singleton.StartCoroutine(FadeOutAndDestroyDisplay());
+    }
+
+    private IEnumerator FadeOutAndDestroyDisplay()
     {
         fader.FadeOut();
+        while (fader.IsVisible) yield return null;
+        Destroy(gameObject);
     }
 
     #endregion

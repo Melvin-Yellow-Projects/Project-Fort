@@ -155,6 +155,12 @@ public class Unit : NetworkBehaviour
     #region Server Functions
 
     [Server]
+    public override void OnStartServer()
+    {
+        ValidateLocation();
+    }
+
+    [Server]
     public void ValidateLocation()
     {
         //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
