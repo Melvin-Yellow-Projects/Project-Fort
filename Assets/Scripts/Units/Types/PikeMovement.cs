@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 /// <summary>
 /// 
@@ -19,9 +20,6 @@ public class PikeMovement : UnitMovement
 {
     /************************************************************/
     #region Variables
-
-    //const int maxMovement = 8;
-    //const int visionRange = 100;
     
     #endregion
     /************************************************************/
@@ -36,5 +34,28 @@ public class PikeMovement : UnitMovement
     {
         return base.IsValidCellForPath(current, neighbor);
     }
+
+    #endregion
+    /************************************************************/
+    #region Event Handler Functions
+
+    [Server]
+    protected override void HandleServerOnStopTurn()
+    {
+        if (currentMovement < maxMovement) CanMove = false;
+
+        base.HandleServerOnStopTurn();
+    }
+
+    [ClientRpc]
+    protected override void HandleRpcOnStopTurn()
+    {
+        if (!isClientOnly) return;
+
+        if (currentMovement < maxMovement) CanMove = false;
+
+        base.HandleRpcOnStopTurn();
+    }
+
     #endregion
 }

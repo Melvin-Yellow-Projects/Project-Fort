@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  maxMovement: 4
+  maxMovement: 2
   visionRange: 100
   movesPerStep: 1
   travelSpeed: 6
@@ -262,6 +262,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: id
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
         type: 3}

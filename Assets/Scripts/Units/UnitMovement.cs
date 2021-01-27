@@ -21,24 +21,24 @@ public abstract class UnitMovement : NetworkBehaviour
     /** Class Parameters **/
     [Header("Gameplay Settings")]
     [Tooltip("ID for this unit")]
-    [SerializeField] int maxMovement = 4;
+    [SerializeField] protected int maxMovement = 4;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] int visionRange = 100;
+    [SerializeField] protected int visionRange = 100;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] int movesPerStep = 1;
+    [SerializeField] protected int movesPerStep = 1;
 
     [Header("Aesthetic Settings")]
     [Tooltip("ID for this unit")]
-    [SerializeField] float travelSpeed = 6f;
+    [SerializeField] protected float travelSpeed = 6f;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] float rotationSpeed = 360f;
+    [SerializeField] protected float rotationSpeed = 360f;
 
     /** Other Variables **/
-    float orientation;
-    int currentMovement;
+    protected float orientation;
+    protected int currentMovement;
 
     [SyncVar(hook = nameof(HookOnMyCell))]
     HexCell myCell;
@@ -196,8 +196,10 @@ public abstract class UnitMovement : NetworkBehaviour
     public void ServerDoAction()
     {
         if (!HasAction) return;
-        if (!Path.HasPath) return; // HACK: removing this line causes errors, HasAction should
-                                            // better reflect the action status of the unit
+
+        // HACK: removing line causes errors, HasAction should better reflect action status of unit
+        if (!Path.HasPath || CurrentMovement == 0) return;
+
         List<HexCell> cells = new List<HexCell>();
         cells.Add(Path[0]);
         cells.Add(Path[1]);
@@ -225,7 +227,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         if (!Path.HasPath) return;
 
-        Path.RemoveTailCells(numberToRemove: 1);
+        Path.RemoveTailCells(numberToRemove: movesPerStep);
         if (hasAuthority) Path.Show(); // FIXME: this might be a problem
 
         TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
@@ -510,23 +512,16 @@ public abstract class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnStopTurn()
+    protected virtual void HandleServerOnStopTurn()
     {
-        // TODO: this might change for units
-        if (currentMovement < maxMovement) CanMove = false;
-
         HasAction = false;
-
         HandleRpcOnStopTurn();
     }
 
     [ClientRpc]
-    private void HandleRpcOnStopTurn()
+    protected virtual void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
-
-        if (currentMovement < maxMovement) CanMove = false;
-
         HasAction = false;
     }
 
@@ -556,6 +551,7 @@ public abstract class UnitMovement : NetworkBehaviour
         CanMove = false;
     }
 
+    [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
         if (myCell) MyCell = myCell;

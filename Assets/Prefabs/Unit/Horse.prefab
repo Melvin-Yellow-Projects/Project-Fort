@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  maxMovement: 8
+  maxMovement: 6
   visionRange: 100
   movesPerStep: 1
   travelSpeed: 6
