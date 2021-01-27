@@ -49,13 +49,11 @@ public class UnitDisplay : MonoBehaviour
     // HACK: we don't need all three of these functions
     public void ShowDisplay()
     {
-        if (!unit.hasAuthority) return;
         movementDisplay.SetActive(true);
     }
 
     public void HideDisplay()
     {
-        if (!unit.hasAuthority) return;
         movementDisplay.SetActive(false);
     }
 
@@ -64,7 +62,6 @@ public class UnitDisplay : MonoBehaviour
     /// </summary>
     public void RefreshMovementDisplay(int movement)
     {
-        if (!unit.hasAuthority) return;
         currentMovementText.text = $"{movement}";
     }
 

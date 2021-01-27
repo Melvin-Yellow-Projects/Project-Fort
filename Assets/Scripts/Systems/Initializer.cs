@@ -8,19 +8,33 @@
  * Date Created: October 17, 2020
  * 
  * Additional Comments: 
+ * 
+ *      TODO: make a static initializer bool variable that checks to see if the game has init
  **/
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Mirror;
 
 /// <summary>
 /// Singleton MonoBehavior GameObject that initializes various static class references
 /// </summary>
 public class Initializer : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
-    #region Public Variables
+    /************************************************************/
+    #region Variables
+
+    //static bool hasInitialized = false;
+
+    [Header("SceneLoader")]
+    [Tooltip("main menu scene")]
+    [SerializeField, Scene] string menuScene;
+    [Tooltip("core game scene")]
+    [SerializeField, Scene] string gameScene;
+    [Tooltip("map editor scene")]
+    [SerializeField, Scene] string editorScene;
 
     [Header("GameMode")]
     [Tooltip("game mode settings load out")]
@@ -45,10 +59,15 @@ public class Initializer : MonoBehaviour
     [Header("Fort")]
     [Tooltip("reference to the Fort prefab")]
     [SerializeField] Fort fortPrefab;
+    [Tooltip("highlight color that shows buy area for economy phase")]
+    [SerializeField] Color fortHighlightColor;
 
-    [Header("Unit")]
-    [Tooltip("reference to the Unit prefab")]
-    [SerializeField] Unit unitPrefab;
+    [Header("Units")]
+    [Tooltip("references to the Unit prefabs")]
+    [SerializeField] Unit axePrefab;
+    [SerializeField] Unit horsePrefab;
+    [SerializeField] Unit pikePrefab;
+    [SerializeField] Unit wallPrefab;
 
     [Header("UnitCursor")]
     [Tooltip("unit cursor prefab reference")]
@@ -57,8 +76,7 @@ public class Initializer : MonoBehaviour
     [SerializeField] Material unitCursorMaterial = null;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -66,60 +84,51 @@ public class Initializer : MonoBehaviour
     /// </summary>
     protected void Awake()
     {
-        // GameMode
+        Debug.Log("initializing classes with their respective prefabs");
+
+        /** SceneLoader **/
+        if (menuScene != null && SceneLoader.MenuSceneName == null)
+            SceneLoader.MenuSceneName = System.IO.Path.GetFileNameWithoutExtension(menuScene);
+        if (gameScene != null && SceneLoader.GameSceneName == null)
+            SceneLoader.GameSceneName = System.IO.Path.GetFileNameWithoutExtension(gameScene);
+        if (editorScene != null && SceneLoader.EditorSceneName == null)
+            SceneLoader.EditorSceneName = System.IO.Path.GetFileNameWithoutExtension(editorScene);
+
+        /** GameMode **/
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
-        // ComputerPlayer
+        /** ComputerPlayer **/
         if (computerPlayerPrefab && !ComputerPlayer.Prefab)
             ComputerPlayer.Prefab = computerPlayerPrefab;
 
-        // GameOverHandler
+        /** GameOverHandler **/
         if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
             GameOverHandler.Prefab = gameOverHandlerPrefab;
 
-        // HexMetrics
+        /** HexMetrics **/
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
-        // HexGrid
+        /** HexGrid **/
         if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
 
-        // Fort
+        /** Fort **/
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
+        if (fortHighlightColor != null && Fort.HighlightColor != null)
+            Fort.HighlightColor = fortHighlightColor;
 
-        // Unit
-        if (unitPrefab && !Unit.Prefab) Unit.Prefab = unitPrefab;
+        /** Unit **/
+        if (Unit.Prefabs == null)
+        {
+            Unit.Prefabs = new List<Unit>
+            {
+                axePrefab,
+                horsePrefab,
+                pikePrefab,
+                wallPrefab
+            };
+        }
 
-        // UnitCursor
-        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
-        if (unitCursorMaterial && !UnitCursor.MyMaterial)
-            UnitCursor.MyMaterial = unitCursorMaterial;
-    }
-
-    /// <summary>
-    /// Unity Method; This function is called when the object becomes enabled and active
-    /// </summary>
-    protected void OnEnable()
-    {
-        // GameMode
-        if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
-
-        // GameOverHandler
-        if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
-            GameOverHandler.Prefab = gameOverHandlerPrefab;
-
-        // HexMetrics
-        if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
-
-        // HexGrid
-        if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
-
-        // Fort
-        if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
-
-        // Unit
-        if (unitPrefab && !Unit.Prefab) Unit.Prefab = unitPrefab;
-
-        // UnitCursor
+        /** UnitCursor **/
         if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
         if (unitCursorMaterial && !UnitCursor.MyMaterial)
             UnitCursor.MyMaterial = unitCursorMaterial;

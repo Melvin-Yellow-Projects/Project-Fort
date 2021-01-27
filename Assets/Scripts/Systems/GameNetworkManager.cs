@@ -23,8 +23,6 @@ public class GameNetworkManager : NetworkManager
     [Tooltip("how long to wait for a player to load the map terrain")]
     [SerializeField, Range(0f, 60f)] float waitForPlayerToSpawnTerrain = 30f;
 
-    bool isGameInProgress = false;
-
     Coroutine waitCoroutine;
 
     #endregion
@@ -56,6 +54,8 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
+    public static bool IsGameInProgress { get; set; }
+
     #endregion
     /************************************************************/
     #region Server Functions
@@ -65,7 +65,7 @@ public class GameNetworkManager : NetworkManager
     {
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
         {
-            Debug.LogWarning($"{item.Key} has connection {item.Value}");
+            Debug.LogWarning($"{item.Key} has connection {item.Value.connectionId}");
         }
 
         Debug.LogWarning($"Now there are a total of {NetworkServer.connections.Count} conns!");
@@ -73,7 +73,7 @@ public class GameNetworkManager : NetworkManager
         if (!GameSession.Singleton.IsOnline) return;
 
         // TODO: make player a spectator
-        if (!isGameInProgress) return;
+        if (!IsGameInProgress) return;
 
         conn.Disconnect();
     }
@@ -81,9 +81,15 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+        if (!SceneLoader.IsGameScene) return;
+
         GameManager.Players.Remove(conn.identity.GetComponent<Player>());
 
-        base.OnServerDisconnect(conn);
+        //base.OnServerDisconnect(conn);
+        NetworkServer.Destroy(conn.identity.gameObject);
+
+        // TODO: revoke authority and team on previously owned entities, see the code ->
+        //          base.OnServerDisconnect(conn);
     }
 
     [Server]
@@ -91,7 +97,7 @@ public class GameNetworkManager : NetworkManager
     {
         GameManager.Players.Clear();
 
-        isGameInProgress = false;
+        IsGameInProgress = false;
     }
 
     [Server]
@@ -104,7 +110,7 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
-        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
         playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
         playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
     }
@@ -113,25 +119,26 @@ public class GameNetworkManager : NetworkManager
     public void ServerStartGame() // HACK move this into SceneLoader?
     {
         // HACK: hardcoded and tethered to LobbyMenu.UpdatePlayerTags()
-        if (GameManager.Players.Count < 2) return; 
+        if (GameManager.Players.Count < 2) return;
 
-        isGameInProgress = true;
+        IsGameInProgress = true;
 
-        //Debug.Log("Changing scene");
+        Debug.Log("Changing scene");
 
-        ServerChangeScene("Game Scene");
+        ServerChangeScene(SceneLoader.GameSceneName);
     }
 
     [Server]
     public override void OnServerSceneChanged(string sceneName) 
     {
         // HACK: this code is really jank
-        // HACK: move this into SceneLoader?
+        // HACK: move part of this into SceneLoader?
+
+        Debug.Log($"Server has changed the Scene to {sceneName}");
 
         if (SceneLoader.IsGameScene && GameManager.Players.Count < 2)
             ServerSpawnComputerPlayer();
 
-        Debug.Log("It's time to spawn a map!");
         HexGrid.ServerSpawnMapTerrain();
 
         if (!SceneLoader.IsGameScene) return;
@@ -182,7 +189,7 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
-        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
         playerInfo.PlayerName = $"Computer Player {GameManager.Players.Count}";
 
         NetworkServer.Spawn(player.gameObject);
@@ -208,6 +215,7 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
+    [Client]
     public override void OnStopClient()
     {
         GameManager.Players.Clear();

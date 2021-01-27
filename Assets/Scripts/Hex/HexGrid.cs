@@ -94,6 +94,12 @@ public class HexGrid : NetworkBehaviour
 
     private void OnDestroy()
     {
+        Debug.LogWarning("HexGrid calling OnDestroy()");
+
+        // HACK brute force clearing
+        Units.Clear();
+        Forts.Clear();
+
         Unsubscribe();
 
         Singleton = null;
@@ -104,8 +110,18 @@ public class HexGrid : NetworkBehaviour
     #region Server Functions
 
     [Server]
+    public override void OnStopServer()
+    {
+        ClearEntities();
+
+        Debug.LogWarning($"number of forts after OnStopServer(): {Forts.Count}");
+    }
+
+    [Server]
     public static void ServerSpawnMapTerrain()
     {
+        Debug.Log("Spawning Map Terrain");
+
         Instantiate(Prefab).InitializeMap();
 
         SaveLoadMenu.LoadMapFromReader();
@@ -155,11 +171,12 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client]
+    [Client] // HACK: this function can be improved
     public override void OnStartClient()
     {
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
-        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
+        if (SceneLoader.IsGameScene)
+            NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
         // HACK: perhaps a static event that logs to clients to enable player is better
 
         if (!isClientOnly) return;
@@ -171,7 +188,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetUpdateCellData(NetworkConnection conn, HexCellData data)
+    private void TargetUpdateCellData(NetworkConnection target, HexCellData data)
     {
         int index = data.index;
         cells[index].Elevation = data.elevation;
@@ -189,6 +206,8 @@ public class HexGrid : NetworkBehaviour
 
     private void InitializeMap()
     {
+        Debug.Log("Initializing HexGrid Map");
+
         Singleton = this;
 
         //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
@@ -472,13 +491,13 @@ public class HexGrid : NetworkBehaviour
     {
         for (int i = 0; i < Units.Count; i++)
         {
-            Units[i].Die(isPlayingAnimation: false);
+            NetworkServer.Destroy(Units[i].gameObject);
         }
         Units.Clear();
 
         for (int i = 0; i < Forts.Count; i++)
         {
-            Destroy(Forts[i].gameObject);
+            NetworkServer.Destroy(Forts[i].gameObject);
         }
         Forts.Clear();
     }

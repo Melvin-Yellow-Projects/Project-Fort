@@ -21,11 +21,17 @@ public class SceneLoader : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
+    public static string MenuSceneName { get; set; }
+
+    public static string GameSceneName { get; set; }
+
+    public static string EditorSceneName { get; set; }
+
     public static bool IsGameScene
     {
         get
         {
-            return SceneManager.GetActiveScene().name.StartsWith("Game Scene");
+            return SceneManager.GetActiveScene().name.Equals(GameSceneName);
         }
     }
 
@@ -42,6 +48,16 @@ public class SceneLoader : MonoBehaviour
         // FIXME: This needs to work for host/server/client
         if (NetworkServer.active && NetworkClient.isConnected)
         {
+            GameNetworkManager.IsGameInProgress = false;
+
+            for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+            {
+                Player p = GameManager.Players[i];
+                if (p as ComputerPlayer) NetworkServer.Destroy(p.gameObject);
+            }
+
+            NetworkServer.Destroy(HexGrid.Singleton.gameObject);
+
             NetworkManager.singleton.StopHost();
         }
         else
@@ -53,7 +69,7 @@ public class SceneLoader : MonoBehaviour
         GameSession.Singleton.IsOnline = false;
         GameSession.Singleton.IsEditorMode = false;
 
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(MenuSceneName); // FIXME
     }
 
     public static void LoadLocalGame()
@@ -61,7 +77,7 @@ public class SceneLoader : MonoBehaviour
         //GameSession.Singleton.IsOnline = false; // HACK: brute force line of code
         NetworkManager.singleton.StartHost();
 
-        LoadSceneByName("Game Scene");
+        LoadSceneByName(GameSceneName); // FIXME
     }
 
     public static void LoadMapEditorScene()
@@ -70,8 +86,8 @@ public class SceneLoader : MonoBehaviour
         NetworkManager.singleton.autoCreatePlayer = false;
         NetworkManager.singleton.StartHost();
 
-        Debug.Log("Loading Map Editor Scene");
-        LoadSceneByName("Map Editor Scene");
+        Debug.Log("Loading Editor Scene");
+        LoadSceneByName(EditorSceneName); // FIXME
     }
 
     /// <summary>

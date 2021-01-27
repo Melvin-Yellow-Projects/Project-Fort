@@ -3,7 +3,7 @@
  * Description: 
  * 
  * Authors: Will Lacey
- * Date Created: January 19, 2020
+ * Date Created: January 19, 2021
  * 
  * Additional Comments: 
  **/
@@ -111,16 +111,17 @@ public class GameOverHandler : NetworkBehaviour
 
         switch (type)
         {
-            case WinConditionType.Armistice:
+            case WinConditionType.Draw:
                 TargetDefeat(player.connectionToClient);
                 break;
             case WinConditionType.Conquest:
                 TargetDefeat(player.connectionToClient);
                 break;
-            case WinConditionType.Annihilation:
+            case WinConditionType.Routed:
                 TargetDefeat(player.connectionToClient);
                 break;
-            case WinConditionType.TEST:
+            case WinConditionType.Disconnect:
+                TargetDefeat(player.connectionToClient); // will line ever be sent to legit client?
                 break;
         }
 

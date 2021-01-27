@@ -49,7 +49,7 @@ MonoBehaviour:
   autoStartServerBuild: 1
   showDebugMessages: 0
   serverTickRate: 30
-  offlineScene: Assets/Scenes/Start Menu Scene.unity
+  offlineScene: 
   onlineScene: 
   transport: {fileID: -6134402128047789783}
   networkAddress: localhost
@@ -62,8 +62,14 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs:
-  - {fileID: 1936015192140806696, guid: 42403f62e5c024786b85537907da21f9, type: 3}
+  - {fileID: 3526458366338087291, guid: e13c3345ac9a24999a438fe916ef8f24, type: 3}
+  - {fileID: 128458814369925967, guid: 04738286589f8426782f751ddecc598b, type: 3}
+  - {fileID: 5510439269666843771, guid: 43caec3ffa22a400ebf8c051572d3235, type: 3}
   - {fileID: 661696987785951891, guid: 79bda6422235f4e5aba76dd2ac926692, type: 3}
+  - {fileID: 2400661251502749445, guid: 00775140048754ae6a56a9e2da1ae881, type: 3}
+  - {fileID: 2400661251502749445, guid: 481f1ac5ac1d94d14ad6a3c28f4ad0d8, type: 3}
+  - {fileID: 2400661251502749445, guid: 63eb5cb93b5e44d7e8e61d77208c3d08, type: 3}
+  - {fileID: 2400661251502749445, guid: ced11a457a69f41faa32deedf3f4db29, type: 3}
   waitForPlayerToSpawnTerrain: 30
 --- !u!114 &-6134402128047789783
 MonoBehaviour:

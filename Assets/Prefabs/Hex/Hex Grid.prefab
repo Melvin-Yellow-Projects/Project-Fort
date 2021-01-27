@@ -72,5 +72,4 @@ MonoBehaviour:
   cellCountZ: 15
   layersToIgnore:
     serializedVersion: 2
-    m_Bits: 256
-  units: []
+    m_Bits: 1792

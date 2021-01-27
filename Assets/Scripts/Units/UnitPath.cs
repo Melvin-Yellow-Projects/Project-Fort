@@ -60,7 +60,6 @@ public class UnitPath : MonoBehaviour
         {
             return cells;
         }
-        [Mirror.Server]
         set
         {
             // HACK: does this work?

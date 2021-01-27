@@ -33,15 +33,6 @@ public class Team : NetworkBehaviour
         {
             return teamIndex; 
         }
-
-        [Server]
-        set
-        {
-            if (teamIndex == value) return;
-
-            teamIndex = value;
-            ServerRefreshAuthoritativeConnection();
-        }
     }
 
     public Color MyColor
@@ -98,6 +89,19 @@ public class Team : NetworkBehaviour
 
         netIdentity.RemoveClientAuthority();
         netIdentity.AssignClientAuthority(AuthoritiveConnection);
+    }
+
+    public void SetTeam(int teamIndex)
+    {
+        if (this.teamIndex == teamIndex) return;
+
+        this.teamIndex = teamIndex;
+        ServerRefreshAuthoritativeConnection();
+    }
+
+    public void SetTeam(Team team)
+    {
+        SetTeam(team.teamIndex);
     }
 
     #endregion

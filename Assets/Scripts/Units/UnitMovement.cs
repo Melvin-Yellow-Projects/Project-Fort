@@ -13,23 +13,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class UnitMovement : NetworkBehaviour
+public abstract class UnitMovement : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
 
-    // HACK: this needs to be configurable
-    const float travelSpeed = 6f;
-    const float rotationSpeed = 360f;
-    int currentMovement = 8;
-    const int maxMovement = 8;
-    const int visionRange = 100;
-    //const int movesPerStep = 1;
+    /** Class Parameters **/
+    [Header("Gameplay Settings")]
+    [Tooltip("ID for this unit")]
+    [SerializeField] int maxMovement = 4;
+
+    [Tooltip("ID for this unit")]
+    [SerializeField] int visionRange = 100;
+
+    [Tooltip("ID for this unit")]
+    [SerializeField] int movesPerStep = 1;
+
+    [Header("Aesthetic Settings")]
+    [Tooltip("ID for this unit")]
+    [SerializeField] float travelSpeed = 6f;
+
+    [Tooltip("ID for this unit")]
+    [SerializeField] float rotationSpeed = 360f;
+
+    /** Other Variables **/
+    float orientation;
+    int currentMovement;
 
     [SyncVar(hook = nameof(HookOnMyCell))]
-    public HexCell myCell; // HACK: why is this public?
-
-    float orientation;
+    HexCell myCell;
 
     #endregion
     /************************************************************/
@@ -99,10 +111,11 @@ public class UnitMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
 
-            Display.RefreshMovementDisplay(currentMovement);
+            if (hasAuthority) Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
-            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+            if (hasAuthority)
+                MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
         }
     }
 
@@ -118,13 +131,7 @@ public class UnitMovement : NetworkBehaviour
 
     public bool IsEnRoute { get; set; }
 
-    public bool HasAction
-    {
-        get
-        {
-            return Path.HasPath;
-        }
-    }
+    public bool HasAction { get; set; }
 
     public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
 
@@ -140,12 +147,12 @@ public class UnitMovement : NetworkBehaviour
             if (value)
             {
                 CurrentMovement = maxMovement;
-                Display.ShowDisplay(); // FIXME: this is showing enemy movement
+                if (hasAuthority) Display.ShowDisplay();
             }
             else
             {
                 CurrentMovement = 0;
-                Display.HideDisplay();
+                if (hasAuthority) Display.HideDisplay();
             }
             Path.Clear();
         }
@@ -158,11 +165,12 @@ public class UnitMovement : NetworkBehaviour
     private void Awake()
     {
         MyUnit = GetComponent<Unit>();
-        Display = GetComponent<UnitDisplay>();
         Path = GetComponent<UnitPath>();
 
-        currentMovement = maxMovement;
-        Subscribe();
+        Display = GetComponent<UnitDisplay>();
+        Display.HideDisplay();
+
+        currentMovement = maxMovement; // TODO: create sync var for variable
     }
 
     private void Start()
@@ -170,20 +178,26 @@ public class UnitMovement : NetworkBehaviour
         Display.RefreshMovementDisplay(currentMovement);
     }
 
-    private void OnDestroy()
-    {
-        Unsubscribe();
-    }
-
     #endregion
     /************************************************************/
     #region Server Functions
+
+    public override void OnStartServer()
+    {
+        Subscribe();
+    }
+
+    public override void OnStopServer()
+    {
+        Unsubscribe();
+    }
 
     [Server]
     public void ServerDoAction()
     {
         if (!HasAction) return;
-
+        if (!Path.HasPath) return; // HACK: removing this line causes errors, HasAction should
+                                            // better reflect the action status of the unit
         List<HexCell> cells = new List<HexCell>();
         cells.Add(Path[0]);
         cells.Add(Path[1]);
@@ -194,28 +208,27 @@ public class UnitMovement : NetworkBehaviour
     [Server]
     public void ServerCompleteAction()
     {
+        if (GetComponent<UnitDeath>().IsDying)
+        {
+            // TODO: Brute Force repitition, this can be improved
+            MyUnit.CombatHandler.gameObject.SetActive(false);
+            Debug.Log("Disabling Combat Handler");
+        }
+
         if (!EnRouteCell) return;
 
-        if (GetComponent<UnitDeath>().IsDying) // HACK: this is probably inefficient
-        {
-            // TODO: tell client we dead
-            MyUnit.CollisionHandler.gameObject.SetActive(false);
-        }
-        else
-        {
-            MyCell = EnRouteCell;
-            EnRouteCell = null;
-            HadActionCanceled = false;
+        MyCell = EnRouteCell;
+        EnRouteCell = null;
+        HadActionCanceled = false;
 
-            CurrentMovement--;
-            if (HasAction)
-            {
-                Path.RemoveTailCells(numberToRemove: 1);
-                if (hasAuthority) Path.Show(); // FIXME: this might be a problem
+        CurrentMovement--;
 
-                TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
-            }
-        }
+        if (!Path.HasPath) return;
+
+        Path.RemoveTailCells(numberToRemove: 1);
+        if (hasAuthority) Path.Show(); // FIXME: this might be a problem
+
+        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
     }
 
     [Server]
@@ -369,32 +382,30 @@ public class UnitMovement : NetworkBehaviour
 
     }
 
-    [Command]
-    public void CmdClearPath()
+    [Server]
+    public bool ServerClearAction()
     {
-        // TODO: Validation logic for CmdClearPath()
-        // This should already auto deny for units you dont have authority over
+        bool hadAction = HasAction;
+
+        //Debug.Log($"Clearing Action for Unit, {name}");
+
         Path.Clear();
+        HasAction = false;
         TargetClearPath();
+
+        return hadAction;
     }
 
-    [Command]
-    public void CmdSetPath(List<HexCell> cells)
+    [Server] // HACK: not sure if this is correct
+    public bool ServerSetAction(UnitData data)
     {
-        if (hasAuthority) return; // return if this is the server/host calling this function
+        if (!CanMove || data.pathCells.Count < 2) return false;
 
-        if (GameManager.IsPlayingTurn) return;
-        if (!CanMove) return;
+        Path.Cells = UnitPathfinding.GetValidCells(MyUnit, data.pathCells);
 
-        // TODO: verify that a player can't send the cell theyre currently on
+        HasAction = true;
 
-        // TODO: //if (MoveCount >= GameMode.Singleton.MovesPerTurn) return;
-
-        cells = UnitPathfinding.GetValidCells(MyUnit, cells);
-
-        // TODO: increment MountCount, refresh player UI
-
-        Path.Cells = cells;
+        return true;
     }
 
     #endregion
@@ -404,7 +415,10 @@ public class UnitMovement : NetworkBehaviour
     [TargetRpc]
     private void TargetClearPath()
     {
-        if (isClientOnly) Path.Clear();
+        if (!isClientOnly) return;
+
+        HasAction = false;
+        Path.Clear();
     }
 
     [TargetRpc]
@@ -412,7 +426,7 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        CurrentMovement--;
+        CurrentMovement--; // TODO: This isn't needed, this can be a sync var
 
         Path.RemoveTailCells(numberToRemove: 1);
         Path.Show();
@@ -423,14 +437,14 @@ public class UnitMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        CanMove = false;
+        CanMove = false; // This isn't needed, this can be a sync var
     }
 
     #endregion
     /************************************************************/
     #region Class Functions
 
-    public bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
+    public virtual bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
     {
         // invalid if there is a river inbetween
         //if (current.GetEdgeType(neighbor) == river) return false;
@@ -442,7 +456,7 @@ public class UnitMovement : NetworkBehaviour
         return true;
     }
 
-    public bool IsValidCellForPath(HexCell current, HexCell neighbor)
+    public virtual bool IsValidCellForPath(HexCell current, HexCell neighbor)
     {
         // if a Unit exists on this cell
         //if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
@@ -470,14 +484,14 @@ public class UnitMovement : NetworkBehaviour
     {
         GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnUnitDeath += HandleServerOnUnitDeath;
+        UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
     }
 
     private void Unsubscribe()
     {
         GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
-        GetComponent<UnitDeath>().ServerOnUnitDeath -= HandleServerOnUnitDeath;
+        UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
     }
 
     [Server]
@@ -500,6 +514,9 @@ public class UnitMovement : NetworkBehaviour
     {
         // TODO: this might change for units
         if (currentMovement < maxMovement) CanMove = false;
+
+        HasAction = false;
+
         HandleRpcOnStopTurn();
     }
 
@@ -509,18 +526,22 @@ public class UnitMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         if (currentMovement < maxMovement) CanMove = false;
+
+        HasAction = false;
     }
 
     [Server]
-    private void HandleServerOnUnitDeath()
+    private void HandleServerOnUnitDeath(Unit unit)
     {
+        if (unit != MyUnit) return;
+
         StopAllCoroutines();
 
         MyCell.MyUnit = null;
 
         IsEnRoute = false;
 
-        UnitPathfinding.DecreaseVisibility(myCell, visionRange);
+        //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
 
         CanMove = false; // FIXME: this wont work if unit dies right before new Round 
 

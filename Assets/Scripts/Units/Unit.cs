@@ -29,6 +29,19 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Variables
 
+    [Header("Settings")]
+    [Tooltip("ID for this unit")]
+    [SerializeField] int id = 0;
+
+    [Tooltip("title name for this unit")]
+    [SerializeField] string title = null;
+
+    [Tooltip("how much this unit costs")]
+    [SerializeField] int resources = 0;
+
+    //[Tooltip("sprite asset for the unit")]
+    //[SerializeField] Sprite artwork = null;
+
     bool isSelected = false;
 
     #endregion
@@ -53,7 +66,31 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Properties
 
-    public static Unit Prefab { get; set; }
+    public static List<Unit> Prefabs { get; set; }
+
+    public int Id
+    {
+        get
+        {
+            return id;
+        }
+    }
+
+    public string Title
+    {
+        get
+        {
+            return title;
+        }
+    }
+
+    public int Resources
+    {
+        get
+        {
+            return resources;
+        }
+    }
 
     public Team MyTeam { get; private set; }
 
@@ -61,7 +98,7 @@ public class Unit : NetworkBehaviour
 
     public UnitMovement Movement { get; private set; }
 
-    public UnitCollisionHandler CollisionHandler { get; private set; }
+    public UnitCombat CombatHandler { get; private set; }
 
     public bool IsSelected
     {
@@ -97,7 +134,10 @@ public class Unit : NetworkBehaviour
         MyTeam = GetComponent<Team>();
         MyColorSetter = GetComponent<ColorSetter>();
         Movement = GetComponent<UnitMovement>();
-        CollisionHandler = GetComponentInChildren<UnitCollisionHandler>();
+        CombatHandler = GetComponentInChildren<UnitCombat>();
+
+        if (!MyTeam || !MyColorSetter || !Movement || !CombatHandler)
+            Debug.LogError($"unit {name} is missing an essential component");
     }
 
     private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
@@ -159,8 +199,9 @@ public class Unit : NetworkBehaviour
         HexCoordinates coordinates = HexCoordinates.Load(reader);
         float orientation = reader.ReadSingle();
 
-        Unit unit = Instantiate(Prefab);
-        if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
+        // FIXME: Update Code for Unit Variety
+        Unit unit = Instantiate(Prefabs[UnityEngine.Random.Range(0, Prefabs.Count)]);
+        if (header >= 4) unit.MyTeam.SetTeam(reader.ReadByte());
 
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;

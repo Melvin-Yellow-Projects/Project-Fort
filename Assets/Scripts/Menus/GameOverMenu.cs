@@ -3,7 +3,7 @@
  * Description: 
  * 
  * Authors: Will Lacey
- * Date Created: January 20, 2020
+ * Date Created: January 20, 2021
  * 
  * Additional Comments: 
  **/
@@ -46,14 +46,7 @@ public class GameOverMenu : MonoBehaviour
 
     public void LeaveGame()
     {
-        if (NetworkServer.active && NetworkClient.isConnected)
-        {
-            NetworkManager.singleton.StopHost();
-        }
-        else
-        {
-            NetworkManager.singleton.StopClient();
-        }
+        SceneLoader.LoadStartScene();
     }
 
     #endregion

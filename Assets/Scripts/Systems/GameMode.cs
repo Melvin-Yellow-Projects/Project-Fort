@@ -27,6 +27,8 @@ public class GameMode : ScriptableObject
 
     [SerializeField] int movesPerTurn = 5;
 
+    [SerializeField] int startingPlayerResources = 1200;
+
     //[SerializeField] int minMovesPerTurn = 2;
 
     [SerializeField] bool isUsingTurnTimer = false;
@@ -53,35 +55,43 @@ public class GameMode : ScriptableObject
 
     public static GameMode Singleton { get; set; }
 
-    public bool IsUsingTurnTimer
+    public static bool IsUsingTurnTimer
     {
         get
         {
-            return isUsingTurnTimer;
+            return Singleton.isUsingTurnTimer;
         }
     }
 
-    public float TurnTimerLength
+    public static float TurnTimerLength
     {
         get
         {
-            return turnTimerLength;
+            return Singleton.turnTimerLength;
         }
     }
 
-    public int TurnsPerRound
+    public static int TurnsPerRound
     {
         get
         {
-            return turnsPerRound;
+            return Singleton.turnsPerRound;
         }
     }
 
-    public int MovesPerTurn
+    public static int MovesPerTurn
     {
         get
         {
-            return movesPerTurn;
+            return Singleton.movesPerTurn;
+        }
+    }
+
+    public static int StartingPlayerResources
+    {
+        get
+        {
+            return Singleton.startingPlayerResources;
         }
     }
 

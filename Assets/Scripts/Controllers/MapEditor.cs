@@ -293,10 +293,10 @@ public class MapEditor : MonoBehaviour
     {
         if (cell.MyUnit) return;
 
-        Unit unit = Instantiate(Unit.Prefab);
+        Unit unit = Instantiate(Unit.Prefabs[activeUnitTypeIndex]);
 
         unit.MyCell = cell;
-        unit.MyTeam.TeamIndex = teamIndex;
+        unit.MyTeam.SetTeam(teamIndex);
         unit.Movement.Orientation = Random.Range(0, 360f);
 
         HexGrid.Singleton.ParentTransformToGrid(unit.transform);
@@ -309,7 +309,7 @@ public class MapEditor : MonoBehaviour
         Fort fort = Instantiate(Fort.Prefab);
 
         fort.MyCell = cell;
-        fort.MyTeam.TeamIndex = teamIndex;
+        fort.MyTeam.SetTeam(teamIndex);
         fort.Orientation = Random.Range(0, 360f);
 
         HexGrid.Singleton.ParentTransformToGrid(fort.transform);

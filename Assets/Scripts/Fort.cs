@@ -24,10 +24,17 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Variables
 
+    [Header("Settings")]
+    [Tooltip("speed to highlight buy cells")]
+    [SerializeField] float highlightSpeed = 1;
+
     [SyncVar(hook = nameof(HookOnMyCell))]
     HexCell myCell;
 
     float orientation;
+
+    float interpolator;
+    Color currentColor;
 
     #endregion
     /************************************************************/
@@ -87,6 +94,8 @@ public class Fort : NetworkBehaviour
         }
     }
 
+    public static Color HighlightColor { get; set; }
+
     #endregion
     /************************************************************/
     #region Unity Functions
@@ -99,36 +108,33 @@ public class Fort : NetworkBehaviour
     private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
     {
         OnFortSpawned?.Invoke(this);
-
-        if (!isClientOnly) Subscribe();
     }
 
     private void OnDestroy()
     {
         myCell.MyFort = null; // HACK: does this need to be transfered to the server?
         OnFortDespawned?.Invoke(this);
-
-        if (!isClientOnly) Unsubscribe();
     }
 
     #endregion
     /************************************************************/
     #region Server Functions
 
-    //[Server]
-    //public override void OnStartServer()
-    //{
-    //    Subscribe();
-    //    OnFortSpawned?.Invoke(this);
-    //}
+    [Server]
+    public override void OnStartServer()
+    {
+        Subscribe();
+    }
 
-    //[Server]
-    //public override void OnStopServer()
-    //{
-    //    Unsubscribe();
-    //    myCell.MyFort = null; // HACK: does this need to be transfered to the server?
-    //    OnFortDespawned?.Invoke(this);
-    //}
+    [Server]
+    public override void OnStopServer()
+    {
+        Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
 
     #endregion
     /************************************************************/
@@ -137,6 +143,87 @@ public class Fort : NetworkBehaviour
     public void ValidateLocation()
     {
         transform.localPosition = myCell.Position;
+    }
+
+    public bool IsBuyCell(HexCell cell)
+    {
+        bool isBuyCell = (cell == MyCell);
+        for (HexDirection d = HexDirection.NE; !isBuyCell && d <= HexDirection.NW; d++)
+        {
+            isBuyCell = (cell == MyCell.GetNeighbor(d));
+        }
+
+        return isBuyCell;
+    }
+
+    public void ShowBuyCells()
+    {
+        StopAllCoroutines();
+
+        StartCoroutine(HighlightCellNeighbors());
+    }
+
+    public void HideBuyCells()
+    {
+        StopAllCoroutines();
+
+        StartCoroutine(UnhighlightCellNeighbors());
+    }
+
+    // HACK: maybe we could shorted some code here
+    private IEnumerator HighlightCellNeighbors()
+    {
+        currentColor = HighlightColor;
+        currentColor.a = 0;
+        interpolator = 0;
+
+        while (true)
+        {
+            while (interpolator < 1)
+            {
+                MyCell.EnableHighlight(currentColor);
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {
+                    MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+                }
+                currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
+                interpolator += Time.deltaTime * highlightSpeed;
+                yield return null;
+            }
+
+            while (interpolator > 0)
+            {
+                MyCell.EnableHighlight(currentColor);
+                for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+                {
+                    MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+                }
+                currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
+                interpolator -= Time.deltaTime * highlightSpeed;
+                yield return null;
+            }
+        }
+    }
+
+    private IEnumerator UnhighlightCellNeighbors()
+    {
+        while (interpolator > 0)
+        {
+            MyCell.EnableHighlight(currentColor);
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+            {
+                MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+            }
+            currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
+            interpolator -= Time.deltaTime * highlightSpeed;
+            yield return null;
+        }
+
+        MyCell.DisableHighlight();
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+        {
+            MyCell.GetNeighbor(d).DisableHighlight();
+        }
     }
 
     #endregion
@@ -156,7 +243,7 @@ public class Fort : NetworkBehaviour
         float orientation = reader.ReadSingle();
 
         Fort fort = Instantiate(Prefab);
-        if (header >= 4) fort.MyTeam.TeamIndex = reader.ReadByte();
+        if (header >= 4) fort.MyTeam.SetTeam(reader.ReadByte());
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;
@@ -171,15 +258,17 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Event Handler Functions
 
-    [Server]
     private void Subscribe()
     {
+        if (!isServer) return;
+
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
-    [Server]
     private void Unsubscribe()
     {
+        if (!isServer) return;
+
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
@@ -192,7 +281,7 @@ public class Fort : NetworkBehaviour
 
         ServerOnFortCaptured?.Invoke(this, unit.MyTeam);
 
-        MyTeam.TeamIndex = unit.MyTeam.TeamIndex;
+        MyTeam.SetTeam(unit.MyTeam);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

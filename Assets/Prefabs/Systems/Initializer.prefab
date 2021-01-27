@@ -43,6 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de39a309b2637e4ebeb812ef7d3d752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  menuScene: Assets/Scenes/0. Start Menu Scene.unity
+  gameScene: Assets/Scenes/1. Game Scene.unity
+  editorScene: Assets/Scenes/2. Editor Scene.unity
   gameModeSettings: {fileID: 11400000, guid: 90b669160dbf446a99964b6a2b407c7e, type: 2}
   computerPlayerPrefab: {fileID: 641622084965352743, guid: e13c3345ac9a24999a438fe916ef8f24,
     type: 3}
@@ -53,7 +56,13 @@ MonoBehaviour:
     type: 3}
   fortPrefab: {fileID: 4639194577561459866, guid: 79bda6422235f4e5aba76dd2ac926692,
     type: 3}
-  unitPrefab: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+  axePrefab: {fileID: 2400661251502749442, guid: 00775140048754ae6a56a9e2da1ae881,
+    type: 3}
+  horsePrefab: {fileID: 2400661251502749442, guid: 481f1ac5ac1d94d14ad6a3c28f4ad0d8,
+    type: 3}
+  pikePrefab: {fileID: 2400661251502749442, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
+    type: 3}
+  wallPrefab: {fileID: 2400661251502749442, guid: ced11a457a69f41faa32deedf3f4db29,
     type: 3}
   unitCursorPrefab: {fileID: 6044708383268903625, guid: 1251d2526ff8746989407f2a412c63a7,
     type: 3}
