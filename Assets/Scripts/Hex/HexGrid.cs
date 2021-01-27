@@ -76,6 +76,8 @@ public class HexGrid : NetworkBehaviour
     int fortCount = 0;
     int unitCount = 0;
 
+    int numberOfCellsLoaded = 0;
+
     #endregion
     /************************************************************/
     #region Public Properties
@@ -187,14 +189,7 @@ public class HexGrid : NetworkBehaviour
         InitializeMap();
 
         Debug.Log("I am a client and I'm fetching the Map!");
-        for (int index = 0; index < cells.Length; index++)
-        {
-            // HACK: I think this doesnt work and it needs to be called when data is received
-            float percent = (float)index / cells.Length;
-            LoadingDisplay.SetFillProgress(percent); 
-            CmdUpdateCellData(index); 
-            LoadingDisplay.Done();
-        }
+        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     [TargetRpc]
@@ -208,6 +203,12 @@ public class HexGrid : NetworkBehaviour
         // FIXME: Is this code correct?
         cells[index].ShaderData.RefreshTerrain(cells[index]);
         cells[index].ShaderData.RefreshVisibility(cells[index]);
+
+        numberOfCellsLoaded++;
+
+        float percent = (float)numberOfCellsLoaded / cells.Length;
+        LoadingDisplay.SetFillProgress(percent);
+        if (numberOfCellsLoaded == cells.Length) LoadingDisplay.Done();
     }
 
     #endregion
