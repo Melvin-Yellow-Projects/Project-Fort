@@ -123,8 +123,7 @@ public class HexGrid : NetworkBehaviour
     public static void ServerSpawnMapTerrain()
     {
         Debug.Log("Spawning Map Terrain");
-
-        LoadingDisplay.IsFillProgressFake = true;
+        if (LoadingDisplay.Singleton) LoadingDisplay.IsFillProgressFake = true;
 
         Instantiate(Prefab).InitializeMap();
 
@@ -169,7 +168,7 @@ public class HexGrid : NetworkBehaviour
             NetworkServer.Spawn(Forts[i].gameObject,
                 ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
         }
-        LoadingDisplay.Done();
+        if (LoadingDisplay.Singleton) LoadingDisplay.Done();
     }
 
     #endregion

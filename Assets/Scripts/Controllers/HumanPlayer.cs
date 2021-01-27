@@ -130,7 +130,6 @@ public class HumanPlayer : Player
         }
     }
 
-
     [Client]
     private void DoPathfinding()
     {

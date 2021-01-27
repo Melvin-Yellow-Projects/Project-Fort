@@ -77,7 +77,7 @@ public class Fort : NetworkBehaviour
             myCell = value;
             myCell.MyFort = this;
 
-            if (isServer) ValidateLocation();
+            ValidateLocation();
         }
     }
 
@@ -133,12 +133,6 @@ public class Fort : NetworkBehaviour
         Unsubscribe();
     }
 
-    [Server]
-    public void ValidateLocation()
-    {
-        transform.localPosition = myCell.Position;
-    }
-
     #endregion
     /************************************************************/
     #region Client Functions
@@ -146,6 +140,11 @@ public class Fort : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Class Functions
+
+    public void ValidateLocation()
+    {
+        if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = myCell.Position;
+    }
 
     public bool IsBuyCell(HexCell cell)
     {

@@ -160,20 +160,19 @@ public class Unit : NetworkBehaviour
         ValidateLocation();
     }
 
-    [Server]
-    public void ValidateLocation()
-    {
-        //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
-        transform.localPosition = MyCell.Position;
-    }
-
     #endregion
     /************************************************************/
     #region Class Functions
 
+    public void ValidateLocation()
+    {
+        //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
+        if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = MyCell.Position;
+    }
+
     public void Die(bool isPlayingAnimation = true)
     {
-        //StopAllCoroutines(); // HACK: i think this line can be safely removed
+        StopAllCoroutines(); // HACK: i think this line can be safely removed; bruteforcing 
 
         GetComponent<UnitDeath>().Die(isPlayingAnimation);
     }

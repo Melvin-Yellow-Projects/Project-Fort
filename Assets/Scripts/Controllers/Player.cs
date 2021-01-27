@@ -237,7 +237,7 @@ public abstract class Player : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        GameManager.Players.Remove(this);
+        GameManager.Players.Remove(this); // host will try and remove twice
 
         if (!hasAuthority) return;
 
@@ -293,6 +293,7 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned += HandleOnFortDespawned;
 
         if (!isServer) return;
+        Debug.LogWarning("Subscribing Player as a Server");
 
         UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
 
@@ -310,7 +311,9 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
 
+        Debug.LogError($"Unsubbing Player {name}");
         if (!isServer) return;
+        Debug.LogWarning("Unsubscribing Player as a Server");
 
         UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
 
