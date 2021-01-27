@@ -25,9 +25,6 @@ public class GameManager : NetworkBehaviour
     /************************************************************/
     #region Private Variables
 
-    [SyncVar(hook = nameof(HookOnIsEconomyPhase))]
-    bool isEconomyPhase = true;
-
     float turnTimer = 0f;
 
     #endregion
@@ -100,17 +97,7 @@ public class GameManager : NetworkBehaviour
 
     public static int TurnCount { get; private set; }
 
-    public static bool IsEconomyPhase
-    {
-        get
-        {
-            return Singleton.isEconomyPhase;
-        }
-        set
-        {
-            Singleton.isEconomyPhase = value;
-        }
-    }
+    public static bool IsEconomyPhase { get; private set; }
 
     public static bool IsPlayingTurn { get; private set; } = false;
 
@@ -146,8 +133,8 @@ public class GameManager : NetworkBehaviour
         else
         {
             // Update Timer FIXME: this is just wrong
-            string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
-            PlayerMenu.UpdateTimerText(text);
+            //string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
+            //PlayerMenu.UpdateTimerText(text);
         }
     }
 
@@ -165,7 +152,7 @@ public class GameManager : NetworkBehaviour
     {
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
-        gameObject.SetActive(true);
+        gameObject.SetActive(true); // turn on for just Server
         enabled = GameMode.IsUsingTurnTimer;
         ServerStartRound();
     }
@@ -312,6 +299,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log("RpcInvokeClientOnStartRound");
         if (isClientOnly)
         {
+            IsEconomyPhase = true;
             RoundCount++;
             TurnCount = 0;
         }
@@ -321,6 +309,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcInvokeClientOnStopEconomyPhase()
     {
+        if (isClientOnly) IsEconomyPhase = false;
         ClientOnStopEconomyPhase?.Invoke();
     }
 
@@ -328,11 +317,8 @@ public class GameManager : NetworkBehaviour
     private void RpcInvokeClientOnStartTurn()
     {
         Debug.Log("RpcInvokeClientOnStartTurn");
+        if (isClientOnly) TurnCount++;
         ClientOnStartTurn?.Invoke();
-        if (isClientOnly)
-        {
-            TurnCount++;
-        }
     }
 
     [ClientRpc]
@@ -347,12 +333,6 @@ public class GameManager : NetworkBehaviour
     {
         //Debug.Log("RpcInvokeClientOnStopTurn");
         ClientOnStopTurn?.Invoke();
-    }
-
-    [Client]
-    private void HookOnIsEconomyPhase(bool oldValue, bool newValue)
-    {
-        // HACK: is this function ever needed?
     }
 
     #endregion
