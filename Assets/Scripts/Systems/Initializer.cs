@@ -8,6 +8,8 @@
  * Date Created: October 17, 2020
  * 
  * Additional Comments: 
+ * 
+ *      TODO: make a static initializer bool variable that checks to see if the game has init
  **/
 
 using System.Collections;
@@ -21,8 +23,10 @@ using Mirror;
 /// </summary>
 public class Initializer : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
-    #region Public Variables
+    /************************************************************/
+    #region Variables
+
+    //static bool hasInitialized = false;
 
     [Header("SceneLoader")]
     [Tooltip("main menu scene")]
@@ -55,6 +59,8 @@ public class Initializer : MonoBehaviour
     [Header("Fort")]
     [Tooltip("reference to the Fort prefab")]
     [SerializeField] Fort fortPrefab;
+    [Tooltip("highlight color that shows buy area for economy phase")]
+    [SerializeField] Color fortHighlightColor;
 
     [Header("Units")]
     [Tooltip("references to the Unit prefabs")]
@@ -70,8 +76,7 @@ public class Initializer : MonoBehaviour
     [SerializeField] Material unitCursorMaterial = null;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -81,7 +86,7 @@ public class Initializer : MonoBehaviour
     {
         Debug.Log("initializing classes with their respective prefabs");
 
-        // SceneLoader
+        /** SceneLoader **/
         if (menuScene != null && SceneLoader.MenuSceneName == null)
             SceneLoader.MenuSceneName = System.IO.Path.GetFileNameWithoutExtension(menuScene);
         if (gameScene != null && SceneLoader.GameSceneName == null)
@@ -89,27 +94,29 @@ public class Initializer : MonoBehaviour
         if (editorScene != null && SceneLoader.EditorSceneName == null)
             SceneLoader.EditorSceneName = System.IO.Path.GetFileNameWithoutExtension(editorScene);
 
-        // GameMode
+        /** GameMode **/
         if (gameModeSettings && !GameMode.Singleton) GameMode.Singleton = gameModeSettings;
 
-        // ComputerPlayer
+        /** ComputerPlayer **/
         if (computerPlayerPrefab && !ComputerPlayer.Prefab)
             ComputerPlayer.Prefab = computerPlayerPrefab;
 
-        // GameOverHandler
+        /** GameOverHandler **/
         if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
             GameOverHandler.Prefab = gameOverHandlerPrefab;
 
-        // HexMetrics
+        /** HexMetrics **/
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
-        // HexGrid
+        /** HexGrid **/
         if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
 
-        // Fort
+        /** Fort **/
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
+        if (fortHighlightColor != null && Fort.HighlightColor != null)
+            Fort.HighlightColor = fortHighlightColor;
 
-        // Unit
+        /** Unit **/
         if (Unit.Prefabs == null)
         {
             Unit.Prefabs = new List<Unit>
@@ -121,7 +128,7 @@ public class Initializer : MonoBehaviour
             };
         }
 
-        // UnitCursor
+        /** UnitCursor **/
         if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
         if (unitCursorMaterial && !UnitCursor.MyMaterial)
             UnitCursor.MyMaterial = unitCursorMaterial;

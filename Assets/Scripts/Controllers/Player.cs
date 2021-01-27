@@ -27,19 +27,34 @@ public abstract class Player : NetworkBehaviour
     #region Variables
 
     [SyncVar(hook = nameof(HookOnMoveCount))]
-    private int moveCount = 0; // HACK: this is wrong, other clients shouldnt know this data
+    int moveCount = 0; // HACK: wrong, other clients shouldnt know this data.
+
+    [SyncVar(hook = nameof(HookOnResources))]
+    int resources = 0; // HACK: wrong, other clients shouldnt know this data, or should they? 
+
+    bool hasEndedTurn = false;
 
     #endregion
     /************************************************************/
     #region Class Events
-
-    // FIXME: Verify Player Menu
 
     /// <summary>
     /// Server event for when a player has been defeated
     /// </summary>
     /// <subscriber class="GameOverHandler">handles the defeated player</subscriber>
     public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
+
+    /// <summary>
+    /// Client event for when a player's resources have updated
+    /// </summary>
+    //public static event Action ClientOnResourcesUpdated;
+
+    /// <summary>
+    /// Client event for when a player has ended their turn
+    /// FIXME: shouldnt this event just be for the Human Player?
+    /// </summary>
+    /// <subscriber class="PlayerMenu">Updates the player menu status</subscriber>
+    public static event Action ClientOnHasEndedTurn; 
 
     #endregion
     /************************************************************/
@@ -65,7 +80,30 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public bool HasEndedTurn { get; set; } = false;
+    public int Resources
+    {
+        get
+        {
+            return resources;
+        }
+        set
+        {
+            resources = value;
+        }
+    }
+
+    public bool HasEndedTurn
+    {
+        get
+        {
+            return hasEndedTurn;
+        }
+        set
+        {
+            hasEndedTurn = value;
+            if (isServer && connectionToClient != null) TargetSetHasEndedTurn(value);
+        }
+    }
 
     public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
 
@@ -95,6 +133,7 @@ public abstract class Player : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
         Subscribe();
+        resources = GameMode.StartingPlayerResources;
     }
 
     [Server]
@@ -111,7 +150,7 @@ public abstract class Player : NetworkBehaviour
     protected void CmdEndTurn()
     {
         HasEndedTurn = true;
-        GameManager.Singleton.ServerTryPlayTurn();
+        GameManager.Singleton.ServerTryEndTurn();
     }
 
     [Command]
@@ -123,7 +162,7 @@ public abstract class Player : NetworkBehaviour
     [Command]
     protected void CmdSetAction(UnitData data)
     {
-        if (GameManager.IsPlayingTurn) return;
+        if (GameManager.IsEconomyPhase || GameManager.IsPlayingTurn) return;
         if (!CanMove()) return;
 
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
@@ -140,10 +179,46 @@ public abstract class Player : NetworkBehaviour
         if (data.MyUnit.Movement.ServerClearAction()) MoveCount++;
     }
 
+    /// <summary>
+    /// HACK: is unitId Validation needed?
+    /// HACK: should this return bool?
+    /// </summary>
+    /// <param name="unitId"></param>
+    /// <param name="cell"></param>
+    [Command] 
+    protected void CmdTryBuyUnit(int unitId, HexCell cell)
+    {
+        if (!GameManager.IsEconomyPhase) return;
+        if (cell.MyUnit) return;
+
+        //if (0 <= unitId && unitId < Unit.Prefabs.Count)
+        Unit unit = Unit.Prefabs[unitId];
+        if (Resources < unit.Resources) return;
+
+        bool canBuy = false;
+        for (int i = 0; !canBuy && i < MyForts.Count; i++)
+        {
+            Fort fort = MyForts[i];
+            canBuy = fort.IsBuyCell(cell);
+        }
+
+        if (!canBuy) return;
+
+        Unit instance = Instantiate(unit);
+        instance.MyCell = cell;
+        instance.MyTeam.SetTeam(MyTeam);
+        instance.Movement.Orientation = UnityEngine.Random.Range(0, 360f);
+
+        NetworkServer.Spawn(instance.gameObject, connectionToClient);
+
+        Resources -= unit.Resources;
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions
 
+    [Client]
     public override void OnStartClient()
     {
         if (!isClientOnly) return;
@@ -157,6 +232,7 @@ public abstract class Player : NetworkBehaviour
         Subscribe();
     }
 
+    [Client]
     public override void OnStopClient()
     {
         if (!isClientOnly) return;
@@ -188,6 +264,13 @@ public abstract class Player : NetworkBehaviour
         MyForts.Remove(fortNetId.GetComponent<Fort>());
     }
 
+    [TargetRpc]
+    public void TargetSetHasEndedTurn(bool status)
+    {
+        if (!isServer) HasEndedTurn = status;
+        ClientOnHasEndedTurn?.Invoke(); 
+    }
+
     #endregion
     /************************************************************/
     #region Class Functions
@@ -215,6 +298,7 @@ public abstract class Player : NetworkBehaviour
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
+        GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
         GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
     }
@@ -232,6 +316,7 @@ public abstract class Player : NetworkBehaviour
 
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
+        GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
         GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
     }
@@ -247,23 +332,6 @@ public abstract class Player : NetworkBehaviour
     private void HandleOnFortDespawned(Fort fort)
     {
         MyForts.Remove(fort);
-    }
-
-    [Server]
-    private void HandleServerOnUnitDeath(Unit unit)
-    {
-        MyUnits.Remove(unit);
-        if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
-
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
-    }
-
-    [TargetRpc]
-    private void HandleTargetOnUnitDeath(NetworkIdentity unitNetId)
-    {
-        if (isServer) return;
-
-        MyUnits.Remove(unitNetId.GetComponent<Unit>());
     }
 
     [Server] // HACK: this function is so jank
@@ -291,9 +359,33 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server]
+    private void HandleServerOnUnitDeath(Unit unit)
+    {
+        MyUnits.Remove(unit);
+        if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
+
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
+    }
+
+    [TargetRpc] // HACK: this could be UnitData? ...but i mean it is coming from the server so idk
+    private void HandleTargetOnUnitDeath(NetworkIdentity unitNetId)
+    {
+        if (isServer) return;
+
+        MyUnits.Remove(unitNetId.GetComponent<Unit>());
+    }
+
+    [Server]
+    protected virtual void HandleServerOnStartRound()
+    {
+        MoveCount = 0;
+        HasEndedTurn = false;
+    }
+
+    [Server]
     protected virtual void HandleServerOnStartTurn()
     {
-        MoveCount = GameMode.Singleton.MovesPerTurn;
+        MoveCount = GameMode.MovesPerTurn;
         HasEndedTurn = false;
     }
 
@@ -302,6 +394,9 @@ public abstract class Player : NetworkBehaviour
     {
         HasEndedTurn = true;
     }
+
+    [Client]
+    protected virtual void HookOnResources(int oldValue, int newValue) { }
 
     [Client]
     protected virtual void HookOnMoveCount(int oldValue, int newValue) { }

@@ -40,14 +40,14 @@ public class HumanPlayer : Player
 
     protected void OnEnable()
     {
-        PlayerMenu.Singleton.MyPlayer = this;
-
-        //if (!hasAuthority) enabled = false;
-        //gameObject.SetActive(false);
+        PlayerMenu.MyPlayer = this;
+        PlayerMenu.RefreshResourcesText();
     }
 
-    protected void Update()
+    protected void LateUpdate() 
     {
+        // this is in late update so the player cursor always shows on top of hexes
+
         // other human players should be disabled 
         //if (!hasAuthority) return; 
 
@@ -58,8 +58,8 @@ public class HumanPlayer : Player
         UpdateCurrentCell();
         if (selectedUnit) DoPathfinding();
     }
-    #endregion
 
+    #endregion
     /************************************************************/
     #region Server Functions
 
@@ -68,44 +68,58 @@ public class HumanPlayer : Player
     {
         if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
 
+        if (GameNetworkManager.IsGameInProgress) return;
+
         GameNetworkManager.Singleton.ServerStartGame();
     }
 
     #endregion
     /************************************************************/
-    #region Input Functions
+    #region Client Input Functions
 
+    [Client]
     private void DoSelection(InputAction.CallbackContext context)
     {
         if (!currentCell) return;
 
-        if (currentCell.MyFort && currentCell.MyFort.hasAuthority) Debug.Log("My Fort!");
-
         DeselectUnitAndClearItsPath();
-
         SelectUnit(currentCell.MyUnit);
     }
 
+    [Client]
     private void DoCommand(InputAction.CallbackContext context)
     {
-        if (selectedUnit) CmdSetAction(UnitData.Instantiate(selectedUnit));
+        if (GameManager.IsEconomyPhase)
+        {
+            if (!currentCell) return;
 
-        PlayerMenu.RefreshMoveCountText();
+            CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
+        }
+        else
+        {
+            if (selectedUnit) CmdSetAction(UnitData.Instantiate(selectedUnit));
 
-        DeselectUnit();
+            PlayerMenu.RefreshMoveCountText();
+
+            DeselectUnit();
+        }
     }
 
     #endregion
     /************************************************************/
-    #region Class Functions
+    #region Client Functions
 
+    [Client]
     private void UpdateCurrentCell()
     {
         HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
+
+        // HACK: this color is hardcoded, it should probably reflect the team color?
+        if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+
         if (cell != currentCell)
         {
             if (currentCell) currentCell.DisableHighlight();
-            if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
 
             currentCell = cell;
             hasCurrentCellUpdated = true; // whether or not current cell has updated
@@ -116,6 +130,8 @@ public class HumanPlayer : Player
         }
     }
 
+
+    [Client]
     private void DoPathfinding()
     {
         if (!hasCurrentCellUpdated || currentCell == null) return;
@@ -132,6 +148,7 @@ public class HumanPlayer : Player
         selectedUnit.Movement.Path.Show();
     }
 
+    [Client]
     private void SelectUnit(Unit unit)
     {
         if (!MyUnits.Contains(unit)) return;
@@ -147,6 +164,7 @@ public class HumanPlayer : Player
         selectedUnit.IsSelected = true;
     }
 
+    [Client]
     private void DeselectUnit()
     {
         if (!selectedUnit) return;
@@ -155,6 +173,7 @@ public class HumanPlayer : Player
         selectedUnit = null;
     }
 
+    [Client]
     private void DeselectUnitAndClearItsPath()
     {
         if (!selectedUnit) return;
@@ -165,6 +184,14 @@ public class HumanPlayer : Player
 
         //Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
     }
+
+    [Client] 
+    public void EndTurnButtonPressed()
+    {
+        if (HasEndedTurn) CmdCancelEndTurn();
+        else CmdEndTurn();
+    }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions
@@ -175,8 +202,8 @@ public class HumanPlayer : Player
 
         if (!hasAuthority) return;
 
-        PlayerMenu.ClientOnEndTurnButtonPressed += CmdEndTurn;
-
+        GameManager.ClientOnStartRound += HandleClientOnStartRound;
+        GameManager.ClientOnStopEconomyPhase += HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
@@ -192,8 +219,8 @@ public class HumanPlayer : Player
 
         if (!hasAuthority) return;
 
-        PlayerMenu.ClientOnEndTurnButtonPressed -= CmdEndTurn;
-
+        GameManager.ClientOnStartRound -= HandleClientOnStartRound;
+        GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
@@ -201,9 +228,17 @@ public class HumanPlayer : Player
     }
 
     [Client]
-    protected void HandleClientOnStartTurn() // FIXME: this function is not called
+    private void HandleClientOnStartRound()
     {
-        PlayerMenu.RefreshMoveCountText(); 
+        foreach (Fort fort in MyForts) fort.ShowBuyCells();
+        foreach (Unit unit in MyUnits) unit.Movement.Display.HideDisplay();
+    }
+
+    [Client]
+    private void HandleClientOnStopEconomyPhase()
+    {
+        foreach (Fort fort in MyForts) fort.HideBuyCells();
+        foreach (Unit unit in MyUnits) unit.Movement.Display.ShowDisplay();
     }
 
     [Client]
@@ -218,6 +253,12 @@ public class HumanPlayer : Player
     private void HandleClientOnStopTurn()
     {
         controls.Enable();
+    }
+
+    [Client]
+    protected override void HookOnResources(int oldValue, int newValue)
+    {
+        if (PlayerMenu.MyPlayer) PlayerMenu.RefreshResourcesText();
     }
 
     [Client]

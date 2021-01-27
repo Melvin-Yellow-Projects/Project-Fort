@@ -110,7 +110,7 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
-        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
         playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
         playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
     }
@@ -189,7 +189,7 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
-        player.MyTeam.TeamIndex = GameManager.Players.Count; // TODO: move to playerInfo
+        player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
         playerInfo.PlayerName = $"Computer Player {GameManager.Players.Count}";
 
         NetworkServer.Spawn(player.gameObject);

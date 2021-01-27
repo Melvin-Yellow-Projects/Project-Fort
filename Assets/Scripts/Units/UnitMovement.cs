@@ -387,7 +387,7 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         bool hadAction = HasAction;
 
-        Debug.Log("Hello");
+        //Debug.Log($"Clearing Action for Unit, {name}");
 
         Path.Clear();
         HasAction = false;

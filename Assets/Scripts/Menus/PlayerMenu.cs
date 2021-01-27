@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -25,20 +26,14 @@ public class PlayerMenu : MonoBehaviour
     /* Cached References */
     [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
+    [SerializeField] TMP_Text resourcesText = null;
     [SerializeField] TMP_Text moveTimerText = null;
+    [SerializeField] GameObject buyPanel = null;
+    [SerializeField] Button endTurnButton = null;
+    [SerializeField] TMP_Text endTurnButtonText = null;
 
-    Player player = null;
-
-    #endregion
-    /************************************************************/
-    #region Class Events
-
-    // FIXME: Verify Player Menu
-
-    /// <summary>
-    /// Server event for when a player has pressed their end turn button
-    /// </summary>
-    public static event Action ClientOnEndTurnButtonPressed;
+    static HumanPlayer player = null; 
+    static int unitId = 0;
 
     #endregion
     /************************************************************/
@@ -46,7 +41,7 @@ public class PlayerMenu : MonoBehaviour
 
     public static PlayerMenu Singleton { get; set; }
 
-    public Player MyPlayer
+    public static HumanPlayer MyPlayer 
     {
         get
         {
@@ -54,11 +49,23 @@ public class PlayerMenu : MonoBehaviour
         }
         set
         {
-            if (!value) return;
+            if (!value) return; // HACK: is this line needed?
             player = value;
-            enabled = true;
+            Singleton.enabled = true;
         }
     }
+
+    public static int UnitId
+    {
+        get
+        {
+            return unitId;
+        }
+        set
+        {
+            unitId = Mathf.Clamp(value, 0, Unit.Prefabs.Count);
+        }
+    } 
 
     #endregion
     /************************************************************/
@@ -81,28 +88,30 @@ public class PlayerMenu : MonoBehaviour
     /************************************************************/
     #region Class Functions
 
+    public static void RefreshMoveCountText()
+    {
+        if (!MyPlayer) return;
+
+        string moveCountString = $"M{MyPlayer.MoveCount}";
+
+        Singleton.moveCountText.text = $"R{GameManager.RoundCount}: T{GameManager.TurnCount}:" +
+            moveCountString;
+    }
+
+    public static void RefreshResourcesText()
+    {
+        Singleton.resourcesText.text = $"{MyPlayer.Resources}";
+    }
+
+    // HACK: this should fetch the timer from the Game Manager
     public static void UpdateTimerText(string text)
     {
         Singleton.moveTimerText.text = text;
     }
 
-    public static void RefreshMoveCountText()
-    {
-        GameMode gm = GameMode.Singleton;
-
-        if (!Singleton.MyPlayer) return;
-
-        string moveCountString = (Singleton.MyPlayer.MoveCount > gm.MovesPerTurn) ?
-            "MXX" : $"M{Singleton.MyPlayer.MoveCount}";
-
-        Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
-            $"T{GameManager.TurnCount}:" +
-            moveCountString;
-    }
-
     public static void EndTurnButtonPressed()
     {
-        ClientOnEndTurnButtonPressed?.Invoke();
+        MyPlayer.EndTurnButtonPressed();
     }
 
     #endregion
@@ -111,14 +120,60 @@ public class PlayerMenu : MonoBehaviour
 
     private void Subscribe()
     {
-        GameManager.ClientOnStartRound += RefreshMoveCountText;
-        GameManager.ClientOnStartTurn += RefreshMoveCountText;
+        GameManager.ClientOnStartRound += HandleClientOnStartRound;
+        GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
+        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
+
+        //Player.ClientOnResourcesUpdated += null;
+        Player.ClientOnHasEndedTurn += HandleClientOnHasEndedTurn;
     }
 
     private void Unsubscribe()
     {
-        GameManager.ClientOnStartRound -= RefreshMoveCountText;
-        GameManager.ClientOnStartTurn -= RefreshMoveCountText;
+        GameManager.ClientOnStartRound -= HandleClientOnStartRound;
+        GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
+        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
+
+        //Player.ClientOnResourcesUpdated -= null;
+        Player.ClientOnHasEndedTurn -= HandleClientOnHasEndedTurn;
     }
+
+    private void HandleClientOnStartRound()
+    {
+        UpdateTimerText("Economy Phase");
+
+        buyPanel.SetActive(true);
+
+        Singleton.endTurnButtonText.text = "End Turn";
+        endTurnButton.interactable = true;
+
+        RefreshMoveCountText();
+    }
+
+    private void HandleClientOnStartTurn()
+    {
+        UpdateTimerText("Your Turn");
+
+        buyPanel.SetActive(false);
+
+        Singleton.endTurnButtonText.text = "End Turn";
+        endTurnButton.interactable = true;
+
+        RefreshMoveCountText();
+    }
+
+    private void HandleClientOnPlayTurn()
+    {
+        UpdateTimerText("Executing Turn");
+
+        endTurnButton.interactable = false;
+    }
+
+    private void HandleClientOnHasEndedTurn()
+    {
+        if (MyPlayer.HasEndedTurn) Singleton.endTurnButtonText.text = "Cancel";
+        else Singleton.endTurnButtonText.text = "End Turn";
+    }
+
     #endregion
 }

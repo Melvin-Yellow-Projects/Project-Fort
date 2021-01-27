@@ -37,7 +37,7 @@ public class Unit : NetworkBehaviour
     [SerializeField] string title = null;
 
     [Tooltip("how much this unit costs")]
-    [SerializeField] int cost = 0;
+    [SerializeField] int resources = 0;
 
     //[Tooltip("sprite asset for the unit")]
     //[SerializeField] Sprite artwork = null;
@@ -67,6 +67,30 @@ public class Unit : NetworkBehaviour
     #region Properties
 
     public static List<Unit> Prefabs { get; set; }
+
+    public int Id
+    {
+        get
+        {
+            return id;
+        }
+    }
+
+    public string Title
+    {
+        get
+        {
+            return title;
+        }
+    }
+
+    public int Resources
+    {
+        get
+        {
+            return resources;
+        }
+    }
 
     public Team MyTeam { get; private set; }
 
@@ -176,8 +200,8 @@ public class Unit : NetworkBehaviour
         float orientation = reader.ReadSingle();
 
         // FIXME: Update Code for Unit Variety
-        Unit unit = Instantiate(Prefabs[UnityEngine.Random.Range(0, Prefabs.Count)]); 
-        if (header >= 4) unit.MyTeam.TeamIndex = reader.ReadByte();
+        Unit unit = Instantiate(Prefabs[UnityEngine.Random.Range(0, Prefabs.Count)]);
+        if (header >= 4) unit.MyTeam.SetTeam(reader.ReadByte());
 
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
         unit.Movement.Orientation = orientation;
