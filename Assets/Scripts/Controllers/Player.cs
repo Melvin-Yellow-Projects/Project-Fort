@@ -132,7 +132,7 @@ public abstract class Player : NetworkBehaviour
     public override void OnStartServer()
     {
         DontDestroyOnLoad(gameObject);
-        Subscribe();
+        ServerSubscribe();
         resources = GameMode.StartingPlayerResources;
     }
 
@@ -143,7 +143,7 @@ public abstract class Player : NetworkBehaviour
         // HACK: not certain this works
         if (GameNetworkManager.IsGameInProgress)
             ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
-        Unsubscribe();
+        ServerUnsubscribe();
     }
 
     [Command]
@@ -221,27 +221,20 @@ public abstract class Player : NetworkBehaviour
     [Client]
     public override void OnStartClient()
     {
-        if (!isClientOnly) return;
+        AuthoritySubscribe();
 
+        if (!isClientOnly) return;
         DontDestroyOnLoad(gameObject);
 
         GameManager.Players.Add(this);
-
-        if (!hasAuthority) return;
-
-        Subscribe();
     }
 
     [Client]
     public override void OnStopClient()
     {
-        if (!isClientOnly) return;
+        GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it
 
-        GameManager.Players.Remove(this); // host will try and remove twice
-
-        if (!hasAuthority) return;
-
-        Unsubscribe();
+        AuthorityUnsubscribe();
     }
 
     // HACK: can probably replace with psuedo Handler function since it's specifically called by a
@@ -285,15 +278,13 @@ public abstract class Player : NetworkBehaviour
     #region Event Handler Functions
 
     // HACK this line does not work, subscribe needs to happen on server and authoritive client
-    protected virtual void Subscribe()
+    protected virtual void ServerSubscribe()
     {
+        Debug.LogWarning($"ServerSubscribe on {name}");
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
-
-        if (!isServer) return;
-        Debug.LogWarning("Subscribing Player as a Server");
 
         UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
 
@@ -304,16 +295,14 @@ public abstract class Player : NetworkBehaviour
         GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
     }
 
-    protected virtual void Unsubscribe()
+    [Server]
+    protected virtual void ServerUnsubscribe()
     {
+        Debug.LogWarning($"ServerUnsubscribe on {name}");
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
-
-        Debug.LogError($"Unsubbing Player {name}");
-        if (!isServer) return;
-        Debug.LogWarning("Unsubscribing Player as a Server");
 
         UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
 
@@ -322,6 +311,28 @@ public abstract class Player : NetworkBehaviour
         GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
         GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
+    }
+
+    [Client]
+    protected virtual void AuthoritySubscribe()
+    {
+        if (!hasAuthority || !isClientOnly) return;
+        Debug.LogWarning($"AuthoritySubscribe on {name}");
+        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
+    }
+
+    [Client]
+    protected virtual void AuthorityUnsubscribe()
+    {
+        if (!hasAuthority || !isClientOnly) return;
+        Debug.LogWarning($"AuthorityUnsubscribe on {name}");
+        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
     }
 
     private void HandleOnFortSpawned(Fort fort)

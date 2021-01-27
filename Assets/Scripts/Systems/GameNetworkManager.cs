@@ -183,6 +183,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public static void ServerSpawnComputerPlayer()
     {
+        Debug.LogWarning("Spawning Computer Player");
         ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
 
         PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
