@@ -66,7 +66,7 @@ public class SceneLoader : MonoBehaviour
             NetworkManager.singleton.StopClient();
         }
 
-        //SceneManager.LoadScene(MenuSceneName); // FIXME
+        SceneManager.LoadScene(MenuSceneName); // FIXME
     }
 
     public static void LoadLocalGame()
