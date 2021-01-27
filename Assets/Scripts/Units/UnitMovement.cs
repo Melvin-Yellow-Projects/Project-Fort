@@ -72,7 +72,7 @@ public abstract class UnitMovement : NetworkBehaviour
             myCell = value;
             myCell.MyUnit = MyUnit; // sets this hex cell's unit to this one
 
-            MyUnit.ValidateLocation(); // FIXME: Why doesn't this work?
+            if (isServer) MyUnit.ValidateLocation(); // FIXME: Why doesn't this work?
             //MyUnit.ServerValidateLocation();
         }
     }

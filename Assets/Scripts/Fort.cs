@@ -77,7 +77,7 @@ public class Fort : NetworkBehaviour
             myCell = value;
             myCell.MyFort = this;
 
-            ValidateLocation();
+            if (isServer) ValidateLocation();
         }
     }
 
