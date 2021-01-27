@@ -25,6 +25,9 @@ public class GameManager : NetworkBehaviour
     /************************************************************/
     #region Private Variables
 
+    [SyncVar(hook = nameof(HookOnIsEconomyPhase))]
+    bool isEconomyPhase = true;
+
     float turnTimer = 0f;
 
     #endregion
@@ -97,7 +100,17 @@ public class GameManager : NetworkBehaviour
 
     public static int TurnCount { get; private set; }
 
-    public static bool IsEconomyPhase { get; private set; } = true;
+    public static bool IsEconomyPhase
+    {
+        get
+        {
+            return Singleton.isEconomyPhase;
+        }
+        set
+        {
+            Singleton.isEconomyPhase = value;
+        }
+    }
 
     public static bool IsPlayingTurn { get; private set; } = false;
 
@@ -168,8 +181,8 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartRound();
 
         // update timer and its text // TODO: this should be the economy timer
-        if (GameMode.IsUsingTurnTimer) ServerResetTimer();  // HACK: i think this line can be moved
-                                                                        // to PlayerMenu
+        if (GameMode.IsUsingTurnTimer) ServerResetTimer();  // FIXME: this line must be moved to
+                                                                        // PlayerMenu
     }
 
     [Server]
@@ -182,7 +195,7 @@ public class GameManager : NetworkBehaviour
 
         // update timer and its text
         if (GameMode.IsUsingTurnTimer) ServerResetTimer();
-        else PlayerMenu.UpdateTimerText("Your Turn");
+        else PlayerMenu.UpdateTimerText("Your Turn"); // HACK: this does nothing
     }
 
     [Server]
@@ -336,6 +349,11 @@ public class GameManager : NetworkBehaviour
     {
         //Debug.Log("RpcInvokeClientOnStopTurn");
         ClientOnStopTurn?.Invoke();
+    }
+
+    private void HookOnIsEconomyPhase(bool oldValue, bool newValue)
+    {
+
     }
 
     #endregion
