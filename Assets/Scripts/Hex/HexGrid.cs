@@ -84,6 +84,8 @@ public class HexGrid : NetworkBehaviour
 
     public static HexGrid Singleton { get; private set; }
 
+    public static bool HasSpawnedMapTerrain { get; set; }
+
     public static List<Unit> Units { get; private set; } = new List<Unit>();
 
     public static List<Fort> Forts { get; private set; } = new List<Fort>();
@@ -155,6 +157,8 @@ public class HexGrid : NetworkBehaviour
     {
         Debug.Log("Spawning Map Entities");
 
+        HasSpawnedMapTerrain = true;
+
         for (int i = 0; i < Units.Count; i++)
         {
             NetworkServer.Spawn(Units[i].gameObject,
@@ -185,6 +189,7 @@ public class HexGrid : NetworkBehaviour
 
         Debug.Log("I am a client and I'm fetching the Map!");
         for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+        HasSpawnedMapTerrain = true;
     }
 
     [TargetRpc]

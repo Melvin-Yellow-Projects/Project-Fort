@@ -172,7 +172,8 @@ public class Unit : NetworkBehaviour
 
     public void ValidateLocation()
     {
-        UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: this no work
+        if (HexGrid.HasSpawnedMapTerrain) return;
+        //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
         transform.localPosition = MyCell.Position;
     }
 
