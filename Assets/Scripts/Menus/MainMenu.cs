@@ -14,15 +14,14 @@ using UnityEngine;
 
 public class MainMenu : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     [SerializeField] GameObject preLobbyMenu = null;
     [SerializeField] LobbyMenu lobbyMenu = null;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Start()
@@ -38,8 +37,7 @@ public class MainMenu : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void OnlineButtonPressed()
@@ -55,8 +53,7 @@ public class MainMenu : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Event Handler Functions **********/
+    /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()

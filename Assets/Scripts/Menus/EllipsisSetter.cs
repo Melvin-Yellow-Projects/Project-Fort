@@ -19,7 +19,7 @@ using TMPro;
 /// </summary>
 public class EllipsisSetter : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     [Header("Settings")]
@@ -36,9 +36,7 @@ public class EllipsisSetter : MonoBehaviour
     string originalText;
 
     #endregion
-
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void Awake()
@@ -59,8 +57,7 @@ public class EllipsisSetter : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Classa Functions **********/
+    /************************************************************/
     #region Class Functions
 
     private IEnumerator AddEllipses()
