@@ -145,7 +145,7 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
-            // Update Timer
+            // Update Timer FIXME: this is just wrong
             string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
             PlayerMenu.UpdateTimerText(text);
         }
@@ -216,7 +216,7 @@ public class GameManager : NetworkBehaviour
         bool playTurn = true;
         foreach (Player player in Players) playTurn &= player.HasEndedTurn;
 
-        if (playTurn)
+        if (playTurn && !IsPlayingTurn)
         {
             if (IsEconomyPhase)
             {

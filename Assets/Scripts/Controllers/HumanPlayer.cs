@@ -58,8 +58,8 @@ public class HumanPlayer : Player
         UpdateCurrentCell();
         if (selectedUnit) DoPathfinding();
     }
-    #endregion
 
+    #endregion
     /************************************************************/
     #region Server Functions
 
@@ -75,8 +75,9 @@ public class HumanPlayer : Player
 
     #endregion
     /************************************************************/
-    #region Input Functions
+    #region Client Input Functions
 
+    [Client]
     private void DoSelection(InputAction.CallbackContext context)
     {
         if (!currentCell) return;
@@ -85,6 +86,7 @@ public class HumanPlayer : Player
         SelectUnit(currentCell.MyUnit);
     }
 
+    [Client]
     private void DoCommand(InputAction.CallbackContext context)
     {
         if (GameManager.IsEconomyPhase)
@@ -105,8 +107,9 @@ public class HumanPlayer : Player
 
     #endregion
     /************************************************************/
-    #region Class Functions
+    #region Client Functions
 
+    [Client]
     private void UpdateCurrentCell()
     {
         HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
@@ -127,6 +130,8 @@ public class HumanPlayer : Player
         }
     }
 
+
+    [Client]
     private void DoPathfinding()
     {
         if (!hasCurrentCellUpdated || currentCell == null) return;
@@ -143,6 +148,7 @@ public class HumanPlayer : Player
         selectedUnit.Movement.Path.Show();
     }
 
+    [Client]
     private void SelectUnit(Unit unit)
     {
         if (!MyUnits.Contains(unit)) return;
@@ -158,6 +164,7 @@ public class HumanPlayer : Player
         selectedUnit.IsSelected = true;
     }
 
+    [Client]
     private void DeselectUnit()
     {
         if (!selectedUnit) return;
@@ -166,6 +173,7 @@ public class HumanPlayer : Player
         selectedUnit = null;
     }
 
+    [Client]
     private void DeselectUnitAndClearItsPath()
     {
         if (!selectedUnit) return;
@@ -177,6 +185,13 @@ public class HumanPlayer : Player
         //Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
     }
 
+    [Client] 
+    public void EndTurnButtonPressed()
+    {
+        if (HasEndedTurn) CmdCancelEndTurn();
+        else CmdEndTurn();
+    }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions
@@ -186,8 +201,6 @@ public class HumanPlayer : Player
         base.Subscribe();
 
         if (!hasAuthority) return;
-
-        PlayerMenu.ClientOnEndTurnButtonPressed += HandleClientOnEndTurnButtonPressed;
 
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase += HandleClientOnStopEconomyPhase;
@@ -205,8 +218,6 @@ public class HumanPlayer : Player
         base.Unsubscribe();
 
         if (!hasAuthority) return;
-
-        PlayerMenu.ClientOnEndTurnButtonPressed -= HandleClientOnEndTurnButtonPressed;
 
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
@@ -242,14 +253,6 @@ public class HumanPlayer : Player
     private void HandleClientOnStopTurn()
     {
         controls.Enable();
-    }
-
-    [Client] // Hack this is probably not needed
-    private void HandleClientOnEndTurnButtonPressed()
-    {
-        // HasEndedTurn has not been updated yet, it's a state behind
-        if (HasEndedTurn) CmdCancelEndTurn(); 
-        else CmdEndTurn();
     }
 
     [Client]

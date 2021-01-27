@@ -32,19 +32,8 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] Button endTurnButton = null;
     [SerializeField] TMP_Text endTurnButtonText = null;
 
-    static Player player = null; // FIXME: this could be a HumanPlayer, right?
+    static HumanPlayer player = null; 
     static int unitId = 0;
-
-    #endregion
-    /************************************************************/
-    #region Class Events
-
-    /// <summary>
-    /// Server event for when a player has pressed their end turn button
-    /// FIXME: this could probably report directly to the HumanPlayer
-    /// </summary>
-    /// <subscriber class="HumanPlayer">sends client button press data to the server</subscriber>
-    public static event Action ClientOnEndTurnButtonPressed; 
 
     #endregion
     /************************************************************/
@@ -52,7 +41,7 @@ public class PlayerMenu : MonoBehaviour
 
     public static PlayerMenu Singleton { get; set; }
 
-    public static Player MyPlayer 
+    public static HumanPlayer MyPlayer 
     {
         get
         {
@@ -106,8 +95,7 @@ public class PlayerMenu : MonoBehaviour
         string moveCountString = (MyPlayer.MoveCount > GameMode.MovesPerTurn) ?
             "MXX" : $"M{MyPlayer.MoveCount}";
 
-        Singleton.moveCountText.text = $"R{GameManager.RoundCount}:" +
-            $"T{GameManager.TurnCount}:" +
+        Singleton.moveCountText.text = $"R{GameManager.RoundCount}: T{GameManager.TurnCount}:" +
             moveCountString;
     }
 
@@ -124,9 +112,7 @@ public class PlayerMenu : MonoBehaviour
 
     public static void EndTurnButtonPressed()
     {
-        if (GameManager.IsPlayingTurn) return;
-
-        ClientOnEndTurnButtonPressed?.Invoke();
+        MyPlayer.EndTurnButtonPressed();
     }
 
     #endregion
