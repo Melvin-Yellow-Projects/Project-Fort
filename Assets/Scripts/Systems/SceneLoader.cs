@@ -45,7 +45,7 @@ public class SceneLoader : MonoBehaviour
     /// </summary>
     public static void LoadStartScene()
     {
-        // FIXME: This needs to work for host/server/client
+        // FIXME: This needs to work for host/server/client; i can't figure it out yeesh
         if (NetworkServer.active && NetworkClient.isConnected)
         {
             for (int i = GameManager.Players.Count - 1; i >= 0; i--)
@@ -64,9 +64,10 @@ public class SceneLoader : MonoBehaviour
         else
         {
             NetworkManager.singleton.StopClient();
+            Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
         }
 
-        SceneManager.LoadScene(MenuSceneName); // FIXME
+        SceneManager.LoadScene(MenuSceneName); 
     }
 
     public static void LoadLocalGame()
