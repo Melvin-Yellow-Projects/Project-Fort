@@ -39,8 +39,8 @@ public class HorseCombat : UnitCombat
 
     protected override void IdleCollision(Unit otherUnit)
     {
-        // is the enemy a wall?
-        if (otherUnit.Id == 3)
+        // is the enemy a wall or a pike?
+        if (otherUnit.Id == 3 || otherUnit.Id == 2)
         {
             MyUnit.Movement.CancelAction();
         }
