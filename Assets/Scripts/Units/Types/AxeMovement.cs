@@ -42,8 +42,8 @@ public class AxeMovement : UnitMovement
         if (MyUnit.CombatHandler.HasCaptured)
         {
             CanMove = true;
-            // FIXME: this is not a good solution
-            TargetOnGaleforceActivate(CanMove);
+            // HACK: this is not a good solution
+            if (connectionToClient != null) TargetOnGaleforceActivate(CanMove);
         }
         else if (currentMovement < maxMovement)
         {

@@ -229,7 +229,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
 
-        CurrentMovement--;
+        CurrentMovement--; // FIXME assumes all tiles have the same cost
 
         if (!Path.HasPath) return;
 
@@ -397,7 +397,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         Path.Clear();
         HasAction = false;
-        TargetClearPath();
+        if (connectionToClient != null) TargetClearPath();
 
         return hadAction;
     }
@@ -544,9 +544,9 @@ public abstract class UnitMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
+        //UnitPathfinding.DecreaseVisibility(myCell, visionRange); // FIXME visibility
 
-        CanMove = false; // FIXME: this wont work if unit dies right before new Round 
+        CanMove = false;
 
         HandleRpcOnDeath();
     }

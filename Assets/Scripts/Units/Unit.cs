@@ -172,8 +172,6 @@ public class Unit : NetworkBehaviour
 
     public void Die(bool isPlayingAnimation = true)
     {
-        StopAllCoroutines(); // HACK: i think this line can be safely removed; bruteforcing 
-
         GetComponent<UnitDeath>().Die(isPlayingAnimation);
     }
 
