@@ -39,8 +39,16 @@ public class AxeMovement : UnitMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (MyUnit.CombatHandler.HasCaptured) CanMove = true;
-        else if (currentMovement < maxMovement) CanMove = false;
+        if (MyUnit.CombatHandler.HasCaptured)
+        {
+            CanMove = true;
+            // FIXME: this is not a good solution
+            TargetOnGaleforceActivate(CanMove);
+        }
+        else if (currentMovement < maxMovement)
+        {
+            CanMove = false;
+        }
 
         base.HandleServerOnStopTurn();
     }
@@ -54,6 +62,12 @@ public class AxeMovement : UnitMovement
         else if (currentMovement < maxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
+    }
+
+    [TargetRpc]
+    private void TargetOnGaleforceActivate(bool canMove)
+    {
+        CanMove = canMove;
     }
 
     #endregion
