@@ -34,6 +34,7 @@ public class HorseCombat : UnitCombat
         else
         {
             MyUnit.Die();
+            otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 

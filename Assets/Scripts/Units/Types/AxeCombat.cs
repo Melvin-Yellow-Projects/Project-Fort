@@ -36,6 +36,7 @@ public class AxeCombat : UnitCombat
         else
         {
             MyUnit.Die();
+            otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 

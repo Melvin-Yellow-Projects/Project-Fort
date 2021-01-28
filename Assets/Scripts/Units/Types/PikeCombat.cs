@@ -34,6 +34,7 @@ public class PikeCombat : UnitCombat
         else if (otherUnit.Id != 1)
         {
             MyUnit.Die();
+            otherUnit.CombatHandler.HasCaptured = true;
         }
 
         else

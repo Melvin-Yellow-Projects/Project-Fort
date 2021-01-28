@@ -39,8 +39,6 @@ public class HorseMovement : UnitMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (currentMovement < maxMovement) CanMove = false;
-
         base.HandleServerOnStopTurn();
     }
 
@@ -48,8 +46,6 @@ public class HorseMovement : UnitMovement
     protected override void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
-
-        if (currentMovement < maxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
     }

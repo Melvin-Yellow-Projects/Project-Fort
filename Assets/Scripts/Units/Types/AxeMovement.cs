@@ -39,7 +39,8 @@ public class AxeMovement : UnitMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (currentMovement < maxMovement) CanMove = false;
+        if (MyUnit.CombatHandler.HasCaptured) CanMove = true;
+        else if (currentMovement < maxMovement) CanMove = false;
 
         base.HandleServerOnStopTurn();
     }
@@ -49,7 +50,8 @@ public class AxeMovement : UnitMovement
     {
         if (!isClientOnly) return;
 
-        if (currentMovement < maxMovement) CanMove = false;
+        if (MyUnit.CombatHandler.HasCaptured) CanMove = true;
+        else if (currentMovement < maxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
     }

@@ -22,7 +22,7 @@ public abstract class UnitCombat : MonoBehaviour
 
     public Unit MyUnit { get; private set; }
 
-    //public bool HasCaptured { get; set; }
+    public bool HasCaptured { get; set; }
 
     #endregion
     /************************************************************/

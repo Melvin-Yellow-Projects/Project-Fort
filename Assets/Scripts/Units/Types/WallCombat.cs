@@ -28,6 +28,7 @@ public class WallCombat : UnitCombat
         if (otherUnit.Id == 0)
         {
             MyUnit.Die(); // I am captured by the axe
+            otherUnit.CombatHandler.HasCaptured = true;
         }
 
         // are we both traveling to the same cell? is there a gap between us?

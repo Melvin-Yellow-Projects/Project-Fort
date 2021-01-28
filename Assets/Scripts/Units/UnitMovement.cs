@@ -111,11 +111,15 @@ public abstract class UnitMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
 
-            if (hasAuthority) Display.RefreshMovementDisplay(currentMovement);
+            if (!hasAuthority) return;
+
+            Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
-            if (hasAuthority)
-                MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+
+            if (CanMove) Display.ShowDisplay();
+            else Display.HideDisplay();
         }
     }
 
@@ -514,6 +518,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStopTurn()
     {
+        MyUnit.CombatHandler.HasCaptured = false;
         HasAction = false;
         HandleRpcOnStopTurn();
     }
@@ -522,6 +527,7 @@ public abstract class UnitMovement : NetworkBehaviour
     protected virtual void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
+        MyUnit.CombatHandler.HasCaptured = false;
         HasAction = false;
     }
 
