@@ -49,7 +49,8 @@ public class HorseCombat : UnitCombat
         // I have captured enemy piece
         else
         {
-            MyUnit.Movement.CanMove = false;
+            //MyUnit.Movement.Path.Clear();
+            MyUnit.Movement.ServerClearAction();
         }
     }
     #endregion
