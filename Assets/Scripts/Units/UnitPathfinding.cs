@@ -201,7 +201,7 @@ public class UnitPathfinding : MonoBehaviour
         if (edgeType != HexEdgeType.Flat) moveCost += 1;
 
         // if mud add 100
-        if (current.TerrainTypeIndex == 2) moveCost = 100;
+        if (neighbor.TerrainTypeIndex == 2) moveCost = 100;
 
         return moveCost;
     }
