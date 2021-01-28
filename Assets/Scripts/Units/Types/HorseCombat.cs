@@ -14,5 +14,42 @@ using UnityEngine;
 
 public class HorseCombat : UnitCombat
 {
-    
+    /************************************************************/
+    #region Class Functions
+
+    protected override void AllyCollision(Unit otherUnit)
+    {
+        MyUnit.Movement.CancelAction();
+    }
+
+    protected override void ActiveCollision(Unit otherUnit)
+    {
+        // is the enemy a wall?
+        if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CancelAction();
+        }
+
+        // active combat has been triggered
+        else
+        {
+            MyUnit.Die();
+        }
+    }
+
+    protected override void IdleCollision(Unit otherUnit)
+    {
+        // is the enemy a wall?
+        if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CancelAction();
+        }
+
+        // I have captured enemy piece
+        else
+        {
+            MyUnit.Movement.CanMove = false;
+        }
+    }
+    #endregion
 }
