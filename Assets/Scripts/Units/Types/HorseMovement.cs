@@ -39,6 +39,7 @@ public class HorseMovement : UnitMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
+        if (CurrentMovement == 0) ServerClearAction();
         base.HandleServerOnStopTurn();
     }
 
