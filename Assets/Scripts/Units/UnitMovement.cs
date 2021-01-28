@@ -227,14 +227,14 @@ public abstract class UnitMovement : NetworkBehaviour
         EnRouteCell = null;
         HadActionCanceled = false;
 
+        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
+
         CurrentMovement--;
 
         if (!Path.HasPath) return;
 
         Path.RemoveTailCells(numberToRemove: movesPerStep);
         if (hasAuthority) Path.Show(); // FIXME: this might be a problem
-
-        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
     }
 
     [Server]
@@ -433,6 +433,8 @@ public abstract class UnitMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         CurrentMovement--; // TODO: This isn't needed, this can be a sync var
+
+        if (!Path.HasPath) return;
 
         Path.RemoveTailCells(numberToRemove: 1);
         Path.Show();
