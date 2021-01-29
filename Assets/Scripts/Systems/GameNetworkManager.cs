@@ -253,6 +253,7 @@ public class GameNetworkManager : NetworkManager
         SteamManager steamManager = GetComponent<SteamManager>();
         Transport steamTransport = GetComponent<Mirror.FizzySteam.FizzySteamworks>();
 
+        // toggle the correct transport and manager
         kcpTransport.enabled = !IsUsingSteam;
         steamManager.enabled = IsUsingSteam;
         steamTransport.enabled = IsUsingSteam;
