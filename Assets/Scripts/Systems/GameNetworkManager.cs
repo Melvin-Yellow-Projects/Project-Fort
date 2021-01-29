@@ -20,6 +20,10 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Variables
 
+    [Header("Settings")]
+    [Tooltip("whether or not this build is using Steam")]
+    [SerializeField] bool isUsingSteam = false;
+
     [Tooltip("how long to wait for a player to load the map terrain")]
     [SerializeField, Range(0f, 60f)] float waitForPlayerToSpawnTerrain = 30f;
 
@@ -54,11 +58,21 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
+    public static bool IsUsingSteam { get; private set; } = false;
+
     public static bool IsGameInProgress { get; set; }
 
     #endregion
     /************************************************************/
     #region Server Functions
+
+    public override void OnValidate()
+    {
+        // the build has been changed from before, now time to change the transport
+        if (isUsingSteam != IsUsingSteam) ChangeTransport();
+        
+        base.OnValidate();
+    }
 
     [Server]
     public override void OnServerConnect(NetworkConnection conn)
@@ -224,6 +238,37 @@ public class GameNetworkManager : NetworkManager
     public override void OnStopClient()
     {
         GameManager.Players.Clear();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    private void ChangeTransport()
+    {
+        // update property to reflect the editor change
+        IsUsingSteam = isUsingSteam;
+
+        Transport kcpTransport = GetComponent<kcp2k.KcpTransport>();
+        SteamManager steamManager = GetComponent<SteamManager>();
+        Transport steamTransport = GetComponent<Mirror.FizzySteam.FizzySteamworks>();
+
+        kcpTransport.enabled = !IsUsingSteam;
+        steamManager.enabled = IsUsingSteam;
+        steamTransport.enabled = IsUsingSteam;
+
+        if (IsUsingSteam)
+        {
+            Debug.LogWarning("Changing Network Transport to Fizzy Steamworks");
+
+            transport = steamTransport;
+        }
+        else
+        {
+            Debug.LogWarning("Changing Network Transport to KcpTransport");
+
+            transport = kcpTransport;
+        }
     }
 
     #endregion

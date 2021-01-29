@@ -22,7 +22,7 @@ public class GameSession : NetworkBehaviour
     #region Variables
 
     [Tooltip("how fast to run the game's internal clock speed")]
-    [SerializeField] [Range(0, 10)] private float gameSpeed = 1f;
+    [SerializeField] [Range(0, 10)] float gameSpeed = 1f;
 
     #endregion
 
