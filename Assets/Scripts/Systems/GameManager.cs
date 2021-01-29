@@ -160,11 +160,12 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerStartRound() 
     {
-        foreach (Player player in Players) player.Resources += 100;
-
         RoundCount++;
         TurnCount = 0;
         IsEconomyPhase = true;
+
+        // give 100 to a player for each fort they own
+        foreach (Player player in Players) player.Resources += player.MyForts.Count * 100;
 
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();
