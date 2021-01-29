@@ -194,17 +194,14 @@ public class UnitPathfinding : MonoBehaviour
     public static int GetMoveCostCalculation(HexCell current, HexCell neighbor)
     {
         // starting move cost
-        int moveCost = 0;
+        int moveCost = 1;
 
-        if (current.TerrainTypeIndex == 1) // if grass 
-        {
-            moveCost += 1;
-        }
-        else
-        {
-            HexEdgeType edgeType = current.GetEdgeType(neighbor);
-            moveCost += (edgeType == HexEdgeType.Flat) ? 2 : 3;
-        }
+        // add one if hill
+        //HexEdgeType edgeType = current.GetEdgeType(neighbor);
+        //if (edgeType != HexEdgeType.Flat) moveCost += 1;
+
+        // if mud add 100
+        //if (neighbor.TerrainTypeIndex == 2) moveCost = 100;
 
         return moveCost;
     }

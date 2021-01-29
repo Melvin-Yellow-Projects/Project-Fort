@@ -17,14 +17,15 @@ using Mirror;
 
 public abstract class UnitCombat : MonoBehaviour
 {
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public Unit MyUnit { get; private set; }
 
-    #endregion
+    public bool HasCaptured { get; set; }
 
-    /********** MARK: Unity Functions **********/
+    #endregion
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -48,28 +49,47 @@ public abstract class UnitCombat : MonoBehaviour
         // HACK: this should be 100% guarenteed because other collisions are disabled
         if (!otherUnit) return;
 
-        //Debug.Log($"{MyUnit.name} has collided with {otherUnit.name}");
+        // Debug.Log($"{MyUnit.name} has collided with {otherUnit.name}");
 
-        // is the unit on my team?
+        // is the unit on my team? // TODO: is this okay with the horse unit?
         if (otherUnit.MyTeam == MyUnit.MyTeam)
         {
             // Other Unit is my Ally
-            MyUnit.Movement.CancelAction();
+            AllyCollision(otherUnit);
         }
 
         // do i die to this unit?
         else if (otherUnit.Movement.EnRouteCell && !otherUnit.Movement.HadActionCanceled)
         {
-            // Other Unit is in Active Combat
-            MyUnit.Die();
+            // Other Unit is in route; active combat
+            ActiveCollision(otherUnit);
         }
 
-        // the unit is my enemy, and i have killed him, and now i have to stop moving
+        // the other unit is my enemy, it is idle, and now i have entered idle combat
         else
         {
-            // Other Unit is in Inactive Combat
-            MyUnit.Movement.CanMove = false;
+            // Other Unit is idle; idle combat
+            IdleCollision(otherUnit);
         }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    protected virtual void AllyCollision(Unit otherUnit)
+    {
+        MyUnit.Movement.CancelAction();
+    }
+
+    protected virtual void ActiveCollision(Unit otherUnit)
+    {
+        MyUnit.Die();
+    }
+
+    protected virtual void IdleCollision(Unit otherUnit)
+    {
+        MyUnit.Movement.CanMove = false;
     }
 
     #endregion

@@ -1,0 +1,139 @@
+﻿/**
+ * File Name: Fader.cs
+ * Description: This class serves as a way to handle images fading in and out
+ * 
+ * Authors: Will Lacey
+ * Date Created: July 22, 2020
+ * 
+ * Additional Comments: 
+ * 
+ *      Previously known as FaderComponent.cs within the Death's Army Project
+ *      
+ *      HACK: Code repetition
+ **/
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+/// <summary>
+/// 
+/// </summary>
+public class Fader : MonoBehaviour
+{
+    /************************************************************/
+    #region Variables
+
+    [Header("Settings")]
+    [Tooltip("whether or not to set the gameObject's images to be visible on Awake()")]
+    [SerializeField] bool isVisible = true;
+
+    [Tooltip("speed in which to fade in or out")]
+    [SerializeField, Range(0, 5f)] float fadeSpeed = 1f;
+
+    Image[] images = null;
+
+    #endregion
+    /************************************************************/
+    #region Unity Functions
+
+    public bool IsVisible
+    {
+        get
+        {
+            return isVisible;
+        }
+    }
+
+    private Image[] Images
+    {
+        get
+        {
+            if (images == null)
+            {
+                images = GetComponentsInChildren<Image>();
+            }
+            return images;
+        }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Unity Functions
+
+    private void Awake()
+    {
+        if (isVisible) return;
+
+        for (int i = 0; i < 0; i++)
+        {
+            Color color = Images[i].color;
+            Images[i].color = new Color(color.r, color.g, color.b, 0);
+        }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    public void FadeIn()
+    {
+        StopAllCoroutines();
+
+        foreach (Image image in Images)
+            StartCoroutine(FadeInCoroutine(image));
+    }
+
+    public IEnumerator FadeInCoroutine(Image image)
+    {
+        // set color alpha to 0
+        Color color = image.color;
+        image.color = new Color(color.r, color.g, color.b, 0);
+        color = image.color;
+
+        // begin fade in process
+        while (color.a < 1)
+        {
+            // yield every frame
+            yield return null;
+
+            color.a += Time.deltaTime * fadeSpeed;
+            image.color = new Color(color.r, color.g, color.b, color.a);
+            color = image.color;
+        }
+
+        isVisible = true;
+    }
+
+    public void FadeOut()
+    {
+        StopAllCoroutines();
+
+        foreach (Image image in Images)
+            StartCoroutine(FadeOutCoroutine(image));
+    }
+
+    public IEnumerator FadeOutCoroutine(Image image)
+    {
+        // set color alpha to 1
+        Color color = image.color;
+        image.color = new Color(color.r, color.g, color.b, 1);
+        color = image.color;
+
+        // begin fade in process
+        while (color.a > 0)
+        {
+            // yield every frame
+            yield return null;
+
+            color.a -= Time.deltaTime * fadeSpeed;
+            image.color = new Color(color.r, color.g, color.b, color.a);
+            color = image.color;
+        }
+
+        isVisible = false;
+    }
+
+    #endregion
+}

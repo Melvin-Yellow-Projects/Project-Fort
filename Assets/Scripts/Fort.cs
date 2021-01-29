@@ -124,6 +124,7 @@ public class Fort : NetworkBehaviour
     public override void OnStartServer()
     {
         Subscribe();
+        ValidateLocation();
     }
 
     [Server]
@@ -142,7 +143,7 @@ public class Fort : NetworkBehaviour
 
     public void ValidateLocation()
     {
-        transform.localPosition = myCell.Position;
+        if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = myCell.Position;
     }
 
     public bool IsBuyCell(HexCell cell)

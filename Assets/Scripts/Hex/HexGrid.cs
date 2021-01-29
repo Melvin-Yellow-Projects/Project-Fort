@@ -76,6 +76,8 @@ public class HexGrid : NetworkBehaviour
     int fortCount = 0;
     int unitCount = 0;
 
+    int numberOfCellsLoaded = 0;
+
     #endregion
     /************************************************************/
     #region Public Properties
@@ -121,6 +123,7 @@ public class HexGrid : NetworkBehaviour
     public static void ServerSpawnMapTerrain()
     {
         Debug.Log("Spawning Map Terrain");
+        if (LoadingDisplay.Singleton) LoadingDisplay.IsFillProgressFake = true;
 
         Instantiate(Prefab).InitializeMap();
 
@@ -165,6 +168,7 @@ public class HexGrid : NetworkBehaviour
             NetworkServer.Spawn(Forts[i].gameObject,
                 ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
         }
+        if (LoadingDisplay.Singleton) LoadingDisplay.Done();
     }
 
     #endregion
@@ -198,6 +202,12 @@ public class HexGrid : NetworkBehaviour
         // FIXME: Is this code correct?
         cells[index].ShaderData.RefreshTerrain(cells[index]);
         cells[index].ShaderData.RefreshVisibility(cells[index]);
+
+        numberOfCellsLoaded++;
+
+        float percent = (float)numberOfCellsLoaded / cells.Length;
+        LoadingDisplay.SetFillProgress(percent);
+        if (numberOfCellsLoaded == cells.Length) LoadingDisplay.Done();
     }
 
     #endregion

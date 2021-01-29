@@ -45,31 +45,29 @@ public class SceneLoader : MonoBehaviour
     /// </summary>
     public static void LoadStartScene()
     {
-        // FIXME: This needs to work for host/server/client
+        // FIXME: This needs to work for host/server/client; i can't figure it out yeesh
         if (NetworkServer.active && NetworkClient.isConnected)
         {
-            GameNetworkManager.IsGameInProgress = false;
-
             for (int i = GameManager.Players.Count - 1; i >= 0; i--)
             {
                 Player p = GameManager.Players[i];
                 if (p as ComputerPlayer) NetworkServer.Destroy(p.gameObject);
             }
 
+            // HACK you shouldn't manually have to destroy these
             NetworkServer.Destroy(HexGrid.Singleton.gameObject);
+            if (IsGameScene) NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
 
             NetworkManager.singleton.StopHost();
+            //Application.Quit();
         }
         else
         {
             NetworkManager.singleton.StopClient();
+            Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
         }
 
-        NetworkManager.singleton.autoCreatePlayer = true;
-        GameSession.Singleton.IsOnline = false;
-        GameSession.Singleton.IsEditorMode = false;
-
-        SceneManager.LoadScene(MenuSceneName); // FIXME
+        SceneManager.LoadScene(MenuSceneName); 
     }
 
     public static void LoadLocalGame()

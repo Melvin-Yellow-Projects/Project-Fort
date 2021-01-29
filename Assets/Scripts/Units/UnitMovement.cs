@@ -21,24 +21,24 @@ public abstract class UnitMovement : NetworkBehaviour
     /** Class Parameters **/
     [Header("Gameplay Settings")]
     [Tooltip("ID for this unit")]
-    [SerializeField] int maxMovement = 4;
+    [SerializeField] protected int maxMovement = 4;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] int visionRange = 100;
+    [SerializeField] protected int visionRange = 100;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] int movesPerStep = 1;
+    [SerializeField] protected int movesPerStep = 1;
 
     [Header("Aesthetic Settings")]
     [Tooltip("ID for this unit")]
-    [SerializeField] float travelSpeed = 6f;
+    [SerializeField] protected float travelSpeed = 6f;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] float rotationSpeed = 360f;
+    [SerializeField] protected float rotationSpeed = 360f;
 
     /** Other Variables **/
-    float orientation;
-    int currentMovement;
+    protected float orientation;
+    protected int currentMovement;
 
     [SyncVar(hook = nameof(HookOnMyCell))]
     HexCell myCell;
@@ -111,11 +111,15 @@ public abstract class UnitMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, maxMovement);
 
-            if (hasAuthority) Display.RefreshMovementDisplay(currentMovement);
+            if (!hasAuthority) return;
+
+            Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
-            if (hasAuthority)
-                MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+
+            if (CanMove) Display.ShowDisplay();
+            else Display.HideDisplay();
         }
     }
 
@@ -196,8 +200,10 @@ public abstract class UnitMovement : NetworkBehaviour
     public void ServerDoAction()
     {
         if (!HasAction) return;
-        if (!Path.HasPath) return; // HACK: removing this line causes errors, HasAction should
-                                            // better reflect the action status of the unit
+
+        // HACK: removing line causes errors, HasAction should better reflect action status of unit
+        if (!Path.HasPath || CurrentMovement == 0) return;
+
         List<HexCell> cells = new List<HexCell>();
         cells.Add(Path[0]);
         cells.Add(Path[1]);
@@ -221,14 +227,14 @@ public abstract class UnitMovement : NetworkBehaviour
         EnRouteCell = null;
         HadActionCanceled = false;
 
-        CurrentMovement--;
+        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
+
+        CurrentMovement--; // FIXME assumes all tiles have the same cost
 
         if (!Path.HasPath) return;
 
-        Path.RemoveTailCells(numberToRemove: 1);
+        Path.RemoveTailCells(numberToRemove: movesPerStep);
         if (hasAuthority) Path.Show(); // FIXME: this might be a problem
-
-        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
     }
 
     [Server]
@@ -391,7 +397,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         Path.Clear();
         HasAction = false;
-        TargetClearPath();
+        if (connectionToClient != null) TargetClearPath();
 
         return hadAction;
     }
@@ -427,6 +433,8 @@ public abstract class UnitMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         CurrentMovement--; // TODO: This isn't needed, this can be a sync var
+
+        if (!Path.HasPath) return;
 
         Path.RemoveTailCells(numberToRemove: 1);
         Path.Show();
@@ -510,23 +518,18 @@ public abstract class UnitMovement : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnStopTurn()
+    protected virtual void HandleServerOnStopTurn()
     {
-        // TODO: this might change for units
-        if (currentMovement < maxMovement) CanMove = false;
-
+        MyUnit.CombatHandler.HasCaptured = false;
         HasAction = false;
-
         HandleRpcOnStopTurn();
     }
 
     [ClientRpc]
-    private void HandleRpcOnStopTurn()
+    protected virtual void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
-
-        if (currentMovement < maxMovement) CanMove = false;
-
+        MyUnit.CombatHandler.HasCaptured = false;
         HasAction = false;
     }
 
@@ -541,9 +544,9 @@ public abstract class UnitMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
+        //UnitPathfinding.DecreaseVisibility(myCell, visionRange); // FIXME visibility
 
-        CanMove = false; // FIXME: this wont work if unit dies right before new Round 
+        CanMove = false;
 
         HandleRpcOnDeath();
     }
@@ -556,6 +559,7 @@ public abstract class UnitMovement : NetworkBehaviour
         CanMove = false;
     }
 
+    [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
         if (myCell) MyCell = myCell;

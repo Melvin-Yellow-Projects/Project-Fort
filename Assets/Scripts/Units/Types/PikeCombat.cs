@@ -14,5 +14,48 @@ using UnityEngine;
 
 public class PikeCombat : UnitCombat
 {
-    
+    /************************************************************/
+    #region Class Functions
+
+    protected override void AllyCollision(Unit otherUnit)
+    {
+        MyUnit.Movement.CancelAction();
+    }
+
+    protected override void ActiveCollision(Unit otherUnit)
+    {
+        // is the enemy a wall?
+        if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CancelAction();
+        }
+
+        // if the enemy is not a horse, die
+        else if (otherUnit.Id != 1)
+        {
+            MyUnit.Die();
+            otherUnit.CombatHandler.HasCaptured = true;
+        }
+
+        else
+        {
+            // do nothing, cut through the enemy horse with charge
+        }
+    }
+
+    protected override void IdleCollision(Unit otherUnit)
+    {
+        // is the enemy a wall?
+        if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CancelAction();
+        }
+
+        else
+        {
+            // do nothing, cut through the enemy with charge
+        }
+    }
+
+    #endregion
 }

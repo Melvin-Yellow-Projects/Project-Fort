@@ -160,6 +160,8 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerStartRound() 
     {
+        foreach (Player player in Players) player.Resources += 100;
+
         RoundCount++;
         TurnCount = 0;
         IsEconomyPhase = true;
@@ -302,6 +304,9 @@ public class GameManager : NetworkBehaviour
             IsEconomyPhase = true;
             RoundCount++;
             TurnCount = 0;
+
+            // TODO: check to see if connection is still active, or if this line is needed
+            //NetworkClient.connection.identity.GetComponent<Player>().Resources += 100;
         }
         ClientOnStartRound?.Invoke();
     }

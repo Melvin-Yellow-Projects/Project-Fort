@@ -154,17 +154,11 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    //[Server]
-    //public override void OnStartServer()
-    //{
-    //    OnUnitSpawned?.Invoke(this);
-    //}
-
-    //[Server]
-    //public override void OnStopServer()
-    //{
-    //    OnUnitDepawned?.Invoke(this);
-    //}
+    [Server]
+    public override void OnStartServer()
+    {
+        ValidateLocation();
+    }
 
     #endregion
     /************************************************************/
@@ -172,14 +166,12 @@ public class Unit : NetworkBehaviour
 
     public void ValidateLocation()
     {
-        UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: this no work
-        transform.localPosition = MyCell.Position;
+        //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
+        if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = MyCell.Position;
     }
 
     public void Die(bool isPlayingAnimation = true)
     {
-        //StopAllCoroutines(); // HACK: i think this line can be safely removed
-
         GetComponent<UnitDeath>().Die(isPlayingAnimation);
     }
 

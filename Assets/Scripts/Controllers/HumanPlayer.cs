@@ -82,18 +82,25 @@ public class HumanPlayer : Player
     {
         if (!currentCell) return;
 
-        DeselectUnitAndClearItsPath();
-        SelectUnit(currentCell.MyUnit);
-    }
-
-    [Client]
-    private void DoCommand(InputAction.CallbackContext context)
-    {
         if (GameManager.IsEconomyPhase)
         {
             if (!currentCell) return;
 
             CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
+        }
+        else
+        {
+            DeselectUnitAndClearItsPath();
+            SelectUnit(currentCell.MyUnit);
+        }
+    }
+
+    [Client]
+    private void DoCommand(InputAction.CallbackContext context)
+    {
+        if (GameManager.IsEconomyPhase && currentCell)
+        {
+            CmdTrySellUnit(currentCell);
         }
         else
         {
@@ -129,7 +136,6 @@ public class HumanPlayer : Player
             hasCurrentCellUpdated = false;
         }
     }
-
 
     [Client]
     private void DoPathfinding()
@@ -196,10 +202,8 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Event Handler Functions
 
-    protected override void Subscribe()
+    protected override void AuthoritySubscribe()
     {
-        base.Subscribe();
-
         if (!hasAuthority) return;
 
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
@@ -211,20 +215,22 @@ public class HumanPlayer : Player
         controls.Player.Selection.performed += DoSelection;
         controls.Player.Command.performed += DoCommand;
         controls.Enable();
+
+        base.AuthoritySubscribe();
     }
 
-    protected override void Unsubscribe()
+    protected override void AuthorityUnsubscribe()
     {
-        base.Unsubscribe();
-
         if (!hasAuthority) return;
-
+        
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
         GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
 
         controls.Dispose();
+
+        base.AuthorityUnsubscribe();
     }
 
     [Client]

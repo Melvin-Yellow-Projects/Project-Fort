@@ -138,7 +138,7 @@ public class UnitPath : MonoBehaviour
             {
                 cells.Add(cell);
 
-                if (UnitPathfinding.GetMoveCostCalculation(cells) <= movement.MaxMovement)
+                if (UnitPathfinding.GetMoveCostCalculation(cells) <= movement.CurrentMovement)
                 {
                     return; // ...otherwise reset the path if the path is too long
                 }
@@ -202,7 +202,8 @@ public class UnitPath : MonoBehaviour
         else cursor = UnitCursor.Initialize(points);
 
         cursor.IsSelected = unit.IsSelected;
-        cursor.HasError = (UnitPathfinding.GetMoveCostCalculation(cells) > movement.MaxMovement);
+        cursor.HasError =
+            (UnitPathfinding.GetMoveCostCalculation(cells) > movement.CurrentMovement);
 
         //StartCoroutine(AnimatePath());
     }
