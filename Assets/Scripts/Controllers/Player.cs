@@ -195,14 +195,7 @@ public abstract class Player : NetworkBehaviour
         Unit unit = Unit.Prefabs[unitId];
         if (Resources < unit.Resources) return;
 
-        bool canBuy = false;
-        for (int i = 0; !canBuy && i < MyForts.Count; i++)
-        {
-            Fort fort = MyForts[i];
-            canBuy = fort.IsBuyCell(cell);
-        }
-
-        if (!canBuy) return;
+        if (!CanBuyOnCell(cell)) return;
 
         Unit instance = Instantiate(unit);
         instance.MyCell = cell;
@@ -212,6 +205,22 @@ public abstract class Player : NetworkBehaviour
         NetworkServer.Spawn(instance.gameObject, connectionToClient);
 
         Resources -= unit.Resources;
+    }
+
+    [Command]
+    protected void CmdTrySellUnit(HexCell cell)
+    {
+        if (!GameManager.IsEconomyPhase) return;
+
+        if (MyUnits.Count == 1) return;
+
+        if (!cell.MyUnit || cell.MyUnit.MyTeam != MyTeam) return;
+
+        if (!CanBuyOnCell(cell)) return;
+
+        Resources += cell.MyUnit.Resources;
+
+        cell.MyUnit.Die();
     }
 
     #endregion
@@ -271,6 +280,17 @@ public abstract class Player : NetworkBehaviour
     public bool CanMove()
     {
         return (MoveCount > 0);
+    }
+
+    private bool CanBuyOnCell(HexCell cell)
+    {
+        for (int i = 0; i < MyForts.Count; i++)
+        {
+            Fort fort = MyForts[i];
+            if (fort.IsBuyCell(cell)) return true;
+        }
+
+        return false;
     }
 
     #endregion

@@ -82,18 +82,25 @@ public class HumanPlayer : Player
     {
         if (!currentCell) return;
 
-        DeselectUnitAndClearItsPath();
-        SelectUnit(currentCell.MyUnit);
-    }
-
-    [Client]
-    private void DoCommand(InputAction.CallbackContext context)
-    {
         if (GameManager.IsEconomyPhase)
         {
             if (!currentCell) return;
 
             CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
+        }
+        else
+        {
+            DeselectUnitAndClearItsPath();
+            SelectUnit(currentCell.MyUnit);
+        }
+    }
+
+    [Client]
+    private void DoCommand(InputAction.CallbackContext context)
+    {
+        if (GameManager.IsEconomyPhase && currentCell)
+        {
+            CmdTrySellUnit(currentCell);
         }
         else
         {
