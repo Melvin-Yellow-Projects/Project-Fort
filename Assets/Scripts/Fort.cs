@@ -261,15 +261,11 @@ public class Fort : NetworkBehaviour
 
     private void Subscribe()
     {
-        if (!isServer) return;
-
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
     private void Unsubscribe()
     {
-        if (!isServer) return;
-
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
@@ -281,6 +277,8 @@ public class Fort : NetworkBehaviour
         if (!unit || MyTeam == unit.MyTeam) return;
 
         ServerOnFortCaptured?.Invoke(this, unit.MyTeam);
+
+        Debug.Log($"Fort {name} was captured by team {unit.MyTeam.TeamIndex}");
 
         MyTeam.SetTeam(unit.MyTeam);
     }
