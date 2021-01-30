@@ -77,7 +77,14 @@ public class GameOverHandler : NetworkBehaviour
     {
         TargetOnDefeat?.Invoke();
 
-        conn.identity.GetComponent<HumanPlayer>().enabled = false;
+        HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
+
+        player.MyUnits.Clear();
+        player.MyForts.Clear();
+
+        player.enabled = false;
+        Destroy(PlayerMenu.Singleton.gameObject);
+
         // TODO: disable player's UI (end turn button)
     }
 
@@ -142,6 +149,10 @@ public class GameOverHandler : NetworkBehaviour
 
         foreach (Unit unit in player.MyUnits) unit.MyTeam.SetTeam(0);
         foreach (Fort fort in player.MyForts) fort.MyTeam.SetTeam(0);
+        player.MyUnits.Clear();
+        player.MyForts.Clear();
+
+        player.enabled = false;
 
         ServerCheckIfGameOver();
     }
