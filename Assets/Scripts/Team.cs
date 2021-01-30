@@ -35,11 +35,35 @@ public class Team : NetworkBehaviour
         }
     }
 
-    public Color MyColor
+    //public Color TeamColor { get; set; }
+    public Color TeamColor
     {
         get
         {
-            return (teamIndex == 1) ? Color.blue : Color.red;
+            // TODO: add settable color
+            switch (teamIndex)
+            {
+                case 0:
+                    return Color.gray;
+                case 1:
+                    return Color.blue;
+                case 2:
+                    return Color.red;
+                case 3:
+                    return Color.green;
+                case 4:
+                    return Color.yellow;
+                case 5:
+                    return Color.magenta;
+                case 6:
+                    return Color.cyan;
+                case 7:
+                    return Color.red + Color.yellow;
+                case 8:
+                    return new Color(143f / 255f, 0.4f, 1f, 1); // lavender
+            }
+            Debug.LogError("team color not found");
+            return Color.black;
         }
     }
 
@@ -52,7 +76,8 @@ public class Team : NetworkBehaviour
         }
     }
 
-    public NetworkConnection AuthoritiveConnection //FIXME: This needs to be updated
+    //HACK: This needs to be updated
+    public NetworkConnection AuthoritiveConnection 
     {
         [Server] 
         get
@@ -62,7 +87,7 @@ public class Team : NetworkBehaviour
                 if (teamIndex == GameManager.Players[i].MyTeam.teamIndex)
                 {
                     //Debug.Log($"Grabbing Authoritative Connection for {name}");
-                    MyPlayer = GameManager.Players[i]; // HACK: this won't work for long
+                    MyPlayer = GameManager.Players[i];
                     return GameManager.Players[i].connectionToClient;
                 }
             }
@@ -97,6 +122,7 @@ public class Team : NetworkBehaviour
 
         this.teamIndex = teamIndex;
         ServerRefreshAuthoritativeConnection();
+        //if (MyColorSetter) MyColorSetter.SetColor(TeamColor); // TODO: validate if line needed
     }
 
     public void SetTeam(Team team)
@@ -110,7 +136,7 @@ public class Team : NetworkBehaviour
 
     private void HookOnTeamIndex(int oldValue, int newValue)
     {
-        if (MyColorSetter) MyColorSetter.SetColor(MyColor);
+        if (MyColorSetter) MyColorSetter.SetColor(TeamColor);
 
     }
 

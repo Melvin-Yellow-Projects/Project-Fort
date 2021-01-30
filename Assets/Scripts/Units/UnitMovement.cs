@@ -116,7 +116,7 @@ public abstract class UnitMovement : NetworkBehaviour
             Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
-            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.TeamColor, isSaturating: !CanMove);
 
             if (CanMove) Display.ShowDisplay();
             else Display.HideDisplay();

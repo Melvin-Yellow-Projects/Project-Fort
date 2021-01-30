@@ -181,7 +181,8 @@ public class GameNetworkManager : NetworkManager
 
         Debug.Log($"Server has changed the Scene to {sceneName}");
 
-        if (SceneLoader.IsGameScene && GameManager.Players.Count < 2)
+        // HACK: this is hardcoded, 4 should not represent the num player max
+        while (SceneLoader.IsGameScene && GameManager.Players.Count < 4) 
             ServerSpawnComputerPlayer();
 
         HexGrid.ServerSpawnMapTerrain();

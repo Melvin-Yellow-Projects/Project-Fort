@@ -626,8 +626,6 @@ public class HexGrid : NetworkBehaviour
 
     private void HandleOnFortSpawned(Fort fort)
     {
-        // TODO: Server validation
-
         fort.name = $"{fort.MyTeam.TeamIndex}fort{fortCount}";
         fortCount += 1;
 
@@ -643,8 +641,6 @@ public class HexGrid : NetworkBehaviour
 
     private void HandleOnUnitSpawned(Unit unit)
     {
-        // TODO: Server validation
-
         unit.name = $"{unit.MyTeam.TeamIndex}unit{unitCount}"; // FIXME: name should update
         unitCount += 1;
 

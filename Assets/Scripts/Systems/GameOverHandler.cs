@@ -60,6 +60,14 @@ public class GameOverHandler : NetworkBehaviour
         Unsubscribe();
     }
 
+    [Server]
+    public void ServerCheckIfGameOver()
+    {
+        if (GameManager.Players.Count != 1) return;
+
+        RpcGameOver(GameManager.Players[0].GetComponent<PlayerInfo>().PlayerName);
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions
@@ -70,6 +78,7 @@ public class GameOverHandler : NetworkBehaviour
         TargetOnDefeat?.Invoke();
 
         conn.identity.GetComponent<HumanPlayer>().enabled = false;
+        // TODO: disable player's UI (end turn button)
     }
 
     [ClientRpc]
@@ -105,33 +114,35 @@ public class GameOverHandler : NetworkBehaviour
         //Unit.OnUnitDepawned -= null;
     }
 
+    [Server]
     private void HandleServerOnPlayerDefeat(Player player, WinConditionType type)
     {
-        // HACK: assumes two players
-        //ServerOnGameOver?.Invoke(); 
-        RpcGameOver("The Winner");
-
-        // TODO: check if player is AI, if AI, skip connections
-        if (player.connectionToClient == null) return;
-
-        switch (type)
+        // HACK: fix this function up later
+        if (player.connectionToClient == null)
         {
-            case WinConditionType.Draw:
-                TargetDefeat(player.connectionToClient);
-                break;
-            case WinConditionType.Conquest:
-                TargetDefeat(player.connectionToClient);
-                break;
-            case WinConditionType.Routed:
-                TargetDefeat(player.connectionToClient);
-                break;
-            case WinConditionType.Disconnect:
-                TargetDefeat(player.connectionToClient); // will line ever be sent to legit client?
-                break;
+            switch (type)
+            {
+                case WinConditionType.Draw:
+                    TargetDefeat(player.connectionToClient);
+                    break;
+                case WinConditionType.Conquest:
+                    TargetDefeat(player.connectionToClient);
+                    break;
+                case WinConditionType.Routed:
+                    TargetDefeat(player.connectionToClient);
+                    break;
+                case WinConditionType.Disconnect:
+                    TargetDefeat(player.connectionToClient); // will line ever be sent to legit client?
+                    break;
+            }
         }
 
-        // TODO: check for remaining players, then broadcast RpcGameOver
+        GameManager.Players.Remove(player);
 
+        foreach (Unit unit in player.MyUnits) unit.MyTeam.SetTeam(0);
+        foreach (Fort fort in player.MyForts) fort.MyTeam.SetTeam(0);
+
+        ServerCheckIfGameOver();
     }
     #endregion
 }
