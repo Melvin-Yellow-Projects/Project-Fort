@@ -53,10 +53,10 @@ public class Fort : NetworkBehaviour
     public static event Action<Fort> OnFortDespawned;
 
     /// <summary>
-    /// Server event for when a fort is captured; passes captured fort and new capturing team
+    /// Server event for when a fort is captured; passes captured fort and its previous team
     /// </summary>
     /// <subscriber class="Player">updates a player's forts</subscriber>
-    public static event Action<Fort, Team> ServerOnFortCaptured;
+    public static event Action<Fort, int> ServerOnFortCaptured;
 
     #endregion
     /************************************************************/
@@ -235,7 +235,7 @@ public class Fort : NetworkBehaviour
     {
         myCell.coordinates.Save(writer);
         writer.Write(orientation);
-        writer.Write((byte)MyTeam.TeamIndex);
+        writer.Write((byte)MyTeam.Id);
     }
 
     public static void Load(BinaryReader reader, int header)
@@ -276,11 +276,13 @@ public class Fort : NetworkBehaviour
 
         if (!unit || MyTeam == unit.MyTeam) return;
 
-        ServerOnFortCaptured?.Invoke(this, unit.MyTeam);
+        Debug.Log($"Fort {name} was captured by team {unit.MyTeam.Id}");
 
-        Debug.Log($"Fort {name} was captured by team {unit.MyTeam.TeamIndex}");
+        int previousTeamId = MyTeam.Id;
 
         MyTeam.SetTeam(unit.MyTeam);
+
+        ServerOnFortCaptured?.Invoke(this, previousTeamId);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

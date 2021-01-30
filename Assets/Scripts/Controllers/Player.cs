@@ -368,19 +368,19 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server] // HACK: this function is so jank
-    private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
+    private void HandleServerOnFortCaptured(Fort fort, int previousTeamId)
     {
         if (MyTeam == fort.MyTeam)
+        {
+            MyForts.Add(fort);
+            if (connectionToClient != null) TargetAddFort(connectionToClient, fort.netIdentity); 
+        }
+        else if (MyTeam.Id == previousTeamId)
         {
             MyForts.Remove(fort);
             if (connectionToClient != null) TargetRemoveFort(connectionToClient, fort.netIdentity);
 
             if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
-        }
-        else if (MyTeam == newTeam)
-        {
-            MyForts.Add(fort);
-            if (connectionToClient != null) TargetAddFort(connectionToClient, fort.netIdentity);
         }
     }
 

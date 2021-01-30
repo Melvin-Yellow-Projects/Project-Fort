@@ -626,7 +626,7 @@ public class HexGrid : NetworkBehaviour
 
     private void HandleOnFortSpawned(Fort fort)
     {
-        fort.name = $"{fort.MyTeam.TeamIndex}fort{fortCount}";
+        fort.name = $"{fort.MyTeam.Id}fort{fortCount}";
         fortCount += 1;
 
         Forts.Add(fort);
@@ -641,7 +641,7 @@ public class HexGrid : NetworkBehaviour
 
     private void HandleOnUnitSpawned(Unit unit)
     {
-        unit.name = $"{unit.MyTeam.TeamIndex}unit{unitCount}"; // FIXME: name should update
+        unit.name = $"{unit.MyTeam.Id}unit{unitCount}"; // FIXME: name should update
         unitCount += 1;
 
         Units.Add(unit);

@@ -183,7 +183,7 @@ public class Unit : NetworkBehaviour
     {
         MyCell.coordinates.Save(writer);
         writer.Write(Movement.Orientation);
-        writer.Write((byte)MyTeam.TeamIndex);
+        writer.Write((byte)MyTeam.Id);
     }
 
     public static void Load(BinaryReader reader, int header)

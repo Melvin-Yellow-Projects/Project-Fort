@@ -20,18 +20,18 @@ public class Team : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    [SyncVar(hook = nameof(HookOnTeamIndex))]
-    int teamIndex = 0;
+    [SyncVar(hook = nameof(HookOnId))]
+    int id = 0;
 
     #endregion
     /************************************************************/
     #region Properties
 
-    public int TeamIndex
+    public int Id
     {
         get
         {
-            return teamIndex; 
+            return id; 
         }
     }
 
@@ -41,7 +41,7 @@ public class Team : NetworkBehaviour
         get
         {
             // TODO: add settable color
-            switch (teamIndex)
+            switch (id)
             {
                 case 0:
                     return Color.gray;
@@ -84,7 +84,7 @@ public class Team : NetworkBehaviour
         {
             for (int i = 0; i < GameManager.Players.Count; i++)
             {
-                if (teamIndex == GameManager.Players[i].MyTeam.teamIndex)
+                if (id == GameManager.Players[i].MyTeam.id)
                 {
                     //Debug.Log($"Grabbing Authoritative Connection for {name}");
                     MyPlayer = GameManager.Players[i];
@@ -120,23 +120,23 @@ public class Team : NetworkBehaviour
 
     public void SetTeam(int teamIndex)
     {
-        if (this.teamIndex == teamIndex) return;
+        if (this.id == teamIndex) return;
 
-        this.teamIndex = teamIndex;
+        this.id = teamIndex;
         ServerRefreshAuthoritativeConnection();
         //if (MyColorSetter) MyColorSetter.SetColor(TeamColor); // TODO: validate if line needed
     }
 
     public void SetTeam(Team team)
     {
-        SetTeam(team.teamIndex);
+        SetTeam(team.id);
     }
 
     #endregion
     /************************************************************/
     #region Event Handler Functions
 
-    private void HookOnTeamIndex(int oldValue, int newValue)
+    private void HookOnId(int oldValue, int newValue)
     {
         if (MyColorSetter) MyColorSetter.SetColor(TeamColor);
 
@@ -165,7 +165,7 @@ public class Team : NetworkBehaviour
         if (ReferenceEquals(this, other)) return true;
         if (ReferenceEquals(other, null)) return false;
 
-        return this.teamIndex == other.teamIndex;
+        return this.id == other.id;
     }
 
     public override bool Equals(object obj)
@@ -177,7 +177,7 @@ public class Team : NetworkBehaviour
     {
         unchecked
         {
-            int hashCode = teamIndex.GetHashCode();
+            int hashCode = id.GetHashCode();
             //hashCode = (hashCode * 397) ^ length.GetHashCode();
             //hashCode = (hashCode * 397) ^ breadth.GetHashCode();
             return hashCode;
