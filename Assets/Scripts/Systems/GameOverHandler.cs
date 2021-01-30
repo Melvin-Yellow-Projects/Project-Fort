@@ -118,7 +118,7 @@ public class GameOverHandler : NetworkBehaviour
     private void HandleServerOnPlayerDefeat(Player player, WinConditionType type)
     {
         // HACK: fix this function up later
-        if (player.connectionToClient == null)
+        if (player.connectionToClient != null)
         {
             switch (type)
             {
