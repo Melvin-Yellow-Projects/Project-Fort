@@ -113,7 +113,9 @@ public class Team : NetworkBehaviour
         //Debug.Log($"Refreshing AuthoritativeConnection for {name}");
 
         netIdentity.RemoveClientAuthority();
-        netIdentity.AssignClientAuthority(AuthoritiveConnection);
+
+        NetworkConnection conn = AuthoritiveConnection;
+        if (conn != null) netIdentity.AssignClientAuthority(conn);
     }
 
     public void SetTeam(int teamIndex)
