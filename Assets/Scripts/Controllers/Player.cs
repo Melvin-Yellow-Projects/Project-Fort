@@ -251,6 +251,7 @@ public abstract class Player : NetworkBehaviour
     [TargetRpc] 
     public void TargetAddFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
+        if (isServer) return;
         MyForts.Add(fortNetId.GetComponent<Fort>());
     }
 
@@ -259,6 +260,7 @@ public abstract class Player : NetworkBehaviour
     [TargetRpc]
     public void TargetRemoveFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
+        if (isServer) return;
         MyForts.Remove(fortNetId.GetComponent<Fort>());
     }
 
