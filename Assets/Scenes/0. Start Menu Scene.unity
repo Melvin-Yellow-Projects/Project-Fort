@@ -1121,11 +1121,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Game Session
       objectReference: {fileID: 0}
-    - target: {fileID: 5207390952724036994, guid: 64f2c9b84aa0c4428a54d3f15acedf1e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64f2c9b84aa0c4428a54d3f15acedf1e, type: 3}
 --- !u!1001 &552553741
@@ -1358,22 +1353,25 @@ PrefabInstance:
     - target: {fileID: -6134402128047789783, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: transport
       value: 
-      objectReference: {fileID: 755730889}
+      objectReference: {fileID: 1838490279}
     - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: isUsingSteam
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: offlineScene
-      value: 
+    - target: {fileID: 1838490279, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1838490280, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
@@ -1437,18 +1435,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
---- !u!114 &755730889 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -6134402128047789783, guid: 809fe4a4a9a794e9193a092e63594b3e,
-    type: 3}
-  m_PrefabInstance: {fileID: 755730888}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1838490278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &756895154
 GameObject:
   m_ObjectHideFlags: 0
@@ -2325,63 +2311,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1822657313}
   m_CullTransparentMesh: 0
---- !u!1 &1838490278 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
+--- !u!114 &1838490279 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1838490279, guid: 809fe4a4a9a794e9193a092e63594b3e,
     type: 3}
   m_PrefabInstance: {fileID: 755730888}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1838490279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1838490278}
-  m_Enabled: 0
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnClientConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  Channels: 02000000
-  Timeout: 25
-  SteamAppID: 480
-  AllowSteamRelay: 1
-  SteamUserID: 0
---- !u!114 &1838490280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1838490278}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1853477911
@@ -3259,6 +3198,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 3751343900369824914, guid: 696b560a3a69ac94faeb025effe188e5,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4359583969644351848, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}
       propertyPath: m_Name
@@ -3374,6 +3318,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4613475959490639677, guid: 696b560a3a69ac94faeb025effe188e5,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4903426235945761979, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}
       propertyPath: m_Text
@@ -3383,6 +3332,13 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 192.168.11.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 6042515661634817711, guid: 696b560a3a69ac94faeb025effe188e5,
+        type: 3}
+      propertyPath: m_text
+      value: 'HELLO
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 6578015582841221282, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}
@@ -3503,6 +3459,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2418506821338460504, guid: caf4da95add9a8a4c9eaab2540fd7911,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3953701095290871864, guid: caf4da95add9a8a4c9eaab2540fd7911,
         type: 3}
       propertyPath: lobbyMenu
@@ -3517,6 +3478,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Main Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 4727842035428128448, guid: caf4da95add9a8a4c9eaab2540fd7911,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5732967479878212571, guid: caf4da95add9a8a4c9eaab2540fd7911,
         type: 3}

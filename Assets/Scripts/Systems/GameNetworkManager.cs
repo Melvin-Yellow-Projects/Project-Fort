@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
-using UnityEngine.SceneManagement;
+using Steamworks;
 
 public class GameNetworkManager : NetworkManager
 {
@@ -59,6 +59,8 @@ public class GameNetworkManager : NetworkManager
     }
 
     public static bool IsUsingSteam { get; private set; } = false;
+
+    public static ulong LobbyId { get; set; }
 
     public static bool IsGameInProgress { get; set; }
 
@@ -109,6 +111,12 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public override void OnStopServer()
     {
+        //for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+        //{
+        //    Player p = GameManager.Players[i];
+        //    NetworkServer.Destroy(p.gameObject);
+        //}
+
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;
@@ -128,9 +136,28 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
+        if (IsUsingSteam)
+        {
+            CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(
+                new CSteamID(LobbyId),
+                numPlayers - 1
+            );
+            playerInfo.SteamId = steamId.m_SteamID; // this sets up all the steam info, name, picture
+        }
+        else
+        {
+            playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
+        }
+
         player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
+
+        //playerInfo.TeamColor = new Color(
+        //    UnityEngine.Random.Range(0f, 1f),
+        //    UnityEngine.Random.Range(0f, 1f),
+        //    UnityEngine.Random.Range(0f, 1f)
+        //);
+
         playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
-        playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
     }
 
     [Server]

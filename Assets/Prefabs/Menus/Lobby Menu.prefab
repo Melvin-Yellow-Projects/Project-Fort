@@ -1511,7 +1511,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2468236475195169606
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2532,7 +2532,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2468236475839713572
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3737,3 +3737,16 @@ MonoBehaviour:
   - {fileID: 2468236475841767662}
   - {fileID: 2468236474969195599}
   - {fileID: 2468236474567486773}
+  - {fileID: 2468236474531464974}
+  - {fileID: 2468236476215729607}
+  - {fileID: 2468236475061228190}
+  - {fileID: 2468236476045613238}
+  playerSteamImages:
+  - {fileID: 2468236475231802545}
+  - {fileID: 2468236474744392104}
+  - {fileID: 2468236475228963476}
+  - {fileID: 2468236475314790635}
+  - {fileID: 2468236474469719272}
+  - {fileID: 2468236474649914598}
+  - {fileID: 2468236474867530445}
+  - {fileID: 2468236476393222332}
