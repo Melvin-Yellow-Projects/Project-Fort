@@ -44,7 +44,7 @@ public class SaveLoadMenu : MonoBehaviour
     /// <summary>
     /// current map save/load version
     /// </summary>
-    const int mapFileVersion = 4;
+    const int mapFileVersion = 0;
 
     /// <summary>
     /// determines if the user is either saving or loading
@@ -252,7 +252,7 @@ public class SaveLoadMenu : MonoBehaviour
 
         int header = MapReader.ReadInt32();
         //int header = GameSession.Singleton.MapHexBuffer.ReadInt32();
-        if (header <= mapFileVersion)
+        if (header <= mapFileVersion || mapFileVersion == 0)
         {
             HexGrid.Singleton.Load(MapReader, header);
             //HexGrid.Singleton.Load(GameSession.Singleton.MapHexBuffer, header);

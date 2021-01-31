@@ -32,6 +32,9 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] Button endTurnButton = null;
     [SerializeField] TMP_Text endTurnButtonText = null;
 
+    [SerializeField] TMP_Text[] unitTexts = null;
+    [SerializeField] TMP_Text[] costTexts = null;
+
     static HumanPlayer player = null; 
     static int unitId = 0;
 
@@ -75,6 +78,12 @@ public class PlayerMenu : MonoBehaviour
     {
         Singleton = this;
         enabled = false;
+
+        for (int i = 0; i < Unit.Prefabs.Count; i++)
+        {
+            unitTexts[i].text = Unit.Prefabs[i].Title;
+            costTexts[i].text = $"{Unit.Prefabs[i].Resources}";
+        }
 
         Subscribe();
     }

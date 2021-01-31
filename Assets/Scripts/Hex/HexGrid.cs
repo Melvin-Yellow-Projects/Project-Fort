@@ -539,22 +539,13 @@ public class HexGrid : NetworkBehaviour
         writer.Write(cellCountX);
         writer.Write(cellCountZ);
 
-        for (int i = 0; i < cells.Length; i++)
-        {
-            cells[i].Save(writer);
-        }
+        for (int i = 0; i < cells.Length; i++) cells[i].Save(writer);
 
         writer.Write(Forts.Count);
-        for (int i = 0; i < Forts.Count; i++)
-        {
-            Forts[i].Save(writer);
-        }
+        for (int i = 0; i < Forts.Count; i++) Forts[i].Save(writer);
 
         writer.Write(Units.Count);
-        for (int i = 0; i < Units.Count; i++)
-        {
-            Units[i].Save(writer);
-        }
+        for (int i = 0; i < Units.Count; i++) Units[i].Save(writer);
     }
 
     /// <summary>

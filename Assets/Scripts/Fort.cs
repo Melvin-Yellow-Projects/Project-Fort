@@ -244,7 +244,7 @@ public class Fort : NetworkBehaviour
         float orientation = reader.ReadSingle();
 
         Fort fort = Instantiate(Prefab);
-        if (header >= 4) fort.MyTeam.SetTeam(reader.ReadByte());
+        fort.MyTeam.SetTeam(reader.ReadByte());
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;

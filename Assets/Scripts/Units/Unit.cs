@@ -182,21 +182,21 @@ public class Unit : NetworkBehaviour
     public void Save(BinaryWriter writer)
     {
         MyCell.coordinates.Save(writer);
-        writer.Write(Movement.Orientation);
+        writer.Write((byte)Id);
         writer.Write((byte)MyTeam.Id);
+        writer.Write(Movement.Orientation);
     }
 
     public static void Load(BinaryReader reader, int header)
     {
         HexCoordinates coordinates = HexCoordinates.Load(reader);
-        float orientation = reader.ReadSingle();
 
-        // FIXME: Update Code for Unit Variety
-        Unit unit = Instantiate(Prefabs[UnityEngine.Random.Range(0, Prefabs.Count)]);
-        if (header >= 4) unit.MyTeam.SetTeam(reader.ReadByte());
+        Unit unit = Instantiate(Prefabs[reader.ReadByte()]);
+
+        unit.MyTeam.SetTeam(reader.ReadByte());
 
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
-        unit.Movement.Orientation = orientation;
+        unit.Movement.Orientation = reader.ReadSingle();
 
         // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
         //HexGrid.Singleton.ParentTransformToGrid(unit.transform);
