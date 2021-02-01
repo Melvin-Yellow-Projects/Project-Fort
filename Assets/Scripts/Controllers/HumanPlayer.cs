@@ -80,8 +80,6 @@ public class HumanPlayer : Player
     [Client]
     private void DoSelection(InputAction.CallbackContext context)
     {
-        Debug.Log("Attempt Selection");
-
         if (!currentCell) return;
 
         if (GameManager.IsEconomyPhase)
@@ -89,15 +87,11 @@ public class HumanPlayer : Player
             if (!currentCell) return;
 
             CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
-
-            Debug.Log("Economy Phase Selection");
         }
         else
         {
             DeselectUnitAndClearItsPath();
             SelectUnit(currentCell.MyUnit);
-
-            Debug.Log("Player Phase Selection");
         }
     }
 
@@ -163,16 +157,15 @@ public class HumanPlayer : Player
     [Client]
     private void SelectUnit(Unit unit)
     {
-        Debug.Log("0");
         if (!MyUnits.Contains(unit)) return;
         //if (!unit) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
-        Debug.Log("1");
+
         if (!unit.Movement.CanMove) return;
-        Debug.Log("2");
+
         if (unit) CmdClearAction(UnitData.Instantiate(unit));
-        Debug.Log("3");
+
         if (!CanMove()) return;
-        Debug.Log("4");
+
         selectedUnit = unit;
         selectedUnit.IsSelected = true;
     }
@@ -189,9 +182,8 @@ public class HumanPlayer : Player
     [Client]
     private void DeselectUnitAndClearItsPath()
     {
-        Debug.Log("deselect?");
         if (!selectedUnit) return;
-        Debug.Log("deselect.");
+
         selectedUnit.Movement.Path.Clear();
 
         DeselectUnit();

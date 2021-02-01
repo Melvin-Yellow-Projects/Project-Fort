@@ -577,7 +577,10 @@ public abstract class UnitMovement : NetworkBehaviour
     [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
+        Debug.LogError("0");
         if (!isClientOnly) return;
+
+        Debug.LogError("1");
 
         if (myCell) MyCell = myCell;
 
