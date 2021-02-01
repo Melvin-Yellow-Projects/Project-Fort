@@ -153,6 +153,7 @@ public class SaveLoadMenu : MonoBehaviour
     private void PrepareReaderForOnlineGame() 
     {
         PrepareReader();
+
         // HACK: This line is kinda fishy
         Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
     }

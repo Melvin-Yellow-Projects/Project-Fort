@@ -571,10 +571,11 @@ public abstract class UnitMovement : NetworkBehaviour
     [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
-        Debug.Log("Hook activated");
+        if (isServer) return;
+
         if (myCell) MyCell = myCell;
 
-        UnitPathfinding.DecreaseVisibility(oldValue, VisionRange);
+        if (oldValue) UnitPathfinding.DecreaseVisibility(oldValue, VisionRange);
         UnitPathfinding.IncreaseVisibility(newValue, VisionRange);
     }
 
