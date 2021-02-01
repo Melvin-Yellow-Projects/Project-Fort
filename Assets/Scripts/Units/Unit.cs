@@ -138,16 +138,13 @@ public class Unit : NetworkBehaviour
 
         if (!MyTeam || !MyColorSetter || !Movement || !CombatHandler)
             Debug.LogError($"unit {name} is missing an essential component");
-    }
 
-    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
-    {
-        OnUnitSpawned?.Invoke(this);
+        HexGrid.Units.Add(this); // HACK: should this be an event?
     }
 
     private void OnDestroy()
     {
-        OnUnitDepawned?.Invoke(this);
+        HexGrid.Units.Remove(this); // HACK: should this be an event?
     }
 
     #endregion
@@ -157,7 +154,28 @@ public class Unit : NetworkBehaviour
     [Server]
     public override void OnStartServer()
     {
+        OnUnitSpawned?.Invoke(this);
+
         ValidateLocation();
+    }
+
+    public override void OnStopServer()
+    {
+        OnUnitDepawned?.Invoke(this);
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    public override void OnStartClient()
+    {
+        OnUnitSpawned?.Invoke(this);
+    }
+
+    public override void OnStopClient()
+    {
+        OnUnitDepawned?.Invoke(this);
     }
 
     #endregion

@@ -102,8 +102,6 @@ public class HexGrid : NetworkBehaviour
         Units.Clear();
         Forts.Clear();
 
-        Unsubscribe();
-
         Singleton = null;
     }
 
@@ -228,8 +226,6 @@ public class HexGrid : NetworkBehaviour
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
         CreateMap(cellCountX, cellCountZ);
-
-        Subscribe();
     }
 
     public bool CreateMap(int x, int z)
@@ -591,57 +587,6 @@ public class HexGrid : NetworkBehaviour
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;
-    }
-
-    #endregion
-    /************************************************************/
-    #region Event Handler Functions
-
-    private void Subscribe()
-    {
-        Fort.OnFortSpawned += HandleOnFortSpawned;
-        Fort.OnFortDespawned += HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
-        Unit.OnUnitDepawned += HandleOnUnitDepawned;
-    }
-
-    private void Unsubscribe()
-    {
-        Fort.OnFortSpawned -= HandleOnFortSpawned;
-        Fort.OnFortDespawned -= HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
-        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
-    }
-
-    private void HandleOnFortSpawned(Fort fort)
-    {
-        fort.name = $"fort{fortCount}";
-        fortCount += 1;
-
-        Forts.Add(fort);
-    }
-
-    private void HandleOnFortDespawned(Fort fort)
-    {
-        // FIXME: this needs to be replaced with a manual event rather than handle
-
-        Forts.Remove(fort);
-    }
-
-    private void HandleOnUnitSpawned(Unit unit)
-    {
-        unit.name = $"unit{unitCount}";
-        unitCount += 1;
-
-        Units.Add(unit);
-    }
-
-    private void HandleOnUnitDepawned(Unit unit)
-    {
-        // FIXME: this needs to be replaced with a manual event rather than handle
-        Units.Remove(unit);
     }
 
     #endregion

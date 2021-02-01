@@ -181,13 +181,11 @@ public class GameNetworkManager : NetworkManager
 
         Debug.Log($"Server has changed the Scene to {sceneName}");
 
-        // HACK: this is hardcoded, 4 should not represent the num player max
-        while (SceneLoader.IsGameScene && GameManager.Players.Count < 4) 
-            ServerSpawnComputerPlayer();
-
         HexGrid.ServerSpawnMapTerrain();
 
         if (!SceneLoader.IsGameScene) return;
+
+        ServerPadGameWithComputerPlayers();
 
         GameOverHandler gameOverHandler = Instantiate(GameOverHandler.Prefab);
         NetworkServer.Spawn(gameOverHandler.gameObject);
@@ -227,7 +225,27 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public static void ServerSpawnComputerPlayer()
+    public static void ServerPadGameWithComputerPlayers()
+    {
+        int[] teamIndex = new int[8]; // HACK: hardcoded
+        foreach (Fort fort in HexGrid.Forts) teamIndex[fort.MyTeam.Id - 1] += 1;
+
+        for (int i = 0; i < teamIndex.Length; i++)
+        {
+            if (teamIndex[i] > 0)
+            {
+                bool isTeamOwnedByHumanPlayer = false;
+                foreach (Player player in GameManager.Players)
+                {
+                    if (player.MyTeam.Id == i + 1) isTeamOwnedByHumanPlayer = true;
+                }
+                if (!isTeamOwnedByHumanPlayer) ServerSpawnComputerPlayer(i + 1);
+            }
+        }
+    }
+
+    [Server]
+    public static void ServerSpawnComputerPlayer(int teamId)
     {
         Debug.LogWarning("Spawning Computer Player");
         ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
@@ -236,8 +254,8 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
-        player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
-        playerInfo.PlayerName = $"Computer Player {GameManager.Players.Count}";
+        player.MyTeam.SetTeam(teamId); // TODO: move to playerInfo
+        playerInfo.PlayerName = $"Computer Player {teamId}";
 
         NetworkServer.Spawn(player.gameObject);
     }

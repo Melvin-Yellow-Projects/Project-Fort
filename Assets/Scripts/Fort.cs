@@ -103,17 +103,13 @@ public class Fort : NetworkBehaviour
     private void Awake()
     {
         MyTeam = GetComponent<Team>();
-    }
 
-    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
-    {
-        OnFortSpawned?.Invoke(this);
+        HexGrid.Forts.Add(this); // HACK: should this be an event?
     }
 
     private void OnDestroy()
     {
-        myCell.MyFort = null; // HACK: does this need to be transfered to the server?
-        OnFortDespawned?.Invoke(this);
+        HexGrid.Forts.Remove(this); // HACK: should this be an event?
     }
 
     #endregion
@@ -123,7 +119,10 @@ public class Fort : NetworkBehaviour
     [Server]
     public override void OnStartServer()
     {
+        OnFortSpawned?.Invoke(this);
+
         Subscribe();
+
         ValidateLocation();
     }
 
@@ -131,11 +130,25 @@ public class Fort : NetworkBehaviour
     public override void OnStopServer()
     {
         Unsubscribe();
+
+        myCell.MyFort = null;
+
+        OnFortDespawned?.Invoke(this);
     }
 
     #endregion
     /************************************************************/
     #region Client Functions
+
+    public override void OnStartClient()
+    {
+        OnFortSpawned?.Invoke(this);
+    }
+
+    public override void OnStopClient()
+    {
+        OnFortDespawned?.Invoke(this);
+    }
 
     #endregion
     /************************************************************/
