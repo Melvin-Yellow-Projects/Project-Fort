@@ -340,6 +340,8 @@ public class UnitPathfinding : MonoBehaviour
 
     public static void IncreaseVisibility(HexCell fromCell, int range)
     {
+        Debug.Log("IncreaseVisibility()");
+
         List<HexCell> cells = GetVisibleCells(fromCell, range);
         for (int i = 0; i < cells.Count; i++)
         {

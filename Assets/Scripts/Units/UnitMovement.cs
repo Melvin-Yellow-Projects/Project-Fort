@@ -186,11 +186,16 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
+    [Server]
     public override void OnStartServer()
     {
         Subscribe();
+
+        Orientation = UnityEngine.Random.Range(0, 360f);
+        UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
 
+    [Server]
     public override void OnStopServer()
     {
         Unsubscribe();
@@ -418,9 +423,10 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
+    [Client]
     public override void OnStartClient()
     {
-        if (!hasAuthority || isServer) return;
+        if (isServer) return;
 
         UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
@@ -553,7 +559,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         CanMove = false;
 
-        if (MyUnit.MyTeam.Id != 0) UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
+        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
 
         HandleRpcOnDeath();
     }
@@ -561,7 +567,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [ClientRpc]
     private void HandleRpcOnDeath()
     {
-        if (!isClientOnly) return;
+        if (isServer) return;
 
         CanMove = false;
 
@@ -571,7 +577,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
-        if (isServer) return;
+        if (!isClientOnly) return;
 
         if (myCell) MyCell = myCell;
 

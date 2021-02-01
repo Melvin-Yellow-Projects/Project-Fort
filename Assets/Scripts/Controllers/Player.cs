@@ -200,9 +200,6 @@ public abstract class Player : NetworkBehaviour
         Unit instance = Instantiate(unit);
         instance.MyCell = cell;
         instance.MyTeam.SetTeam(MyTeam);
-        instance.Movement.Orientation = UnityEngine.Random.Range(0, 360f);
-
-        UnitPathfinding.IncreaseVisibility(cell, instance.Movement.VisionRange); 
 
         NetworkServer.Spawn(instance.gameObject, connectionToClient);
 
