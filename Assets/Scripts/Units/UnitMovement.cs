@@ -191,7 +191,7 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         Subscribe();
 
-        Orientation = UnityEngine.Random.Range(0, 360f);
+        Orientation = Random.Range(0, 360f);
         UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
 
@@ -578,7 +578,7 @@ public abstract class UnitMovement : NetworkBehaviour
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
         Debug.LogError("0");
-        if (!isClientOnly) return;
+        if (isServer) return;
 
         Debug.LogError("1");
 
