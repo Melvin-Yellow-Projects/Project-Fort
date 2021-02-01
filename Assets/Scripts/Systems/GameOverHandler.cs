@@ -79,6 +79,11 @@ public class GameOverHandler : NetworkBehaviour
 
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
 
+        foreach (Unit unit in player.MyUnits)
+        {
+            unit.MyCell.DecreaseVisibility();
+        }
+
         player.MyUnits.Clear();
         player.MyForts.Clear();
 
@@ -147,8 +152,13 @@ public class GameOverHandler : NetworkBehaviour
         GameManager.Players.Remove(player);
         Debug.LogWarning($"{player.name} has lost, there are {GameManager.Players.Count} Players");
 
-        foreach (Unit unit in player.MyUnits) unit.MyTeam.SetTeam(0);
         foreach (Fort fort in player.MyForts) fort.MyTeam.SetTeam(0);
+        foreach (Unit unit in player.MyUnits)
+        {
+            unit.MyTeam.SetTeam(0);
+            unit.MyCell.DecreaseVisibility();
+        }
+
         player.MyUnits.Clear();
         player.MyForts.Clear();
 
