@@ -24,6 +24,9 @@ public class GameNetworkManager : NetworkManager
     [Tooltip("whether or not this build is using Steam")]
     [SerializeField] bool isUsingSteam = false;
 
+    [Tooltip("minimum number of concurrent connections to start game")]
+    [SerializeField, Range(1, 2)] int minConnections = 1;
+
     [Tooltip("how long to wait for a player to load the map terrain")]
     [SerializeField, Range(0f, 60f)] float waitForPlayerToSpawnTerrain = 30f;
 
@@ -59,6 +62,14 @@ public class GameNetworkManager : NetworkManager
     }
 
     public static bool IsUsingSteam { get; private set; } = false;
+
+    public static int MinConnections
+    {
+        get
+        {
+            return Singleton.minConnections;
+        }
+    }
 
     public static ulong LobbyId { get; set; }
 
@@ -163,8 +174,7 @@ public class GameNetworkManager : NetworkManager
     [Server]
     public void ServerStartGame() // HACK move this into SceneLoader?
     {
-        // HACK: hardcoded and tethered to LobbyMenu.UpdatePlayerTags()
-        if (GameManager.Players.Count < 2) return;
+        if (GameManager.Players.Count < MinConnections) return;
 
         IsGameInProgress = true;
 

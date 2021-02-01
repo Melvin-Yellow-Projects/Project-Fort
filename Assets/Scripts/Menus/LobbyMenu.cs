@@ -112,8 +112,8 @@ public class LobbyMenu : MonoBehaviour
             playerSteamImages[i].texture = null;
         }
 
-        // HACK: hardcoded and tethered to GameNetworkManager.ServerStartGame()
-        startGameButton.interactable = (GameManager.Players.Count >= 2);
+        startGameButton.interactable =
+            (GameManager.Players.Count >= GameNetworkManager.MinConnections);
     }
 
     private void HandlePartyOwnerStateChange()
