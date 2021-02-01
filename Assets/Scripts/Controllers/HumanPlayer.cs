@@ -163,6 +163,7 @@ public class HumanPlayer : Player
     [Client]
     private void SelectUnit(Unit unit)
     {
+        Debug.Log("0");
         if (!MyUnits.Contains(unit)) return;
         //if (!unit) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
         Debug.Log("1");
@@ -188,8 +189,9 @@ public class HumanPlayer : Player
     [Client]
     private void DeselectUnitAndClearItsPath()
     {
+        Debug.Log("deselect?");
         if (!selectedUnit) return;
-
+        Debug.Log("deselect.");
         selectedUnit.Movement.Path.Clear();
 
         DeselectUnit();
