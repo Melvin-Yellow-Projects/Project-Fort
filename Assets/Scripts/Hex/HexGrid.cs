@@ -556,39 +556,26 @@ public class HexGrid : NetworkBehaviour
     {
         ClearEntities();
 
-        //int x = 20, z = 15; // HACK: <- line not needed
         int x = mapReader.ReadInt32();
         int z = mapReader.ReadInt32();
 
         // we dont need to make another map if it's the same size as the existing one
         if (x != cellCountX || z != cellCountZ)
         {
-            // check if map failed to be created
-            if (!CreateMap(x, z)) return;
+            if (!CreateMap(x, z)) return; // check if map failed to be created
         }
 
         bool originalImmediateMode = cellShaderData.ImmediateMode;
         cellShaderData.ImmediateMode = true;
 
-        for (int i = 0; i < cells.Length; i++)
-        {
-            cells[i].Load(mapReader, header);
-        }
-        for (int i = 0; i < chunks.Length; i++)
-        {
-            chunks[i].Refresh();
-        }
+        for (int i = 0; i < cells.Length; i++) cells[i].Load(mapReader, header);
+        for (int i = 0; i < chunks.Length; i++) chunks[i].Refresh();
+
         int fortCount = mapReader.ReadInt32();
-        for (int i = 0; i < fortCount; i++)
-        {
-            Fort.Load(mapReader, header);
-        }
+        for (int i = 0; i < fortCount; i++) Fort.Load(mapReader, header);
 
         int unitCount = mapReader.ReadInt32();
-        for (int i = 0; i < unitCount; i++)
-        {
-            Unit.Load(mapReader, header);
-        }
+        for (int i = 0; i < unitCount; i++) Unit.Load(mapReader, header);
 
         cellShaderData.ImmediateMode = originalImmediateMode;
     }
