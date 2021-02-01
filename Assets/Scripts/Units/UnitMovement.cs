@@ -573,9 +573,8 @@ public abstract class UnitMovement : NetworkBehaviour
     [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
-        Debug.LogWarning("0");
         if (GeneralUtilities.IsRunningOnHost()) return;
-        Debug.LogError("1");
+
         if (myCell) MyCell = myCell;
 
         if (oldValue) UnitPathfinding.DecreaseVisibility(oldValue, VisionRange);
