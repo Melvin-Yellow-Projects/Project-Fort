@@ -31,7 +31,7 @@ public class HexCellShaderData : MonoBehaviour
 
     List<HexCell> transitioningCells = new List<HexCell>();
 
-    bool needsVisibilityReset;
+    bool needsVisibilityReset = false;
 
     #endregion
 

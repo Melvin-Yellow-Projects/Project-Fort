@@ -194,7 +194,7 @@ public abstract class UnitMovement : NetworkBehaviour
         Orientation = Random.Range(0, 360f);
 
         // this is called by the LateUpdate's reset in HexCellShaderData
-        //UnitPathfinding.IncreaseVisibility(MyCell, VisionRange); 
+        UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
 
     [Server]
