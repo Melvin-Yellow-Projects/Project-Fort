@@ -99,7 +99,7 @@ public class LobbyMenu : MonoBehaviour
         {
             Player player = GameManager.Players[i];
 
-            playerNameTexts[i].text = $"Player {i + 1}";
+            //playerNameTexts[i].text = $"Player {i + 1}";
             playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = false;
             playerNameTexts[i].text = player.GetComponent<PlayerInfo>().PlayerName;
             playerSteamImages[i].texture = player.GetComponent<PlayerInfo>().DisplayTexture;
