@@ -226,6 +226,7 @@ public abstract class UnitMovement : NetworkBehaviour
             // TODO: Brute Force repitition, this can be improved
             MyUnit.CombatHandler.gameObject.SetActive(false);
             Debug.Log("Disabling Combat Handler");
+            return;
         }
 
         if (!EnRouteCell) return;
@@ -553,7 +554,8 @@ public abstract class UnitMovement : NetworkBehaviour
 
         CanMove = false;
 
-        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
+        if (EnRouteCell) UnitPathfinding.DecreaseVisibility(EnRouteCell, VisionRange);
+        else UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
 
         HandleRpcOnDeath();
     }
