@@ -140,6 +140,7 @@ public class Unit : NetworkBehaviour
             Debug.LogError($"unit {name} is missing an essential component");
 
         HexGrid.Units.Add(this); // HACK: should this be an event?
+        name = $"unit {UnityEngine.Random.Range(0, 100000)}";
     }
 
     private void OnDestroy()
@@ -170,12 +171,12 @@ public class Unit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        OnUnitSpawned?.Invoke(this);
+        if (!isServer) OnUnitSpawned?.Invoke(this);
     }
 
     public override void OnStopClient()
     {
-        OnUnitDepawned?.Invoke(this);
+        if (!isServer) OnUnitDepawned?.Invoke(this);
     }
 
     #endregion

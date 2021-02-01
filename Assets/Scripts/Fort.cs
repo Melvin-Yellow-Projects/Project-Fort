@@ -105,6 +105,7 @@ public class Fort : NetworkBehaviour
         MyTeam = GetComponent<Team>();
 
         HexGrid.Forts.Add(this); // HACK: should this be an event?
+        name = $"fort {UnityEngine.Random.Range(0, 100000)}";
     }
 
     private void OnDestroy()
@@ -142,12 +143,12 @@ public class Fort : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        OnFortSpawned?.Invoke(this);
+        if (!isServer) OnFortSpawned?.Invoke(this);
     }
 
     public override void OnStopClient()
     {
-        OnFortDespawned?.Invoke(this);
+        if (!isServer) OnFortDespawned?.Invoke(this);
     }
 
     #endregion

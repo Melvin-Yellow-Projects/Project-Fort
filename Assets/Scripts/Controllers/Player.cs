@@ -372,8 +372,6 @@ public abstract class Player : NetworkBehaviour
     [Server] // HACK: this function is so jank
     private void HandleServerOnFortCaptured(Fort fort, int previousTeamId)
     {
-        Debug.Log($"Player {name} has team id of {MyTeam.Id} and the prev id is {previousTeamId}");
-
         if (MyTeam == fort.MyTeam)
         {
             Debug.Log($"{name} is adding {fort.name} they just gained");
