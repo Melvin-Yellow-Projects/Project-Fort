@@ -80,6 +80,8 @@ public class HumanPlayer : Player
     [Client]
     private void DoSelection(InputAction.CallbackContext context)
     {
+        Debug.Log("Attempt Selection");
+
         if (!currentCell) return;
 
         if (GameManager.IsEconomyPhase)
@@ -87,11 +89,15 @@ public class HumanPlayer : Player
             if (!currentCell) return;
 
             CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
+
+            Debug.Log("Economy Phase Selection");
         }
         else
         {
             DeselectUnitAndClearItsPath();
             SelectUnit(currentCell.MyUnit);
+
+            Debug.Log("Player Phase Selection");
         }
     }
 
