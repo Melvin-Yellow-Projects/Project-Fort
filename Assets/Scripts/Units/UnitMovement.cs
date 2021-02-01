@@ -423,14 +423,6 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client]
-    public override void OnStartClient()
-    {
-        if (isServer) return;
-
-        UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
-    }
-
     [TargetRpc]
     private void TargetClearPath()
     {
