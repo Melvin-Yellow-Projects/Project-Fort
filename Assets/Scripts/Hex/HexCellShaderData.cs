@@ -168,6 +168,7 @@ public class HexCellShaderData : MonoBehaviour
 
     public void ViewElevationChanged()
     {
+        if (SceneLoader.IsGameScene) return; // HACK: I dont think this line is right
         needsVisibilityReset = true;
         enabled = true;
     }
