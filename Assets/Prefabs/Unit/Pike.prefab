@@ -15,7 +15,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   maxMovement: 3
-  visionRange: 100
+  visionRange: 0
   movesPerStep: 1
   travelSpeed: 6
   rotationSpeed: 360

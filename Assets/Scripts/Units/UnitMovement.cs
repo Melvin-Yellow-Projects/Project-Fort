@@ -24,7 +24,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [SerializeField] protected int maxMovement = 4;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] protected int visionRange = 100;
+    [SerializeField] protected int visionRange = 1;
 
     [Tooltip("ID for this unit")]
     [SerializeField] protected int movesPerStep = 1;
@@ -64,7 +64,7 @@ public abstract class UnitMovement : NetworkBehaviour
             // if there is a previous cell...
             if (myCell && myCell.MyUnit == MyUnit)
             {
-                UnitPathfinding.DecreaseVisibility(myCell, visionRange);
+                //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
                 myCell.MyUnit = null;
             }
 
@@ -234,7 +234,7 @@ public abstract class UnitMovement : NetworkBehaviour
         if (!Path.HasPath) return;
 
         Path.RemoveTailCells(numberToRemove: movesPerStep);
-        if (hasAuthority) Path.Show(); // FIXME: this might be a problem
+        if (hasAuthority) Path.Show();
     }
 
     [Server]
@@ -418,6 +418,15 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
+    public override void OnStartClient()
+    {
+        if (!hasAuthority) return;
+
+        UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
+
+        base.OnStartClient();
+    }
+
     [TargetRpc]
     private void TargetClearPath()
     {
@@ -548,6 +557,8 @@ public abstract class UnitMovement : NetworkBehaviour
 
         CanMove = false;
 
+        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
+
         HandleRpcOnDeath();
     }
 
@@ -557,6 +568,8 @@ public abstract class UnitMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         CanMove = false;
+
+        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
     }
 
     [Client]

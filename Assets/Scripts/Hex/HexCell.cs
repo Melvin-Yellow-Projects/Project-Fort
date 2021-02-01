@@ -447,6 +447,12 @@ public class HexCell : MonoBehaviour
     {
         visibility -= 1;
         if (visibility == 0) ShaderData.RefreshVisibility(this);
+
+        if (visibility >= 0) return;
+
+        Debug.LogError($"{name}'s visibility is less than 0!");
+
+        visibility = 0;
     }
 
     public void ResetVisibility()

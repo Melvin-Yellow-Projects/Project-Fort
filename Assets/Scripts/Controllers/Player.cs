@@ -51,7 +51,6 @@ public abstract class Player : NetworkBehaviour
 
     /// <summary>
     /// Client event for when a player has ended their turn
-    /// FIXME: shouldnt this event just be for the Human Player?
     /// </summary>
     /// <subscriber class="PlayerMenu">Updates the player menu status</subscriber>
     public static event Action ClientOnHasEndedTurn; 
@@ -197,10 +196,13 @@ public abstract class Player : NetworkBehaviour
 
         if (!CanBuyOnCell(cell)) return;
 
+        // HACK: create unit instantiation method
         Unit instance = Instantiate(unit);
         instance.MyCell = cell;
         instance.MyTeam.SetTeam(MyTeam);
         instance.Movement.Orientation = UnityEngine.Random.Range(0, 360f);
+
+        UnitPathfinding.IncreaseVisibility(cell, instance.Movement.VisionRange); 
 
         NetworkServer.Spawn(instance.gameObject, connectionToClient);
 

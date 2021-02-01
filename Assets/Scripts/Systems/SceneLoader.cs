@@ -75,7 +75,7 @@ public class SceneLoader : MonoBehaviour
         //GameSession.Singleton.IsOnline = false; // HACK: brute force line of code
         NetworkManager.singleton.StartHost();
 
-        LoadSceneByName(GameSceneName); // FIXME
+        LoadSceneByName(GameSceneName); 
     }
 
     public static void LoadMapEditorScene()
@@ -85,7 +85,7 @@ public class SceneLoader : MonoBehaviour
         NetworkManager.singleton.StartHost();
 
         Debug.Log("Loading Editor Scene");
-        LoadSceneByName(EditorSceneName); // FIXME
+        LoadSceneByName(EditorSceneName);
     }
 
     /// <summary>
