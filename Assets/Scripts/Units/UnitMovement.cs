@@ -420,11 +420,9 @@ public abstract class UnitMovement : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (!hasAuthority) return;
+        if (!hasAuthority || isServer) return;
 
         UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
-
-        base.OnStartClient();
     }
 
     [TargetRpc]
