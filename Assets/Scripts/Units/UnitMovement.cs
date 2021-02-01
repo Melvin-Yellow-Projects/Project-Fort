@@ -561,7 +561,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [ClientRpc]
     private void HandleRpcOnDeath()
     {
-        if (isServer) return;
+        if (GeneralUtilities.IsRunningOnHost()) return;
 
         CanMove = false;
 
