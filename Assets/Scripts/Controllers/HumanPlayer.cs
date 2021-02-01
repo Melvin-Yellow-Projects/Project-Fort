@@ -165,13 +165,13 @@ public class HumanPlayer : Player
     {
         if (!MyUnits.Contains(unit)) return;
         //if (!unit) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
-
+        Debug.Log("1");
         if (!unit.Movement.CanMove) return;
-
+        Debug.Log("2");
         if (unit) CmdClearAction(UnitData.Instantiate(unit));
-
+        Debug.Log("3");
         if (!CanMove()) return;
-
+        Debug.Log("4");
         selectedUnit = unit;
         selectedUnit.IsSelected = true;
     }
