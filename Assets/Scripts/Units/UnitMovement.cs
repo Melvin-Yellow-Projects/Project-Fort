@@ -551,11 +551,9 @@ public abstract class UnitMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        //UnitPathfinding.DecreaseVisibility(myCell, visionRange); // FIXME visibility
-
         CanMove = false;
 
-        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
+        if (MyUnit.MyTeam.Id != 0) UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
 
         HandleRpcOnDeath();
     }
@@ -573,7 +571,11 @@ public abstract class UnitMovement : NetworkBehaviour
     [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
+        Debug.Log("Hook activated");
         if (myCell) MyCell = myCell;
+
+        UnitPathfinding.DecreaseVisibility(oldValue, VisionRange);
+        UnitPathfinding.IncreaseVisibility(newValue, VisionRange);
     }
 
     #endregion
