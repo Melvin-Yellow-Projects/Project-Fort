@@ -11,11 +11,53 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SystemMenu : MonoBehaviour
 {
     /************************************************************/
+    #region Variables
+
+    [Header("Cached References")]
+    [SerializeField] Button downloadButton = null;
+    [SerializeField] Button helpButton = null;
+    [SerializeField] Button settingsButton = null;
+    [SerializeField] Button exitButton = null;
+
+    #endregion
+    /************************************************************/
+    #region Unity Functions
+
+    private void Awake()
+    {
+        if (Mirror.NetworkServer.active)
+        {
+            downloadButton.interactable = true;
+            helpButton.interactable = true;
+            settingsButton.interactable = true;
+            exitButton.interactable = true;
+        }
+        else
+        {
+            downloadButton.interactable = false;
+            helpButton.interactable = true;
+            settingsButton.interactable = true;
+            exitButton.interactable = true;
+        }
+    }
+
+    #endregion
+    /************************************************************/
     #region Class Functions
+
+    public void DownloadButtonPressed()
+    {
+        // TODO: this should download the current player map
+        string title = "Download Map";
+        string description = "sorry, this feature is not yet implemented";
+
+        PopupMenu.Open(title, description, isConfirmationPopup: false);
+    }
 
     public void HelpButtonPressed()
     {
