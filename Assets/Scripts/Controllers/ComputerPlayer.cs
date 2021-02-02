@@ -29,11 +29,14 @@ public class ComputerPlayer : Player
     {
         base.HandleServerOnStartRound();
 
-        //foreach (Unit unit in MyUnits)
-        //{
-        //    unit.Movement.Path
+        //Debug.Log($"{name} is buying");
 
-        //    UnitPathfinding.FindPath(target);
+        //foreach (Fort fort in MyForts)
+        //{
+        //    foreach (HexCell cell in fort.GetBuyCells())
+        //    {
+        //        CmdTryBuyUnit(Random.Range(0, Unit.Prefabs.Count), cell);
+        //    }
         //}
 
         HasEndedTurn = true;
@@ -43,6 +46,20 @@ public class ComputerPlayer : Player
     protected override void HandleServerOnStartTurn()
     {
         base.HandleServerOnStartTurn();
+
+        Debug.Log($"{name} is moving");
+
+        //foreach (Unit unit in MyUnits)
+        //{
+        //    if (unit.Movement.CanMove)
+        //    {
+        //        unit.Movement.Path.Cells =
+        //            UnitPathfinding.FindPath(unit, unit.MyCell, HexGrid.Forts[0].MyCell);
+
+        //        CmdSetAction(UnitData.Instantiate(unit));
+        //    }
+        //}
+
         HasEndedTurn = true;
     }
 

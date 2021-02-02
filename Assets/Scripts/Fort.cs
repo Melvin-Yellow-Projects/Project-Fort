@@ -158,9 +158,22 @@ public class Fort : NetworkBehaviour
         if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = myCell.Position;
     }
 
+    public List<HexCell> GetBuyCells()
+    {
+        List<HexCell> buyCells = new List<HexCell>();
+
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+        {
+            buyCells.Add(MyCell.GetNeighbor(d));
+        }
+
+        return buyCells;
+    }
+
     public bool IsBuyCell(HexCell cell)
     {
         bool isBuyCell = (cell == MyCell);
+
         for (HexDirection d = HexDirection.NE; !isBuyCell && d <= HexDirection.NW; d++)
         {
             isBuyCell = (cell == MyCell.GetNeighbor(d));
