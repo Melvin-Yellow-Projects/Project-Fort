@@ -731,6 +731,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad65a580cddddc2479b0555338dc8444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveLoadMenu: {fileID: 0}
   startGameButton: {fileID: 2468236475527809551}
   lobbyItems:
   - {fileID: 184912943613075758}

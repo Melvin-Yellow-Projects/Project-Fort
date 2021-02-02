@@ -21,6 +21,8 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Variables **********/
     #region Variables
 
+    [SerializeField] SaveLoadMenu saveLoadMenu = null;
+
     [SerializeField] Button startGameButton = null;
     [SerializeField] LobbyItem[] lobbyItems = null;
 
@@ -51,7 +53,19 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        SaveLoadMenu.Singleton.Open(3);
+        bool sameTeam = false;
+        for (int i = 0; i < GameManager.Players.Count - 1; i++)
+        {
+            Player player1 = GameManager.Players[i];
+
+            for (int j = i + 1; j < GameManager.Players.Count; j++)
+            {
+                Player player2 = GameManager.Players[j];
+
+            }
+        }
+
+        saveLoadMenu.Open(3);
     }
 
     public void LeaveLobby()

@@ -58,8 +58,6 @@ public class SaveLoadMenu : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    public static SaveLoadMenu Singleton { get; private set; }
-
     private static BinaryReader MapReader { get; set; }
 
     #endregion
@@ -67,19 +65,15 @@ public class SaveLoadMenu : MonoBehaviour
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    private void Awake()
+    private void OnEnable()
     {
-        Singleton = this;
-
         controls = new Controls();
         controls.General.Affirmation.performed += Action;
         controls.Enable();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        Singleton = null;
-
         controls.General.Affirmation.performed -= Action;
     }
 

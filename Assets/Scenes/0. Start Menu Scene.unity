@@ -2284,7 +2284,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2026496697}
   m_HandleRect: {fileID: 2026496696}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2969,6 +2969,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3875699037393992888, guid: a19ca0d1b1e52c340aa76d02442a3f99,
+        type: 3}
+      propertyPath: saveLoadMenu
+      value: 
+      objectReference: {fileID: 413763624}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a19ca0d1b1e52c340aa76d02442a3f99, type: 3}
 --- !u!1001 &5820976603166337784
