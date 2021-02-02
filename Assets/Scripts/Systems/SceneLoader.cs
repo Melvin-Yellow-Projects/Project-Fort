@@ -64,7 +64,7 @@ public class SceneLoader : MonoBehaviour
         else
         {
             NetworkManager.singleton.StopClient();
-            Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
+            //Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
         }
 
         SceneManager.LoadScene(MenuSceneName); 
