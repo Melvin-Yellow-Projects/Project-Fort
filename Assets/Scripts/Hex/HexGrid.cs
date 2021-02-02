@@ -496,13 +496,13 @@ public class HexGrid : NetworkBehaviour
     {
         for (int i = 0; i < Units.Count; i++)
         {
-            NetworkServer.Destroy(Units[i].gameObject);
+            Destroy(Units[i].gameObject);
         }
         Units.Clear();
 
         for (int i = 0; i < Forts.Count; i++)
         {
-            NetworkServer.Destroy(Forts[i].gameObject);
+            Destroy(Forts[i].gameObject);
         }
         Forts.Clear();
     }

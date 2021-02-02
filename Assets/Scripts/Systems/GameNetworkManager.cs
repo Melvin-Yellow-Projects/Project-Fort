@@ -284,6 +284,15 @@ public class GameNetworkManager : NetworkManager
     {
         Debug.LogError("Disconnecting client");
 
+        for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+        {
+            Player p = GameManager.Players[i];
+            if (p as ComputerPlayer) Destroy(p.gameObject);
+        }
+
+        // HACK you shouldn't manually have to destroy these
+        Destroy(HexGrid.Singleton.gameObject);
+
         GameManager.Players.Clear();
     }
 

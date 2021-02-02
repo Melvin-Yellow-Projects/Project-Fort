@@ -182,6 +182,11 @@ public abstract class UnitMovement : NetworkBehaviour
         Display.RefreshMovementDisplay(currentMovement);
     }
 
+    private void OnDestroy()
+    {
+        Unsubscribe();
+    }
+
     #endregion
     /************************************************************/
     #region Server Functions
@@ -194,11 +199,6 @@ public abstract class UnitMovement : NetworkBehaviour
 
         // this is called by the LateUpdate's reset in HexCellShaderData
         UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
-    }
-
-    public override void OnStopServer()
-    {
-        Unsubscribe();
     }
 
     [Server]
