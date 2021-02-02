@@ -282,7 +282,7 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStopClient()
     {
-        Debug.LogError("Disconnecting client");
+        Debug.LogWarning("Disconnecting client!");
 
         for (int i = GameManager.Players.Count - 1; i >= 0; i--)
         {
