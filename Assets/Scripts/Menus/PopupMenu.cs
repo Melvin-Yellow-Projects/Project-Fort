@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 /// <summary>
 /// 
@@ -49,7 +50,8 @@ public class PopupMenu : MonoBehaviour
     /************************************************************/
     #region Class Functions
 
-    public static void Open(string title, string description, bool isConfirmationPopup = false)
+    public static void Open(string title, string description,
+        bool isConfirmationPopup = false, UnityEngine.Events.UnityAction func = null)
     {
         Singleton = Instantiate(Prefab);
 
@@ -59,12 +61,16 @@ public class PopupMenu : MonoBehaviour
 
         Singleton.confirmationButton.gameObject.SetActive(isConfirmationPopup);
 
+        Singleton.confirmationButton.onClick.AddListener(func);
+
         MapCamera.Locked = true;
     }
 
     public static void Close()
     {
         MapCamera.Locked = false;
+
+        Singleton.confirmationButton.onClick.RemoveAllListeners();
 
         Destroy(Singleton.gameObject);
     }

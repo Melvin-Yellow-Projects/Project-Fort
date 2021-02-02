@@ -40,7 +40,11 @@ public class SystemMenu : MonoBehaviour
         // HACK: verify this line
         if (Mirror.NetworkServer.active) 
         {
-            SceneLoader.LoadStartScene();
+            string title = "Resignation?";
+            string description = "would you like to leave?";
+
+            PopupMenu.Open(title, description,
+                isConfirmationPopup: true, func: SceneLoader.LoadStartScene); 
         }
         else
         {
