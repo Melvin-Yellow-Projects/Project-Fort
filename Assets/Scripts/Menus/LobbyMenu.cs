@@ -53,17 +53,18 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        bool sameTeam = false;
-        for (int i = 0; i < GameManager.Players.Count - 1; i++)
+        bool foundSameTeam = false;
+        for (int i = 0; !foundSameTeam && i < GameManager.Players.Count - 1; i++)
         {
-            Player player1 = GameManager.Players[i];
+            Player player = GameManager.Players[i];
 
-            for (int j = i + 1; j < GameManager.Players.Count; j++)
+            for (int j = i + 1; !foundSameTeam && j < GameManager.Players.Count; j++)
             {
-                Player player2 = GameManager.Players[j];
-
+                foundSameTeam = (player.MyTeam == GameManager.Players[j].MyTeam);
             }
         }
+
+        if (foundSameTeam) return;
 
         saveLoadMenu.Open(3);
     }
@@ -134,9 +135,10 @@ public class LobbyMenu : MonoBehaviour
     private void HandlePartyOwnerStateChange()
     {
         if (!NetworkClient.connection.identity) return;
-        if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader) return;
 
-        startGameButton.gameObject.SetActive(true);
+        bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
+
+        startGameButton.gameObject.SetActive(isLeader);
     }
 
     #endregion
