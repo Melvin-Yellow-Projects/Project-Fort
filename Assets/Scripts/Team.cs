@@ -27,10 +27,12 @@ public class Team : NetworkBehaviour
 
     #endregion
     /************************************************************/
-    #region Properties
-
-    //public static event Action ServerOnChangePlayerTeam;
-
+    #region Class Events
+    
+    /// <summary>
+    /// Event for when a client changes team
+    /// </summary>
+    /// <subscriber class="LobbyMenu">updates a player's team color</subscriber>
     public static event Action ClientOnChangeTeam;
 
     #endregion

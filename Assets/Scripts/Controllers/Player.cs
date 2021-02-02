@@ -382,8 +382,6 @@ public abstract class Player : NetworkBehaviour
 
             MyForts.Remove(fort);
             if (connectionToClient != null) TargetRemoveFort(connectionToClient, fort.netIdentity);
-
-            if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
         }
     }
 
@@ -400,6 +398,7 @@ public abstract class Player : NetworkBehaviour
         MyUnits.Remove(unit);
         if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
 
+        // HACK: should this event fire instantly when a player loses?
         if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
     }
 
@@ -414,6 +413,8 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartRound()
     {
+        if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
+
         MoveCount = 0;
         HasEndedTurn = false;
     }
@@ -421,6 +422,9 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartTurn()
     {
+        if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
+        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
+
         MoveCount = GameMode.MovesPerTurn;
         HasEndedTurn = false;
     }
