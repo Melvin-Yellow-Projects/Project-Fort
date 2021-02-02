@@ -51,6 +51,7 @@ public struct UnitData
         };
     }
 
+    // HACK: can this be added to general utilities?
     public bool DoesConnectionHaveAuthority(NetworkConnection conn)
     {
         return MyUnit.connectionToClient.connectionId == conn.connectionId;

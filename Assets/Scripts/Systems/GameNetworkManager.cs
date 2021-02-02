@@ -139,7 +139,6 @@ public class GameNetworkManager : NetworkManager
         base.OnServerAddPlayer(conn);
 
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
-        PlayerInfo playerInfo = conn.identity.GetComponent<PlayerInfo>();
 
         GameManager.Players.Add(player);
 
@@ -149,22 +148,23 @@ public class GameNetworkManager : NetworkManager
                 new CSteamID(LobbyId),
                 numPlayers - 1
             );
-            playerInfo.SteamId = steamId.m_SteamID; // this sets up all the steam info, name, picture
+            // this sets up all the steam info, name, picture
+            player.Info.SteamId = steamId.m_SteamID; 
         }
         else
         {
-            playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
+            player.Info.PlayerName = $"Player {GameManager.Players.Count}";
         }
 
         player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
 
-        //playerInfo.TeamColor = new Color(
+        //player.Info.TeamColor = new Color(
         //    UnityEngine.Random.Range(0f, 1f),
         //    UnityEngine.Random.Range(0f, 1f),
         //    UnityEngine.Random.Range(0f, 1f)
         //);
 
-        playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
+        player.Info.IsPartyLeader = (GameManager.Players.Count == 1);
     }
 
     [Server]
@@ -252,12 +252,10 @@ public class GameNetworkManager : NetworkManager
         Debug.LogWarning("Spawning Computer Player");
         ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
 
-        PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
-
         GameManager.Players.Add(player);
 
         player.MyTeam.SetTeam(teamId); // TODO: move to playerInfo
-        playerInfo.PlayerName = $"Computer Player {teamId}";
+        player.Info.PlayerName = $"Computer Player {teamId}";
 
         NetworkServer.Spawn(player.gameObject);
     }
@@ -291,7 +289,7 @@ public class GameNetworkManager : NetworkManager
         }
 
         // HACK you shouldn't manually have to destroy these
-        Destroy(HexGrid.Singleton.gameObject);
+        if (HexGrid.Singleton) Destroy(HexGrid.Singleton.gameObject);
 
         GameManager.Players.Clear();
     }

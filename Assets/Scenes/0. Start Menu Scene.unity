@@ -2859,11 +2859,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2468236475527809551, guid: a19ca0d1b1e52c340aa76d02442a3f99,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 413763624}
     - target: {fileID: 3875699037393992867, guid: a19ca0d1b1e52c340aa76d02442a3f99,
         type: 3}
       propertyPath: m_Name
@@ -3326,7 +3321,7 @@ PrefabInstance:
     - target: {fileID: 4903426235945761979, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}
       propertyPath: m_Text
-      value: 192.168.86.248
+      value: 192.168.11.24
       objectReference: {fileID: 0}
     - target: {fileID: 4903426236037027071, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}

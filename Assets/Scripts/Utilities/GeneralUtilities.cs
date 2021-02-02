@@ -11,6 +11,11 @@ public static class GeneralUtilities
         return NetworkServer.localConnection.connectionId == NetworkClient.connection.connectionId;
     }
 
+    public static bool IsMyConnection(NetworkConnection conn)
+    {
+        return conn.connectionId == NetworkClient.connection.connectionId;
+    }
+
     public static float Normalization(float value, float min, float max)
     {
         return (value - min) / (max - min);

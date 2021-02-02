@@ -67,6 +67,14 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
+    public PlayerInfo Info
+    {
+        get
+        {
+            return GetComponent<PlayerInfo>();
+        }
+    }
+
     public int MoveCount
     {
         get
@@ -112,16 +120,12 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
-    //protected void Awake()
-    //{
-    //    DontDestroyOnLoad(gameObject);
-    //    if (isServer || hasAuthority) Subscribe();
-    //}
-
-    //protected void OnDestroy()
-    //{
-    //    if (isServer || hasAuthority) Unsubscribe();
-    //}
+    protected virtual void Start()
+    {
+        // HACK: this should just show the defeat, not the player has won screen
+        if (isServer && MyUnits.Count == 0 && MyForts.Count == 0)
+            ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
+    }
 
     protected void OnDestroy()
     {
