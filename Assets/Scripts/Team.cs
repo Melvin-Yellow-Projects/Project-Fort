@@ -137,18 +137,18 @@ public class Team : NetworkBehaviour
 
         if (id > maxTeams) id = 1;
 
-        RpcChangeTeam();
+        //RpcChangeTeam();
     }
 
     #endregion
     /************************************************************/
     #region Client Functions
 
-    [ClientRpc]
-    private void RpcChangeTeam()
-    {
-        ClientOnChangeTeam?.Invoke();
-    }
+    //[ClientRpc]
+    //private void RpcChangeTeam()
+    //{
+    //    ClientOnChangeTeam?.Invoke();
+    //}
 
     #endregion
     /************************************************************/
@@ -174,6 +174,7 @@ public class Team : NetworkBehaviour
 
     private void HookOnId(int oldValue, int newValue)
     {
+        ClientOnChangeTeam?.Invoke();
         if (MyColorSetter) MyColorSetter.SetColor(TeamColor);
     }
 
