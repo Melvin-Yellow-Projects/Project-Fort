@@ -113,6 +113,8 @@ public class PlayerInfo : NetworkBehaviour
 
         IsPartyLeader = false;
         playerInfo.IsPartyLeader = true;
+
+        Debug.LogWarning($"{name} has changed the party leader!");
     }
 
     #endregion

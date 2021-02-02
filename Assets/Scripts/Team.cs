@@ -133,6 +133,8 @@ public class Team : NetworkBehaviour
     {
         if (GameNetworkManager.IsGameInProgress) return;
 
+        Debug.LogWarning($"{name} is Changing Teams!");
+
         id += 1;
 
         if (id > maxTeams) id = 1;

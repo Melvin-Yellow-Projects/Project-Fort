@@ -65,19 +65,20 @@ public class LobbyItem : MonoBehaviour
 
     public void Action()
     {
-        Debug.LogError("Action Button Has Been Pressed!");
-
         if (!player) return;
 
         PlayerInfo clientPlayerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
 
         if (player.hasAuthority)
         {
+            Debug.Log($"{clientPlayerInfo.name} is attempting to change teams");
             // if this is my button, ask server to change my color
             player.MyTeam.CmdChangeTeam();
         }
         else if (clientPlayerInfo.IsPartyLeader)
         {
+            Debug.Log($"{clientPlayerInfo.name} is attempting to change the party leader");
+
             // else am i the party leader? if so, give the leader status to another player
             clientPlayerInfo.CmdGivePartyLeaderStatusToNewPlayer(player.netIdentity);
         }
