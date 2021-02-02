@@ -287,6 +287,8 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientDisconnect(conn);
 
+        Debug.Log("Disconnecting client");
+
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
