@@ -56,7 +56,7 @@ public class SceneLoader : MonoBehaviour
 
             // HACK you shouldn't manually have to destroy these
             NetworkServer.Destroy(HexGrid.Singleton.gameObject);
-            if (IsGameScene) NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
+            //if (IsGameScene) NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
 
             NetworkManager.singleton.StopHost();
             //Application.Quit();

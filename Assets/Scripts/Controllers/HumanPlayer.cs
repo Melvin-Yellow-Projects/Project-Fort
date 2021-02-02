@@ -116,6 +116,11 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Client Functions
 
+    public override void OnStartLocalPlayer()
+    {
+        AuthoritySubscribe();
+    }
+
     [Client]
     private void UpdateCurrentCell()
     {
@@ -204,8 +209,6 @@ public class HumanPlayer : Player
 
     protected override void AuthoritySubscribe()
     {
-        if (!hasAuthority) return;
-
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase += HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
@@ -221,8 +224,6 @@ public class HumanPlayer : Player
 
     protected override void AuthorityUnsubscribe()
     {
-        if (!hasAuthority) return;
-        
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;

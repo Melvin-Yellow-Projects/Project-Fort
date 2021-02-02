@@ -191,9 +191,6 @@ public class GameNetworkManager : NetworkManager
         if (!SceneLoader.IsGameScene) return;
 
         ServerPadGameWithComputerPlayers();
-
-        GameOverHandler gameOverHandler = Instantiate(GameOverHandler.Prefab);
-        NetworkServer.Spawn(gameOverHandler.gameObject);
     }
 
     [Server]
