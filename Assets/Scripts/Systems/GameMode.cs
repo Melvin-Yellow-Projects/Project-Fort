@@ -15,7 +15,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Game Mode Settings")]
 public class GameMode : ScriptableObject
 {
-    /********** MARK: Game Variables **********/
+    /************************************************************/
     #region Game Variables
 
     //[SerializeField] bool hasMaximumRounds = false;
@@ -34,7 +34,7 @@ public class GameMode : ScriptableObject
     [SerializeField] bool isUsingTurnTimer = false;
 
     [SerializeField] float turnTimerLength = 10f;
-    
+
     //[SerializeField] bool isHotseat = false;
 
     //[SerializeField] bool canPlayerBreak = false;
@@ -42,15 +42,13 @@ public class GameMode : ScriptableObject
     //[SerializeField] float playerBreakingTimerLength;
 
     #endregion
-
-    /********** MARK: Game Instance Variables **********/
+    /************************************************************/
     #region Game Instance Variables
 
     //public bool isPlayerBreaking = false;
 
     #endregion
-
-    /********** MARK: Class Properties **********/
+    /************************************************************/
     #region Class Properties
 
     public static GameMode Singleton { get; set; }
@@ -61,6 +59,10 @@ public class GameMode : ScriptableObject
         {
             return Singleton.isUsingTurnTimer;
         }
+        set
+        {
+            Singleton.isUsingTurnTimer = value;
+        }
     }
 
     public static float TurnTimerLength
@@ -68,6 +70,10 @@ public class GameMode : ScriptableObject
         get
         {
             return Singleton.turnTimerLength;
+        }
+        set
+        {
+            Singleton.turnTimerLength = value;
         }
     }
 
@@ -77,6 +83,10 @@ public class GameMode : ScriptableObject
         {
             return Singleton.turnsPerRound;
         }
+        set
+        {
+            Singleton.turnsPerRound = value;
+        }
     }
 
     public static int MovesPerTurn
@@ -85,6 +95,10 @@ public class GameMode : ScriptableObject
         {
             return Singleton.movesPerTurn;
         }
+        set
+        {
+            Singleton.movesPerTurn = value;
+        }
     }
 
     public static int StartingPlayerResources
@@ -92,6 +106,10 @@ public class GameMode : ScriptableObject
         get
         {
             return Singleton.startingPlayerResources;
+        }
+        set
+        {
+            Singleton.startingPlayerResources = value;
         }
     }
 

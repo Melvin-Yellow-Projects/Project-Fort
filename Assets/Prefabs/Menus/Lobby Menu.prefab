@@ -232,7 +232,19 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3875699037393992888}
+        m_TargetAssemblyTypeName: LobbyMenu, Assembly-CSharp
+        m_MethodName: OnToggleValueChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &1789268832517439234
 GameObject:
@@ -931,7 +943,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3875699037393992888}
+        m_TargetAssemblyTypeName: LobbyMenu, Assembly-CSharp
+        m_MethodName: OnSliderValueChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3568395451130102131
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,6 +1281,9 @@ MonoBehaviour:
   - {fileID: 3411061618259538338}
   - {fileID: 3135356366301483329}
   - {fileID: 174677758790870333}
+  gameModeSettingsPanel: {fileID: 4018393197692209708}
+  turnTimerSlider: {fileID: 3319815536965457797}
+  turnTimerText: {fileID: 5050865045816635645}
 --- !u!1 &4018393197692209708
 GameObject:
   m_ObjectHideFlags: 0

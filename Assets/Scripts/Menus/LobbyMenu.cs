@@ -15,22 +15,28 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class LobbyMenu : MonoBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
+    [Header("Cached References")]
     [SerializeField] SaveLoadMenu saveLoadMenu = null;
 
     [SerializeField] Button startGameButton = null;
     [SerializeField] LobbyItem[] lobbyItems = null;
 
+    [Header("Game Mode Settings")]
+    [SerializeField] GameObject gameModeSettingsPanel = null;
+    [SerializeField] Slider turnTimerSlider = null;
+    [SerializeField] TMP_Text turnTimerText = null;
+
     bool hasSubscribed = false;
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     // HACK: Since awake and on destroy are only called on previously active game objects, the
@@ -47,8 +53,7 @@ public class LobbyMenu : MonoBehaviour
     //}
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void StartGame()
@@ -89,8 +94,25 @@ public class LobbyMenu : MonoBehaviour
     }
 
     #endregion
+    /************************************************************/
+    #region GameMode Functions 
 
-    /********** MARK: Event Handler Functions **********/
+    // HACK: move these functions elsewhere; perhaps a GameMode instance Manager?
+
+    public void OnToggleValueChanged(bool toggle)
+    {
+        GameMode.IsUsingTurnTimer = toggle;
+        turnTimerSlider.interactable = toggle;
+    }
+
+    public void OnSliderValueChanged(float value)
+    {
+        GameMode.TurnTimerLength = value;
+        turnTimerText.text = $"{value} min";
+    }
+
+    #endregion
+    /************************************************************/
     #region Event Handler Functions
 
     public void Subscribe()
@@ -132,7 +154,7 @@ public class LobbyMenu : MonoBehaviour
             lobbyItems[i].ClearPlayer();
         }
 
-        startGameButton.interactable = !ArePlayersOnDifferentTeams() && 
+        startGameButton.interactable = !ArePlayersOnDifferentTeams() &&
             (GameManager.Players.Count >= GameNetworkManager.MinConnections);
     }
     
@@ -143,6 +165,8 @@ public class LobbyMenu : MonoBehaviour
         bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
 
         startGameButton.gameObject.SetActive(isLeader);
+
+        gameModeSettingsPanel.SetActive(isLeader);
     }
 
     #endregion
