@@ -22,8 +22,8 @@ public class PlayerInfo : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    [SyncVar(hook = nameof(HookOnIsPartyOwner))]
-    bool isPartyOwner = false;
+    [SyncVar(hook = nameof(HookOnIsPartyLeader))]
+    bool isPartyLeader = false;
 
     [SyncVar(hook = nameof(HookOnPlayerName))]
     string playerName;
@@ -51,17 +51,17 @@ public class PlayerInfo : NetworkBehaviour
     /************************************************************/
     #region Class Events
 
-    public bool IsPartyOwner
+    public bool IsPartyLeader
     {
         get
         {
-            return isPartyOwner;
+            return isPartyLeader;
         }
 
         [Server]
         set
         {
-            isPartyOwner = value;
+            isPartyLeader = value;
         }
     }
 
@@ -99,6 +99,20 @@ public class PlayerInfo : NetworkBehaviour
         {
             return displayTexture;
         }
+    }
+
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    [Command]
+    public void CmdGivePartyLeaderStatusToNewPlayer(NetworkIdentity playerNetId)
+    {
+        if (GameNetworkManager.IsGameInProgress) return;
+        if (!playerNetId.TryGetComponent(out PlayerInfo playerInfo)) return;
+
+        IsPartyLeader = false;
+        playerInfo.IsPartyLeader = true;
     }
 
     #endregion
@@ -166,17 +180,16 @@ public class PlayerInfo : NetworkBehaviour
 
     }
 
-    private void HookOnIsPartyOwner(bool oldValue, bool newValue)
+    private void HookOnIsPartyLeader(bool oldValue, bool newValue)
     {
-        if (!hasAuthority) return;
-
         ClientOnPlayerInfoUpdate?.Invoke();
     }
 
     private void HookOnPlayerName(string oldValue, string newValue)
     {
-        ClientOnPlayerInfoUpdate?.Invoke();
         name = playerName;
+
+        ClientOnPlayerInfoUpdate?.Invoke();
     }
 
     private void HandleSteamIdUpdated(ulong oldSteamId, ulong newSteamId)

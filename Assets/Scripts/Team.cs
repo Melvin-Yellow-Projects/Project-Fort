@@ -23,6 +23,16 @@ public class Team : NetworkBehaviour
     [SyncVar(hook = nameof(HookOnId))]
     int id = 0;
 
+    const int maxTeams = 8;
+
+    #endregion
+    /************************************************************/
+    #region Properties
+
+    //public static event Action ServerOnChangePlayerTeam;
+
+    public static event Action ClientOnChangeTeam;
+
     #endregion
     /************************************************************/
     #region Properties
@@ -118,11 +128,37 @@ public class Team : NetworkBehaviour
         if (conn != null) netIdentity.AssignClientAuthority(conn);
     }
 
-    public void SetTeam(int teamIndex)
+    [Command]
+    public void CmdChangeTeam()
     {
-        if (this.id == teamIndex) return;
+        if (GameNetworkManager.IsGameInProgress) return;
 
-        this.id = teamIndex;
+        id += 1;
+
+        if (id > maxTeams) id = 1;
+
+        //RpcChangeTeam();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    //[ClientRpc]
+    //private void RpcChangeTeam()
+    //{
+    //    ClientOnChangeTeam?.Invoke();
+    //}
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    public void SetTeam(int id)
+    {
+        if (this.id == id) return;
+
+        this.id = id;
         ServerRefreshAuthoritativeConnection();
         //if (MyColorSetter) MyColorSetter.SetColor(TeamColor); // TODO: validate if line needed
     }
@@ -138,8 +174,8 @@ public class Team : NetworkBehaviour
 
     private void HookOnId(int oldValue, int newValue)
     {
+        ClientOnChangeTeam?.Invoke();
         if (MyColorSetter) MyColorSetter.SetColor(TeamColor);
-
     }
 
     #endregion

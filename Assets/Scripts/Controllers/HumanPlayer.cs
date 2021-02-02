@@ -70,7 +70,7 @@ public class HumanPlayer : Player
     [Command] // HACK: i dont like this function here
     public void CmdStartGame() 
     {
-        if (!GetComponent<PlayerInfo>().IsPartyOwner) return;
+        if (!GetComponent<PlayerInfo>().IsPartyLeader) return;
 
         if (GameNetworkManager.IsGameInProgress) return;
 

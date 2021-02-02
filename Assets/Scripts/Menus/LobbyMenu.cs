@@ -15,16 +15,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Mirror;
-using TMPro;
 
 public class LobbyMenu : MonoBehaviour
 {
     /********** MARK: Variables **********/
     #region Variables
 
+    [SerializeField] SaveLoadMenu saveLoadMenu = null;
+
     [SerializeField] Button startGameButton = null;
-    [SerializeField] TMP_Text[] playerNameTexts = new TMP_Text[0];
-    [SerializeField] RawImage[] playerSteamImages = new RawImage[0];
+    [SerializeField] LobbyItem[] lobbyItems = null;
 
     bool hasSubscribed = false;
 
@@ -51,6 +51,13 @@ public class LobbyMenu : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    public void StartGame()
+    {
+        if (ArePlayersOnDifferentTeams()) return;
+
+        saveLoadMenu.Open(3);
+    }
+
     public void LeaveLobby()
     {
         if (NetworkServer.active && NetworkClient.isConnected) // are you a host?
@@ -66,6 +73,21 @@ public class LobbyMenu : MonoBehaviour
         SceneLoader.LoadStartScene();
     }
 
+    private bool ArePlayersOnDifferentTeams()
+    {
+        for (int i = 0; i < GameManager.Players.Count - 1; i++)
+        {
+            Player player = GameManager.Players[i];
+
+            for (int j = i + 1; j < GameManager.Players.Count; j++)
+            {
+                if (player.MyTeam == GameManager.Players[j].MyTeam) return true;
+            }
+        }
+
+        return false;
+    }
+
     #endregion
 
     /********** MARK: Event Handler Functions **********/
@@ -77,15 +99,20 @@ public class LobbyMenu : MonoBehaviour
         hasSubscribed = true;
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
-        PlayerInfo.ClientOnPlayerInfoUpdate += UpdatePlayerTags;
+        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+        PlayerInfo.ClientOnPlayerInfoUpdate += RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyOwnerStateChange;
+        Team.ClientOnChangeTeam += RefreshLobbyItems;
     }
 
     public void Unsubscribe()
     {
+        hasSubscribed = false;
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
-        PlayerInfo.ClientOnPlayerInfoUpdate -= UpdatePlayerTags;
+        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+        PlayerInfo.ClientOnPlayerInfoUpdate -= RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyOwnerStateChange;
+        Team.ClientOnChangeTeam -= RefreshLobbyItems;
     }
 
     private void HandleOnClientConnectEvent()
@@ -93,35 +120,29 @@ public class LobbyMenu : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private void UpdatePlayerTags()
+    private void RefreshLobbyItems()
     {
         for (int i = 0; i < GameManager.Players.Count; i++)
         {
-            Player player = GameManager.Players[i];
-
-            //playerNameTexts[i].text = $"Player {i + 1}";
-            playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = false;
-            playerNameTexts[i].text = player.GetComponent<PlayerInfo>().PlayerName;
-            playerSteamImages[i].texture = player.GetComponent<PlayerInfo>().DisplayTexture;
+            lobbyItems[i].SetPlayer(GameManager.Players[i]);
         }
 
-        for (int i = GameManager.Players.Count; i < playerNameTexts.Length; i++)
+        for (int i = GameManager.Players.Count; i < lobbyItems.Length; i++)
         {
-            playerNameTexts[i].text = "Waiting For Player";
-            playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = true;
-            playerSteamImages[i].texture = null;
+            lobbyItems[i].ClearPlayer();
         }
 
-        startGameButton.interactable =
+        startGameButton.interactable = !ArePlayersOnDifferentTeams() && 
             (GameManager.Players.Count >= GameNetworkManager.MinConnections);
     }
-
+    
     private void HandlePartyOwnerStateChange()
     {
         if (!NetworkClient.connection.identity) return;
-        if (!NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyOwner) return;
 
-        startGameButton.gameObject.SetActive(true);
+        bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
+
+        startGameButton.gameObject.SetActive(isLeader);
     }
 
     #endregion

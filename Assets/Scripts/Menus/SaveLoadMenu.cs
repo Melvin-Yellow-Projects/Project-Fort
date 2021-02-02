@@ -58,21 +58,21 @@ public class SaveLoadMenu : MonoBehaviour
     /********** MARK: Properties **********/
     #region Properties
 
-    private static BinaryReader MapReader;
+    private static BinaryReader MapReader { get; set; }
 
     #endregion
 
     /********** MARK: Unity Functions **********/
     #region Unity Functions
 
-    private void Awake()
+    private void OnEnable()
     {
         controls = new Controls();
         controls.General.Affirmation.performed += Action;
         controls.Enable();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         controls.General.Affirmation.performed -= Action;
     }
