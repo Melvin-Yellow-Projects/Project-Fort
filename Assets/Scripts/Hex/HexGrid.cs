@@ -102,8 +102,6 @@ public class HexGrid : NetworkBehaviour
         Units.Clear();
         Forts.Clear();
 
-        Unsubscribe();
-
         Singleton = null;
     }
 
@@ -111,7 +109,6 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStopServer()
     {
         ClearEntities();
@@ -175,7 +172,7 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client] // HACK: this function can be improved
+    // HACK: this function can be improved
     public override void OnStartClient()
     {
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
@@ -228,8 +225,6 @@ public class HexGrid : NetworkBehaviour
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
         CreateMap(cellCountX, cellCountZ);
-
-        Subscribe();
     }
 
     public bool CreateMap(int x, int z)
@@ -501,13 +496,13 @@ public class HexGrid : NetworkBehaviour
     {
         for (int i = 0; i < Units.Count; i++)
         {
-            NetworkServer.Destroy(Units[i].gameObject);
+            Destroy(Units[i].gameObject);
         }
         Units.Clear();
 
         for (int i = 0; i < Forts.Count; i++)
         {
-            NetworkServer.Destroy(Forts[i].gameObject);
+            Destroy(Forts[i].gameObject);
         }
         Forts.Clear();
     }
@@ -539,22 +534,13 @@ public class HexGrid : NetworkBehaviour
         writer.Write(cellCountX);
         writer.Write(cellCountZ);
 
-        for (int i = 0; i < cells.Length; i++)
-        {
-            cells[i].Save(writer);
-        }
+        for (int i = 0; i < cells.Length; i++) cells[i].Save(writer);
 
         writer.Write(Forts.Count);
-        for (int i = 0; i < Forts.Count; i++)
-        {
-            Forts[i].Save(writer);
-        }
+        for (int i = 0; i < Forts.Count; i++) Forts[i].Save(writer);
 
         writer.Write(Units.Count);
-        for (int i = 0; i < Units.Count; i++)
-        {
-            Units[i].Save(writer);
-        }
+        for (int i = 0; i < Units.Count; i++) Units[i].Save(writer);
     }
 
     /// <summary>
@@ -600,61 +586,6 @@ public class HexGrid : NetworkBehaviour
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;
-    }
-
-    #endregion
-    /************************************************************/
-    #region Event Handler Functions
-
-    private void Subscribe()
-    {
-        Fort.OnFortSpawned += HandleOnFortSpawned;
-        Fort.OnFortDespawned += HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
-        Unit.OnUnitDepawned += HandleOnUnitDepawned;
-    }
-
-    private void Unsubscribe()
-    {
-        Fort.OnFortSpawned -= HandleOnFortSpawned;
-        Fort.OnFortDespawned -= HandleOnFortDespawned;
-
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
-        Unit.OnUnitDepawned -= HandleOnUnitDepawned;
-    }
-
-    private void HandleOnFortSpawned(Fort fort)
-    {
-        // TODO: Server validation
-
-        fort.name = $"{fort.MyTeam.TeamIndex}fort{fortCount}";
-        fortCount += 1;
-
-        Forts.Add(fort);
-    }
-
-    private void HandleOnFortDespawned(Fort fort)
-    {
-        // FIXME: this needs to be replaced with a manual event rather than handle
-
-        Forts.Remove(fort);
-    }
-
-    private void HandleOnUnitSpawned(Unit unit)
-    {
-        // TODO: Server validation
-
-        unit.name = $"{unit.MyTeam.TeamIndex}unit{unitCount}"; // FIXME: name should update
-        unitCount += 1;
-
-        Units.Add(unit);
-    }
-
-    private void HandleOnUnitDepawned(Unit unit)
-    {
-        // FIXME: this needs to be replaced with a manual event rather than handle
-        Units.Remove(unit);
     }
 
     #endregion

@@ -24,7 +24,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [SerializeField] protected int maxMovement = 4;
 
     [Tooltip("ID for this unit")]
-    [SerializeField] protected int visionRange = 100;
+    [SerializeField] protected int visionRange = 1;
 
     [Tooltip("ID for this unit")]
     [SerializeField] protected int movesPerStep = 1;
@@ -64,7 +64,7 @@ public abstract class UnitMovement : NetworkBehaviour
             // if there is a previous cell...
             if (myCell && myCell.MyUnit == MyUnit)
             {
-                UnitPathfinding.DecreaseVisibility(myCell, visionRange);
+                //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
                 myCell.MyUnit = null;
             }
 
@@ -116,7 +116,7 @@ public abstract class UnitMovement : NetworkBehaviour
             Display.RefreshMovementDisplay(currentMovement);
 
             // refreshes color given if the unit can move
-            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.MyColor, isSaturating: !CanMove);
+            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.TeamColor, isSaturating: !CanMove);
 
             if (CanMove) Display.ShowDisplay();
             else Display.HideDisplay();
@@ -182,6 +182,11 @@ public abstract class UnitMovement : NetworkBehaviour
         Display.RefreshMovementDisplay(currentMovement);
     }
 
+    private void OnDestroy()
+    {
+        Unsubscribe();
+    }
+
     #endregion
     /************************************************************/
     #region Server Functions
@@ -189,11 +194,11 @@ public abstract class UnitMovement : NetworkBehaviour
     public override void OnStartServer()
     {
         Subscribe();
-    }
 
-    public override void OnStopServer()
-    {
-        Unsubscribe();
+        Orientation = Random.Range(0, 360f);
+
+        // this is called by the LateUpdate's reset in HexCellShaderData
+        UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
 
     [Server]
@@ -219,6 +224,7 @@ public abstract class UnitMovement : NetworkBehaviour
             // TODO: Brute Force repitition, this can be improved
             MyUnit.CombatHandler.gameObject.SetActive(false);
             Debug.Log("Disabling Combat Handler");
+            return;
         }
 
         if (!EnRouteCell) return;
@@ -234,7 +240,7 @@ public abstract class UnitMovement : NetworkBehaviour
         if (!Path.HasPath) return;
 
         Path.RemoveTailCells(numberToRemove: movesPerStep);
-        if (hasAuthority) Path.Show(); // FIXME: this might be a problem
+        if (hasAuthority) Path.Show();
     }
 
     [Server]
@@ -544,9 +550,10 @@ public abstract class UnitMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        //UnitPathfinding.DecreaseVisibility(myCell, visionRange); // FIXME visibility
-
         CanMove = false;
+
+        if (EnRouteCell) UnitPathfinding.DecreaseVisibility(EnRouteCell, VisionRange);
+        else UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
 
         HandleRpcOnDeath();
     }
@@ -554,15 +561,22 @@ public abstract class UnitMovement : NetworkBehaviour
     [ClientRpc]
     private void HandleRpcOnDeath()
     {
-        if (!isClientOnly) return;
+        if (GeneralUtilities.IsRunningOnHost()) return;
 
         CanMove = false;
+
+        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
     }
 
     [Client]
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)
     {
+        if (GeneralUtilities.IsRunningOnHost()) return;
+
         if (myCell) MyCell = myCell;
+
+        if (oldValue) UnitPathfinding.DecreaseVisibility(oldValue, VisionRange);
+        UnitPathfinding.IncreaseVisibility(newValue, VisionRange);
     }
 
     #endregion

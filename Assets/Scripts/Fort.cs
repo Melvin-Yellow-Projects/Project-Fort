@@ -53,10 +53,10 @@ public class Fort : NetworkBehaviour
     public static event Action<Fort> OnFortDespawned;
 
     /// <summary>
-    /// Server event for when a fort is captured; passes captured fort and new capturing team
+    /// Server event for when a fort is captured; passes captured fort and its previous team
     /// </summary>
     /// <subscriber class="Player">updates a player's forts</subscriber>
-    public static event Action<Fort, Team> ServerOnFortCaptured;
+    public static event Action<Fort, int> ServerOnFortCaptured;
 
     #endregion
     /************************************************************/
@@ -103,39 +103,51 @@ public class Fort : NetworkBehaviour
     private void Awake()
     {
         MyTeam = GetComponent<Team>();
-    }
 
-    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
-    {
-        OnFortSpawned?.Invoke(this);
+        HexGrid.Forts.Add(this); // HACK: should this be an event?
+        name = $"fort {UnityEngine.Random.Range(0, 100000)}";
     }
 
     private void OnDestroy()
     {
-        myCell.MyFort = null; // HACK: does this need to be transfered to the server?
-        OnFortDespawned?.Invoke(this);
+        HexGrid.Forts.Remove(this); // HACK: should this be an event?
     }
 
     #endregion
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
+        OnFortSpawned?.Invoke(this);
+
         Subscribe();
+
         ValidateLocation();
     }
 
-    [Server]
     public override void OnStopServer()
     {
         Unsubscribe();
+
+        myCell.MyFort = null;
+
+        OnFortDespawned?.Invoke(this);
     }
 
     #endregion
     /************************************************************/
     #region Client Functions
+
+    public override void OnStartClient()
+    {
+        if (!isServer) OnFortSpawned?.Invoke(this);
+    }
+
+    public override void OnStopClient()
+    {
+        if (!isServer) OnFortDespawned?.Invoke(this);
+    }
 
     #endregion
     /************************************************************/
@@ -235,7 +247,7 @@ public class Fort : NetworkBehaviour
     {
         myCell.coordinates.Save(writer);
         writer.Write(orientation);
-        writer.Write((byte)MyTeam.TeamIndex);
+        writer.Write((byte)MyTeam.Id);
     }
 
     public static void Load(BinaryReader reader, int header)
@@ -244,7 +256,7 @@ public class Fort : NetworkBehaviour
         float orientation = reader.ReadSingle();
 
         Fort fort = Instantiate(Prefab);
-        if (header >= 4) fort.MyTeam.SetTeam(reader.ReadByte());
+        fort.MyTeam.SetTeam(reader.ReadByte());
 
         fort.MyCell = HexGrid.Singleton.GetCell(coordinates);
         fort.Orientation = orientation;
@@ -261,15 +273,11 @@ public class Fort : NetworkBehaviour
 
     private void Subscribe()
     {
-        if (!isServer) return;
-
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
     }
 
     private void Unsubscribe()
     {
-        if (!isServer) return;
-
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
     }
 
@@ -280,9 +288,13 @@ public class Fort : NetworkBehaviour
 
         if (!unit || MyTeam == unit.MyTeam) return;
 
-        ServerOnFortCaptured?.Invoke(this, unit.MyTeam);
+        Debug.Log($"Fort {name} was captured by team {unit.MyTeam.Id}");
+
+        int previousTeamId = MyTeam.Id;
 
         MyTeam.SetTeam(unit.MyTeam);
+
+        ServerOnFortCaptured?.Invoke(this, previousTeamId);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

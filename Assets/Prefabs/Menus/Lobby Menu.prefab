@@ -1358,7 +1358,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2468236475073581850
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2093,7 +2093,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2468236475521784206
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2273,14 +2273,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3875699037393992888}
-        m_TargetAssemblyTypeName: LobbyMenu, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: SaveLoadMenu, Assembly-CSharp
+        m_MethodName: Open
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -2302,7 +2302,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2468236475596985002
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2455,7 +2455,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2468236475740690510
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3737,3 +3737,16 @@ MonoBehaviour:
   - {fileID: 2468236475841767662}
   - {fileID: 2468236474969195599}
   - {fileID: 2468236474567486773}
+  - {fileID: 2468236474531464974}
+  - {fileID: 2468236476215729607}
+  - {fileID: 2468236475061228190}
+  - {fileID: 2468236476045613238}
+  playerSteamImages:
+  - {fileID: 2468236475231802545}
+  - {fileID: 2468236474744392104}
+  - {fileID: 2468236475228963476}
+  - {fileID: 2468236475314790635}
+  - {fileID: 2468236474469719272}
+  - {fileID: 2468236474649914598}
+  - {fileID: 2468236474867530445}
+  - {fileID: 2468236476393222332}

@@ -13,12 +13,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System;
-using UnityEngine.SceneManagement;
+using Steamworks;
 
 public class GameNetworkManager : NetworkManager
 {
     /************************************************************/
     #region Variables
+
+    [Header("Settings")]
+    [Tooltip("whether or not this build is using Steam")]
+    [SerializeField] bool isUsingSteam = false;
+
+    [Tooltip("minimum number of concurrent connections to start game")]
+    [SerializeField, Range(1, 2)] int minConnections = 1;
 
     [Tooltip("how long to wait for a player to load the map terrain")]
     [SerializeField, Range(0f, 60f)] float waitForPlayerToSpawnTerrain = 30f;
@@ -54,13 +61,32 @@ public class GameNetworkManager : NetworkManager
         }
     }
 
+    public static bool IsUsingSteam { get; private set; } = false;
+
+    public static int MinConnections
+    {
+        get
+        {
+            return Singleton.minConnections;
+        }
+    }
+
+    public static ulong LobbyId { get; set; }
+
     public static bool IsGameInProgress { get; set; }
 
     #endregion
     /************************************************************/
     #region Server Functions
 
-    [Server]
+    public override void OnValidate()
+    {
+        // the build has been changed from before, now time to change the transport
+        if (isUsingSteam != IsUsingSteam) ChangeTransport();
+        
+        base.OnValidate();
+    }
+
     public override void OnServerConnect(NetworkConnection conn)
     {
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
@@ -78,7 +104,6 @@ public class GameNetworkManager : NetworkManager
         conn.Disconnect();
     }
 
-    [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         if (!SceneLoader.IsGameScene) return;
@@ -92,9 +117,14 @@ public class GameNetworkManager : NetworkManager
         //          base.OnServerDisconnect(conn);
     }
 
-    [Server]
     public override void OnStopServer()
     {
+        //for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+        //{
+        //    Player p = GameManager.Players[i];
+        //    NetworkServer.Destroy(p.gameObject);
+        //}
+
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;
@@ -104,7 +134,6 @@ public class GameNetworkManager : NetworkManager
         IsGameInProgress = false;
     }
 
-    [Server]
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
@@ -114,16 +143,34 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
+        if (IsUsingSteam)
+        {
+            CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(
+                new CSteamID(LobbyId),
+                numPlayers - 1
+            );
+            playerInfo.SteamId = steamId.m_SteamID; // this sets up all the steam info, name, picture
+        }
+        else
+        {
+            playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
+        }
+
         player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
+
+        //playerInfo.TeamColor = new Color(
+        //    UnityEngine.Random.Range(0f, 1f),
+        //    UnityEngine.Random.Range(0f, 1f),
+        //    UnityEngine.Random.Range(0f, 1f)
+        //);
+
         playerInfo.IsPartyOwner = (GameManager.Players.Count == 1);
-        playerInfo.PlayerName = $"Player {GameManager.Players.Count}";
     }
 
     [Server]
     public void ServerStartGame() // HACK move this into SceneLoader?
     {
-        // HACK: hardcoded and tethered to LobbyMenu.UpdatePlayerTags()
-        if (GameManager.Players.Count < 2) return;
+        if (GameManager.Players.Count < MinConnections) return;
 
         IsGameInProgress = true;
 
@@ -132,7 +179,6 @@ public class GameNetworkManager : NetworkManager
         ServerChangeScene(SceneLoader.GameSceneName);
     }
 
-    [Server]
     public override void OnServerSceneChanged(string sceneName) 
     {
         // HACK: this code is really jank
@@ -140,15 +186,11 @@ public class GameNetworkManager : NetworkManager
 
         Debug.Log($"Server has changed the Scene to {sceneName}");
 
-        if (SceneLoader.IsGameScene && GameManager.Players.Count < 2)
-            ServerSpawnComputerPlayer();
-
         HexGrid.ServerSpawnMapTerrain();
 
         if (!SceneLoader.IsGameScene) return;
 
-        GameOverHandler gameOverHandler = Instantiate(GameOverHandler.Prefab);
-        NetworkServer.Spawn(gameOverHandler.gameObject);
+        ServerPadGameWithComputerPlayers();
     }
 
     [Server]
@@ -185,7 +227,27 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public static void ServerSpawnComputerPlayer()
+    public static void ServerPadGameWithComputerPlayers()
+    {
+        int[] teamIndex = new int[8]; // HACK: hardcoded
+        foreach (Fort fort in HexGrid.Forts) teamIndex[fort.MyTeam.Id - 1] += 1;
+
+        for (int i = 0; i < teamIndex.Length; i++)
+        {
+            if (teamIndex[i] > 0)
+            {
+                bool isTeamOwnedByHumanPlayer = false;
+                foreach (Player player in GameManager.Players)
+                {
+                    if (player.MyTeam.Id == i + 1) isTeamOwnedByHumanPlayer = true;
+                }
+                if (!isTeamOwnedByHumanPlayer) ServerSpawnComputerPlayer(i + 1);
+            }
+        }
+    }
+
+    [Server]
+    public static void ServerSpawnComputerPlayer(int teamId)
     {
         Debug.LogWarning("Spawning Computer Player");
         ComputerPlayer player = Instantiate(ComputerPlayer.Prefab);
@@ -194,8 +256,8 @@ public class GameNetworkManager : NetworkManager
 
         GameManager.Players.Add(player);
 
-        player.MyTeam.SetTeam(GameManager.Players.Count); // TODO: move to playerInfo
-        playerInfo.PlayerName = $"Computer Player {GameManager.Players.Count}";
+        player.MyTeam.SetTeam(teamId); // TODO: move to playerInfo
+        playerInfo.PlayerName = $"Computer Player {teamId}";
 
         NetworkServer.Spawn(player.gameObject);
     }
@@ -204,7 +266,6 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Client Functions
 
-    [Client]
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
@@ -212,7 +273,6 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
-    [Client]
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
@@ -220,10 +280,52 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
-    [Client]
     public override void OnStopClient()
     {
+        Debug.LogError("Disconnecting client");
+
+        for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+        {
+            Player p = GameManager.Players[i];
+            if (p as ComputerPlayer) Destroy(p.gameObject);
+        }
+
+        // HACK you shouldn't manually have to destroy these
+        Destroy(HexGrid.Singleton.gameObject);
+
         GameManager.Players.Clear();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    private void ChangeTransport()
+    {
+        // update property to reflect the editor change
+        IsUsingSteam = isUsingSteam;
+
+        Transport kcpTransport = GetComponent<kcp2k.KcpTransport>();
+        SteamManager steamManager = GetComponent<SteamManager>();
+        Transport steamTransport = GetComponent<Mirror.FizzySteam.FizzySteamworks>();
+
+        // toggle the correct transport and manager
+        kcpTransport.enabled = !IsUsingSteam;
+        steamManager.enabled = IsUsingSteam;
+        steamTransport.enabled = IsUsingSteam;
+
+        if (IsUsingSteam)
+        {
+            Debug.LogWarning("Changing Network Transport to Fizzy Steamworks");
+
+            transport = steamTransport;
+        }
+        else
+        {
+            Debug.LogWarning("Changing Network Transport to KcpTransport");
+
+            transport = kcpTransport;
+        }
     }
 
     #endregion

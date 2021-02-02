@@ -48,23 +48,14 @@ public class SceneLoader : MonoBehaviour
         // FIXME: This needs to work for host/server/client; i can't figure it out yeesh
         if (NetworkServer.active && NetworkClient.isConnected)
         {
-            for (int i = GameManager.Players.Count - 1; i >= 0; i--)
-            {
-                Player p = GameManager.Players[i];
-                if (p as ComputerPlayer) NetworkServer.Destroy(p.gameObject);
-            }
-
-            // HACK you shouldn't manually have to destroy these
-            NetworkServer.Destroy(HexGrid.Singleton.gameObject);
-            if (IsGameScene) NetworkServer.Destroy(GameOverHandler.Singleton.gameObject);
-
+            
             NetworkManager.singleton.StopHost();
             //Application.Quit();
         }
         else
         {
             NetworkManager.singleton.StopClient();
-            Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
+            //Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
         }
 
         SceneManager.LoadScene(MenuSceneName); 
@@ -75,7 +66,7 @@ public class SceneLoader : MonoBehaviour
         //GameSession.Singleton.IsOnline = false; // HACK: brute force line of code
         NetworkManager.singleton.StartHost();
 
-        LoadSceneByName(GameSceneName); // FIXME
+        LoadSceneByName(GameSceneName); 
     }
 
     public static void LoadMapEditorScene()
@@ -85,7 +76,7 @@ public class SceneLoader : MonoBehaviour
         NetworkManager.singleton.StartHost();
 
         Debug.Log("Loading Editor Scene");
-        LoadSceneByName(EditorSceneName); // FIXME
+        LoadSceneByName(EditorSceneName);
     }
 
     /// <summary>

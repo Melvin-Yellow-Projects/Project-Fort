@@ -66,11 +66,16 @@ public class MapCamera : MonoBehaviour
 	/********** MARK: Unity Functions **********/
 	#region Unity Functions
 
-	void Awake()
+	protected void Awake()
 	{
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
 
+		Singleton = this;
+	}
+
+	protected void Start()
+	{
 		controls = new Controls();
 
 		controls.Camera.Move.performed += AdjustPosition;
@@ -83,14 +88,6 @@ public class MapCamera : MonoBehaviour
 		controls.Camera.Zoom.canceled += AdjustZoom;
 
 		controls.Enable();
-	}
-
-	/// <summary>
-	/// Unity Method; This function is called when the object becomes enabled and active
-	/// </summary>
-	protected void OnEnable()
-	{
-		Singleton = this;
 	}
 
 	void Update()
@@ -151,12 +148,15 @@ public class MapCamera : MonoBehaviour
 
 	Vector3 ClampPosition(Vector3 position)
 	{
-        float xMax = (HexGrid.Singleton.cellCountX * HexMetrics.chunkSizeX - 0.5f) *
-            (2f * HexMetrics.innerRadius);
+		//Debug.Log($"{HexGrid.Singleton.cellCountX}, {HexMetrics.chunkSizeX}, {2f * HexMetrics.innerRadius}");
+		float xMax = (HexGrid.Singleton.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
+		//float xMax = (HexGrid.Singleton.cellCountX * HexMetrics.chunkSizeX - 0.5f) *
+  //          (2f * HexMetrics.innerRadius);
         position.x = Mathf.Clamp(position.x, 0f, xMax);
 
-        float zMax = (HexGrid.Singleton.cellCountZ * HexMetrics.chunkSizeZ - 1) *
-            (1.5f * HexMetrics.outerRadius);
+		float zMax = (HexGrid.Singleton.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
+		//float zMax = (HexGrid.Singleton.cellCountZ * HexMetrics.chunkSizeZ - 1) *
+  //          (1.5f * HexMetrics.outerRadius);
         position.z = Mathf.Clamp(position.z, 0f, zMax);
 
         return position;

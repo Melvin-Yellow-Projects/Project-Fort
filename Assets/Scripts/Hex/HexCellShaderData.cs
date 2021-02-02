@@ -21,7 +21,7 @@ using System.Collections.Generic;
 /// </summary>
 public class HexCellShaderData : MonoBehaviour
 {
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     const float transitionSpeed = 255f;
@@ -31,7 +31,7 @@ public class HexCellShaderData : MonoBehaviour
 
     List<HexCell> transitioningCells = new List<HexCell>();
 
-    bool needsVisibilityReset;
+    bool needsVisibilityReset = false;
 
     #endregion
 
@@ -41,8 +41,7 @@ public class HexCellShaderData : MonoBehaviour
     public bool ImmediateMode { get; set; }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -78,8 +77,7 @@ public class HexCellShaderData : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     /// <summary>
@@ -128,7 +126,7 @@ public class HexCellShaderData : MonoBehaviour
         enabled = true;
     }
 
-    bool UpdateCellData(HexCell cell, int delta)
+    private bool UpdateCellData(HexCell cell, int delta)
     {
         int index = cell.Index;
         Color32 data = cellTextureData[index];
@@ -151,14 +149,14 @@ public class HexCellShaderData : MonoBehaviour
             if (data.r < 255)
             {
                 stillUpdating = true;
-                int t = data.r + delta;
+                int t = data.r + delta * 2; // brightens faster
                 data.r = t >= 255 ? (byte)255 : (byte)t;
             }
         }
         else if (data.r > 0)
         {
             stillUpdating = true;
-            int t = data.r - delta;
+            int t = (data.r > 140) ? data.r - delta : data.r - (delta / 2); // dims slower
             data.r = t < 0 ? (byte)0 : (byte)t;
         }
 
@@ -170,6 +168,7 @@ public class HexCellShaderData : MonoBehaviour
 
     public void ViewElevationChanged()
     {
+        if (SceneLoader.IsGameScene) return; // HACK: I dont think this line is right
         needsVisibilityReset = true;
         enabled = true;
     }
@@ -186,7 +185,6 @@ public class HexCellShaderData : MonoBehaviour
     public void RefreshVisibility(HexCell cell)
     {
         int index = cell.Index;
-
 
         if (ImmediateMode)
         {

@@ -138,26 +138,44 @@ public class Unit : NetworkBehaviour
 
         if (!MyTeam || !MyColorSetter || !Movement || !CombatHandler)
             Debug.LogError($"unit {name} is missing an essential component");
-    }
 
-    private void Start() // HACK: Start and OnDestroy belong in Server/Client Functions
-    {
-        OnUnitSpawned?.Invoke(this);
+        HexGrid.Units.Add(this); // HACK: should this be an event?
+        name = $"unit {UnityEngine.Random.Range(0, 100000)}";
     }
 
     private void OnDestroy()
     {
-        OnUnitDepawned?.Invoke(this);
+        HexGrid.Units.Remove(this); // HACK: should this be an event?
     }
 
     #endregion
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
+        OnUnitSpawned?.Invoke(this);
+
         ValidateLocation();
+    }
+
+    public override void OnStopServer()
+    {
+        OnUnitDepawned?.Invoke(this);
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    public override void OnStartClient()
+    {
+        if (!isServer) OnUnitSpawned?.Invoke(this);
+    }
+
+    public override void OnStopClient()
+    {
+        if (!isServer) OnUnitDepawned?.Invoke(this);
     }
 
     #endregion
@@ -182,21 +200,21 @@ public class Unit : NetworkBehaviour
     public void Save(BinaryWriter writer)
     {
         MyCell.coordinates.Save(writer);
+        writer.Write((byte)Id);
+        writer.Write((byte)MyTeam.Id);
         writer.Write(Movement.Orientation);
-        writer.Write((byte)MyTeam.TeamIndex);
     }
 
     public static void Load(BinaryReader reader, int header)
     {
         HexCoordinates coordinates = HexCoordinates.Load(reader);
-        float orientation = reader.ReadSingle();
 
-        // FIXME: Update Code for Unit Variety
-        Unit unit = Instantiate(Prefabs[UnityEngine.Random.Range(0, Prefabs.Count)]);
-        if (header >= 4) unit.MyTeam.SetTeam(reader.ReadByte());
+        Unit unit = Instantiate(Prefabs[reader.ReadByte()]);
+
+        unit.MyTeam.SetTeam(reader.ReadByte());
 
         unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
-        unit.Movement.Orientation = orientation;
+        unit.Movement.Orientation = reader.ReadSingle();
 
         // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
         //HexGrid.Singleton.ParentTransformToGrid(unit.transform);

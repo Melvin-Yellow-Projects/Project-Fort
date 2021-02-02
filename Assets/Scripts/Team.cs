@@ -20,26 +20,50 @@ public class Team : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    [SyncVar(hook = nameof(HookOnTeamIndex))]
-    int teamIndex = 0;
+    [SyncVar(hook = nameof(HookOnId))]
+    int id = 0;
 
     #endregion
     /************************************************************/
     #region Properties
 
-    public int TeamIndex
+    public int Id
     {
         get
         {
-            return teamIndex; 
+            return id; 
         }
     }
 
-    public Color MyColor
+    //public Color TeamColor { get; set; }
+    public Color TeamColor
     {
         get
         {
-            return (teamIndex == 1) ? Color.blue : Color.red;
+            // TODO: add settable color
+            switch (id)
+            {
+                case 0:
+                    return Color.gray;
+                case 1:
+                    return Color.blue;
+                case 2:
+                    return Color.red;
+                case 3:
+                    return Color.green;
+                case 4:
+                    return Color.yellow;
+                case 5:
+                    return Color.magenta;
+                case 6:
+                    return Color.cyan;
+                case 7:
+                    return Color.red + Color.yellow;
+                case 8:
+                    return new Color(143f / 255f, 0.4f, 1f, 1); // lavender
+            }
+            Debug.LogError("team color not found");
+            return Color.black;
         }
     }
 
@@ -52,17 +76,18 @@ public class Team : NetworkBehaviour
         }
     }
 
-    public NetworkConnection AuthoritiveConnection //FIXME: This needs to be updated
+    //HACK: This needs to be updated
+    public NetworkConnection AuthoritiveConnection 
     {
         [Server] 
         get
         {
             for (int i = 0; i < GameManager.Players.Count; i++)
             {
-                if (teamIndex == GameManager.Players[i].MyTeam.teamIndex)
+                if (id == GameManager.Players[i].MyTeam.id)
                 {
                     //Debug.Log($"Grabbing Authoritative Connection for {name}");
-                    MyPlayer = GameManager.Players[i]; // HACK: this won't work for long
+                    MyPlayer = GameManager.Players[i];
                     return GameManager.Players[i].connectionToClient;
                 }
             }
@@ -88,29 +113,32 @@ public class Team : NetworkBehaviour
         //Debug.Log($"Refreshing AuthoritativeConnection for {name}");
 
         netIdentity.RemoveClientAuthority();
-        netIdentity.AssignClientAuthority(AuthoritiveConnection);
+
+        NetworkConnection conn = AuthoritiveConnection;
+        if (conn != null) netIdentity.AssignClientAuthority(conn);
     }
 
     public void SetTeam(int teamIndex)
     {
-        if (this.teamIndex == teamIndex) return;
+        if (this.id == teamIndex) return;
 
-        this.teamIndex = teamIndex;
+        this.id = teamIndex;
         ServerRefreshAuthoritativeConnection();
+        //if (MyColorSetter) MyColorSetter.SetColor(TeamColor); // TODO: validate if line needed
     }
 
     public void SetTeam(Team team)
     {
-        SetTeam(team.teamIndex);
+        SetTeam(team.id);
     }
 
     #endregion
     /************************************************************/
     #region Event Handler Functions
 
-    private void HookOnTeamIndex(int oldValue, int newValue)
+    private void HookOnId(int oldValue, int newValue)
     {
-        if (MyColorSetter) MyColorSetter.SetColor(MyColor);
+        if (MyColorSetter) MyColorSetter.SetColor(TeamColor);
 
     }
 
@@ -137,7 +165,7 @@ public class Team : NetworkBehaviour
         if (ReferenceEquals(this, other)) return true;
         if (ReferenceEquals(other, null)) return false;
 
-        return this.teamIndex == other.teamIndex;
+        return this.id == other.id;
     }
 
     public override bool Equals(object obj)
@@ -149,7 +177,7 @@ public class Team : NetworkBehaviour
     {
         unchecked
         {
-            int hashCode = teamIndex.GetHashCode();
+            int hashCode = id.GetHashCode();
             //hashCode = (hashCode * 397) ^ length.GetHashCode();
             //hashCode = (hashCode * 397) ^ breadth.GetHashCode();
             return hashCode;

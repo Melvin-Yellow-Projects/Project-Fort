@@ -24,7 +24,7 @@ public class LobbyMenu : MonoBehaviour
 
     [SerializeField] Button startGameButton = null;
     [SerializeField] TMP_Text[] playerNameTexts = new TMP_Text[0];
-    //[SerializeField] RawImage[] playerSteamImages = new RawImage[0];
+    [SerializeField] RawImage[] playerSteamImages = new RawImage[0];
 
     bool hasSubscribed = false;
 
@@ -77,15 +77,15 @@ public class LobbyMenu : MonoBehaviour
         hasSubscribed = true;
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
-        PlayerInfo.OnClientPlayerInfoUpdate += UpdatePlayerTags;
-        PlayerInfo.OnClientPlayerInfoUpdate += HandlePartyOwnerStateChange;
+        PlayerInfo.ClientOnPlayerInfoUpdate += UpdatePlayerTags;
+        PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyOwnerStateChange;
     }
 
     public void Unsubscribe()
     {
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
-        PlayerInfo.OnClientPlayerInfoUpdate -= UpdatePlayerTags;
-        PlayerInfo.OnClientPlayerInfoUpdate -= HandlePartyOwnerStateChange;
+        PlayerInfo.ClientOnPlayerInfoUpdate -= UpdatePlayerTags;
+        PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyOwnerStateChange;
     }
 
     private void HandleOnClientConnectEvent()
@@ -97,22 +97,23 @@ public class LobbyMenu : MonoBehaviour
     {
         for (int i = 0; i < GameManager.Players.Count; i++)
         {
-            // TODO: add player avatar and name
-            playerNameTexts[i].text = $"Player {i + 1}";
+            Player player = GameManager.Players[i];
+
+            //playerNameTexts[i].text = $"Player {i + 1}";
             playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = false;
-            //playerNameTexts[i].text = players[i].GetComponent<RTSPlayerInfo>().DisplayName;
-            //playerSteamImages[i].texture = players[i].GetComponent<RTSPlayerInfo>().DisplayTexture;
+            playerNameTexts[i].text = player.GetComponent<PlayerInfo>().PlayerName;
+            playerSteamImages[i].texture = player.GetComponent<PlayerInfo>().DisplayTexture;
         }
 
         for (int i = GameManager.Players.Count; i < playerNameTexts.Length; i++)
         {
             playerNameTexts[i].text = "Waiting For Player";
             playerNameTexts[i].GetComponent<EllipsisSetter>().enabled = true;
-            //playerSteamImages[i].texture = null;
+            playerSteamImages[i].texture = null;
         }
 
-        // HACK: hardcoded and tethered to GameNetworkManager.ServerStartGame()
-        startGameButton.interactable = (GameManager.Players.Count >= 2);
+        startGameButton.interactable =
+            (GameManager.Players.Count >= GameNetworkManager.MinConnections);
     }
 
     private void HandlePartyOwnerStateChange()

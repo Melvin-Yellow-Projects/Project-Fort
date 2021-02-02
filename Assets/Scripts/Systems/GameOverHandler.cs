@@ -46,18 +46,11 @@ public class GameOverHandler : NetworkBehaviour
     #region Server Functions
 
     [Server]
-    public override void OnStartServer()
+    public void ServerCheckIfGameOver()
     {
-        Singleton = this;
-        Subscribe();
-    }
+        if (GameManager.Players.Count != 1) return;
 
-    [Server]
-    public override void OnStopServer()
-    {
-        Debug.LogWarning("Server is Unsubbing the GameOverHandler");
-        Singleton = null;
-        Unsubscribe();
+        RpcGameOver(GameManager.Players[0].GetComponent<PlayerInfo>().PlayerName);
     }
 
     #endregion
@@ -69,7 +62,20 @@ public class GameOverHandler : NetworkBehaviour
     {
         TargetOnDefeat?.Invoke();
 
-        conn.identity.GetComponent<HumanPlayer>().enabled = false;
+        HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
+
+        foreach (Unit unit in player.MyUnits)
+        {
+            unit.MyCell.DecreaseVisibility();
+        }
+
+        player.MyUnits.Clear();
+        player.MyForts.Clear();
+
+        player.enabled = false;
+        Destroy(PlayerMenu.Singleton.gameObject);
+
+        // TODO: disable player's UI (end turn button)
     }
 
     [ClientRpc]
@@ -82,11 +88,28 @@ public class GameOverHandler : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Server Functions
+
+    private void Start()
+    {
+        Singleton = this;
+        if (isServer) Subscribe();
+    }
+
+    private void OnDestroy()
+    {
+        Singleton = null;
+        Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
     #region Event Handler Functions
 
-    [Server]
     private void Subscribe()
     {
+        Debug.LogWarning("GameOverHandler Subscribe");
+
         // 1. Flag when a fort is captured (or at the end of the breaking state)
         // 2. Get a fort's team and then it's associated player
         // 3. check if a player has lost all of his forts, if so, player has lost 
@@ -98,40 +121,53 @@ public class GameOverHandler : NetworkBehaviour
         //Unit.OnUnitDepawned += null;
     }
 
-    [Server]
     private void Unsubscribe()
     {
+        Debug.LogWarning("GameOverHandler Unsubscribe");
+
         Player.ServerOnPlayerDefeat -= HandleServerOnPlayerDefeat;
         //Unit.OnUnitDepawned -= null;
     }
 
+    [Server]
     private void HandleServerOnPlayerDefeat(Player player, WinConditionType type)
     {
-        // HACK: assumes two players
-        //ServerOnGameOver?.Invoke(); 
-        RpcGameOver("The Winner");
-
-        // TODO: check if player is AI, if AI, skip connections
-        if (player.connectionToClient == null) return;
-
-        switch (type)
+        // HACK: fix this function up later
+        if (player.connectionToClient != null)
         {
-            case WinConditionType.Draw:
-                TargetDefeat(player.connectionToClient);
-                break;
-            case WinConditionType.Conquest:
-                TargetDefeat(player.connectionToClient);
-                break;
-            case WinConditionType.Routed:
-                TargetDefeat(player.connectionToClient);
-                break;
-            case WinConditionType.Disconnect:
-                TargetDefeat(player.connectionToClient); // will line ever be sent to legit client?
-                break;
+            switch (type)
+            {
+                case WinConditionType.Draw:
+                    TargetDefeat(player.connectionToClient);
+                    break;
+                case WinConditionType.Conquest:
+                    TargetDefeat(player.connectionToClient);
+                    break;
+                case WinConditionType.Routed:
+                    TargetDefeat(player.connectionToClient);
+                    break;
+                case WinConditionType.Disconnect:
+                    TargetDefeat(player.connectionToClient); // will line ever be sent to legit client?
+                    break;
+            }
         }
 
-        // TODO: check for remaining players, then broadcast RpcGameOver
+        GameManager.Players.Remove(player);
+        Debug.LogWarning($"{player.name} has lost, there are {GameManager.Players.Count} Players");
 
+        foreach (Fort fort in player.MyForts) fort.MyTeam.SetTeam(0);
+        foreach (Unit unit in player.MyUnits)
+        {
+            unit.MyTeam.SetTeam(0);
+            unit.MyCell.DecreaseVisibility();
+        }
+
+        player.MyUnits.Clear();
+        player.MyForts.Clear();
+
+        player.enabled = false;
+
+        ServerCheckIfGameOver();
     }
     #endregion
 }

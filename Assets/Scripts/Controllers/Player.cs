@@ -51,7 +51,6 @@ public abstract class Player : NetworkBehaviour
 
     /// <summary>
     /// Client event for when a player has ended their turn
-    /// FIXME: shouldnt this event just be for the Human Player?
     /// </summary>
     /// <subscriber class="PlayerMenu">Updates the player menu status</subscriber>
     public static event Action ClientOnHasEndedTurn; 
@@ -124,11 +123,15 @@ public abstract class Player : NetworkBehaviour
     //    if (isServer || hasAuthority) Unsubscribe();
     //}
 
+    protected void OnDestroy()
+    {
+        ServerUnsubscribe(); // HACK brute force
+    }
+
     #endregion
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         DontDestroyOnLoad(gameObject);
@@ -136,7 +139,6 @@ public abstract class Player : NetworkBehaviour
         resources = GameMode.StartingPlayerResources;
     }
 
-    [Server]
     public override void OnStopServer()
     {
         // HACK: maybe event should fire after unsub()
@@ -144,6 +146,8 @@ public abstract class Player : NetworkBehaviour
         if (GameNetworkManager.IsGameInProgress)
             ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
         ServerUnsubscribe();
+
+        Debug.Log($"{name} OnStopServer");
     }
 
     [Command]
@@ -197,10 +201,10 @@ public abstract class Player : NetworkBehaviour
 
         if (!CanBuyOnCell(cell)) return;
 
+        // HACK: create unit instantiation method
         Unit instance = Instantiate(unit);
         instance.MyCell = cell;
         instance.MyTeam.SetTeam(MyTeam);
-        instance.Movement.Orientation = UnityEngine.Random.Range(0, 360f);
 
         NetworkServer.Spawn(instance.gameObject, connectionToClient);
 
@@ -227,23 +231,19 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client]
     public override void OnStartClient()
     {
-        AuthoritySubscribe();
-
-        if (!isClientOnly) return;
+        if (isServer) return;
         DontDestroyOnLoad(gameObject);
 
         GameManager.Players.Add(this);
     }
 
-    [Client]
     public override void OnStopClient()
     {
-        GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it
+        if (hasAuthority) AuthorityUnsubscribe();
 
-        AuthorityUnsubscribe();
+        GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it
     }
 
     // HACK: can probably replace with psuedo Handler function since it's specifically called by a
@@ -252,7 +252,6 @@ public abstract class Player : NetworkBehaviour
     public void TargetAddFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
         if (isServer) return;
-
         MyForts.Add(fortNetId.GetComponent<Fort>());
     }
 
@@ -262,7 +261,6 @@ public abstract class Player : NetworkBehaviour
     public void TargetRemoveFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
         if (isServer) return;
-
         MyForts.Remove(fortNetId.GetComponent<Fort>());
     }
 
@@ -298,7 +296,6 @@ public abstract class Player : NetworkBehaviour
     #region Event Handler Functions
 
     // HACK this line does not work, subscribe needs to happen on server and authoritive client
-    [Server]
     protected virtual void ServerSubscribe()
     {
         Debug.LogWarning($"ServerSubscribe on {name}");
@@ -316,7 +313,6 @@ public abstract class Player : NetworkBehaviour
         GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
     }
 
-    [Server]
     protected virtual void ServerUnsubscribe()
     {
         Debug.LogWarning($"ServerUnsubscribe on {name}");
@@ -334,10 +330,9 @@ public abstract class Player : NetworkBehaviour
         GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
     }
 
-    [Client]
     protected virtual void AuthoritySubscribe()
     {
-        if (!hasAuthority || !isClientOnly) return;
+        if (isServer) return;
         Debug.LogWarning($"AuthoritySubscribe on {name}");
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
 
@@ -345,10 +340,8 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned += HandleOnFortDespawned;
     }
 
-    [Client]
     protected virtual void AuthorityUnsubscribe()
     {
-        if (!hasAuthority || !isClientOnly) return;
         Debug.LogWarning($"AuthorityUnsubscribe on {name}");
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
 
@@ -370,19 +363,23 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server] // HACK: this function is so jank
-    private void HandleServerOnFortCaptured(Fort fort, Team newTeam)
+    private void HandleServerOnFortCaptured(Fort fort, int previousTeamId)
     {
         if (MyTeam == fort.MyTeam)
         {
+            Debug.Log($"{name} is adding {fort.name} they just gained");
+
+            MyForts.Add(fort);
+            if (connectionToClient != null) TargetAddFort(connectionToClient, fort.netIdentity); 
+        }
+        else if (MyTeam.Id == previousTeamId)
+        {
+            Debug.LogWarning($"{name} is removing {fort.name} they just lost");
+
             MyForts.Remove(fort);
             if (connectionToClient != null) TargetRemoveFort(connectionToClient, fort.netIdentity);
 
             if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
-        }
-        else if (MyTeam == newTeam)
-        {
-            MyForts.Add(fort);
-            if (connectionToClient != null) TargetAddFort(connectionToClient, fort.netIdentity);
         }
     }
 
