@@ -287,14 +287,14 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientDisconnect(conn);
 
-        Debug.Log("Disconnecting client");
-
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
     [Client]
     public override void OnStopClient()
     {
+        Debug.LogError("Disconnecting client");
+
         GameManager.Players.Clear();
     }
 
