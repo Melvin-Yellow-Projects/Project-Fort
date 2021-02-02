@@ -53,18 +53,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void StartGame()
     {
-        bool foundSameTeam = false;
-        for (int i = 0; !foundSameTeam && i < GameManager.Players.Count - 1; i++)
-        {
-            Player player = GameManager.Players[i];
-
-            for (int j = i + 1; !foundSameTeam && j < GameManager.Players.Count; j++)
-            {
-                foundSameTeam = (player.MyTeam == GameManager.Players[j].MyTeam);
-            }
-        }
-
-        if (foundSameTeam) return;
+        if (ArePlayersOnDifferentTeams()) return;
 
         saveLoadMenu.Open(3);
     }
@@ -82,6 +71,21 @@ public class LobbyMenu : MonoBehaviour
 
         // this reloads the start menu, it's the lazy way rather than turning on/off various UI
         SceneLoader.LoadStartScene();
+    }
+
+    private bool ArePlayersOnDifferentTeams()
+    {
+        for (int i = 0; i < GameManager.Players.Count - 1; i++)
+        {
+            Player player = GameManager.Players[i];
+
+            for (int j = i + 1; j < GameManager.Players.Count; j++)
+            {
+                if (player.MyTeam == GameManager.Players[j].MyTeam) return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion
@@ -128,7 +132,7 @@ public class LobbyMenu : MonoBehaviour
             lobbyItems[i].ClearPlayer();
         }
 
-        startGameButton.interactable =
+        startGameButton.interactable = !ArePlayersOnDifferentTeams() && 
             (GameManager.Players.Count >= GameNetworkManager.MinConnections);
     }
     
