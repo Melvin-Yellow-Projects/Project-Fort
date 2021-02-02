@@ -79,6 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  mapCamera: {fileID: 5353259989821856737}
 --- !u!114 &-2715520160280375779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,6 +161,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Map Virtual Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 1013797562108657598, guid: 369237ee3fec44141a8aceee509d2d14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2828834522174937056, guid: 369237ee3fec44141a8aceee509d2d14,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 369237ee3fec44141a8aceee509d2d14, type: 3}
 --- !u!4 &8051244373264447528 stripped
@@ -168,3 +179,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7856691846112463873}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5353259989821856737 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2828834522174937056, guid: 369237ee3fec44141a8aceee509d2d14,
+    type: 3}
+  m_PrefabInstance: {fileID: 7856691846112463873}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3be07c6993f64a31a9a1ff76c83e475, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

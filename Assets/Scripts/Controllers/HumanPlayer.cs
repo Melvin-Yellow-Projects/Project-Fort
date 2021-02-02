@@ -20,6 +20,9 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Variables
 
+    [Header("Cached References")]
+    [SerializeField] MapCamera mapCamera = null;
+
     HexCell currentCell;
 
     Unit selectedUnit;
@@ -40,6 +43,7 @@ public class HumanPlayer : Player
 
     protected void OnEnable()
     {
+        mapCamera.enabled = true;
         PlayerMenu.MyPlayer = this;
         PlayerMenu.RefreshResourcesText();
     }
