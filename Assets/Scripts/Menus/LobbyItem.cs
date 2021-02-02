@@ -71,7 +71,7 @@ public class LobbyItem : MonoBehaviour
 
         PlayerInfo clientPlayerInfo = NetworkClient.connection.identity.GetComponent<PlayerInfo>();
 
-        if (GeneralUtilities.IsMyConnection(player.connectionToServer))
+        if (player.hasAuthority)
         {
             // if this is my button, ask server to change my color
             player.MyTeam.CmdChangeTeam();
