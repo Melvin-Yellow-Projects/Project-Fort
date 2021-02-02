@@ -401,13 +401,16 @@ public class HexCell : MonoBehaviour
     /// Enables the HexCellOutline Sprite
     /// </summary>
     /// <param name="color">Color to set the Sprite</param>
-    public void EnableHighlight(Color color, bool useColorSetter=false)
+    public void EnableHighlight(Color color,
+        bool useSmallHighlight = false, bool useColorSetter=false)
     {
-        Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
+        int childIndex = (useSmallHighlight) ? 1 : 0;
+
+        Image highlight = uiRectTransform.GetChild(childIndex).GetComponent<Image>();
 
         if (useColorSetter)
         {
-            ColorSetter setter = uiRectTransform.GetChild(0).GetComponent<ColorSetter>();
+            ColorSetter setter = uiRectTransform.GetChild(childIndex).GetComponent<ColorSetter>();
             StartCoroutine(setter.SetColor(highlight, color));
         }
         else
@@ -421,9 +424,11 @@ public class HexCell : MonoBehaviour
     /// <summary>
     /// Disables the HexCellOutline Sprite
     /// </summary>
-    public void DisableHighlight()
+    public void DisableHighlight(bool useSmallHighlight = false)
     {
-        Image highlight = uiRectTransform.GetChild(0).GetComponent<Image>();
+        int childIndex = (useSmallHighlight) ? 1 : 0;
+
+        Image highlight = uiRectTransform.GetChild(childIndex).GetComponent<Image>();
         highlight.enabled = false;
     }
 

@@ -197,7 +197,7 @@ public class Fort : NetworkBehaviour
                 MyCell.EnableHighlight(currentColor);
                 for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                 {
-                    MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+                    MyCell.GetNeighbor(d).EnableHighlight(currentColor, useSmallHighlight: true);
                 }
                 currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
                 interpolator += Time.deltaTime * highlightSpeed;
@@ -209,7 +209,7 @@ public class Fort : NetworkBehaviour
                 MyCell.EnableHighlight(currentColor);
                 for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
                 {
-                    MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+                    MyCell.GetNeighbor(d).EnableHighlight(currentColor, useSmallHighlight: true);
                 }
                 currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
                 interpolator -= Time.deltaTime * highlightSpeed;
@@ -225,7 +225,7 @@ public class Fort : NetworkBehaviour
             MyCell.EnableHighlight(currentColor);
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
             {
-                MyCell.GetNeighbor(d).EnableHighlight(currentColor);
+                MyCell.GetNeighbor(d).EnableHighlight(currentColor, useSmallHighlight: true);
             }
             currentColor.a = Mathf.Lerp(0, HighlightColor.a, interpolator);
             interpolator -= Time.deltaTime * highlightSpeed;
@@ -235,7 +235,7 @@ public class Fort : NetworkBehaviour
         MyCell.DisableHighlight();
         for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
         {
-            MyCell.GetNeighbor(d).DisableHighlight();
+            MyCell.GetNeighbor(d).DisableHighlight(useSmallHighlight: true);
         }
     }
 
