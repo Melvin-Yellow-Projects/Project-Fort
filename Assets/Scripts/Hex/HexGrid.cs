@@ -109,7 +109,6 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStopServer()
     {
         ClearEntities();
@@ -173,7 +172,7 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client] // HACK: this function can be improved
+    // HACK: this function can be improved
     public override void OnStartClient()
     {
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled

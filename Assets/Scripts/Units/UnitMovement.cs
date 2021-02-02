@@ -186,7 +186,6 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         Subscribe();
@@ -197,7 +196,6 @@ public abstract class UnitMovement : NetworkBehaviour
         UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
 
-    [Server]
     public override void OnStopServer()
     {
         Unsubscribe();

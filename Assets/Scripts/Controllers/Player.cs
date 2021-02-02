@@ -127,7 +127,6 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         DontDestroyOnLoad(gameObject);
@@ -135,7 +134,6 @@ public abstract class Player : NetworkBehaviour
         resources = GameMode.StartingPlayerResources;
     }
 
-    [Server]
     public override void OnStopServer()
     {
         // HACK: maybe event should fire after unsub()
@@ -226,7 +224,6 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client]
     public override void OnStartClient()
     {
         AuthoritySubscribe();
@@ -237,7 +234,6 @@ public abstract class Player : NetworkBehaviour
         GameManager.Players.Add(this);
     }
 
-    [Client]
     public override void OnStopClient()
     {
         GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it

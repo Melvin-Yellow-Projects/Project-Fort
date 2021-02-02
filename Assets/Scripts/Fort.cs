@@ -117,7 +117,6 @@ public class Fort : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         OnFortSpawned?.Invoke(this);
@@ -127,7 +126,6 @@ public class Fort : NetworkBehaviour
         ValidateLocation();
     }
 
-    [Server]
     public override void OnStopServer()
     {
         Unsubscribe();

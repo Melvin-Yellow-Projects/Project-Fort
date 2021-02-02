@@ -45,14 +45,12 @@ public class GameOverHandler : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         Singleton = this;
         Subscribe();
     }
 
-    [Server]
     public override void OnStopServer()
     {
         Debug.LogWarning("Server is Unsubbing the GameOverHandler");
