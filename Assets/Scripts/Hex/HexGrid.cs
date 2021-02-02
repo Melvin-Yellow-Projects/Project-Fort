@@ -109,7 +109,6 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStopServer()
     {
         ClearEntities();
@@ -173,7 +172,7 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client] // HACK: this function can be improved
+    // HACK: this function can be improved
     public override void OnStartClient()
     {
         // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
@@ -497,13 +496,13 @@ public class HexGrid : NetworkBehaviour
     {
         for (int i = 0; i < Units.Count; i++)
         {
-            NetworkServer.Destroy(Units[i].gameObject);
+            Destroy(Units[i].gameObject);
         }
         Units.Clear();
 
         for (int i = 0; i < Forts.Count; i++)
         {
-            NetworkServer.Destroy(Forts[i].gameObject);
+            Destroy(Forts[i].gameObject);
         }
         Forts.Clear();
     }

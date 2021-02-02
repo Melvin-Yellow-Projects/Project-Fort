@@ -152,7 +152,6 @@ public class Unit : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         OnUnitSpawned?.Invoke(this);

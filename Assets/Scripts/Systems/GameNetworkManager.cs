@@ -87,7 +87,6 @@ public class GameNetworkManager : NetworkManager
         base.OnValidate();
     }
 
-    [Server]
     public override void OnServerConnect(NetworkConnection conn)
     {
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
@@ -105,7 +104,6 @@ public class GameNetworkManager : NetworkManager
         conn.Disconnect();
     }
 
-    [Server]
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         if (!SceneLoader.IsGameScene) return;
@@ -119,7 +117,6 @@ public class GameNetworkManager : NetworkManager
         //          base.OnServerDisconnect(conn);
     }
 
-    [Server]
     public override void OnStopServer()
     {
         //for (int i = GameManager.Players.Count - 1; i >= 0; i--)
@@ -137,7 +134,6 @@ public class GameNetworkManager : NetworkManager
         IsGameInProgress = false;
     }
 
-    [Server]
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
@@ -183,7 +179,6 @@ public class GameNetworkManager : NetworkManager
         ServerChangeScene(SceneLoader.GameSceneName);
     }
 
-    [Server]
     public override void OnServerSceneChanged(string sceneName) 
     {
         // HACK: this code is really jank
@@ -196,9 +191,6 @@ public class GameNetworkManager : NetworkManager
         if (!SceneLoader.IsGameScene) return;
 
         ServerPadGameWithComputerPlayers();
-
-        GameOverHandler gameOverHandler = Instantiate(GameOverHandler.Prefab);
-        NetworkServer.Spawn(gameOverHandler.gameObject);
     }
 
     [Server]
@@ -274,7 +266,6 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Client Functions
 
-    [Client]
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
@@ -282,7 +273,6 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
-    [Client]
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
@@ -290,10 +280,18 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
-    [Client]
     public override void OnStopClient()
     {
         Debug.LogError("Disconnecting client");
+
+        for (int i = GameManager.Players.Count - 1; i >= 0; i--)
+        {
+            Player p = GameManager.Players[i];
+            if (p as ComputerPlayer) Destroy(p.gameObject);
+        }
+
+        // HACK you shouldn't manually have to destroy these
+        Destroy(HexGrid.Singleton.gameObject);
 
         GameManager.Players.Clear();
     }

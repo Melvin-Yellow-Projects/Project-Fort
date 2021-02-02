@@ -20,6 +20,9 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Variables
 
+    [Header("Cached References")]
+    [SerializeField] MapCamera mapCamera = null;
+
     HexCell currentCell;
 
     Unit selectedUnit;
@@ -40,6 +43,7 @@ public class HumanPlayer : Player
 
     protected void OnEnable()
     {
+        mapCamera.enabled = true;
         PlayerMenu.MyPlayer = this;
         PlayerMenu.RefreshResourcesText();
     }
@@ -115,6 +119,11 @@ public class HumanPlayer : Player
     #endregion
     /************************************************************/
     #region Client Functions
+
+    public override void OnStartLocalPlayer()
+    {
+        AuthoritySubscribe();
+    }
 
     [Client]
     private void UpdateCurrentCell()
@@ -204,8 +213,6 @@ public class HumanPlayer : Player
 
     protected override void AuthoritySubscribe()
     {
-        if (!hasAuthority) return;
-
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase += HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
@@ -221,8 +228,6 @@ public class HumanPlayer : Player
 
     protected override void AuthorityUnsubscribe()
     {
-        if (!hasAuthority) return;
-        
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;

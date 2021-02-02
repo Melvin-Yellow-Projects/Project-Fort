@@ -123,11 +123,15 @@ public abstract class Player : NetworkBehaviour
     //    if (isServer || hasAuthority) Unsubscribe();
     //}
 
+    protected void OnDestroy()
+    {
+        ServerUnsubscribe(); // HACK brute force
+    }
+
     #endregion
     /************************************************************/
     #region Server Functions
 
-    [Server]
     public override void OnStartServer()
     {
         DontDestroyOnLoad(gameObject);
@@ -135,7 +139,6 @@ public abstract class Player : NetworkBehaviour
         resources = GameMode.StartingPlayerResources;
     }
 
-    [Server]
     public override void OnStopServer()
     {
         // HACK: maybe event should fire after unsub()
@@ -143,6 +146,8 @@ public abstract class Player : NetworkBehaviour
         if (GameNetworkManager.IsGameInProgress)
             ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
         ServerUnsubscribe();
+
+        Debug.Log($"{name} OnStopServer");
     }
 
     [Command]
@@ -226,23 +231,19 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Client Functions
 
-    [Client]
     public override void OnStartClient()
     {
-        AuthoritySubscribe();
-
-        if (!isClientOnly) return;
+        if (isServer) return;
         DontDestroyOnLoad(gameObject);
 
         GameManager.Players.Add(this);
     }
 
-    [Client]
     public override void OnStopClient()
     {
-        GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it
+        if (hasAuthority) AuthorityUnsubscribe();
 
-        AuthorityUnsubscribe();
+        GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it
     }
 
     // HACK: can probably replace with psuedo Handler function since it's specifically called by a
@@ -295,7 +296,6 @@ public abstract class Player : NetworkBehaviour
     #region Event Handler Functions
 
     // HACK this line does not work, subscribe needs to happen on server and authoritive client
-    [Server]
     protected virtual void ServerSubscribe()
     {
         Debug.LogWarning($"ServerSubscribe on {name}");
@@ -313,7 +313,6 @@ public abstract class Player : NetworkBehaviour
         GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
     }
 
-    [Server]
     protected virtual void ServerUnsubscribe()
     {
         Debug.LogWarning($"ServerUnsubscribe on {name}");
@@ -331,10 +330,9 @@ public abstract class Player : NetworkBehaviour
         GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
     }
 
-    [Client]
     protected virtual void AuthoritySubscribe()
     {
-        if (!hasAuthority || !isClientOnly) return;
+        if (isServer) return;
         Debug.LogWarning($"AuthoritySubscribe on {name}");
         Unit.OnUnitSpawned += HandleOnUnitSpawned;
 
@@ -342,10 +340,8 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned += HandleOnFortDespawned;
     }
 
-    [Client]
     protected virtual void AuthorityUnsubscribe()
     {
-        if (!hasAuthority || !isClientOnly) return;
         Debug.LogWarning($"AuthorityUnsubscribe on {name}");
         Unit.OnUnitSpawned -= HandleOnUnitSpawned;
 

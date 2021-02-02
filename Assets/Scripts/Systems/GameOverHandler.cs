@@ -46,21 +46,6 @@ public class GameOverHandler : NetworkBehaviour
     #region Server Functions
 
     [Server]
-    public override void OnStartServer()
-    {
-        Singleton = this;
-        Subscribe();
-    }
-
-    [Server]
-    public override void OnStopServer()
-    {
-        Debug.LogWarning("Server is Unsubbing the GameOverHandler");
-        Singleton = null;
-        Unsubscribe();
-    }
-
-    [Server]
     public void ServerCheckIfGameOver()
     {
         if (GameManager.Players.Count != 1) return;
@@ -103,11 +88,28 @@ public class GameOverHandler : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Server Functions
+
+    private void Start()
+    {
+        Singleton = this;
+        if (isServer) Subscribe();
+    }
+
+    private void OnDestroy()
+    {
+        Singleton = null;
+        Unsubscribe();
+    }
+
+    #endregion
+    /************************************************************/
     #region Event Handler Functions
 
-    [Server]
     private void Subscribe()
     {
+        Debug.LogWarning("GameOverHandler Subscribe");
+
         // 1. Flag when a fort is captured (or at the end of the breaking state)
         // 2. Get a fort's team and then it's associated player
         // 3. check if a player has lost all of his forts, if so, player has lost 
@@ -119,9 +121,10 @@ public class GameOverHandler : NetworkBehaviour
         //Unit.OnUnitDepawned += null;
     }
 
-    [Server]
     private void Unsubscribe()
     {
+        Debug.LogWarning("GameOverHandler Unsubscribe");
+
         Player.ServerOnPlayerDefeat -= HandleServerOnPlayerDefeat;
         //Unit.OnUnitDepawned -= null;
     }
