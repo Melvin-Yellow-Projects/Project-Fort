@@ -2787,6 +2787,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lobby Menu
       objectReference: {fileID: 0}
+    - target: {fileID: 3875699037393992867, guid: a19ca0d1b1e52c340aa76d02442a3f99,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3875699037393992871, guid: a19ca0d1b1e52c340aa76d02442a3f99,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2892,11 +2897,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3875699037393992888, guid: a19ca0d1b1e52c340aa76d02442a3f99,
+    - target: {fileID: 4831773352102499870, guid: a19ca0d1b1e52c340aa76d02442a3f99,
         type: 3}
-      propertyPath: saveLoadMenu
-      value: 
-      objectReference: {fileID: 413763624}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8497463115571274810, guid: a19ca0d1b1e52c340aa76d02442a3f99,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a19ca0d1b1e52c340aa76d02442a3f99, type: 3}
 --- !u!1 &6578015582841221281 stripped
