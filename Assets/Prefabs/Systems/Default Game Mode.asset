@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turnsPerRound: 3
   movesPerTurn: 5
+  startingPlayerResources: 1200
   isUsingTurnTimer: 0
   turnTimerLength: 10
