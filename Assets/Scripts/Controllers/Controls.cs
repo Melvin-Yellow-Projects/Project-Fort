@@ -46,17 +46,17 @@ public class @Controls : IInputActionCollection, IDisposable
             ""id"": ""4799735f-4a80-44bc-8262-ffedc7d78836"",
             ""actions"": [
                 {
-                    ""name"": ""Selection"",
+                    ""name"": ""Command"",
                     ""type"": ""Button"",
-                    ""id"": ""ed3ad872-cb71-49ce-b89e-95490c2cc117"",
+                    ""id"": ""18560551-d8af-4985-82eb-33f215fdb266"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Command"",
+                    ""name"": ""Cancel"",
                     ""type"": ""Button"",
-                    ""id"": ""18560551-d8af-4985-82eb-33f215fdb266"",
+                    ""id"": ""e30e6428-edd7-49a5-82bb-2bb74e6cb31b"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -65,19 +65,19 @@ public class @Controls : IInputActionCollection, IDisposable
             ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""7be68def-20d5-4840-a67e-1db3288f3910"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""id"": ""8ea60351-237d-48c3-876d-8e5d053bad59"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
-                    ""action"": ""Selection"",
+                    ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a28f7896-5caa-418f-995b-df8a4d015777"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""e54831e0-9fa4-43af-9fa5-3d38e50573af"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
@@ -355,8 +355,8 @@ public class @Controls : IInputActionCollection, IDisposable
         m_General_Affirmation = m_General.FindAction("Affirmation", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Selection = m_Player.FindAction("Selection", throwIfNotFound: true);
         m_Player_Command = m_Player.FindAction("Command", throwIfNotFound: true);
+        m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
@@ -448,14 +448,14 @@ public class @Controls : IInputActionCollection, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private IPlayerActions m_PlayerActionsCallbackInterface;
-    private readonly InputAction m_Player_Selection;
     private readonly InputAction m_Player_Command;
+    private readonly InputAction m_Player_Cancel;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
         public PlayerActions(@Controls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Selection => m_Wrapper.m_Player_Selection;
         public InputAction @Command => m_Wrapper.m_Player_Command;
+        public InputAction @Cancel => m_Wrapper.m_Player_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -465,22 +465,22 @@ public class @Controls : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                @Selection.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelection;
-                @Selection.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelection;
-                @Selection.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelection;
                 @Command.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCommand;
                 @Command.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCommand;
                 @Command.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCommand;
+                @Cancel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Selection.started += instance.OnSelection;
-                @Selection.performed += instance.OnSelection;
-                @Selection.canceled += instance.OnSelection;
                 @Command.started += instance.OnCommand;
                 @Command.performed += instance.OnCommand;
                 @Command.canceled += instance.OnCommand;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
             }
         }
     }
@@ -590,8 +590,8 @@ public class @Controls : IInputActionCollection, IDisposable
     }
     public interface IPlayerActions
     {
-        void OnSelection(InputAction.CallbackContext context);
         void OnCommand(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
     public interface ICameraActions
     {

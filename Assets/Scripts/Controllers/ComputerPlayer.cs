@@ -28,6 +28,14 @@ public class ComputerPlayer : Player
     protected override void HandleServerOnStartRound()
     {
         base.HandleServerOnStartRound();
+
+        //foreach (Unit unit in MyUnits)
+        //{
+        //    unit.Movement.Path
+
+        //    UnitPathfinding.FindPath(target);
+        //}
+
         HasEndedTurn = true;
     }
 

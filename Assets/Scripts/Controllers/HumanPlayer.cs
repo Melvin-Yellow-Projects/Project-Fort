@@ -82,25 +82,32 @@ public class HumanPlayer : Player
     #region Client Input Functions
 
     [Client]
-    private void DoSelection(InputAction.CallbackContext context)
+    private void Command(InputAction.CallbackContext context)
     {
         if (!currentCell) return;
 
         if (GameManager.IsEconomyPhase)
         {
-            if (!currentCell) return;
-
             CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
         }
         else
         {
-            DeselectUnitAndClearItsPath();
-            SelectUnit(currentCell.MyUnit);
+            if (selectedUnit)
+            {
+                CmdSetAction(UnitData.Instantiate(selectedUnit));
+                PlayerMenu.RefreshMoveCountText();
+                DeselectUnit();
+            }
+            else
+            {
+                //DeselectUnitAndClearItsPath();
+                SelectUnit(currentCell.MyUnit);
+            }
         }
     }
 
     [Client]
-    private void DoCommand(InputAction.CallbackContext context)
+    private void Cancel(InputAction.CallbackContext context)
     {
         if (GameManager.IsEconomyPhase && currentCell)
         {
@@ -108,11 +115,7 @@ public class HumanPlayer : Player
         }
         else
         {
-            if (selectedUnit) CmdSetAction(UnitData.Instantiate(selectedUnit));
-
-            PlayerMenu.RefreshMoveCountText();
-
-            DeselectUnit();
+            DeselectUnitAndClearItsPath();
         }
     }
 
@@ -219,8 +222,8 @@ public class HumanPlayer : Player
         GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
 
         controls = new Controls();
-        controls.Player.Selection.performed += DoSelection;
-        controls.Player.Command.performed += DoCommand;
+        controls.Player.Command.performed += Command;
+        controls.Player.Cancel.performed += Cancel;
         controls.Enable();
 
         base.AuthoritySubscribe();
