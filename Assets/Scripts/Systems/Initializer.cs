@@ -48,6 +48,10 @@ public class Initializer : MonoBehaviour
     [Tooltip("reference to the GameOverHandler prefab")]
     [SerializeField] GameOverHandler gameOverHandlerPrefab = null;
 
+    [Header("PopupMenu")]
+    [Tooltip("menu for creating informative popups")]
+    [SerializeField] PopupMenu popupMenuPrefab = null;
+
     [Header("HexMetrics")]
     [Tooltip("noise source for Hex Metrics")]
     [SerializeField] Texture2D noiseSource;
@@ -104,6 +108,9 @@ public class Initializer : MonoBehaviour
         /** GameOverHandler **/
         if (gameOverHandlerPrefab && !GameOverHandler.Prefab)
             GameOverHandler.Prefab = gameOverHandlerPrefab;
+
+        /** PopupMenu **/
+        if (popupMenuPrefab && !PopupMenu.Prefab) PopupMenu.Prefab = popupMenuPrefab;
 
         /** HexMetrics **/
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;

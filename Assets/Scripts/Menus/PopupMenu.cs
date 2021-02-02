@@ -13,31 +13,61 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// 
 /// </summary>
 public class PopupMenu : MonoBehaviour
 {
-    [SerializeField] Text descriptionText = null;
+    /************************************************************/
+    #region Variables
 
-    public void Open()
+    [Header("Cached References")]
+    [SerializeField] TMP_Text title = null;
+    [SerializeField] TMP_Text description = null;
+    [SerializeField] Button confirmationButton = null;
+
+    #endregion
+    /************************************************************/
+    #region Variables
+
+    public static PopupMenu Prefab { get; set; }
+
+    public static PopupMenu Singleton { get; set; }
+
+    #endregion
+    /************************************************************/
+    #region Unity Functions
+
+    private void OnDestroy()
     {
-        gameObject.SetActive(true);
+        Singleton = null;
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    public static void Open(string title, string description, bool isConfirmationPopup = false)
+    {
+        Singleton = Instantiate(Prefab);
+
+        Singleton.title.text = title;
+
+        Singleton.description.text = description;
+
+        Singleton.confirmationButton.gameObject.SetActive(isConfirmationPopup);
+
         MapCamera.Locked = true;
     }
 
-    public void Open(string description)
+    public static void Close()
     {
-        gameObject.SetActive(true);
-        MapCamera.Locked = true;
-
-        descriptionText.text = description;
-    }
-
-    public void Close()
-    {
-        gameObject.SetActive(false);
         MapCamera.Locked = false;
+
+        Destroy(Singleton.gameObject);
     }
+
+    #endregion
 }
