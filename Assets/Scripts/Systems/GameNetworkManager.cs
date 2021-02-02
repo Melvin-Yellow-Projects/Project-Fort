@@ -108,7 +108,14 @@ public class GameNetworkManager : NetworkManager
     {
         if (!SceneLoader.IsGameScene) return;
 
-        GameManager.Players.Remove(conn.identity.GetComponent<Player>());
+        Player player = conn.identity.GetComponent<Player>();
+
+        if (player)
+        {
+            GameManager.Players.Remove(player);
+
+            if (player.Info.IsPartyLeader) GameManager.Players[0].Info.IsPartyLeader = true;
+        }
 
         //base.OnServerDisconnect(conn);
         NetworkServer.Destroy(conn.identity.gameObject);
@@ -119,12 +126,6 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStopServer()
     {
-        //for (int i = GameManager.Players.Count - 1; i >= 0; i--)
-        //{
-        //    Player p = GameManager.Players[i];
-        //    NetworkServer.Destroy(p.gameObject);
-        //}
-
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;

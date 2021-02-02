@@ -80,6 +80,7 @@ public class LobbyMenu : MonoBehaviour
         hasSubscribed = true;
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
+        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate += RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyOwnerStateChange;
         Team.ClientOnChangeTeam += RefreshLobbyItems;
@@ -89,6 +90,7 @@ public class LobbyMenu : MonoBehaviour
     {
         hasSubscribed = false;
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
+        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate -= RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyOwnerStateChange;
         Team.ClientOnChangeTeam -= RefreshLobbyItems;
