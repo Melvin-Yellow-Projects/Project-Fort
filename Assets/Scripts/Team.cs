@@ -137,9 +137,9 @@ public class Team : NetworkBehaviour
 
         Debug.LogWarning($"{name} is Changing Teams!");
 
-        id += 1;
+        //id += 1;
 
-        if (id > maxTeams) id = 1;
+        id = (id == maxTeams) ? 1 : id + 1;
 
         //RpcChangeTeam();
     }
