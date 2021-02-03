@@ -45,18 +45,19 @@ public class WallCombat : UnitCombat
 
     protected override void ActiveBorderCollision(Unit otherUnit)
     {
-        // is the enemy an axe?
-        if (otherUnit.Id == 0)
-        {
-            MyUnit.Die(); // I am captured by the axe
-            otherUnit.CombatHandler.HasCaptured = true;
-        }
+        //// is the enemy an axe?
+        //if (otherUnit.Id == 0)
+        //{
+        //    MyUnit.Die(); // I am captured by the axe
+        //    otherUnit.CombatHandler.HasCaptured = true;
+        //}
 
-        // cancel action 
-        else
-        {
-            MyUnit.Movement.CancelAction();
-        }
+        //// cancel action 
+        //else
+        //{
+        //    MyUnit.Movement.CancelAction();
+        //}
+        ActiveCenterCollision(otherUnit); // TODO: allow for walls to creep
     }
 
     protected override void IdleCollision(Unit otherUnit)
