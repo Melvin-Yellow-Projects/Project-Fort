@@ -250,7 +250,8 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     public void CancelAction()
     {
-        if (!EnRouteCell) return;
+        // HACK: there must be a better implementation
+        if (!EnRouteCell || GetComponent<UnitDeath>().IsDying) return;
 
         CanMove = false;
         HadActionCanceled = true;

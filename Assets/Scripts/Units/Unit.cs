@@ -190,6 +190,7 @@ public class Unit : NetworkBehaviour
 
     public void Die(bool isPlayingAnimation = true)
     {
+        MyTeam.SetTeam(9); // black team
         GetComponent<UnitDeath>().Die(isPlayingAnimation);
     }
 

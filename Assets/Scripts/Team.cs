@@ -73,6 +73,8 @@ public class Team : NetworkBehaviour
                     return Color.red + Color.yellow;
                 case 8:
                     return new Color(143f / 255f, 0.4f, 1f, 1); // lavender
+                case 9:
+                    return Color.black; // lavender
             }
             Debug.LogError("team color not found");
             return Color.black;
