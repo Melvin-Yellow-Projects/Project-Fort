@@ -36,9 +36,9 @@ public class Initializer : MonoBehaviour
     [Tooltip("map editor scene")]
     [SerializeField, Scene] string editorScene;
 
-    [Header("GameMode")]
-    [Tooltip("game mode settings load out")]
-    [SerializeField] GameSettings gameModeSettings = null;
+    [Header("GameSettings")]
+    [Tooltip("game settings load out")]
+    [SerializeField] GameSettings gameSettings = null;
 
     [Header("ComputerPlayer")]
     [Tooltip("reference to the ComputerPlayer prefab")]
@@ -99,8 +99,8 @@ public class Initializer : MonoBehaviour
         if (editorScene != null && SceneLoader.EditorSceneName == null)
             SceneLoader.EditorSceneName = System.IO.Path.GetFileNameWithoutExtension(editorScene);
 
-        /** GameMode **/
-        if (gameModeSettings && !GameSettings.Singleton) GameSettings.Singleton = gameModeSettings;
+        /** GameSettings **/
+        if (gameSettings && !GameSettings.Singleton) GameSettings.Singleton = gameSettings;
 
         /** ComputerPlayer **/
         if (computerPlayerPrefab && !ComputerPlayer.Prefab)
