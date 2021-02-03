@@ -89,14 +89,14 @@ public class BowCombat : UnitCombat
     // HACK this function is so jank home slice
     public Unit Fire()
     {
-        Debug.LogError($"{MyUnit.name} is FIRING");
+        //Debug.LogError($"{MyUnit.name} is FIRING");
 
         Unit unit = null;
 
         HexCell targetCell = MyUnit.MyCell.GetNeighbor(MyUnit.Movement.Direction);
         for (int i = 0; !unit && targetCell && i < range; i++)
         {
-            Debug.Log($"{i}: {targetCell.Index}");
+            //Debug.Log($"{i}: {targetCell.Index}");
 
             if (targetCell.HasTheHighGround(MyUnit.MyCell)) break;
 

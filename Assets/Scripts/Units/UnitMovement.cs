@@ -557,20 +557,21 @@ public abstract class UnitMovement : NetworkBehaviour
 
         CanMove = false;
 
-        if (EnRouteCell) UnitPathfinding.DecreaseVisibility(EnRouteCell, VisionRange);
-        else UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
+        HexCell cell = (EnRouteCell)? EnRouteCell : MyCell;
 
-        HandleRpcOnDeath();
+        UnitPathfinding.DecreaseVisibility(cell, VisionRange);
+
+        HandleRpcOnDeath(cell);
     }
 
     [ClientRpc]
-    private void HandleRpcOnDeath()
+    private void HandleRpcOnDeath(HexCell cell)
     {
         if (GeneralUtilities.IsRunningOnHost()) return;
 
         CanMove = false;
 
-        UnitPathfinding.DecreaseVisibility(MyCell, VisionRange);
+        UnitPathfinding.DecreaseVisibility(cell, VisionRange);
     }
 
     [Client]
