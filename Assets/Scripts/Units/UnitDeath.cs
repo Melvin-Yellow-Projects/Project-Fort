@@ -31,6 +31,7 @@ public class UnitDeath : MonoBehaviour
     /// <summary>
     /// Event for when a unit is killed/destroyed
     /// </summary>
+    /// <subscriber class="Player">removes unit from owned units</subscriber>
     /// <subscriber class="UnitMovement">clears movement data and removes visibility</subscriber>
     public static event Action<Unit> ServerOnUnitDeath;
 

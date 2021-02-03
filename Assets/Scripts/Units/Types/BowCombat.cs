@@ -86,18 +86,34 @@ public class BowCombat : UnitCombat
     /************************************************************/
     #region Class Functions
 
-    public void Fire()
+    // HACK this function is so jank home slice
+    public Unit Fire()
     {
-        //Debug.LogError($"{bow.name} FIRE AT WILL");
+        Debug.LogError($"{MyUnit.name} is FIRING");
 
-        //HexCell cell = bow.MyCell;
-        //for (int j = 0; cell && j < bow.FiringRange; j++)
-        //{
-        //    cell = cell.GetNeighbor(bow.Direction);
-        //    if (cell) Debug.Log($"{cell.name}");
-        //    else Debug.Log(null);
-        //}
-        //bow.CanMove = false;
+        Unit unit = null;
+
+        HexCell targetCell = MyUnit.MyCell.GetNeighbor(MyUnit.Movement.Direction);
+        for (int i = 0; !unit && targetCell && i < range; i++)
+        {
+            Debug.Log($"{i}: {targetCell.Index}");
+
+            if (targetCell.HasTheHighGround(MyUnit.MyCell)) break;
+
+            if (targetCell.MyUnit) unit = targetCell.MyUnit;
+
+            targetCell = targetCell.GetNeighbor(MyUnit.Movement.Direction);
+        }
+
+        MyUnit.Movement.CanMove = false;
+
+        if (!unit) return null;
+
+        if (unit.MyTeam == MyUnit.MyTeam) return null;
+
+        if (unit.Id == 3) return null;
+
+        return unit;
     }
 
     #endregion

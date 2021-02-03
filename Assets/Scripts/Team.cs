@@ -74,7 +74,7 @@ public class Team : NetworkBehaviour
                 case 8:
                     return new Color(143f / 255f, 0.4f, 1f, 1); // lavender
                 case 9:
-                    return Color.black; // lavender
+                    return Color.black; // this team is for when a unit dies
             }
             Debug.LogError("team color not found");
             return Color.black;

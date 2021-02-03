@@ -334,6 +334,16 @@ public class HexCell : MonoBehaviour
     }
 
     /// <summary>
+    /// Checks if this cell is on significantly higher ground relative to the given cell
+    /// </summary>
+    /// <param name="relativeCell">cell to evaluate relative elevation</param>
+    /// <returns>whether this cell has the high ground or not</returns>
+    public bool HasTheHighGround(HexCell relativeCell)
+    {
+        return (Elevation - relativeCell.Elevation >= HexMetrics.cliffDelta);
+    }
+
+    /// <summary>
     /// Queries a hex cell's chunk (and possibly neighboring chunk) to retriangulate
     /// </summary>
     void Refresh()

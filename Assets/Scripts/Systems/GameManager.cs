@@ -284,13 +284,22 @@ public class GameManager : NetworkBehaviour
             unit.Movement.ServerCompleteAction();
         }
 
-        //// HACK: Bow Calculations
-        //for (int i = 0; i < HexGrid.Units.Count; i++)
-        //{
-        //    BowCombat bow = HexGrid.Units[i].CombatHandler as BowCombat;
+        // HACK: Bow Calculations
+        ServerBowCalculations();
+    }
 
-        //    if (bow && bow.CanFire) bow.Fire();
-        //}
+    [Server]
+    private void ServerBowCalculations()
+    {
+        List<Unit> deadUnits = new List<Unit>();
+
+        for (int i = 0; i < HexGrid.Units.Count; i++)
+        {
+            BowCombat bow = HexGrid.Units[i].CombatHandler as BowCombat;
+
+            if (bow && bow.CanFire) deadUnits.Add(bow.Fire());
+        }
+        foreach (Unit unit in deadUnits) if (unit) unit.Die();
     }
 
     [Server]

@@ -58,7 +58,7 @@ public static class HexMetrics
     /// <summary>
     /// how high the elevation delta must be to be considered a cliff (set to 0 for only cliffs)
     /// </summary>
-    public const int cliffDelta = 1;
+    public const int cliffDelta = 2;
 
     /// <summary>
     /// strength of hex grid vertex noise; max displacement will equal [2 * (value ** 2)] ** 0.5
@@ -246,7 +246,7 @@ public static class HexMetrics
 
         // check if slope
         int delta = Mathf.Abs(elevation2 - elevation1);
-        if (delta <= HexMetrics.cliffDelta) edgeType = HexEdgeType.Slope;
+        if (delta < HexMetrics.cliffDelta) edgeType = HexEdgeType.Slope;
 
         // check if flat
         if (elevation1 == elevation2) edgeType = HexEdgeType.Flat;

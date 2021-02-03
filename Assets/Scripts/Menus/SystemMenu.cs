@@ -82,7 +82,7 @@ public class SystemMenu : MonoBehaviour
         // HACK: verify this line
         if (Mirror.NetworkServer.active) 
         {
-            string title = "Resignation?";
+            string title = "Exit";
             string description = "would you like to leave?";
 
             PopupMenu.Open(title, description,
