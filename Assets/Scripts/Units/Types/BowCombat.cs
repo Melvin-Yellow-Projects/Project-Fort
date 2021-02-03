@@ -46,8 +46,8 @@ public class BowCombat : UnitCombat
 
     protected override void ActiveCenterCollision(Unit otherUnit)
     {
-        // is the enemy a wall?
-        if (otherUnit.Id == 3)
+        // is the enemy a wall or bow?
+        if (otherUnit.Id == 3 || otherUnit.Id == 4)
         {
             MyUnit.Movement.CancelAction();
         }
@@ -62,8 +62,8 @@ public class BowCombat : UnitCombat
 
     protected override void ActiveBorderCollision(Unit otherUnit)
     {
-        // is the enemy a wall?
-        if (otherUnit.Id == 3)
+        // is the enemy a wall or bow?
+        if (otherUnit.Id == 3 || otherUnit.Id == 4)
         {
             MyUnit.Movement.CancelAction();
         }
