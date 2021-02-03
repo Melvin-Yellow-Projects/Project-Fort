@@ -49,8 +49,6 @@ public abstract class UnitCombat : MonoBehaviour
         // HACK: this should be 100% guarenteed because other collisions are disabled
         if (!otherUnit) return;
 
-        // Debug.Log($"{MyUnit.name} has collided with {otherUnit.name}");
-
         // is the unit on my team? // TODO: is this okay with the horse unit?
         if (otherUnit.MyTeam == MyUnit.MyTeam)
         {
@@ -58,11 +56,21 @@ public abstract class UnitCombat : MonoBehaviour
             AllyCollision(otherUnit);
         }
 
-        // do i die to this unit?
+        // do i die to this unit? if so other Unit is in route; active combat
         else if (otherUnit.Movement.EnRouteCell && !otherUnit.Movement.HadActionCanceled)
         {
-            // Other Unit is in route; active combat
-            ActiveCollision(otherUnit);
+            // is this collision a center collision? (a collision roughly at cell's center?)
+            if (MyUnit.Movement.EnRouteCell == otherUnit.Movement.EnRouteCell)
+            {
+                // this collision was at the cell center
+                ActiveCenterCollision(otherUnit);
+            }
+            else
+            {
+                // this collision was at the cell border
+                ActiveBorderCollision(otherUnit);
+            }
+
         }
 
         // the other unit is my enemy, it is idle, and now i have entered idle combat
@@ -82,8 +90,14 @@ public abstract class UnitCombat : MonoBehaviour
         MyUnit.Movement.CancelAction();
     }
 
-    protected virtual void ActiveCollision(Unit otherUnit)
+    protected virtual void ActiveCenterCollision(Unit otherUnit)
     {
+        MyUnit.Die();
+    }
+
+    protected virtual void ActiveBorderCollision(Unit otherUnit)
+    {
+        gameObject.SetActive(false);
         MyUnit.Die();
     }
 

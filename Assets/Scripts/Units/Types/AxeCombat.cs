@@ -15,14 +15,14 @@ using UnityEngine;
 public class AxeCombat : UnitCombat
 {
     /************************************************************/
-    #region Class Functions
+    #region Base Class Functions
 
     protected override void AllyCollision(Unit otherUnit)
     {
         MyUnit.Movement.CancelAction();
     }
 
-    protected override void ActiveCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Unit otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
@@ -35,6 +35,25 @@ public class AxeCombat : UnitCombat
         // active combat has been triggered
         else
         {
+            MyUnit.Die();
+            otherUnit.CombatHandler.HasCaptured = true;
+        }
+    }
+
+    protected override void ActiveBorderCollision(Unit otherUnit)
+    {
+        // is the enemy a wall?
+        if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CanMove = false; // capture wall
+
+            // TODO: flag for galeforce
+        }
+
+        // active combat has been triggered
+        else
+        {
+            gameObject.SetActive(false);
             MyUnit.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }

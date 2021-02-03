@@ -22,7 +22,7 @@ public class WallCombat : UnitCombat
         MyUnit.Movement.CancelAction();
     }
 
-    protected override void ActiveCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Unit otherUnit)
     {
         // is the enemy an axe?
         if (otherUnit.Id == 0)
@@ -31,13 +31,28 @@ public class WallCombat : UnitCombat
             otherUnit.CombatHandler.HasCaptured = true;
         }
 
-        // are we both traveling to the same cell? is there a gap between us?
-        else if (MyUnit.Movement.EnRouteCell == otherUnit.Movement.EnRouteCell)
+        // is the enemy a wall? 
+        else if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CancelAction();
+        }
+
+        else
         {
             MyUnit.Movement.CanMove = false;
         }
+    }
 
-        // the enemy is adjacent to me
+    protected override void ActiveBorderCollision(Unit otherUnit)
+    {
+        // is the enemy an axe?
+        if (otherUnit.Id == 0)
+        {
+            MyUnit.Die(); // I am captured by the axe
+            otherUnit.CombatHandler.HasCaptured = true;
+        }
+
+        // cancel action 
         else
         {
             MyUnit.Movement.CancelAction();

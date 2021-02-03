@@ -232,7 +232,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         if (!EnRouteCell) return;
 
-        Direction = HexMetrics.GetDirection(MyCell, EnRouteCell);
+        //Direction = HexMetrics.GetDirection(MyCell, EnRouteCell);
         MyCell = EnRouteCell;
         EnRouteCell = null;
         HadActionCanceled = false;

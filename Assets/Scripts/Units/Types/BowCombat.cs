@@ -36,16 +36,15 @@ public class BowCombat : UnitCombat
     }
 
     #endregion
-
     /************************************************************/
-    #region Class Functions
+    #region Base Class Functions
 
     protected override void AllyCollision(Unit otherUnit)
     {
         MyUnit.Movement.CancelAction();
     }
 
-    protected override void ActiveCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Unit otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
@@ -61,10 +60,31 @@ public class BowCombat : UnitCombat
         }
     }
 
+    protected override void ActiveBorderCollision(Unit otherUnit)
+    {
+        // is the enemy a wall?
+        if (otherUnit.Id == 3)
+        {
+            MyUnit.Movement.CancelAction();
+        }
+
+        // active combat has been triggered
+        else
+        {
+            gameObject.SetActive(false);
+            MyUnit.Die();
+            otherUnit.CombatHandler.HasCaptured = true;
+        }
+    }
+
     protected override void IdleCollision(Unit otherUnit)
     {
         MyUnit.Movement.CancelAction();
     }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
 
     public void Fire()
     {
