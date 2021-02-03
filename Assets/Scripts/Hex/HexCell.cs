@@ -467,7 +467,7 @@ public class HexCell : MonoBehaviour
 
         Debug.LogError($"{name}'s visibility is less than 0!");
 
-        visibility = 0;
+        //visibility = 0;
     }
 
     public void ResetVisibility()
