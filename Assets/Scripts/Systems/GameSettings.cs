@@ -13,6 +13,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [CreateAssetMenu(menuName = "Game Settings")]
 public class GameSettings : ScriptableObject
@@ -113,6 +114,34 @@ public class GameSettings : ScriptableObject
         {
             Singleton.startingPlayerResources = value;
         }
+    }
+
+    #endregion
+}
+
+/// <summary>
+/// 
+/// </summary>
+public static class GameSettingsSerializer
+{
+    /************************************************************/
+    #region HexCellData
+
+    public static void WriteUnitData(this NetworkWriter writer, GameSettings settings)
+    {
+        //writer.WriteNetworkIdentity(data.netIdentity);
+        //HexCellSerializer.WriteHexCellIndices(writer, data.pathCells);
+    }
+
+    public static GameSettings ReadUnitData(this NetworkReader reader)
+    {
+        //UnitData data = new UnitData
+        //{
+        //    netIdentity = reader.ReadNetworkIdentity(),
+        //    pathCells = HexCellSerializer.ReadHexCellIndices(reader)
+        //};
+
+        return null;
     }
 
     #endregion

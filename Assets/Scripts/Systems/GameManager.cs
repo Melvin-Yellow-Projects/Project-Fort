@@ -113,7 +113,7 @@ public class GameManager : NetworkBehaviour
     /// Unity Method; LateUpdate is called every frame, if the Behaviour is enabled and after all
     /// Update functions have been called
     /// </summary>
-    [Server]
+    [ServerCallback]
     private void LateUpdate()
     {
         // wait for timer to end or for players to end their turn
@@ -333,7 +333,6 @@ public class GameManager : NetworkBehaviour
     private void RpcInvokeClientOnPlayTurn()
     {
         //Debug.Log("RpcInvokeClientOnPlayTurn");
-        enabled = false;
         ClientOnPlayTurn?.Invoke();
     }
 
@@ -351,7 +350,7 @@ public class GameManager : NetworkBehaviour
     private void ResetTimer()
     {
         TurnTimer = Time.time + GameSettings.TurnTimerLength;
-        enabled = true;
+        if (isServer) enabled = true;
     }
 
     #endregion

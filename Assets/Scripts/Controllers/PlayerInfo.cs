@@ -172,19 +172,11 @@ public class PlayerInfo : NetworkBehaviour
     /************************************************************/
     #region Event Handler Functions
 
-    private void Subscribe()
-    {
-
-    }
-
-    private void Unsubscribe()
-    {
-
-    }
-
     private void HookOnIsPartyLeader(bool oldValue, bool newValue)
     {
         ClientOnPlayerInfoUpdate?.Invoke();
+
+        if (newValue) GameSession.Singleton.CmdSetGameMode(null);
     }
 
     private void HookOnPlayerName(string oldValue, string newValue)

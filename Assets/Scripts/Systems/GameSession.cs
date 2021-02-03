@@ -3,10 +3,9 @@
  * Description: Handles the current session of the game; Carries data between different levels
  * 
  * Authors: Will Lacey
- * Date Created: March 27, 2020
+ * Date Created: November 29, 2020
  * 
  * Additional Comments:
- *      TODO: The "Date Created" is so off
  **/
 
 using System.Collections;
@@ -18,26 +17,24 @@ using Mirror;
 
 public class GameSession : NetworkBehaviour
 {
-    /********** MARK: Variables **********/
+    /************************************************************/
     #region Variables
 
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] float gameSpeed = 1f;
 
     #endregion
-
-    /********** MARK: Public Properties **********/
+    /************************************************************/
     #region Public Properties
 
     public static GameSession Singleton { get; private set; }
 
     public bool IsOnline { get; set; } = false; // HACK: this property isn't mega accurate 
 
-    public bool IsEditorMode { get; set; } = false;
+    public bool IsEditorMode { get; set; } = false; // HACK change this, relocate it
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -59,7 +56,36 @@ public class GameSession : NetworkBehaviour
     }
     #endregion
 
-    /********** MARK: Class Functions **********/
+    /************************************************************/
+    #region Server Functions
+
+    [Command(ignoreAuthority = true)]
+    public void CmdSetGameMode(GameSettings settings, NetworkConnectionToClient conn = null)
+    {
+        if (GameNetworkManager.IsGameInProgress) return;
+
+        Player player = conn.identity.GetComponent<Player>();
+        if (!player.Info.IsPartyLeader) return;
+
+        // coolio set the game settings!
+        Debug.LogWarning("Server is setting new game settings!");
+
+        RpcSetGameMode(settings);
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+
+    [ClientRpc]
+    private void RpcSetGameMode(GameSettings settings)
+    {
+        // set the game settings
+        Debug.Log("Client is recieving new game settings");
+    }
+
+    #endregion
+    /************************************************************/
     #region Class Functions
 
     private void InitGameSession()
@@ -67,8 +93,6 @@ public class GameSession : NetworkBehaviour
         Singleton = this;
 
         DontDestroyOnLoad(gameObject);
-
-        //SceneManager.activeSceneChanged += HandleActiveSceneChanged;
     }
 
     /// <summary>
@@ -84,36 +108,6 @@ public class GameSession : NetworkBehaviour
     {
         Singleton.IsOnline = false;
     }
-
-    #endregion
-
-    /********** MARK: Event Handler Functions **********/
-    #region Event Handler Functions
-
-    private void HandleActiveSceneChanged(Scene current, Scene next)
-    {
-        //if (next.name.StartsWith("Game Scene")) SpawnOfflinePlayer(); // HACK: i think this can be removed
-
-        SaveLoadMenu.LoadMapFromReader(); // HACK: is this overkill to do it every scene change?
-    }
-
-    #endregion
-
-    /********** MARK: Debug Functions **********/
-    #region Debug Functions
-
-    /**
-    private void SpawnOfflinePlayer()
-    {
-        if (IsOnline) return;
-
-        GameObject offlinePlayer = Instantiate(GameNetworkManager.Singleton.playerPrefab);
-        HumanPlayer humanPlayer = offlinePlayer.GetComponent<HumanPlayer>();
-
-        humanPlayer.enabled = true;
-        humanPlayer.MyTeam.TeamIndex = 1;
-    }
-    */
 
     #endregion
 }
