@@ -93,6 +93,9 @@ public abstract class UnitMovement : NetworkBehaviour
         }
     }
 
+    // TODO: maybe one day you can get this from orientation and the look angle
+    public HexDirection Direction { get; private set; }
+
     public int VisionRange
     {
         get
@@ -140,7 +143,7 @@ public abstract class UnitMovement : NetworkBehaviour
     public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
 
     // HACK: might be better broken up into a property and function FreezeUnit()/CannotMove() 
-    public bool CanMove 
+    public bool CanMove
     {
         get
         {
@@ -229,6 +232,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         if (!EnRouteCell) return;
 
+        Direction = HexMetrics.GetDirection(MyCell, EnRouteCell);
         MyCell = EnRouteCell;
         EnRouteCell = null;
         HadActionCanceled = false;

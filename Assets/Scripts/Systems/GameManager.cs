@@ -283,6 +283,14 @@ public class GameManager : NetworkBehaviour
             Unit unit = HexGrid.Units[i];
             unit.Movement.ServerCompleteAction();
         }
+
+        //// HACK: Bow Calculations
+        //for (int i = 0; i < HexGrid.Units.Count; i++)
+        //{
+        //    BowCombat bow = HexGrid.Units[i].CombatHandler as BowCombat;
+
+        //    if (bow && bow.CanFire) bow.Fire();
+        //}
     }
 
     [Server]

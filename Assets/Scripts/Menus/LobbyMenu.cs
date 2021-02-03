@@ -166,7 +166,7 @@ public class LobbyMenu : MonoBehaviour
 
         startGameButton.gameObject.SetActive(isLeader);
 
-        gameModeSettingsPanel.SetActive(isLeader);
+        //gameModeSettingsPanel.SetActive(isLeader);
     }
 
     #endregion

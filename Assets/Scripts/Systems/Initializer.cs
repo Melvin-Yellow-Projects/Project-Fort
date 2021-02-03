@@ -72,6 +72,7 @@ public class Initializer : MonoBehaviour
     [SerializeField] Unit horsePrefab;
     [SerializeField] Unit pikePrefab;
     [SerializeField] Unit wallPrefab;
+    [SerializeField] Unit bowPrefab;
 
     [Header("UnitCursor")]
     [Tooltip("unit cursor prefab reference")]
@@ -131,7 +132,8 @@ public class Initializer : MonoBehaviour
                 axePrefab,
                 horsePrefab,
                 pikePrefab,
-                wallPrefab
+                wallPrefab,
+                bowPrefab
             };
         }
 

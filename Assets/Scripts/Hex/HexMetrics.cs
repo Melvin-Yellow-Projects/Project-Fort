@@ -286,6 +286,23 @@ public static class HexMetrics
         return position;
     }
 
+    /// <summary>
+    /// Gets the direction between two cells; assumes they are neighbors
+    /// </summary>
+    /// <param name="startCell">starting cell</param>
+    /// <param name="endCell">end cell</param>
+    /// <returns>direction from the starting cell to the ending cell</returns>
+    public static HexDirection GetDirection(HexCell startCell, HexCell endCell)
+    {
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
+        {
+            HexCell cell = startCell.GetNeighbor(d);
+            if (cell && cell.Index == endCell.Index) return d;
+        }
+        Debug.LogError("Direction Not Found");
+        return HexDirection.E;
+    }
+
     #endregion
 
     /********** MARK: Archived Functions **********/
@@ -317,23 +334,6 @@ public static class HexMetrics
     //public static HexDirection AngleToDirection(float angle)
     //{
     //    return (HexDirection)(Mathf.RoundToInt((Mathf.Abs(angle) - 30f) / 60f));
-    //}
-
-    ///// <summary>
-    ///// Gets the direction between two cells; assumes they are neighbors
-    ///// </summary>
-    ///// <param name="startCell">starting cell</param>
-    ///// <param name="endCell">end cell</param>
-    ///// <returns>direction from the starting cell to the ending cell</returns>
-    //public static HexDirection GetDirection(HexCell startCell, HexCell endCell)
-    //{
-    //    Vector3 localVector = startCell.transform.InverseTransformPoint(endCell.Position);
-    //    localVector = localVector.normalized;
-
-    //    float angle = ((Mathf.Atan2(localVector.x, localVector.z) / Mathf.PI) * 180f);
-    //    if (angle < 0) angle += 360f;
-
-    //    return AngleToDirection(angle);
     //}
 
     ///// <summary>
