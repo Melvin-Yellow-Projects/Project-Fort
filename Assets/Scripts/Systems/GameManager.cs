@@ -23,12 +23,6 @@ using Mirror;
 public class GameManager : NetworkBehaviour
 {
     /************************************************************/
-    #region Private Variables
-
-    float turnTimer = 0f;
-
-    #endregion
-    /************************************************************/
     #region Class Events
 
     /// <summary>
@@ -101,6 +95,8 @@ public class GameManager : NetworkBehaviour
 
     public static bool IsPlayingTurn { get; private set; } = false;
 
+    public static float TurnTimer { get; private set; }
+
     public static List<Player> Players { get; set; } = new List<Player>();
 
     #endregion
@@ -109,13 +105,8 @@ public class GameManager : NetworkBehaviour
 
     private void Awake()
     {
-        gameObject.SetActive(false);
         enabled = false;
         Singleton = this;
-
-        if (!isServer) return;
-
-        turnTimer = Time.time + GameSettings.TurnTimerLength;
     }
 
     /// <summary>
@@ -125,17 +116,11 @@ public class GameManager : NetworkBehaviour
     [Server]
     private void LateUpdate()
     {
-        // if Timer is done...
-        if (Time.time > turnTimer)
-        {
-            ServerPlayTurn();
-        }
-        else
-        {
-            // Update Timer FIXME: this is just wrong
-            //string text = $"{Math.Max(turnTimer - Time.time, 0)}0000".Substring(0, 3);
-            //PlayerMenu.UpdateTimerText(text);
-        }
+        // wait for timer to end or for players to end their turn
+        if (Time.time <= TurnTimer) return;
+
+        //enabled = false;
+        if (isServer) ServerEndTurn();
     }
 
     private void OnDestroy()
@@ -153,7 +138,7 @@ public class GameManager : NetworkBehaviour
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
         gameObject.SetActive(true); // turn on for just Server
-        enabled = GameSettings.IsUsingTurnTimer;
+
         ServerStartRound();
     }
 
@@ -164,15 +149,14 @@ public class GameManager : NetworkBehaviour
         TurnCount = 0;
         IsEconomyPhase = true;
 
-        // give 100 to a player for each fort they own
+        // give 100 to a player for each fort they own // TODO: make this a setting
         foreach (Player player in Players) player.Resources += player.MyForts.Count * 100;
 
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();
 
-        // update timer and its text // TODO: this should be the economy timer
-        if (GameSettings.IsUsingTurnTimer) ServerResetTimer();  // FIXME: this line must be moved to
-                                                                        // PlayerMenu
+        // update timer and its text 
+        if (GameSettings.IsUsingTurnTimer) ResetTimer();  
     }
 
     [Server]
@@ -184,14 +168,12 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartTurn();
 
         // update timer and its text
-        if (GameSettings.IsUsingTurnTimer) ServerResetTimer();
+        if (GameSettings.IsUsingTurnTimer) ResetTimer();
     }
 
     [Server]
     public void ServerPlayTurn()
     {
-        enabled = false;
-
         StopAllCoroutines();
         StartCoroutine(ServerPlayTurn(8));
     }
@@ -206,18 +188,22 @@ public class GameManager : NetworkBehaviour
         bool playTurn = true;
         foreach (Player player in Players) playTurn &= player.HasEndedTurn;
 
-        if (playTurn && !IsPlayingTurn)
+        if (playTurn && !IsPlayingTurn) ServerEndTurn();
+    }
+
+    [Server]
+    public void ServerEndTurn()
+    {
+        enabled = false;
+        if (IsEconomyPhase)
         {
-            if (IsEconomyPhase)
-            {
-                IsEconomyPhase = false;
-                RpcInvokeClientOnStopEconomyPhase();
-                ServerStartTurn();
-            }
-            else
-            {
-                ServerPlayTurn();
-            }
+            IsEconomyPhase = false;
+            RpcInvokeClientOnStopEconomyPhase();
+            ServerStartTurn();
+        }
+        else
+        {
+            ServerPlayTurn();
         }
     }
 
@@ -302,13 +288,6 @@ public class GameManager : NetworkBehaviour
         foreach (Unit unit in deadUnits) if (unit) unit.Die();
     }
 
-    [Server]
-    private void ServerResetTimer()
-    {
-        //timeOfNextMove += GameMode.Singleton.TurnTimerLength;
-        turnTimer = Time.time + GameSettings.TurnTimerLength;
-        enabled = true;
-    }
     #endregion
     /************************************************************/
     #region Client Functions
@@ -319,6 +298,8 @@ public class GameManager : NetworkBehaviour
         Debug.Log("RpcInvokeClientOnStartRound");
         if (isClientOnly)
         {
+            if (GameSettings.IsUsingTurnTimer) ResetTimer();
+
             IsEconomyPhase = true;
             RoundCount++;
             TurnCount = 0;
@@ -340,7 +321,11 @@ public class GameManager : NetworkBehaviour
     private void RpcInvokeClientOnStartTurn()
     {
         Debug.Log("RpcInvokeClientOnStartTurn");
-        if (isClientOnly) TurnCount++;
+        if (isClientOnly)
+        {
+            if (GameSettings.IsUsingTurnTimer) ResetTimer();
+            TurnCount++;
+        }
         ClientOnStartTurn?.Invoke();
     }
 
@@ -348,6 +333,7 @@ public class GameManager : NetworkBehaviour
     private void RpcInvokeClientOnPlayTurn()
     {
         //Debug.Log("RpcInvokeClientOnPlayTurn");
+        enabled = false;
         ClientOnPlayTurn?.Invoke();
     }
 
@@ -356,6 +342,16 @@ public class GameManager : NetworkBehaviour
     {
         //Debug.Log("RpcInvokeClientOnStopTurn");
         ClientOnStopTurn?.Invoke();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Class Functions
+
+    private void ResetTimer()
+    {
+        TurnTimer = Time.time + GameSettings.TurnTimerLength;
+        enabled = true;
     }
 
     #endregion

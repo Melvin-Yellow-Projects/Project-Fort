@@ -14,7 +14,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Mirror;
-using TMPro;
 
 public class LobbyMenu : MonoBehaviour
 {
@@ -23,17 +22,10 @@ public class LobbyMenu : MonoBehaviour
 
     [Header("Cached References")]
     [SerializeField] SaveLoadMenu saveLoadMenu = null;
+    [SerializeField] GameSettingsMenu gameSettingsMenu = null;
 
     [SerializeField] Button startGameButton = null;
     [SerializeField] LobbyItem[] lobbyItems = null;
-
-    [Header("Game Settings Panel")]
-    [SerializeField] GameObject gameSettingsPanel = null;
-
-    [Header("Turn Timer")]
-    [SerializeField] Toggle turnTimerToggle = null;
-    [SerializeField] Slider turnTimerSlider = null;
-    [SerializeField] TMP_Text turnTimerText = null;
 
     bool hasSubscribed = false;
 
@@ -97,24 +89,6 @@ public class LobbyMenu : MonoBehaviour
 
     #endregion
     /************************************************************/
-    #region GameMode Functions 
-
-    // HACK: move these functions elsewhere; perhaps a GameMode instance Manager?
-
-    public void OnToggleValueChanged(bool toggle)
-    {
-        GameSettings.IsUsingTurnTimer = toggle;
-        turnTimerSlider.interactable = toggle;
-    }
-
-    public void OnSliderValueChanged(float value)
-    {
-        GameSettings.TurnTimerLength = value;
-        turnTimerText.text = $"{value} min";
-    }
-
-    #endregion
-    /************************************************************/
     #region Event Handler Functions
 
     public void Subscribe()
@@ -168,9 +142,7 @@ public class LobbyMenu : MonoBehaviour
 
         startGameButton.gameObject.SetActive(isLeader);
 
-        gameSettingsPanel.SetActive(isLeader);
-
-        turnTimerToggle.isOn = GameSettings.IsUsingTurnTimer;
+        gameSettingsMenu.Get();
     }
 
     #endregion

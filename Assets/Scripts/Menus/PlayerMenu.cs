@@ -27,7 +27,8 @@ public class PlayerMenu : MonoBehaviour
     [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
     [SerializeField] TMP_Text resourcesText = null;
-    [SerializeField] TMP_Text moveTimerText = null;
+    [SerializeField] TMP_Text gamePhaseText = null;
+    [SerializeField] TMP_Text turnTimerText = null;
     [SerializeField] GameObject buyPanel = null;
     [SerializeField] Button endTurnButton = null;
     [SerializeField] TMP_Text endTurnButtonText = null;
@@ -37,6 +38,8 @@ public class PlayerMenu : MonoBehaviour
 
     static HumanPlayer player = null; 
     static int unitId = 0;
+
+    static float timer = 0;
 
     #endregion
     /************************************************************/
@@ -88,6 +91,11 @@ public class PlayerMenu : MonoBehaviour
         Subscribe();
     }
 
+    private void LateUpdate()
+    {
+        UpdateTimerText();
+    }
+
     private void OnDestroy()
     {
         Unsubscribe();
@@ -101,10 +109,15 @@ public class PlayerMenu : MonoBehaviour
     {
         if (!MyPlayer) return;
 
+        Singleton.endTurnButtonText.text = "End Turn";
+        Singleton.endTurnButton.interactable = true;
+
         string moveCountString = $"M{MyPlayer.MoveCount}";
 
         Singleton.moveCountText.text = $"R{GameManager.RoundCount}: T{GameManager.TurnCount}:" +
             moveCountString;
+
+        Singleton.enabled = true;
     }
 
     public static void RefreshResourcesText()
@@ -112,10 +125,12 @@ public class PlayerMenu : MonoBehaviour
         Singleton.resourcesText.text = $"{MyPlayer.Resources}";
     }
 
-    // HACK: this should fetch the timer from the Game Manager
-    public static void UpdateTimerText(string text)
+    private static void UpdateTimerText()
     {
-        Singleton.moveTimerText.text = text;
+        timer = Math.Max(GameManager.TurnTimer - Time.time, 0);
+
+        if (timer > 10 || timer == 0) Singleton.turnTimerText.text = $"{(int)timer}";
+        else Singleton.turnTimerText.text = $"{timer}0000".Substring(0, 3);
     }
 
     public static void EndTurnButtonPressed()
@@ -149,33 +164,29 @@ public class PlayerMenu : MonoBehaviour
 
     private void HandleClientOnStartRound()
     {
-        UpdateTimerText("Economy Phase");
+        gamePhaseText.text = "Economy Phase";
 
         buyPanel.SetActive(true);
-
-        Singleton.endTurnButtonText.text = "End Turn";
-        endTurnButton.interactable = true;
 
         RefreshMoveCountText();
     }
 
     private void HandleClientOnStartTurn()
     {
-        UpdateTimerText("Your Turn");
+        gamePhaseText.text = "Your Turn";
 
         buyPanel.SetActive(false);
-
-        Singleton.endTurnButtonText.text = "End Turn";
-        endTurnButton.interactable = true;
 
         RefreshMoveCountText();
     }
 
     private void HandleClientOnPlayTurn()
     {
-        UpdateTimerText("Executing Turn");
+        gamePhaseText.text = "Executing Turn";
 
         endTurnButton.interactable = false;
+
+        enabled = false;
     }
 
     private void HandleClientOnHasEndedTurn()

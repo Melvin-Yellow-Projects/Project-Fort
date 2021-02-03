@@ -46,7 +46,7 @@ MonoBehaviour:
   menuScene: Assets/Scenes/0. Start Menu Scene.unity
   gameScene: Assets/Scenes/1. Game Scene.unity
   editorScene: Assets/Scenes/2. Editor Scene.unity
-  gameModeSettings: {fileID: 11400000, guid: 90b669160dbf446a99964b6a2b407c7e, type: 2}
+  gameSettings: {fileID: 11400000, guid: d6c79139693b0433abea79b016d19bf9, type: 2}
   computerPlayerPrefab: {fileID: 641622084965352743, guid: e13c3345ac9a24999a438fe916ef8f24,
     type: 3}
   gameOverHandlerPrefab: {fileID: 128458814369925966, guid: 04738286589f8426782f751ddecc598b,
