@@ -6,7 +6,6 @@
  * Date Created: December 21, 2020
  * 
  * Additional Comments: 
- *      TODO: Add Dapper Dino as one of the authors
  **/
 
 using System.Collections;
@@ -28,8 +27,11 @@ public class LobbyMenu : MonoBehaviour
     [SerializeField] Button startGameButton = null;
     [SerializeField] LobbyItem[] lobbyItems = null;
 
-    [Header("Game Mode Settings")]
-    [SerializeField] GameObject gameModeSettingsPanel = null;
+    [Header("Game Settings Panel")]
+    [SerializeField] GameObject gameSettingsPanel = null;
+
+    [Header("Turn Timer")]
+    [SerializeField] Toggle turnTimerToggle = null;
     [SerializeField] Slider turnTimerSlider = null;
     [SerializeField] TMP_Text turnTimerText = null;
 
@@ -101,13 +103,13 @@ public class LobbyMenu : MonoBehaviour
 
     public void OnToggleValueChanged(bool toggle)
     {
-        GameMode.IsUsingTurnTimer = toggle;
+        GameSettings.IsUsingTurnTimer = toggle;
         turnTimerSlider.interactable = toggle;
     }
 
     public void OnSliderValueChanged(float value)
     {
-        GameMode.TurnTimerLength = value;
+        GameSettings.TurnTimerLength = value;
         turnTimerText.text = $"{value} min";
     }
 
@@ -123,7 +125,7 @@ public class LobbyMenu : MonoBehaviour
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
         GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate += RefreshLobbyItems;
-        PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyOwnerStateChange;
+        PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyLeaderStateChange;
         Team.ClientOnChangeTeam += RefreshLobbyItems;
     }
 
@@ -133,7 +135,7 @@ public class LobbyMenu : MonoBehaviour
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
         GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
         PlayerInfo.ClientOnPlayerInfoUpdate -= RefreshLobbyItems;
-        PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyOwnerStateChange;
+        PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyLeaderStateChange;
         Team.ClientOnChangeTeam -= RefreshLobbyItems;
     }
 
@@ -158,7 +160,7 @@ public class LobbyMenu : MonoBehaviour
             (GameManager.Players.Count >= GameNetworkManager.MinConnections);
     }
     
-    private void HandlePartyOwnerStateChange()
+    private void HandlePartyLeaderStateChange()
     {
         if (!NetworkClient.connection.identity) return;
 
@@ -166,7 +168,9 @@ public class LobbyMenu : MonoBehaviour
 
         startGameButton.gameObject.SetActive(isLeader);
 
-        //gameModeSettingsPanel.SetActive(isLeader);
+        gameSettingsPanel.SetActive(isLeader);
+
+        turnTimerToggle.isOn = GameSettings.IsUsingTurnTimer;
     }
 
     #endregion

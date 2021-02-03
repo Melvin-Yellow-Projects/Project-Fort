@@ -115,7 +115,7 @@ public class GameManager : NetworkBehaviour
 
         if (!isServer) return;
 
-        turnTimer = Time.time + GameMode.TurnTimerLength;
+        turnTimer = Time.time + GameSettings.TurnTimerLength;
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ public class GameManager : NetworkBehaviour
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
         gameObject.SetActive(true); // turn on for just Server
-        enabled = GameMode.IsUsingTurnTimer;
+        enabled = GameSettings.IsUsingTurnTimer;
         ServerStartRound();
     }
 
@@ -171,7 +171,7 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartRound();
 
         // update timer and its text // TODO: this should be the economy timer
-        if (GameMode.IsUsingTurnTimer) ServerResetTimer();  // FIXME: this line must be moved to
+        if (GameSettings.IsUsingTurnTimer) ServerResetTimer();  // FIXME: this line must be moved to
                                                                         // PlayerMenu
     }
 
@@ -184,7 +184,7 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartTurn();
 
         // update timer and its text
-        if (GameMode.IsUsingTurnTimer) ServerResetTimer();
+        if (GameSettings.IsUsingTurnTimer) ServerResetTimer();
     }
 
     [Server]
@@ -244,7 +244,7 @@ public class GameManager : NetworkBehaviour
         IsPlayingTurn = false;
 
         // Finished Turn, either start new one or start a new round
-        if (TurnCount >= GameMode.TurnsPerRound) ServerStartRound();
+        if (TurnCount >= GameSettings.TurnsPerRound) ServerStartRound();
         else ServerStartTurn();
     }
 
@@ -306,7 +306,7 @@ public class GameManager : NetworkBehaviour
     private void ServerResetTimer()
     {
         //timeOfNextMove += GameMode.Singleton.TurnTimerLength;
-        turnTimer = Time.time + GameMode.TurnTimerLength;
+        turnTimer = Time.time + GameSettings.TurnTimerLength;
         enabled = true;
     }
     #endregion

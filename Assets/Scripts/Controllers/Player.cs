@@ -140,7 +140,7 @@ public abstract class Player : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
         ServerSubscribe();
-        resources = GameMode.StartingPlayerResources;
+        resources = GameSettings.StartingPlayerResources;
     }
 
     public override void OnStopServer()
@@ -425,7 +425,7 @@ public abstract class Player : NetworkBehaviour
         if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
         if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
 
-        MoveCount = GameMode.MovesPerTurn;
+        MoveCount = GameSettings.MovesPerTurn;
         HasEndedTurn = false;
     }
 

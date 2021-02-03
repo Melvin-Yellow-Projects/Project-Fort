@@ -6,14 +6,16 @@
  * Date Created: December 6, 2020
  * 
  * Additional Comments: 
+ * 
+ *      Previously known as GameMode.cs
  **/
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game Mode Settings")]
-public class GameMode : ScriptableObject
+[CreateAssetMenu(menuName = "Game Settings")]
+public class GameSettings : ScriptableObject
 {
     /************************************************************/
     #region Game Variables
@@ -51,7 +53,7 @@ public class GameMode : ScriptableObject
     /************************************************************/
     #region Class Properties
 
-    public static GameMode Singleton { get; set; }
+    public static GameSettings Singleton { get; set; }
 
     public static bool IsUsingTurnTimer
     {

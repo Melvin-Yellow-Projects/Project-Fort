@@ -1281,7 +1281,8 @@ MonoBehaviour:
   - {fileID: 3411061618259538338}
   - {fileID: 3135356366301483329}
   - {fileID: 174677758790870333}
-  gameModeSettingsPanel: {fileID: 0}
+  gameSettingsPanel: {fileID: 4018393197692209708}
+  turnTimerToggle: {fileID: 6201920439441913860}
   turnTimerSlider: {fileID: 3319815536965457797}
   turnTimerText: {fileID: 5050865045816635645}
 --- !u!1 &4018393197692209708
@@ -1296,7 +1297,7 @@ GameObject:
   - component: {fileID: 2130301250748906247}
   - component: {fileID: 8334700923755813989}
   m_Layer: 5
-  m_Name: Game Mode Settings
+  m_Name: Game Settings Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
