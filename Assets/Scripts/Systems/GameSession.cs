@@ -35,9 +35,9 @@ public class GameSession : NetworkBehaviour
 
     public static GameSession Singleton { get; private set; }
 
-    public bool IsOnline { get; set; } = false; // HACK: this property isn't mega accurate 
+    public static bool IsOnline { get; set; } = false; // HACK: this property isn't mega accurate 
 
-    public bool IsEditorMode { get; set; } = false; // HACK change this, relocate it
+    public static bool IsEditorMode { get; set; } = false; // HACK change this, relocate it
 
     #endregion
     /************************************************************/
@@ -187,7 +187,7 @@ public class GameSession : NetworkBehaviour
 
         SetGameSettings(gameSettings);
 
-        //DontDestroyOnLoad(Singleton.gameObject);
+        DontDestroyOnLoad(Singleton.gameObject);
     }
 
     private void SetGameSettings(GameSettings settings)
@@ -209,7 +209,7 @@ public class GameSession : NetworkBehaviour
 
     public static void GoOffline()
     {
-        Singleton.IsOnline = false;
+        IsOnline = false;
     }
 
     #endregion

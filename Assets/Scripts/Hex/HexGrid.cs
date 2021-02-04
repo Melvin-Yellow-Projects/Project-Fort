@@ -126,7 +126,7 @@ public class HexGrid : NetworkBehaviour
 
         SaveLoadMenu.LoadMapFromReader();
 
-        if (!GameSession.Singleton.IsEditorMode)
+        if (!GameSession.IsEditorMode)
         {
             HumanPlayer player = NetworkServer.localConnection.identity.GetComponent<HumanPlayer>();
             GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
@@ -218,7 +218,7 @@ public class HexGrid : NetworkBehaviour
         Singleton = this;
 
         //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
-        if (GameSession.Singleton.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        if (GameSession.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
         else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");
 

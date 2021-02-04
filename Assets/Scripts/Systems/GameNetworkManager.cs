@@ -20,6 +20,10 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Variables
 
+    [Header("Cached References")]
+    [Tooltip("session for the game")]
+    [SerializeField] GameSession gameSession = null;
+
     [Header("Settings")]
     [Tooltip("whether or not this build is using Steam")]
     [SerializeField] bool isUsingSteam = false;
@@ -78,14 +82,27 @@ public class GameNetworkManager : NetworkManager
 
     #endregion
     /************************************************************/
-    #region Server Functions
+    #region Unity Functions
 
     public override void OnValidate()
     {
         // the build has been changed from before, now time to change the transport
         if (isUsingSteam != IsUsingSteam) ChangeTransport();
-        
+
         base.OnValidate();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        Debug.LogError("Spawning Game Session");
+
+        GameSession instance = Instantiate(gameSession);
+
+        NetworkServer.Spawn(instance.gameObject);
     }
 
     public override void OnServerConnect(NetworkConnection conn)
@@ -97,7 +114,7 @@ public class GameNetworkManager : NetworkManager
 
         Debug.LogWarning($"Now there are a total of {NetworkServer.connections.Count} conns!");
 
-        if (!GameSession.Singleton.IsOnline) return;
+        if (!GameSession.IsOnline) return;
 
         // TODO: make player a spectator
         if (!IsGameInProgress) return;
@@ -132,8 +149,8 @@ public class GameNetworkManager : NetworkManager
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;
-        GameSession.Singleton.IsOnline = false;
-        GameSession.Singleton.IsEditorMode = false;
+        GameSession.IsOnline = false;
+        GameSession.IsEditorMode = false;
 
         IsGameInProgress = false;
     }
@@ -275,7 +292,7 @@ public class GameNetworkManager : NetworkManager
         // TODO add player to client's list of players
         //conn.identity.GetComponent<Player>();
 
-        if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
+        if (GameSession.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -285,7 +302,7 @@ public class GameNetworkManager : NetworkManager
         // TODO remove player from client's list of players
         //conn.identity.GetComponent<Player>();
 
-        if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
+        if (GameSession.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
     public override void OnStopClient()

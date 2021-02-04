@@ -44,12 +44,12 @@ public class MainMenu : MonoBehaviour
     {
         gameObject.SetActive(false);
         preLobbyMenu.SetActive(true);
-        GameSession.Singleton.IsOnline = true;
+        GameSession.IsOnline = true;
     }
 
     public void GoOffline() // HACK: this function is a little off
     {
-        GameSession.Singleton.IsOnline = false;
+        GameSession.IsOnline = false;
     }
 
     #endregion

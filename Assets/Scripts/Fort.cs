@@ -155,7 +155,7 @@ public class Fort : NetworkBehaviour
 
     public void ValidateLocation()
     {
-        if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = myCell.Position;
+        if (isServer || !GameSession.IsOnline) transform.localPosition = myCell.Position;
     }
 
     public List<HexCell> GetBuyCells()

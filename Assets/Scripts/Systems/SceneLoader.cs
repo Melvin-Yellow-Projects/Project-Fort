@@ -71,7 +71,7 @@ public class SceneLoader : MonoBehaviour
 
     public static void LoadMapEditorScene()
     {
-        GameSession.Singleton.IsEditorMode = true;
+        GameSession.IsEditorMode = true;
         NetworkManager.singleton.autoCreatePlayer = false;
         NetworkManager.singleton.StartHost();
 
