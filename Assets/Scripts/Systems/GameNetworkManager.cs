@@ -126,6 +126,8 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStopServer()
     {
+        // FIXME: Server needs to unspawn objects on server
+
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;

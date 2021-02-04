@@ -91,7 +91,7 @@ public class GameManager : NetworkBehaviour
 
     public static int TurnCount { get; private set; }
 
-    public static bool IsEconomyPhase { get; private set; }
+    public static bool IsEconomyPhase { get; private set; } = false;
 
     public static bool IsPlayingTurn { get; private set; } = false;
 
