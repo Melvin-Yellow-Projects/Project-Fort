@@ -79,13 +79,13 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Server Functions
 
-    public override void OnValidate()
-    {
-        // the build has been changed from before, now time to change the transport
-        if (isUsingSteam != IsUsingSteam) ChangeTransport();
+    //public override void OnValidate()
+    //{
+    //    // the build has been changed from before, now time to change the transport
+    //    if (isUsingSteam != IsUsingSteam) ChangeTransport();
         
-        base.OnValidate();
-    }
+    //    base.OnValidate();
+    //}
 
     public override void OnServerConnect(NetworkConnection conn)
     {
