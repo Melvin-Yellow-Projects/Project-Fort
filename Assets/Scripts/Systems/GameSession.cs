@@ -15,7 +15,7 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using Mirror;
 
-public class GameSession : MonoBehaviour
+public class GameSession : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
