@@ -174,6 +174,7 @@ public class PlayerInfo : NetworkBehaviour
 
     private void HookOnIsPartyLeader(bool oldValue, bool newValue)
     {
+        Debug.LogError("Client firing HookOnIsPartyLeader");
         ClientOnPlayerInfoUpdate?.Invoke();
         if (newValue && hasAuthority) GameSession.Singleton.CmdSetGameMode(GameSession.Settings);
     }
