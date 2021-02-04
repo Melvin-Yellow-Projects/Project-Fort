@@ -22,7 +22,7 @@ public class GameSession : NetworkBehaviour
 
     [Header("Cached References")]
     [Tooltip("game settings to store in the game's session")]
-    //[SyncVar(hook = nameof(HookOnGameSettings))]
+    [SyncVar(hook = nameof(HookOnGameSettings))]
     [SerializeField] GameSettings gameSettings = null;
 
     [Header("Settings")]
@@ -134,7 +134,7 @@ public class GameSession : NetworkBehaviour
     {
         if (!Singleton) InitalizeGameSettings();
 
-        else DestroyGameSession();
+        else Destroy(gameObject);
     }
 
     /// <summary>
@@ -202,9 +202,10 @@ public class GameSession : NetworkBehaviour
     /// <summary>
     ///     Destroys GameObject containing Game Session Class
     /// </summary>
-    public void DestroyGameSession()
+    public static void DestroySession()
     {
-        Destroy(gameObject);
+        Destroy(Singleton.gameObject);
+        Singleton = null;
     }
 
     public static void GoOffline()

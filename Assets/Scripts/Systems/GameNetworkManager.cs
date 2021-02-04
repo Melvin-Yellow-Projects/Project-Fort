@@ -146,6 +146,8 @@ public class GameNetworkManager : NetworkManager
     {
         // FIXME: Server needs to unspawn objects on server
 
+        GameSession.DestroySession(); // HACK: fat chance this works
+
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;
@@ -308,6 +310,8 @@ public class GameNetworkManager : NetworkManager
     public override void OnStopClient()
     {
         Debug.LogWarning("Disconnecting client!");
+
+        if (GameSession.Singleton) GameSession.DestroySession();
 
         for (int i = GameManager.Players.Count - 1; i >= 0; i--)
         {
