@@ -175,8 +175,7 @@ public class PlayerInfo : NetworkBehaviour
     private void HookOnIsPartyLeader(bool oldValue, bool newValue)
     {
         ClientOnPlayerInfoUpdate?.Invoke();
-
-        if (newValue) GameSession.Singleton.CmdSetGameMode(GameSession.Settings);
+        if (newValue && hasAuthority) GameSession.Singleton.CmdSetGameMode(GameSession.Settings);
     }
 
     private void HookOnPlayerName(string oldValue, string newValue)
