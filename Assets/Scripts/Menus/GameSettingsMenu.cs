@@ -33,6 +33,12 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Public Class Functions
 
+    public bool Interactable { get; set; } = false; // TODO: write this functionality
+
+    #endregion
+    /************************************************************/
+    #region Public Class Functions
+
     public void Get()
     {
         /** Turn Timer **/

@@ -83,7 +83,6 @@ public class LobbyMenu : MonoBehaviour
                 if (player.MyTeam == GameManager.Players[j].MyTeam) return true;
             }
         }
-
         return false;
     }
 
@@ -98,8 +97,10 @@ public class LobbyMenu : MonoBehaviour
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
         GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+
+        PlayerInfo.ClientOnPartyLeaderChanged += HandleClientOnPartyLeaderChanged;
         PlayerInfo.ClientOnPlayerInfoUpdate += RefreshLobbyItems;
-        PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyLeaderStateChange;
+        
         Team.ClientOnChangeTeam += RefreshLobbyItems;
     }
 
@@ -107,15 +108,28 @@ public class LobbyMenu : MonoBehaviour
     {
         hasSubscribed = false;
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
-        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+        GameNetworkManager.OnClientDisconnectEvent -= RefreshLobbyItems;
+
+        PlayerInfo.ClientOnPartyLeaderChanged -= HandleClientOnPartyLeaderChanged;
         PlayerInfo.ClientOnPlayerInfoUpdate -= RefreshLobbyItems;
-        PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyLeaderStateChange;
+        
         Team.ClientOnChangeTeam -= RefreshLobbyItems;
     }
 
     private void HandleOnClientConnectEvent()
     {
         gameObject.SetActive(true);
+    }
+
+    private void HandleClientOnPartyLeaderChanged()
+    {
+        if (!NetworkClient.connection.identity) return; // HACK is this lined needed?
+
+        bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
+
+        startGameButton.gameObject.SetActive(isLeader);
+
+        gameSettingsMenu.Interactable = isLeader;
     }
 
     private void RefreshLobbyItems()
@@ -132,17 +146,6 @@ public class LobbyMenu : MonoBehaviour
 
         startGameButton.interactable = !ArePlayersOnDifferentTeams() &&
             (GameManager.Players.Count >= GameNetworkManager.MinConnections);
-    }
-    
-    private void HandlePartyLeaderStateChange()
-    {
-        if (!NetworkClient.connection.identity) return;
-
-        bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
-
-        startGameButton.gameObject.SetActive(isLeader);
-
-        gameSettingsMenu.Get();
     }
 
     #endregion

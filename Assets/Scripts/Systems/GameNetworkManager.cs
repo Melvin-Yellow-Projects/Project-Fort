@@ -271,12 +271,18 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
+        // TODO add player to client's list of players
+        //conn.identity.GetComponent<Player>();
+
         if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
+
+        // TODO remove player from client's list of players
+        //conn.identity.GetComponent<Player>();
 
         if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
     }

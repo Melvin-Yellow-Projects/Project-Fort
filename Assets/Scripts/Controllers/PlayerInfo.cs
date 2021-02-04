@@ -45,7 +45,14 @@ public class PlayerInfo : NetworkBehaviour
     /// <summary>
     /// Event for when a client disconnects from the server
     /// </summary>
+    /// <subscriber class="LobbyMenu">refreshes lobby informtion</subscriber>
     public static event Action ClientOnPlayerInfoUpdate;
+
+    /// <summary>
+    /// Event for when a client disconnects from the server
+    /// </summary>
+    /// <subscriber class="LobbyMenu">refreshes lobby informtion</subscriber>
+    public static event Action ClientOnPartyLeaderChanged;
 
     #endregion
     /************************************************************/
@@ -106,7 +113,7 @@ public class PlayerInfo : NetworkBehaviour
     #region Server Functions
 
     [Command]
-    public void CmdGivePartyLeaderStatusToNewPlayer(NetworkIdentity playerNetId)
+    public void CmdChangePartyLeaderToNewPlayer(NetworkIdentity playerNetId)
     {
         if (GameNetworkManager.IsGameInProgress) return;
         if (!playerNetId.TryGetComponent(out PlayerInfo playerInfo)) return;
@@ -174,9 +181,8 @@ public class PlayerInfo : NetworkBehaviour
 
     private void HookOnIsPartyLeader(bool oldValue, bool newValue)
     {
-        Debug.LogError("Client firing HookOnIsPartyLeader");
-        ClientOnPlayerInfoUpdate?.Invoke();
-        if (newValue && hasAuthority) GameSession.Singleton.CmdSetGameMode(GameSession.Settings);
+        Debug.Log("Setting Party Leader");
+        ClientOnPartyLeaderChanged?.Invoke();
     }
 
     private void HookOnPlayerName(string oldValue, string newValue)
@@ -199,7 +205,6 @@ public class PlayerInfo : NetworkBehaviour
         displayTexture = GetSteamImageAsTexture(imageId);
         ClientOnPlayerInfoUpdate?.Invoke();
     }
-
 
     #endregion
 }

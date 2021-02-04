@@ -80,7 +80,7 @@ public class LobbyItem : MonoBehaviour
             Debug.Log($"{clientPlayerInfo.name} is attempting to change the party leader");
 
             // else am i the party leader? if so, give the leader status to another player
-            clientPlayerInfo.CmdGivePartyLeaderStatusToNewPlayer(player.netIdentity);
+            clientPlayerInfo.CmdChangePartyLeaderToNewPlayer(player.netIdentity);
         }
     }
 

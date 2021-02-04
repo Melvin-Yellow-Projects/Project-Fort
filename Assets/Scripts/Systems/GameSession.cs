@@ -22,6 +22,7 @@ public class GameSession : NetworkBehaviour
 
     [Header("Cached References")]
     [Tooltip("game settings to store in the game's session")]
+    [SyncVar(hook = nameof(HookOnGameSettings))]
     [SerializeField] GameSettings gameSettings = null;
 
     [Header("Settings")]
@@ -210,6 +211,16 @@ public class GameSession : NetworkBehaviour
     {
         Singleton.IsOnline = false;
     }
+
+    #endregion
+
+    /************************************************************/
+    #region Event Handler Functions
+
+    private void HookOnGameSettings(GameSettings oldValue, GameSettings newValue)
+    {
+        Debug.LogError("Setting Game Settings");
+    }    
 
     #endregion
 }
