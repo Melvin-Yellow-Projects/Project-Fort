@@ -36,16 +36,16 @@ public class GameSettingsMenu : MonoBehaviour
     public void Get()
     {
         /** Turn Timer **/
-        turnTimerToggle.isOn = GameSettings.IsUsingTurnTimer;
-        turnTimerSlider.value = GameSettings.TurnTimerLength / 10;
+        turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
+        turnTimerSlider.value = GameSession.TurnTimerLength / 10;
         SetTurnTimerInteractable();
     }
 
     public void Set()
     {
         /** Turn Timer **/
-        GameSettings.IsUsingTurnTimer = turnTimerToggle.isOn;
-        GameSettings.TurnTimerLength = turnTimerSlider.value * 10;
+        GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
+        GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
         SetTurnTimerInteractable();
     }
 
@@ -55,7 +55,7 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void SetTurnTimerInteractable()
     {
-        if (GameSettings.IsUsingTurnTimer)
+        if (GameSession.IsUsingTurnTimer)
         {
             turnTimerSlider.interactable = true;
             turnTimerText.text = GetTurnTimerText();
@@ -69,8 +69,8 @@ public class GameSettingsMenu : MonoBehaviour
 
     private string GetTurnTimerText()
     {
-        int min = (int)GameSettings.TurnTimerLength / 60;
-        int sec = (int)GameSettings.TurnTimerLength % 60;
+        int min = GameSession.TurnTimerLength / 60;
+        int sec = GameSession.TurnTimerLength % 60;
 
         return  $"{min} min {sec} sec";
     }

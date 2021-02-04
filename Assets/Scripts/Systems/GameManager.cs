@@ -156,7 +156,7 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartRound();
 
         // update timer and its text 
-        if (GameSettings.IsUsingTurnTimer) ResetTimer();  
+        if (GameSession.IsUsingTurnTimer) ResetTimer();  
     }
 
     [Server]
@@ -168,7 +168,7 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStartTurn();
 
         // update timer and its text
-        if (GameSettings.IsUsingTurnTimer) ResetTimer();
+        if (GameSession.IsUsingTurnTimer) ResetTimer();
     }
 
     [Server]
@@ -230,7 +230,7 @@ public class GameManager : NetworkBehaviour
         IsPlayingTurn = false;
 
         // Finished Turn, either start new one or start a new round
-        if (TurnCount >= GameSettings.TurnsPerRound) ServerStartRound();
+        if (TurnCount >= GameSession.TurnsPerRound) ServerStartRound();
         else ServerStartTurn();
     }
 
@@ -298,7 +298,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log("RpcInvokeClientOnStartRound");
         if (isClientOnly)
         {
-            if (GameSettings.IsUsingTurnTimer) ResetTimer();
+            if (GameSession.IsUsingTurnTimer) ResetTimer();
 
             IsEconomyPhase = true;
             RoundCount++;
@@ -323,7 +323,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log("RpcInvokeClientOnStartTurn");
         if (isClientOnly)
         {
-            if (GameSettings.IsUsingTurnTimer) ResetTimer();
+            if (GameSession.IsUsingTurnTimer) ResetTimer();
             TurnCount++;
         }
         ClientOnStartTurn?.Invoke();
@@ -349,7 +349,7 @@ public class GameManager : NetworkBehaviour
 
     private void ResetTimer()
     {
-        TurnTimer = Time.time + GameSettings.TurnTimerLength;
+        TurnTimer = Time.time + GameSession.TurnTimerLength;
         if (isServer) enabled = true;
     }
 

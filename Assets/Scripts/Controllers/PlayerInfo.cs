@@ -176,7 +176,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         ClientOnPlayerInfoUpdate?.Invoke();
 
-        if (newValue) GameSession.Singleton.CmdSetGameMode(null);
+        if (newValue) GameSession.Singleton.CmdSetGameMode(GameSession.Settings);
     }
 
     private void HookOnPlayerName(string oldValue, string newValue)

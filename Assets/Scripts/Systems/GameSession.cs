@@ -20,6 +20,11 @@ public class GameSession : NetworkBehaviour
     /************************************************************/
     #region Variables
 
+    [Header("Cached References")]
+    [Tooltip("game settings to store in the game's session")]
+    [SerializeField] GameSettings gameSettings = null;
+
+    [Header("Settings")]
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] float gameSpeed = 1f;
 
@@ -35,6 +40,90 @@ public class GameSession : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Game Settings Properties
+
+    // HACK: this is kinda shameless, but it should work for now
+
+    public static GameSettings Settings
+    {
+        get
+        {
+            return Singleton.gameSettings;
+        }
+    }
+
+    static int turnsPerRound;
+    public static int TurnsPerRound
+    {
+        get
+        {
+            return turnsPerRound;
+        }
+        set
+        {
+            turnsPerRound = value;
+            Singleton.gameSettings.turnsPerRound = value;
+        }
+    }
+
+    static int movesPerTurn;
+    public static int MovesPerTurn
+    {
+        get
+        {
+            return movesPerTurn;
+        }
+        set
+        {
+            movesPerTurn = value;
+            Singleton.gameSettings.movesPerTurn = value;
+        }
+    }
+
+    static bool isUsingTurnTimer;
+    public static bool IsUsingTurnTimer
+    {
+        get
+        {
+            return isUsingTurnTimer;
+        }
+        set
+        {
+            isUsingTurnTimer = value;
+            Singleton.gameSettings.isUsingTurnTimer = value;
+        }
+    }
+
+    static int turnTimerLength;
+    public static int TurnTimerLength
+    {
+        get
+        {
+            return turnTimerLength;
+        }
+        set
+        {
+            turnTimerLength = value;
+            Singleton.gameSettings.turnTimerLength = value;
+        }
+    }
+
+    static int startingPlayerResources;
+    public static int StartingPlayerResources
+    {
+        get
+        {
+            return startingPlayerResources;
+        }
+        set
+        {
+            startingPlayerResources = value;
+            Singleton.gameSettings.startingPlayerResources = value;
+        }
+    }
+
+    #endregion
+    /************************************************************/
     #region Unity Functions
 
     /// <summary>
@@ -42,7 +131,7 @@ public class GameSession : NetworkBehaviour
     /// </summary>
     private void Awake()
     {
-        if (!Singleton) InitGameSession();
+        if (!Singleton) InitalizeGameSettings();
 
         else DestroyGameSession();
     }
@@ -50,10 +139,10 @@ public class GameSession : NetworkBehaviour
     /// <summary>
     ///     Unity Method; Update() is called once per frame
     /// </summary>
-    private void Update()
-    {
-        Time.timeScale = gameSpeed;
-    }
+    //private void Update()
+    //{
+    //    Time.timeScale = gameSpeed;
+    //}
     #endregion
 
     /************************************************************/
@@ -69,6 +158,7 @@ public class GameSession : NetworkBehaviour
 
         // coolio set the game settings!
         Debug.LogWarning("Server is setting new game settings!");
+        SetGameSettings(settings);
 
         RpcSetGameMode(settings);
     }
@@ -80,19 +170,32 @@ public class GameSession : NetworkBehaviour
     [ClientRpc]
     private void RpcSetGameMode(GameSettings settings)
     {
+        if (isServer) return;
         // set the game settings
         Debug.Log("Client is recieving new game settings");
+        SetGameSettings(settings);
     }
 
     #endregion
     /************************************************************/
     #region Class Functions
 
-    private void InitGameSession()
+    public void InitalizeGameSettings()
     {
         Singleton = this;
 
-        DontDestroyOnLoad(gameObject);
+        SetGameSettings(gameSettings);
+
+        DontDestroyOnLoad(Singleton.gameObject);
+    }
+
+    private void SetGameSettings(GameSettings settings)
+    {
+        turnsPerRound = settings.turnsPerRound;
+        movesPerTurn = settings.movesPerTurn;
+        isUsingTurnTimer = settings.isUsingTurnTimer;
+        turnTimerLength = settings.turnTimerLength;
+        startingPlayerResources = settings.startingPlayerResources;
     }
 
     /// <summary>
@@ -100,7 +203,6 @@ public class GameSession : NetworkBehaviour
     /// </summary>
     public void DestroyGameSession()
     {
-        Singleton.gameSpeed = gameSpeed;
         Destroy(gameObject);
     }
 

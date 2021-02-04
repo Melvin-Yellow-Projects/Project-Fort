@@ -36,10 +36,6 @@ public class Initializer : MonoBehaviour
     [Tooltip("map editor scene")]
     [SerializeField, Scene] string editorScene;
 
-    [Header("GameSettings")]
-    [Tooltip("game settings load out")]
-    [SerializeField] GameSettings gameSettings = null;
-
     [Header("ComputerPlayer")]
     [Tooltip("reference to the ComputerPlayer prefab")]
     [SerializeField] ComputerPlayer computerPlayerPrefab = null;
@@ -84,10 +80,7 @@ public class Initializer : MonoBehaviour
     /************************************************************/
     #region Unity Functions
 
-    /// <summary>
-    /// Unity Method; Awake() is called before Start() upon GameObject creation
-    /// </summary>
-    protected void Awake()
+    protected void Start()
     {
         Debug.Log("initializing classes with their respective prefabs");
 
@@ -99,10 +92,7 @@ public class Initializer : MonoBehaviour
         if (editorScene != null && SceneLoader.EditorSceneName == null)
             SceneLoader.EditorSceneName = System.IO.Path.GetFileNameWithoutExtension(editorScene);
 
-        /** GameSettings **/
-        if (gameSettings && !GameSettings.Singleton) GameSettings.Singleton = gameSettings;
-
-        /** ComputerPlayer **/
+        /** Computer Player **/
         if (computerPlayerPrefab && !ComputerPlayer.Prefab)
             ComputerPlayer.Prefab = computerPlayerPrefab;
 

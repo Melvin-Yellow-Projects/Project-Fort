@@ -26,95 +26,23 @@ public class GameSettings : ScriptableObject
     //[SerializeField] int maxRounds = 0;
 
     [Tooltip("turnsPerRound")]
-    [SerializeField] int turnsPerRound = 3;
+    [SerializeField] public int turnsPerRound = 3;
 
-    [SerializeField] int movesPerTurn = 5;
-
-    [SerializeField] int startingPlayerResources = 1200;
+    [SerializeField] public int movesPerTurn = 5;
 
     //[SerializeField] int minMovesPerTurn = 2;
 
-    [SerializeField] bool isUsingTurnTimer = false;
+    [SerializeField] public bool isUsingTurnTimer = false;
 
-    [SerializeField] float turnTimerLength = 10f;
+    [SerializeField] public int turnTimerLength = 10;
+
+    [SerializeField] public int startingPlayerResources = 1200;
 
     //[SerializeField] bool isHotseat = false;
 
     //[SerializeField] bool canPlayerBreak = false;
 
     //[SerializeField] float playerBreakingTimerLength;
-
-    #endregion
-    /************************************************************/
-    #region Game Instance Variables
-
-    //public bool isPlayerBreaking = false;
-
-    #endregion
-    /************************************************************/
-    #region Class Properties
-
-    public static GameSettings Singleton { get; set; }
-
-    public static bool IsUsingTurnTimer
-    {
-        get
-        {
-            return Singleton.isUsingTurnTimer;
-        }
-        set
-        {
-            Singleton.isUsingTurnTimer = value;
-        }
-    }
-
-    public static float TurnTimerLength
-    {
-        get
-        {
-            return Singleton.turnTimerLength;
-        }
-        set
-        {
-            Singleton.turnTimerLength = value;
-        }
-    }
-
-    public static int TurnsPerRound
-    {
-        get
-        {
-            return Singleton.turnsPerRound;
-        }
-        set
-        {
-            Singleton.turnsPerRound = value;
-        }
-    }
-
-    public static int MovesPerTurn
-    {
-        get
-        {
-            return Singleton.movesPerTurn;
-        }
-        set
-        {
-            Singleton.movesPerTurn = value;
-        }
-    }
-
-    public static int StartingPlayerResources
-    {
-        get
-        {
-            return Singleton.startingPlayerResources;
-        }
-        set
-        {
-            Singleton.startingPlayerResources = value;
-        }
-    }
 
     #endregion
 }
@@ -129,19 +57,24 @@ public static class GameSettingsSerializer
 
     public static void WriteUnitData(this NetworkWriter writer, GameSettings settings)
     {
-        //writer.WriteNetworkIdentity(data.netIdentity);
-        //HexCellSerializer.WriteHexCellIndices(writer, data.pathCells);
+        writer.WriteByte((byte)settings.turnsPerRound);
+        writer.WriteByte((byte)settings.movesPerTurn);
+        writer.WriteBoolean(settings.isUsingTurnTimer);
+        writer.WriteInt32(settings.turnTimerLength);
+        writer.WriteInt32(settings.startingPlayerResources);
     }
 
     public static GameSettings ReadUnitData(this NetworkReader reader)
     {
-        //UnitData data = new UnitData
-        //{
-        //    netIdentity = reader.ReadNetworkIdentity(),
-        //    pathCells = HexCellSerializer.ReadHexCellIndices(reader)
-        //};
+        GameSettings settings = ScriptableObject.CreateInstance<GameSettings>();
 
-        return null;
+        settings.turnsPerRound = reader.ReadByte();
+        settings.movesPerTurn = reader.ReadByte();
+        settings.isUsingTurnTimer = reader.ReadBoolean();
+        settings.turnTimerLength = reader.ReadInt32();
+        settings.startingPlayerResources = reader.ReadInt32();
+
+        return settings;
     }
 
     #endregion
