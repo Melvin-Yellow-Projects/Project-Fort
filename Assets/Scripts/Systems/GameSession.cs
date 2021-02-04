@@ -22,7 +22,7 @@ public class GameSession : NetworkBehaviour
 
     [Header("Cached References")]
     [Tooltip("game settings to store in the game's session")]
-    [SyncVar(hook = nameof(HookOnGameSettings))]
+    //[SyncVar(hook = nameof(HookOnGameSettings))]
     [SerializeField] GameSettings gameSettings = null;
 
     [Header("Settings")]
