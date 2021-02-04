@@ -37,6 +37,15 @@ public class GameSettingsMenu : MonoBehaviour
 
     #endregion
     /************************************************************/
+    #region Unity Functions
+
+    //private void Update()
+    //{
+        
+    //}
+
+    #endregion
+    /************************************************************/
     #region Public Class Functions
 
     public void Get()
@@ -49,6 +58,10 @@ public class GameSettingsMenu : MonoBehaviour
 
     public void Set()
     {
+        // HACK this line isn't great, but it checks for whether or not the data should be sent
+        //if (Input.getmou(0)) return; 
+        Debug.Log("Setting Settings...");
+
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
@@ -61,7 +74,7 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void SetTurnTimerInteractable()
     {
-        if (Mirror.NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader)
+        if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader)
         {
             turnTimerToggle.interactable = true;
             if (GameSession.IsUsingTurnTimer)

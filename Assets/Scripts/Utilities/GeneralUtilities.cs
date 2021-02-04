@@ -11,10 +11,15 @@ public static class GeneralUtilities
         return NetworkServer.localConnection.connectionId == NetworkClient.connection.connectionId;
     }
 
-    //public static bool IsMyConnection(NetworkConnection conn)
-    //{
-    //    return conn.connectionId == NetworkClient.connection.connectionId;
-    //}
+    /// <summary>
+    /// Gets the client's player object; the returned player is guarenteed to be either null or
+    /// Human Player castable
+    /// </summary>
+    /// <returns>a client's player object</returns>
+    public static Player GetPlayerFromClientConnection()
+    {
+        return NetworkClient.connection.identity.GetComponent<Player>();
+    }
 
     public static float Normalization(float value, float min, float max)
     {
