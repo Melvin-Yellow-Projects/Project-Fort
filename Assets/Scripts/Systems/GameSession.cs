@@ -187,7 +187,7 @@ public class GameSession : NetworkBehaviour
 
         SetGameSettings(gameSettings);
 
-        DontDestroyOnLoad(Singleton.gameObject);
+        //DontDestroyOnLoad(Singleton.gameObject);
     }
 
     private void SetGameSettings(GameSettings settings)
