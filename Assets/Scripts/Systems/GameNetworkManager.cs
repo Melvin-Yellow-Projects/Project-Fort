@@ -47,6 +47,7 @@ public class GameNetworkManager : NetworkManager
     /// <summary>
     /// Event for when a client disconnects from the server
     /// </summary>
+    /// <subscriber class="LobbyMenu">...</subscriber>
     public static event Action OnClientDisconnectEvent;
 
     #endregion
