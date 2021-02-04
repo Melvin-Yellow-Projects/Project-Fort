@@ -30,7 +30,7 @@ public class SystemMenu : MonoBehaviour
 
     private void Awake()
     {
-        if (Mirror.NetworkServer.active)
+        if (Mirror.NetworkServer.active || Mirror.NetworkClient.isConnected)
         {
             downloadButton.interactable = true;
             helpButton.interactable = true;
