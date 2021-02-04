@@ -55,16 +55,25 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void SetTurnTimerInteractable()
     {
-        if (GameSession.IsUsingTurnTimer)
+        if (Mirror.NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader)
         {
-            turnTimerSlider.interactable = true;
-            turnTimerText.text = GetTurnTimerText();
+            turnTimerToggle.interactable = true;
+            if (GameSession.IsUsingTurnTimer)
+            {
+                turnTimerSlider.interactable = true;
+                turnTimerText.text = GetTurnTimerText();
+            }
+            else
+            {
+                turnTimerSlider.interactable = false;
+                turnTimerText.text = "off";
+            }
         }
         else
         {
+            turnTimerToggle.interactable = false;
             turnTimerSlider.interactable = false;
-            turnTimerText.text = "off";
-        }
+        }    
     }
 
     private string GetTurnTimerText()
