@@ -41,21 +41,18 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void Awake()
     {
-        
+        Refresh();
     }
-
-    //private void Update()
-    //{
-
-    //}
 
     #endregion
     /************************************************************/
     #region Class Functions
 
-    private void Get()
+    private void Refresh()
     {
-        if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
+        //if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
+
+        Debug.LogError("Getting Data");
 
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
@@ -111,12 +108,12 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void Subscribe()
     {
-        GameSession.ClientOnGameSettingsChanged += Get;
+        GameSession.ClientOnGameSettingsChanged += Refresh;
     }
 
     private void Unsubscribe()
     {
-        GameSession.ClientOnGameSettingsChanged -= Get;
+        GameSession.ClientOnGameSettingsChanged -= Refresh;
     }
 
     #endregion
