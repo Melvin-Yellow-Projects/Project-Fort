@@ -98,7 +98,7 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStartServer()
     {
-        Debug.LogError("Spawning Game Session");
+        Debug.LogWarning("Spawning New Game Session");
 
         GameSession instance = Instantiate(gameSession);
 
@@ -109,10 +109,10 @@ public class GameNetworkManager : NetworkManager
     {
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
         {
-            Debug.LogWarning($"{item.Key} has connection {item.Value.connectionId}");
+            Debug.Log($"{item.Key} has connection {item.Value.connectionId}");
         }
 
-        Debug.LogWarning($"Now there are a total of {NetworkServer.connections.Count} conns!");
+        Debug.Log($"Now there are a total of {NetworkServer.connections.Count} conns!");
 
         if (!GameSession.IsOnline) return;
 

@@ -14,6 +14,7 @@ using UnityEngine;
 using System.IO;
 using UnityEngine.SceneManagement;
 using Mirror;
+using System;
 
 public class GameSession : NetworkBehaviour
 {
@@ -22,12 +23,21 @@ public class GameSession : NetworkBehaviour
 
     [Header("Cached References")]
     [Tooltip("game settings to store in the game's session")]
-    [SyncVar(hook = nameof(HookOnGameSettings))]
     [SerializeField] GameSettings gameSettings = null;
 
     [Header("Settings")]
     [Tooltip("how fast to run the game's internal clock speed")]
     [SerializeField] [Range(0, 10)] float gameSpeed = 1f;
+
+    #endregion
+    /************************************************************/
+    #region Class Events
+
+    /// <summary>
+    /// Event for when the client recieves a GameSettings update from the server
+    /// </summary>
+    /// <subscriber class="GameSettingsMenu">refreshes Game Settings Menu informtion</subscriber>
+    public static event Action ClientOnGameSettingsChanged;
 
     #endregion
     /************************************************************/
@@ -45,80 +55,77 @@ public class GameSession : NetworkBehaviour
 
     // HACK: this is kinda shameless, but it should work for now
 
-    public static GameSettings Settings
-    {
-        get
-        {
-            return Singleton.gameSettings;
-        }
-    }
-
-    static int turnsPerRound;
+    [SyncVar(hook = nameof(HookOnTurnsPerRound))]
+    int turnsPerRound;
     public static int TurnsPerRound
     {
         get
         {
-            return turnsPerRound;
+            return Singleton.turnsPerRound;
         }
         set
         {
-            turnsPerRound = value;
+            Singleton.turnsPerRound = value;
             Singleton.gameSettings.turnsPerRound = value;
         }
     }
 
-    static int movesPerTurn;
+    [SyncVar(hook = nameof(HookOnMovesPerTurn))]
+    int movesPerTurn;
     public static int MovesPerTurn
     {
         get
         {
-            return movesPerTurn;
+            return Singleton.movesPerTurn;
         }
         set
         {
-            movesPerTurn = value;
+            Singleton.movesPerTurn = value;
             Singleton.gameSettings.movesPerTurn = value;
         }
     }
 
-    static bool isUsingTurnTimer;
+    [SyncVar(hook = nameof(HookOnIsUsingTurnTimer))]
+    bool isUsingTurnTimer;
     public static bool IsUsingTurnTimer
     {
         get
         {
-            return isUsingTurnTimer;
+            return Singleton.isUsingTurnTimer;
         }
         set
         {
-            isUsingTurnTimer = value;
+            Singleton.isUsingTurnTimer = value;
             Singleton.gameSettings.isUsingTurnTimer = value;
         }
     }
 
-    static int turnTimerLength;
+    [SyncVar(hook = nameof(HookOnTurnTimerLength))]
+    int turnTimerLength;
     public static int TurnTimerLength
     {
         get
         {
-            return turnTimerLength;
+            return Singleton.turnTimerLength;
         }
         set
         {
-            turnTimerLength = value;
+            Singleton.turnTimerLength = value;
             Singleton.gameSettings.turnTimerLength = value;
         }
     }
 
-    static int startingPlayerResources;
+    [SyncVar(hook = nameof(HookOnStartingPlayerResources))]
+    int startingPlayerResources;
     public static int StartingPlayerResources
     {
         get
         {
-            return startingPlayerResources;
+            return Singleton.startingPlayerResources;
         }
         set
         {
-            startingPlayerResources = value;
+            Singleton.startingPlayerResources = value;
             Singleton.gameSettings.startingPlayerResources = value;
         }
     }
@@ -128,7 +135,7 @@ public class GameSession : NetworkBehaviour
     #region Unity Functions
 
     /// <summary>
-    ///     Unity Method; Awake() is called before Start() upon GameObject creation
+    /// Unity Method; Awake() is called before Start() upon GameObject creation
     /// </summary>
     private void Awake()
     {
@@ -138,14 +145,14 @@ public class GameSession : NetworkBehaviour
     }
 
     /// <summary>
-    ///     Unity Method; Update() is called once per frame
+    /// Unity Method; Update() is called once per frame
     /// </summary>
     //private void Update()
     //{
     //    Time.timeScale = gameSpeed;
     //}
-    #endregion
 
+    #endregion
     /************************************************************/
     #region Server Functions
 
@@ -177,6 +184,9 @@ public class GameSession : NetworkBehaviour
     //    SetGameSettings(settings);
     //}
 
+    //[ClientRpc]
+    //private void Rpc()
+
     #endregion
     /************************************************************/
     #region Class Functions
@@ -200,7 +210,7 @@ public class GameSession : NetworkBehaviour
     }
 
     /// <summary>
-    ///     Destroys GameObject containing Game Session Class
+    /// Destroys GameObject containing Game Session Class
     /// </summary>
     public static void DestroySession()
     {
@@ -208,20 +218,34 @@ public class GameSession : NetworkBehaviour
         Singleton = null;
     }
 
-    public static void GoOffline()
-    {
-        IsOnline = false;
-    }
-
     #endregion
-
     /************************************************************/
     #region Event Handler Functions
 
-    private void HookOnGameSettings(GameSettings oldValue, GameSettings newValue)
+    private void HookOnTurnsPerRound(int oldValue, int newValue)
     {
-        Debug.LogError("Setting Game Settings");
-    }    
+        Debug.LogError("HookOnTurnsPerRound");
+    }
+
+    private void HookOnMovesPerTurn(int oldValue, int newValue)
+    {
+        Debug.LogError("HookOnMovesPerTurn");
+    }
+
+    private void HookOnIsUsingTurnTimer(bool oldValue, bool newValue)
+    {
+        Debug.LogError("HookOnIsUsingTurnTimer");
+    }
+
+    private void HookOnTurnTimerLength(int oldValue, int newValue)
+    {
+        Debug.LogError("HookOnTurnTimerLength");
+    }
+
+    private void HookOnStartingPlayerResources(int oldValue, int newValue)
+    {
+        Debug.LogError("HookOnStartingPlayerResources");
+    }
 
     #endregion
 }

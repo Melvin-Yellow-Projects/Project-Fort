@@ -39,21 +39,28 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Unity Functions
 
+    private void Awake()
+    {
+        
+    }
+
     //private void Update()
     //{
-        
+
     //}
 
     #endregion
     /************************************************************/
-    #region Public Class Functions
+    #region Class Functions
 
-    public void Get()
+    private void Get()
     {
+        if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
+
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
-        turnTimerSlider.value = GameSession.TurnTimerLength / 10;
-        SetTurnTimerInteractable();
+        //turnTimerSlider.value = GameSession.TurnTimerLength / 10;
+        //SetTurnTimerInteractable();
     }
 
     public void Set()
@@ -64,13 +71,9 @@ public class GameSettingsMenu : MonoBehaviour
 
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
-        GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
-        SetTurnTimerInteractable();
+        //GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
+        //SetTurnTimerInteractable();
     }
-
-    #endregion
-    /************************************************************/
-    #region Private Class Functions
 
     private void SetTurnTimerInteractable()
     {
@@ -102,5 +105,19 @@ public class GameSettingsMenu : MonoBehaviour
 
         return  $"{min} min {sec} sec";
     }
+    #endregion
+    /************************************************************/
+    #region Private Class Functions
+
+    private void Subscribe()
+    {
+        GameSession.ClientOnGameSettingsChanged += Get;
+    }
+
+    private void Unsubscribe()
+    {
+        GameSession.ClientOnGameSettingsChanged -= Get;
+    }
+
     #endregion
 }
