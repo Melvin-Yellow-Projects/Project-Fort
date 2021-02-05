@@ -1123,6 +1123,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64f2c9b84aa0c4428a54d3f15acedf1e, type: 3}
+--- !u!114 &482111172 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1838490279, guid: 809fe4a4a9a794e9193a092e63594b3e,
+    type: 3}
+  m_PrefabInstance: {fileID: 755730888}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &552553741
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1350,6 +1362,45 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -6134402128047789783, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: transport
+      value: 
+      objectReference: {fileID: 482111172}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: isUsingSteam
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: offlineScene
+      value: Assets/Scenes/0. Start Menu Scene.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[8]
+      value: 
+      objectReference: {fileID: 2400661251502749445, guid: ffaed2756a51a4e6b9e29b04fe534fc8,
+        type: 3}
+    - target: {fileID: 1838490279, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1838490280, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: m_Name
