@@ -68,6 +68,10 @@ public class GameSettingsMenu : MonoBehaviour
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int)turnTimerSlider.value * 10;
         SetTurnTimerInteractable();
+
+        // if this is the server, the sync var's will transmit the data
+        if (player.isServer) return;
+        GameSession.Singleton.CmdSetGameSettings(GameSession.GetGameSettings());
     }
 
     public void RefreshGameSettings()

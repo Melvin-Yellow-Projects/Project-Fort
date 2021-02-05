@@ -156,36 +156,17 @@ public class GameSession : NetworkBehaviour
     /************************************************************/
     #region Server Functions
 
-    //[Command(ignoreAuthority = true)]
-    //public void CmdSetGameMode(GameSettings settings, NetworkConnectionToClient conn = null)
-    //{
-    //    if (GameNetworkManager.IsGameInProgress) return;
+    [Command(ignoreAuthority = true)]
+    public void CmdSetGameSettings(GameSettings settings, NetworkConnectionToClient conn = null)
+    {
+        if (GameNetworkManager.IsGameInProgress) return;
 
-    //    Player player = conn.identity.GetComponent<Player>();
-    //    if (!player.Info.IsPartyLeader) return;
+        Player player = conn.identity.GetComponent<Player>();
+        if (!player.Info.IsPartyLeader) return;
 
-    //    // coolio set the game settings!
-    //    Debug.LogWarning("Server is setting new game settings!");
-    //    SetGameSettings(settings);
-
-    //    RpcSetGameMode(settings);
-    //}
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    //[ClientRpc]
-    //private void RpcSetGameMode(GameSettings settings)
-    //{
-    //    if (isServer) return;
-    //    // set the game settings
-    //    Debug.Log("Client is recieving new game settings");
-    //    SetGameSettings(settings);
-    //}
-
-    //[ClientRpc]
-    //private void Rpc()
+        Debug.LogWarning("Server is setting new game settings!");
+        SetGameSettings(settings);
+    }
 
     #endregion
     /************************************************************/
@@ -202,13 +183,24 @@ public class GameSession : NetworkBehaviour
         Debug.LogWarning("Game Session Initialized");
     }
 
-    private void SetGameSettings(GameSettings settings)
+    private void SetGameSettings(GameSettings gameSettings)
     {
-        turnsPerRound = settings.turnsPerRound;
-        movesPerTurn = settings.movesPerTurn;
-        isUsingTurnTimer = settings.isUsingTurnTimer;
-        turnTimerLength = settings.turnTimerLength;
-        startingPlayerResources = settings.startingPlayerResources;
+        turnsPerRound = gameSettings.turnsPerRound;
+        movesPerTurn = gameSettings.movesPerTurn;
+        isUsingTurnTimer = gameSettings.isUsingTurnTimer;
+        turnTimerLength = gameSettings.turnTimerLength;
+        startingPlayerResources = gameSettings.startingPlayerResources;
+    }
+
+    public static GameSettings GetGameSettings()
+    {
+        Singleton.gameSettings.turnsPerRound = TurnsPerRound;
+        Singleton.gameSettings.movesPerTurn = MovesPerTurn;
+        Singleton.gameSettings.isUsingTurnTimer = IsUsingTurnTimer;
+        Singleton.gameSettings.turnTimerLength = TurnTimerLength;
+        Singleton.gameSettings.startingPlayerResources = StartingPlayerResources;
+
+        return Singleton.gameSettings;
     }
 
     /// <summary>
