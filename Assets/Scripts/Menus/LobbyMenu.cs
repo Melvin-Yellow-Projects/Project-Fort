@@ -130,6 +130,8 @@ public class LobbyMenu : MonoBehaviour
         startGameButton.gameObject.SetActive(isLeader);
 
         gameSettingsMenu.Interactable = isLeader;
+
+        RefreshLobbyItems();
     }
 
     private void RefreshLobbyItems()
