@@ -45,8 +45,7 @@ public class GameSettingsMenu : MonoBehaviour
     {
         Singleton = this;
         Subscribe();
-        if (GameSession.Singleton) RefreshGameSettings();
-        //RefreshGameSettings();
+        RefreshGameSettings();
     }
 
     private void OnDestroy()
@@ -67,7 +66,7 @@ public class GameSettingsMenu : MonoBehaviour
 
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
-        GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
+        GameSession.TurnTimerLength = (int)turnTimerSlider.value * 10;
         SetTurnTimerInteractable();
     }
 
@@ -83,9 +82,8 @@ public class GameSettingsMenu : MonoBehaviour
     {
         // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
         Player player = GeneralUtilities.GetPlayerFromClientConnection();
-        if (!player) return;
 
-        if (player.Info.IsPartyLeader)
+        if (player && player.Info.IsPartyLeader)
         {
             turnTimerToggle.interactable = true;
             turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;

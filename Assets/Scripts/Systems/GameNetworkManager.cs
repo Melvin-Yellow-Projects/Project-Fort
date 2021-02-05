@@ -309,11 +309,6 @@ public class GameNetworkManager : NetworkManager
         if (GameSession.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
-    public override void OnStartClient()
-    {
-        //GameSettingsMenu.Singleton.RefreshGameSettings();
-    }
-
     public override void OnStopClient()
     {
         Debug.LogWarning("Disconnecting client!");
