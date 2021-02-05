@@ -65,7 +65,7 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
-        //SetTurnTimerInteractable();
+        SetTurnTimerInteractable();
     }
 
     public void RefreshGameSettings()
@@ -77,7 +77,7 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
-        //SetTurnTimerInteractable();
+        SetTurnTimerInteractable();
     }
 
     private void SetTurnTimerInteractable()
@@ -85,30 +85,29 @@ public class GameSettingsMenu : MonoBehaviour
         if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader)
         {
             turnTimerToggle.interactable = true;
-            if (GameSession.IsUsingTurnTimer)
-            {
-                turnTimerSlider.interactable = true;
-                turnTimerText.text = GetTurnTimerText();
-            }
-            else
-            {
-                turnTimerSlider.interactable = false;
-                turnTimerText.text = "off";
-            }
+            turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;
         }
         else
         {
             turnTimerToggle.interactable = false;
             turnTimerSlider.interactable = false;
-        }    
+        }
+        turnTimerText.text = GetTurnTimerText();
     }
 
     private string GetTurnTimerText()
     {
-        int min = GameSession.TurnTimerLength / 60;
-        int sec = GameSession.TurnTimerLength % 60;
+        if (GameSession.IsUsingTurnTimer)
+        {
+            int min = GameSession.TurnTimerLength / 60;
+            int sec = GameSession.TurnTimerLength % 60;
 
-        return  $"{min} min {sec} sec";
+            return $"{min} min {sec} sec";
+        }
+        else
+        {
+            return "off";
+        }
     }
     #endregion
     /************************************************************/
