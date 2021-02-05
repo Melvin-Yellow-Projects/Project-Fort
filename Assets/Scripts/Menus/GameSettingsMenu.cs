@@ -39,9 +39,10 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Unity Functions
 
-    private void Awake()
+    private void Start()
     {
         Subscribe();
+        Refresh();
     }
 
     private void OnDestroy()
