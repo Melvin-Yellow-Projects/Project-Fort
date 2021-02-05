@@ -79,19 +79,11 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Server Functions
 
-    public override void Awake()
-    {
-        isUsingSteam = true;
-        ChangeTransport();
-
-        base.Awake();
-    }
-
     //public override void OnValidate()
     //{
     //    // the build has been changed from before, now time to change the transport
     //    if (isUsingSteam != IsUsingSteam) ChangeTransport();
-
+        
     //    base.OnValidate();
     //}
 

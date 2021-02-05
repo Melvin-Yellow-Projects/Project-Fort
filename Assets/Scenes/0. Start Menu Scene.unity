@@ -1350,11 +1350,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: isUsingSteam
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: m_Name
