@@ -215,7 +215,7 @@ public class SaveLoadMenu : MonoBehaviour
     /// <summary>
     /// TODO write save func
     /// </summary>
-	public void Save(string path)
+	public static void Save(string path)
     {
         BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create));
         //GameSession.Singleton.MapHexBuffer.WriteTo(File.Open(path, FileMode.Create));

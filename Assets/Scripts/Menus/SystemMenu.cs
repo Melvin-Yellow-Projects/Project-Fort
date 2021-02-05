@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
 public class SystemMenu : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class SystemMenu : MonoBehaviour
 
     private void Awake()
     {
-        if (Mirror.NetworkServer.active)
+        if (NetworkServer.active || NetworkClient.isConnected)
         {
             downloadButton.interactable = true;
             helpButton.interactable = true;
@@ -53,10 +54,13 @@ public class SystemMenu : MonoBehaviour
     public void DownloadButtonPressed()
     {
         // TODO: this should download the current player map
-        string title = "Download Map";
-        string description = "sorry, this feature is not yet implemented";
+        string title = "Downloaded Map";
+        string description = "map has been saved to downloaded.map";
 
         PopupMenu.Open(title, description, isConfirmationPopup: false);
+
+        string path = System.IO.Path.Combine(Application.persistentDataPath, "downloaded.map");
+        SaveLoadMenu.Save(path);
     }
 
     public void HelpButtonPressed()
