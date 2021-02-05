@@ -63,7 +63,7 @@ public class GameSettingsMenu : MonoBehaviour
     {
         // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
         Player player = GeneralUtilities.GetPlayerFromClientConnection();
-        if (!player.Info.IsPartyLeader) return;
+        if (!player || !player.Info.IsPartyLeader) return;
 
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
