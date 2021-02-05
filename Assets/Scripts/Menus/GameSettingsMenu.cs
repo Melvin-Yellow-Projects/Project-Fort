@@ -42,6 +42,12 @@ public class GameSettingsMenu : MonoBehaviour
     private void Awake()
     {
         Refresh();
+        Subscribe();
+    }
+
+    private void OnDestroy()
+    {
+        Unsubscribe();
     }
 
     #endregion
