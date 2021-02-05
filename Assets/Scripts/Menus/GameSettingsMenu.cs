@@ -39,7 +39,7 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Unity Functions
 
-    private void Awake()
+    private void Start()
     {
         Refresh();
         Subscribe();
@@ -114,11 +114,13 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void Subscribe()
     {
+        Debug.Log("Subscribing GameSettingsMenu");
         GameSession.ClientOnGameSettingsChanged += Refresh;
     }
 
     private void Unsubscribe()
     {
+        Debug.Log("Unsubscribing GameSettingsMenu");
         GameSession.ClientOnGameSettingsChanged -= Refresh;
     }
 
