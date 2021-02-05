@@ -54,12 +54,9 @@ public class SystemMenu : MonoBehaviour
     {
         // TODO: this should download the current player map
         string title = "Download Map";
-        string description = "map has been saved to temp.map";
+        string description = "sorry, this feature is not yet implemented";
 
         PopupMenu.Open(title, description, isConfirmationPopup: false);
-
-        string path = System.IO.Path.Combine(Application.persistentDataPath, "temp.map");
-        SaveLoadMenu.Save(path);
     }
 
     public void HelpButtonPressed()
