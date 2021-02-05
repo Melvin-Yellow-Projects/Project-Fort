@@ -198,6 +198,8 @@ public class GameSession : NetworkBehaviour
         SetGameSettings(gameSettings);
 
         DontDestroyOnLoad(Singleton.gameObject);
+
+        Debug.LogWarning("Game Session Initialized");
     }
 
     private void SetGameSettings(GameSettings settings)
