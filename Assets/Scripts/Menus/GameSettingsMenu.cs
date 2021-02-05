@@ -54,7 +54,21 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Class Functions
 
-    public void Refresh()
+    public void SetGameSettings()
+    {
+        if (!GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
+
+        // HACK this line isn't great, but it checks for whether or not the data should be sent
+        //if (Input.getmou(0)) return; 
+        Debug.Log("Setting Settings...");
+
+        /** Turn Timer **/
+        GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
+        GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
+        //SetTurnTimerInteractable();
+    }
+
+    public void RefreshGameSettings()
     {
         //if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
 
@@ -63,18 +77,6 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
-        //SetTurnTimerInteractable();
-    }
-
-    public void Set()
-    {
-        // HACK this line isn't great, but it checks for whether or not the data should be sent
-        //if (Input.getmou(0)) return; 
-        Debug.Log("Setting Settings...");
-
-        /** Turn Timer **/
-        GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
-        GameSession.TurnTimerLength = (int)turnTimerSlider.value * 10;
         //SetTurnTimerInteractable();
     }
 
@@ -115,13 +117,13 @@ public class GameSettingsMenu : MonoBehaviour
     private void Subscribe()
     {
         Debug.Log("Subscribing GameSettingsMenu");
-        GameSession.ClientOnGameSettingsChanged += Refresh;
+        GameSession.ClientOnGameSettingsChanged += RefreshGameSettings; 
     }
 
     private void Unsubscribe()
     {
         Debug.Log("Unsubscribing GameSettingsMenu");
-        GameSession.ClientOnGameSettingsChanged -= Refresh;
+        GameSession.ClientOnGameSettingsChanged -= RefreshGameSettings;
     }
 
     #endregion
