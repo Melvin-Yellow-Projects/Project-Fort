@@ -33,20 +33,24 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Public Class Functions
 
+    public static GameSettingsMenu Singleton { get; private set; }
+
     public bool Interactable { get; set; } = false; // TODO: write this functionality
 
     #endregion
     /************************************************************/
     #region Unity Functions
 
-    private void Start()
+    private void Awake()
     {
+        Singleton = this;
         Subscribe();
-        RefreshGameSettings();
+        if (GameSession.Singleton) RefreshGameSettings();
     }
 
     private void OnDestroy()
     {
+        Singleton = null;
         Unsubscribe();
     }
 
