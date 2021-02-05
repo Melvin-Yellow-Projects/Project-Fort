@@ -55,7 +55,7 @@ public class GameSession : NetworkBehaviour
 
     // HACK: this is kinda shameless, but it should work for now
 
-    [SyncVar(hook = nameof(HookOnTurnsPerRound))]
+    [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
     int turnsPerRound;
     public static int TurnsPerRound
     {
@@ -70,7 +70,7 @@ public class GameSession : NetworkBehaviour
         }
     }
 
-    [SyncVar(hook = nameof(HookOnMovesPerTurn))]
+    [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
     int movesPerTurn;
     public static int MovesPerTurn
     {
@@ -85,7 +85,7 @@ public class GameSession : NetworkBehaviour
         }
     }
 
-    [SyncVar(hook = nameof(HookOnIsUsingTurnTimer))]
+    [SyncVar(hook = nameof(HookOnGameSettingsBool))]
     bool isUsingTurnTimer;
     public static bool IsUsingTurnTimer
     {
@@ -100,7 +100,7 @@ public class GameSession : NetworkBehaviour
         }
     }
 
-    [SyncVar(hook = nameof(HookOnTurnTimerLength))]
+    [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
     int turnTimerLength;
     public static int TurnTimerLength
     {
@@ -115,7 +115,7 @@ public class GameSession : NetworkBehaviour
         }
     }
 
-    [SyncVar(hook = nameof(HookOnStartingPlayerResources))]
+    [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
     int startingPlayerResources;
     public static int StartingPlayerResources
     {
@@ -222,29 +222,16 @@ public class GameSession : NetworkBehaviour
     /************************************************************/
     #region Event Handler Functions
 
-    private void HookOnTurnsPerRound(int oldValue, int newValue)
+    private void HookOnGameSettingsInt32(int oldValue, int newValue)
     {
         Debug.LogError("HookOnTurnsPerRound");
+        ClientOnGameSettingsChanged?.Invoke();
     }
 
-    private void HookOnMovesPerTurn(int oldValue, int newValue)
-    {
-        Debug.LogError("HookOnMovesPerTurn");
-    }
-
-    private void HookOnIsUsingTurnTimer(bool oldValue, bool newValue)
+    private void HookOnGameSettingsBool(bool oldValue, bool newValue)
     {
         Debug.LogError("HookOnIsUsingTurnTimer");
-    }
-
-    private void HookOnTurnTimerLength(int oldValue, int newValue)
-    {
-        Debug.LogError("HookOnTurnTimerLength");
-    }
-
-    private void HookOnStartingPlayerResources(int oldValue, int newValue)
-    {
-        Debug.LogError("HookOnStartingPlayerResources");
+        ClientOnGameSettingsChanged?.Invoke();
     }
 
     #endregion
