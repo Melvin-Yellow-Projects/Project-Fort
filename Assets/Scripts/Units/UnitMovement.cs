@@ -237,7 +237,8 @@ public abstract class UnitMovement : NetworkBehaviour
         EnRouteCell = null;
         HadActionCanceled = false;
 
-        TargetCompleteAction(connectionToClient); // TODO: relay this message to allies too
+        // TODO: relay this message to allies too
+        if (connectionToClient != null) TargetCompleteAction(connectionToClient); 
 
         CurrentMovement--; // FIXME assumes all tiles have the same cost
 

@@ -146,7 +146,7 @@ public class GameNetworkManager : NetworkManager
     {
         // FIXME: Server needs to unspawn objects on server
 
-        GameSession.DestroySession(); // HACK: fat chance this works
+        GameSession.Singleton.DestroySession(); // HACK: fat chance this works
 
         GameManager.Players.Clear();
 
@@ -313,7 +313,7 @@ public class GameNetworkManager : NetworkManager
     {
         Debug.LogWarning("Disconnecting client!");
 
-        if (GameSession.Singleton) GameSession.DestroySession();
+        if (GameSession.Singleton) GameSession.Singleton.DestroySession();
 
         for (int i = GameManager.Players.Count - 1; i >= 0; i--)
         {

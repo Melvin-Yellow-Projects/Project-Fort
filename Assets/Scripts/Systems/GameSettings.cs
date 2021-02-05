@@ -46,36 +46,3 @@ public class GameSettings : ScriptableObject
 
     #endregion
 }
-
-/// <summary>
-/// 
-/// </summary>
-//public static class GameSettingsSerializer
-//{
-//    /************************************************************/
-//    #region HexCellData
-
-//    public static void WriteUnitData(this NetworkWriter writer, GameSettings settings)
-//    {
-//        writer.WriteByte((byte)settings.turnsPerRound);
-//        writer.WriteByte((byte)settings.movesPerTurn);
-//        writer.WriteBoolean(settings.isUsingTurnTimer);
-//        writer.WriteInt32(settings.turnTimerLength);
-//        writer.WriteInt32(settings.startingPlayerResources);
-//    }
-
-//    public static GameSettings ReadUnitData(this NetworkReader reader)
-//    {
-//        GameSettings settings = ScriptableObject.CreateInstance<GameSettings>();
-
-//        settings.turnsPerRound = reader.ReadByte();
-//        settings.movesPerTurn = reader.ReadByte();
-//        settings.isUsingTurnTimer = reader.ReadBoolean();
-//        settings.turnTimerLength = reader.ReadInt32();
-//        settings.startingPlayerResources = reader.ReadInt32();
-
-//        return settings;
-//    }
-
-//    #endregion
-//}

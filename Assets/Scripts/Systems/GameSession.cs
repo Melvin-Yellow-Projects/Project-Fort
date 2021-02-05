@@ -206,10 +206,11 @@ public class GameSession : NetworkBehaviour
     /// <summary>
     /// Destroys GameObject containing Game Session Class
     /// </summary>
-    public static void DestroySession()
+    public void DestroySession()
     {
-        Destroy(Singleton.gameObject);
+        Debug.LogWarning("Destroying Session");
         Singleton = null;
+        Destroy(gameObject);
     }
 
     #endregion

@@ -170,10 +170,18 @@ public abstract class Player : NetworkBehaviour
     [Command]
     protected void CmdSetAction(UnitData data)
     {
+        //if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+
+        ServerSetAction(connectionToClient.identity.GetComponent<Player>(), data);
+    }
+
+    [Server]
+    protected void ServerSetAction(Player player, UnitData data)
+    {
         if (GameManager.IsEconomyPhase || GameManager.IsPlayingTurn) return;
         if (!CanMove()) return;
 
-        if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+        if (player.MyTeam != data.MyUnit.MyTeam) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
         if (data.MyUnit.Movement.ServerSetAction(data)) MoveCount--;
@@ -195,6 +203,12 @@ public abstract class Player : NetworkBehaviour
     /// <param name="cell"></param>
     [Command] 
     protected void CmdTryBuyUnit(int unitId, HexCell cell)
+    {
+        ServerTryBuyUnit(unitId, cell);
+    }
+
+    [Server]
+    protected void ServerTryBuyUnit(int unitId, HexCell cell)
     {
         if (!GameManager.IsEconomyPhase) return;
         if (cell.MyUnit) return;
