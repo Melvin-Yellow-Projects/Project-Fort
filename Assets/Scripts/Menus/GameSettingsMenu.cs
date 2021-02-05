@@ -81,7 +81,11 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void SetTurnTimerInteractable()
     {
-        if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader)
+        // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
+        Player player = GeneralUtilities.GetPlayerFromClientConnection();
+        if (!player) return;
+
+        if (player.Info.IsPartyLeader)
         {
             turnTimerToggle.interactable = true;
             turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;
