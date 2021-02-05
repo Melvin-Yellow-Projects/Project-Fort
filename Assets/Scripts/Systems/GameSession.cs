@@ -224,13 +224,13 @@ public class GameSession : NetworkBehaviour
 
     private void HookOnGameSettingsInt32(int oldValue, int newValue)
     {
-        Debug.LogWarning("Updating GameSettings");
+        //Debug.LogWarning("Updating GameSettings");
         ClientOnGameSettingsChanged?.Invoke();
     }
 
     private void HookOnGameSettingsBool(bool oldValue, bool newValue)
     {
-        Debug.LogWarning("Updating GameSettings");
+        //Debug.LogWarning("Updating GameSettings");
         ClientOnGameSettingsChanged?.Invoke();
     }
 
