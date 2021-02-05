@@ -291,6 +291,8 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
+        if (GameSettingsMenu.Singleton) GameSettingsMenu.Singleton.RefreshGameSettings();
+
         // TODO add player to client's list of players
         //conn.identity.GetComponent<Player>();
 
@@ -305,6 +307,11 @@ public class GameNetworkManager : NetworkManager
         //conn.identity.GetComponent<Player>();
 
         if (GameSession.IsOnline) OnClientDisconnectEvent?.Invoke();
+    }
+
+    public override void OnStartClient()
+    {
+        GameSettingsMenu.Singleton.RefreshGameSettings();
     }
 
     public override void OnStopClient()
