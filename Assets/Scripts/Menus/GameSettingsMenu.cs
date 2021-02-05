@@ -39,9 +39,8 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Unity Functions
 
-    private void Start()
+    private void Awake()
     {
-        Refresh();
         Subscribe();
     }
 
@@ -54,7 +53,7 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Class Functions
 
-    private void Refresh()
+    public void Refresh()
     {
         //if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
 
