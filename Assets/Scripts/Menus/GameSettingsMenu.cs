@@ -42,7 +42,7 @@ public class GameSettingsMenu : MonoBehaviour
     private void Start()
     {
         Subscribe();
-        //Refresh();
+        RefreshGameSettings();
     }
 
     private void OnDestroy()
@@ -58,10 +58,6 @@ public class GameSettingsMenu : MonoBehaviour
     {
         if (!GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
 
-        // HACK this line isn't great, but it checks for whether or not the data should be sent
-        //if (Input.getmou(0)) return; 
-        Debug.Log("Setting Settings...");
-
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
@@ -70,10 +66,6 @@ public class GameSettingsMenu : MonoBehaviour
 
     public void RefreshGameSettings()
     {
-        //if (GeneralUtilities.GetPlayerFromClientConnection().Info.IsPartyLeader) return;
-
-        Debug.LogError("Getting Data");
-
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
