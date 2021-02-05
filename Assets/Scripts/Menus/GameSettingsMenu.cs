@@ -62,7 +62,7 @@ public class GameSettingsMenu : MonoBehaviour
 
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
-        //turnTimerSlider.value = GameSession.TurnTimerLength / 10;
+        turnTimerSlider.value = GameSession.TurnTimerLength / 10;
         //SetTurnTimerInteractable();
     }
 
@@ -74,7 +74,7 @@ public class GameSettingsMenu : MonoBehaviour
 
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
-        //GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
+        GameSession.TurnTimerLength = (int)turnTimerSlider.value * 10;
         //SetTurnTimerInteractable();
     }
 
