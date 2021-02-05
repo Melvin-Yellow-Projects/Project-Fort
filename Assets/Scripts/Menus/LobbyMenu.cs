@@ -6,7 +6,6 @@
  * Date Created: December 21, 2020
  * 
  * Additional Comments: 
- *      TODO: Add Dapper Dino as one of the authors
  **/
 
 using System.Collections;
@@ -15,7 +14,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Mirror;
-using TMPro;
 
 public class LobbyMenu : MonoBehaviour
 {
@@ -24,14 +22,10 @@ public class LobbyMenu : MonoBehaviour
 
     [Header("Cached References")]
     [SerializeField] SaveLoadMenu saveLoadMenu = null;
+    [SerializeField] GameSettingsMenu gameSettingsMenu = null;
 
     [SerializeField] Button startGameButton = null;
     [SerializeField] LobbyItem[] lobbyItems = null;
-
-    [Header("Game Mode Settings")]
-    [SerializeField] GameObject gameModeSettingsPanel = null;
-    [SerializeField] Slider turnTimerSlider = null;
-    [SerializeField] TMP_Text turnTimerText = null;
 
     bool hasSubscribed = false;
 
@@ -89,26 +83,7 @@ public class LobbyMenu : MonoBehaviour
                 if (player.MyTeam == GameManager.Players[j].MyTeam) return true;
             }
         }
-
         return false;
-    }
-
-    #endregion
-    /************************************************************/
-    #region GameMode Functions 
-
-    // HACK: move these functions elsewhere; perhaps a GameMode instance Manager?
-
-    public void OnToggleValueChanged(bool toggle)
-    {
-        GameMode.IsUsingTurnTimer = toggle;
-        turnTimerSlider.interactable = toggle;
-    }
-
-    public void OnSliderValueChanged(float value)
-    {
-        GameMode.TurnTimerLength = value;
-        turnTimerText.text = $"{value} min";
     }
 
     #endregion
@@ -122,8 +97,10 @@ public class LobbyMenu : MonoBehaviour
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
         GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+
+        PlayerInfo.ClientOnPartyLeaderChanged += HandleClientOnPartyLeaderChanged;
         PlayerInfo.ClientOnPlayerInfoUpdate += RefreshLobbyItems;
-        PlayerInfo.ClientOnPlayerInfoUpdate += HandlePartyOwnerStateChange;
+        
         Team.ClientOnChangeTeam += RefreshLobbyItems;
     }
 
@@ -131,15 +108,30 @@ public class LobbyMenu : MonoBehaviour
     {
         hasSubscribed = false;
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
-        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+        GameNetworkManager.OnClientDisconnectEvent -= RefreshLobbyItems;
+
+        PlayerInfo.ClientOnPartyLeaderChanged -= HandleClientOnPartyLeaderChanged;
         PlayerInfo.ClientOnPlayerInfoUpdate -= RefreshLobbyItems;
-        PlayerInfo.ClientOnPlayerInfoUpdate -= HandlePartyOwnerStateChange;
+        
         Team.ClientOnChangeTeam -= RefreshLobbyItems;
     }
 
     private void HandleOnClientConnectEvent()
     {
         gameObject.SetActive(true);
+    }
+
+    private void HandleClientOnPartyLeaderChanged()
+    {
+        if (!NetworkClient.connection.identity) return; // HACK is this lined needed?
+
+        bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
+
+        startGameButton.gameObject.SetActive(isLeader);
+
+        gameSettingsMenu.Interactable = isLeader;
+
+        RefreshLobbyItems();
     }
 
     private void RefreshLobbyItems()
@@ -156,17 +148,6 @@ public class LobbyMenu : MonoBehaviour
 
         startGameButton.interactable = !ArePlayersOnDifferentTeams() &&
             (GameManager.Players.Count >= GameNetworkManager.MinConnections);
-    }
-    
-    private void HandlePartyOwnerStateChange()
-    {
-        if (!NetworkClient.connection.identity) return;
-
-        bool isLeader = NetworkClient.connection.identity.GetComponent<PlayerInfo>().IsPartyLeader;
-
-        startGameButton.gameObject.SetActive(isLeader);
-
-        //gameModeSettingsPanel.SetActive(isLeader);
     }
 
     #endregion

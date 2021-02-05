@@ -20,6 +20,10 @@ public class GameNetworkManager : NetworkManager
     /************************************************************/
     #region Variables
 
+    [Header("Cached References")]
+    [Tooltip("session for the game")]
+    [SerializeField] GameSession gameSession = null;
+
     [Header("Settings")]
     [Tooltip("whether or not this build is using Steam")]
     [SerializeField] bool isUsingSteam = false;
@@ -47,6 +51,7 @@ public class GameNetworkManager : NetworkManager
     /// <summary>
     /// Event for when a client disconnects from the server
     /// </summary>
+    /// <subscriber class="LobbyMenu">...</subscriber>
     public static event Action OnClientDisconnectEvent;
 
     #endregion
@@ -77,26 +82,39 @@ public class GameNetworkManager : NetworkManager
 
     #endregion
     /************************************************************/
-    #region Server Functions
+    #region Unity Functions
 
     public override void OnValidate()
     {
         // the build has been changed from before, now time to change the transport
         if (isUsingSteam != IsUsingSteam) ChangeTransport();
-        
+
         base.OnValidate();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Server Functions
+
+    public override void OnStartServer()
+    {
+        Debug.LogWarning("Spawning New Game Session");
+
+        GameSession instance = Instantiate(gameSession);
+
+        NetworkServer.Spawn(instance.gameObject);
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
         {
-            Debug.LogWarning($"{item.Key} has connection {item.Value.connectionId}");
+            Debug.Log($"{item.Key} has connection {item.Value.connectionId}");
         }
 
-        Debug.LogWarning($"Now there are a total of {NetworkServer.connections.Count} conns!");
+        Debug.Log($"Now there are a total of {NetworkServer.connections.Count} conns!");
 
-        if (!GameSession.Singleton.IsOnline) return;
+        if (!GameSession.IsOnline) return;
 
         // TODO: make player a spectator
         if (!IsGameInProgress) return;
@@ -126,11 +144,15 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStopServer()
     {
+        // FIXME: Server needs to unspawn objects on server
+
+        GameSession.DestroySession(); // HACK: fat chance this works
+
         GameManager.Players.Clear();
 
         autoCreatePlayer = true;
-        GameSession.Singleton.IsOnline = false;
-        GameSession.Singleton.IsEditorMode = false;
+        GameSession.IsOnline = false;
+        GameSession.IsEditorMode = false;
 
         IsGameInProgress = false;
     }
@@ -269,19 +291,29 @@ public class GameNetworkManager : NetworkManager
     {
         base.OnClientConnect(conn);
 
-        if (GameSession.Singleton.IsOnline) OnClientConnectEvent?.Invoke();
+        if (GameSettingsMenu.Singleton) GameSettingsMenu.Singleton.RefreshGameSettings();
+
+        // TODO add player to client's list of players
+        //conn.identity.GetComponent<Player>();
+
+        if (GameSession.IsOnline) OnClientConnectEvent?.Invoke();
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
 
-        if (GameSession.Singleton.IsOnline) OnClientDisconnectEvent?.Invoke();
+        // TODO remove player from client's list of players
+        //conn.identity.GetComponent<Player>();
+
+        if (GameSession.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
     public override void OnStopClient()
     {
         Debug.LogWarning("Disconnecting client!");
+
+        if (GameSession.Singleton) GameSession.DestroySession();
 
         for (int i = GameManager.Players.Count - 1; i >= 0; i--)
         {

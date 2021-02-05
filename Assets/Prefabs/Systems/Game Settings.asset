@@ -11,9 +11,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dafec78f0a0fd47cda763a949d1b720a, type: 3}
   m_Name: Game Settings
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameSettings
   turnsPerRound: 3
   movesPerTurn: 5
+  isUsingTurnTimer: 1
+  turnTimerLength: 210
   startingPlayerResources: 1200
-  isUsingTurnTimer: 0
-  turnTimerLength: 10

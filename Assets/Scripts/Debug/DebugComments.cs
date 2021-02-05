@@ -4,7 +4,7 @@
  * 
  * Authors: XXXX [Youtube Channel], Will Lacey
  * Date Created: August 18, 2020
- * Last Updated: January 15, 2021
+ * Last Updated: February 3, 2021
  * 
  * Additional Comments: 
  *      The original version of this file can be found on XXXX YouTube channel under the video: 
@@ -190,4 +190,18 @@ public class DebugComments : MonoBehaviour
     }
 
     #endregion
+    /************************************************************/
+    #region Interesting Debug Code/Functions
+
+    /** Handle Scene Change **/
+
+    //SceneManager.activeSceneChanged += HandleActiveSceneChanged;
+
+    //private void HandleActiveSceneChanged(Scene current, Scene next)
+    //{
+
+    //}
+
+    #endregion
+
 }

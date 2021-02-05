@@ -60,7 +60,6 @@ public struct UnitData
     #endregion
 }
 
-
 /// <summary>
 /// 
 /// </summary>

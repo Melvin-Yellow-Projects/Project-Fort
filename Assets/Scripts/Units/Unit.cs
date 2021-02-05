@@ -185,7 +185,7 @@ public class Unit : NetworkBehaviour
     public void ValidateLocation()
     {
         //UnitPathfinding.IncreaseVisibility(MyCell, Movement.VisionRange); // FIXME: vision no work
-        if (isServer || !GameSession.Singleton.IsOnline) transform.localPosition = MyCell.Position;
+        if (isServer || !GameSession.IsOnline) transform.localPosition = MyCell.Position;
     }
 
     public void Die(bool isPlayingAnimation = true)
