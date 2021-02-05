@@ -199,7 +199,7 @@ public class GameSession : NetworkBehaviour
 
         DontDestroyOnLoad(Singleton.gameObject);
 
-        if (GameSettingsMenu.Singleton) GameSettingsMenu.Singleton.RefreshGameSettings();
+        //if (GameSettingsMenu.Singleton) GameSettingsMenu.Singleton.RefreshGameSettings();
 
         Debug.LogWarning("Game Session Initialized");
     }
