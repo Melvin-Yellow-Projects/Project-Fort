@@ -75,7 +75,6 @@ public class GameSettingsMenu : MonoBehaviour
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
         SetTurnTimerInteractable();
-        turnTimerText.text = GetTurnTimerText();
 
         // if this is the server, the sync var's will transmit the data
         if (player.isServer) return;
@@ -88,7 +87,6 @@ public class GameSettingsMenu : MonoBehaviour
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
         SetTurnTimerInteractable();
-        turnTimerText.text = GetTurnTimerText();
     }
 
     private void SetTurnTimerInteractable()
@@ -105,8 +103,7 @@ public class GameSettingsMenu : MonoBehaviour
         {
             turnTimerToggle.interactable = false;
             turnTimerSlider.interactable = false;
-        }    
-
+        }
         turnTimerText.text = GetTurnTimerText();
     }
 
