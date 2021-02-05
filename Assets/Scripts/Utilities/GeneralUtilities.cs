@@ -18,6 +18,7 @@ public static class GeneralUtilities
     /// <returns>a client's player object</returns>
     public static Player GetPlayerFromClientConnection()
     {
+        if (NetworkClient.connection == null || !NetworkClient.connection.identity) return null;
         return NetworkClient.connection.identity.GetComponent<Player>();
     }
 
