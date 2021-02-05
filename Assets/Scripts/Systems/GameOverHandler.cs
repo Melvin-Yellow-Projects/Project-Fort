@@ -51,6 +51,8 @@ public class GameOverHandler : NetworkBehaviour
         if (GameManager.Players.Count != 1) return;
 
         RpcGameOver(GameManager.Players[0].GetComponent<PlayerInfo>().PlayerName);
+
+        NetworkServer.Destroy(GameManager.Singleton.gameObject);
     }
 
     #endregion
@@ -62,20 +64,19 @@ public class GameOverHandler : NetworkBehaviour
     {
         TargetOnDefeat?.Invoke();
 
+        Destroy(PlayerMenu.Singleton.gameObject);
+
+        if (isServer) return;
+
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
 
-        foreach (Unit unit in player.MyUnits)
-        {
-            unit.MyCell.DecreaseVisibility();
-        }
+        foreach (Fort fort in player.MyForts) fort.HideBuyCells();
+        foreach (Unit unit in player.MyUnits) unit.MyCell.DecreaseVisibility();
 
         player.MyUnits.Clear();
         player.MyForts.Clear();
 
-        player.enabled = false;
-        Destroy(PlayerMenu.Singleton.gameObject);
-
-        // TODO: disable player's UI (end turn button)
+        Destroy(player); 
     }
 
     [ClientRpc]
@@ -83,7 +84,9 @@ public class GameOverHandler : NetworkBehaviour
     {
         ClientOnGameOver?.Invoke(winner);
 
-        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = false;
+        HumanPlayer player = NetworkClient.connection.identity.GetComponent<HumanPlayer>();
+
+        if (player) Destroy(player);
     }
 
     #endregion
@@ -132,6 +135,23 @@ public class GameOverHandler : NetworkBehaviour
     [Server]
     private void HandleServerOnPlayerDefeat(Player player, WinConditionType type)
     {
+        GameManager.Players.Remove(player);
+        Debug.LogWarning($"{player.name} has lost, there are {GameManager.Players.Count} Players");
+
+        foreach (Fort fort in player.MyForts)
+        {
+            fort.HideBuyCells();
+            fort.MyTeam.SetTeam(0);
+        }
+        foreach (Unit unit in player.MyUnits)
+        {
+            unit.MyTeam.SetTeam(0);
+            unit.MyCell.DecreaseVisibility();
+        }
+
+        player.MyUnits.Clear();
+        player.MyForts.Clear();
+
         // HACK: fix this function up later
         if (player.connectionToClient != null)
         {
@@ -152,20 +172,7 @@ public class GameOverHandler : NetworkBehaviour
             }
         }
 
-        GameManager.Players.Remove(player);
-        Debug.LogWarning($"{player.name} has lost, there are {GameManager.Players.Count} Players");
-
-        foreach (Fort fort in player.MyForts) fort.MyTeam.SetTeam(0);
-        foreach (Unit unit in player.MyUnits)
-        {
-            unit.MyTeam.SetTeam(0);
-            unit.MyCell.DecreaseVisibility();
-        }
-
-        player.MyUnits.Clear();
-        player.MyForts.Clear();
-
-        player.enabled = false;
+        Destroy(player);
 
         ServerCheckIfGameOver();
     }

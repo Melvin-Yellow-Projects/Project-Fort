@@ -127,7 +127,7 @@ public abstract class Player : NetworkBehaviour
         //    ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
     }
 
-    protected void OnDestroy()
+    protected virtual void OnDestroy()
     {
         ServerUnsubscribe(); // HACK brute force
     }

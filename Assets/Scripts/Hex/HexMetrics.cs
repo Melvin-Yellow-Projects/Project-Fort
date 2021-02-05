@@ -299,7 +299,7 @@ public static class HexMetrics
             HexCell cell = startCell.GetNeighbor(d);
             if (cell && cell.Index == endCell.Index) return d;
         }
-        if (startCell.Index == endCell.Index) Debug.LogWarning("no direction, cells are the same");
+        if (startCell.Index == endCell.Index) Debug.Log("no direction, cells are the same");
         else Debug.LogError("Direction Not Found");
         return HexDirection.E;
     }

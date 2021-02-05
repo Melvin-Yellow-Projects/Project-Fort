@@ -63,6 +63,12 @@ public class HumanPlayer : Player
         if (selectedUnit) DoPathfinding();
     }
 
+    protected override void OnDestroy()
+    {
+        if (currentCell) currentCell.DisableHighlight();
+        base.OnDestroy();
+    }
+
     #endregion
     /************************************************************/
     #region Server Functions
