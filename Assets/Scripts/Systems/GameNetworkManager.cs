@@ -311,7 +311,7 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStartClient()
     {
-        GameSettingsMenu.Singleton.RefreshGameSettings();
+        //GameSettingsMenu.Singleton.RefreshGameSettings();
     }
 
     public override void OnStopClient()
