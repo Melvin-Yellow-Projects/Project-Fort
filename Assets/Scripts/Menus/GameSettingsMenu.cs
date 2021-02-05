@@ -33,7 +33,7 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Public Class Functions
 
-    //public static GameSettingsMenu Singleton { get; private set; }
+    public static GameSettingsMenu Singleton { get; private set; }
 
     public bool Interactable { get; set; } = false; // TODO: write this functionality
 
@@ -43,10 +43,10 @@ public class GameSettingsMenu : MonoBehaviour
 
     private void Awake()
     {
-        //Singleton = this;
+        Singleton = this;
         Subscribe();
-        //if (GameSession.Singleton) RefreshGameSettings();
-        RefreshGameSettings();
+        if (GameSession.Singleton) RefreshGameSettings();
+        //RefreshGameSettings();
     }
 
     private void OnDestroy()
