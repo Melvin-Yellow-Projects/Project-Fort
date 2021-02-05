@@ -183,6 +183,11 @@ public class GameSession : NetworkBehaviour
         Debug.LogWarning("Game Session Initialized");
     }
 
+    /// <summary>
+    /// Sets the session's game settings; if this is the server, it will fire the sync vars for
+    /// everything
+    /// </summary>
+    /// <param name="gameSettings"></param>
     private void SetGameSettings(GameSettings gameSettings)
     {
         turnsPerRound = gameSettings.turnsPerRound;
@@ -192,6 +197,11 @@ public class GameSession : NetworkBehaviour
         startingPlayerResources = gameSettings.startingPlayerResources;
     }
 
+    /// <summary>
+    /// This function saves the current game settings in memory to 'disk' and then transmits the 
+    /// data over the internet
+    /// </summary>
+    /// <returns></returns>
     public static GameSettings GetGameSettings()
     {
         Singleton.gameSettings.turnsPerRound = TurnsPerRound;
