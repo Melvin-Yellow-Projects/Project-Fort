@@ -42,7 +42,7 @@ public class GameSettingsMenu : MonoBehaviour
     private void Start()
     {
         Subscribe();
-        Refresh();
+        //Refresh();
     }
 
     private void OnDestroy()
