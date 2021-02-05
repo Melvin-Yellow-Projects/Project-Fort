@@ -45,7 +45,7 @@ public class GameSettingsMenu : MonoBehaviour
     {
         Singleton = this;
         Subscribe();
-        RefreshGameSettings();
+        if (GameSession.Singleton) RefreshGameSettings();
     }
 
     private void OnDestroy()
