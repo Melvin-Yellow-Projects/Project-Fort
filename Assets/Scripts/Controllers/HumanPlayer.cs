@@ -23,7 +23,7 @@ public class HumanPlayer : Player
     [Header("Cached References")]
     [SerializeField] MapCamera mapCamera = null;
 
-    HexCell currentCell;
+    public HexCell currentCell; // HACK this shouldnt be public
 
     Unit selectedUnit;
 

@@ -8,16 +8,26 @@ public class DebugHand : MonoBehaviour
     #region Variables
 
     [Tooltip("layers to ignore when raycasting")]
-    [SerializeField] LayerMask layersToIgnore; 
+    [SerializeField] LayerMask layersToIgnore;
+
+    Unit grabbedUnit = null;
 
     #endregion
     /************************************************************/
     #region Unity Functions
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (Input.GetMouseButtonDown(0)) TryToPickupPiece();
+        
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (grabbedUnit) LetGoOfPiece();
+            else TryToPickupPiece(); 
+        }
+
+        if (!grabbedUnit) return;
+        UpdateGrabbedPiecePosition();
     }
 
     #endregion
@@ -35,6 +45,26 @@ public class DebugHand : MonoBehaviour
         Debug.DrawLine(ray.origin, hit.point, Color.red, 3f);
 
         Debug.Log(hit.rigidbody.transform.parent.name);
+
+        grabbedUnit = hit.rigidbody.GetComponentInParent<Unit>();
+    }
+
+    private void LetGoOfPiece()
+    {
+        //grabbedUnit.transform.position = grabbedUnit.MyCell.Position;
+        grabbedUnit.ValidateLocation();
+        grabbedUnit = null;
+    }
+
+    private void UpdateGrabbedPiecePosition()
+    {
+        grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
+
+        //grabbedUnit.transform.position = new Vector3(
+        //    PlayerMenu.MyPlayer.currentCell.Position.x,
+        //    PlayerMenu.MyPlayer.currentCell.Position.y,
+        //    PlayerMenu.MyPlayer.currentCell.Position.z
+        //);
     }
 
     #endregion
