@@ -7,8 +7,11 @@ public class DebugHand : MonoBehaviour
     /************************************************************/
     #region Variables
 
-    [Tooltip("layers to ignore when raycasting")]
-    [SerializeField] LayerMask layersToIgnore;
+    [Tooltip("layers affected by grabbing")]
+    [SerializeField] LayerMask grabLayers;
+
+    [Tooltip("layers for the HexMap")]
+    [SerializeField] LayerMask terrainLayers;
 
     Unit grabbedUnit = null;
 
@@ -39,7 +42,7 @@ public class DebugHand : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (!Physics.Raycast(ray, out hit, 1000, ~layersToIgnore)) return;
+        if (!Physics.Raycast(ray, out hit, 1000, grabLayers)) return;
 
         Debug.DrawLine(ray.origin, hit.point, Color.red, 3f);
 
@@ -57,20 +60,20 @@ public class DebugHand : MonoBehaviour
 
     private void UpdateGrabbedPiecePosition()
     {
-        grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
+        //grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
 
-        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        //if (!Physics.Raycast(ray, out RaycastHit hit, 1000, ~layersToIgnore)) return;
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000, terrainLayers)) return;
 
-        //HexCell cell = HexGrid.Singleton.GetCell(hit.point);
-        //if (!cell || !cell.IsExplored) return;
+        HexCell cell = HexGrid.Singleton.GetCell(hit.point);
+        if (!cell || !cell.IsExplored) return;
 
-        //grabbedUnit.transform.position = new Vector3(
-        //    hit.point.x,
-        //    PlayerMenu.MyPlayer.currentCell.Position.y,
-        //    hit.point.z + 2
-        //);
+        grabbedUnit.transform.position = new Vector3(
+            hit.point.x,
+            PlayerMenu.MyPlayer.currentCell.Position.y,
+            hit.point.z
+        );
     }
 
     #endregion
