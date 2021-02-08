@@ -134,10 +134,6 @@ public class SaveLoadMenu : MonoBehaviour
         {
             PrepareReaderForOnlineGame();
         }
-        else if (menuMode == 4)
-        {
-            DebugLoad(path);
-        }
 
         // exit menu
         Close();
@@ -295,67 +291,6 @@ public class SaveLoadMenu : MonoBehaviour
     }
 
     #endregion
-    /************************************************************/
-    #region Debug Functions
-
-    private void DebugLoad(string path)
-    {
-        // check to see if the path exists
-        if (!IsPathValid(path)) return;
-
-        MapReader = new BinaryReader(File.OpenRead(path));
-
-        /**********/
-        //BinaryReader data = MapReader;
-
-        //int length = (int)data.BaseStream.Length;
-        //byte[] buffer = new byte[length];
-
-        //data.Read(buffer, 0, length);
-
-        ////writer.WriteInt32(length);
-        ////for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
-
-        ///**/
-
-        ////int length = reader.ReadInt32();
-        ////byte[] buffer = new byte[length];
-
-        ////for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
-
-        //MapReader = new BinaryReader(new MemoryStream(buffer));
-
-        HexGrid.Singleton.CmdRequestMap(); 
-
-        /**********/
-
-        //LoadMapFromReader();
-    }
-
-    
-
-    //private void DebugWrite(BinaryReader data)
-    //{
-    //    int length = (int)data.BaseStream.Length;
-    //    byte[] buffer = new byte[length];
-
-    //    data.Read(buffer, 0, length);
-
-    //    //writer.WriteInt32(length);
-    //    for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
-    //}
-
-    //private BinaryReader DebugRead()
-    //{
-    //    int length = reader.ReadInt32();
-    //    byte[] buffer = new byte[length];
-
-    //    for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
-
-    //    return new BinaryReader(new MemoryStream(buffer));
-    //}
-
-    #endregion
 }
 
 /// <summary>
@@ -368,6 +303,8 @@ public static class BinaryReaderSerializer
 
     public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader data)
     {
+        data.BaseStream.Position = 0;
+
         int length = (int) data.BaseStream.Length;
         byte[] buffer = new byte[length];
 
