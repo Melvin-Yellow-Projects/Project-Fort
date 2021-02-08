@@ -19,7 +19,6 @@ public class DebugHand : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        
         if (Input.GetMouseButtonDown(0))
         {
             if (grabbedUnit) LetGoOfPiece();
@@ -60,10 +59,17 @@ public class DebugHand : MonoBehaviour
     {
         grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
 
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //if (!Physics.Raycast(ray, out RaycastHit hit, 1000, ~layersToIgnore)) return;
+
+        //HexCell cell = HexGrid.Singleton.GetCell(hit.point);
+        //if (!cell || !cell.IsExplored) return;
+
         //grabbedUnit.transform.position = new Vector3(
-        //    PlayerMenu.MyPlayer.currentCell.Position.x,
+        //    hit.point.x,
         //    PlayerMenu.MyPlayer.currentCell.Position.y,
-        //    PlayerMenu.MyPlayer.currentCell.Position.z
+        //    hit.point.z + 2
         //);
     }
 

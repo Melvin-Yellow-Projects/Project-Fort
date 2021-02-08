@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5510439269666843769}
   - component: {fileID: 5675019671678609604}
   - component: {fileID: 5510439269666843768}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hex Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,4 +72,4 @@ MonoBehaviour:
   cellCountZ: 15
   layersToIgnore:
     serializedVersion: 2
-    m_Bits: 1792
+    m_Bits: 2147485239

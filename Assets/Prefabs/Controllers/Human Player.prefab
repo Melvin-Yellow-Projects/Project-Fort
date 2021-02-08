@@ -81,6 +81,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   mapCamera: {fileID: 5353259989821856737}
+  currentCell: {fileID: 0}
 --- !u!114 &-2715520160280375779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,7 +103,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3526458366338087291}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20912be3cdbba4517bba3d0ba70e6e52, type: 3}
   m_Name: 

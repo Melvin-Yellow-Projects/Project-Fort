@@ -49,7 +49,7 @@ public class HexGrid : NetworkBehaviour
     public int cellCountZ = 15;
 
     [Tooltip("layers to ignore when raycasting")]
-    [SerializeField] LayerMask layersToIgnore; // TODO: this would probably be better as a cell layer
+    [SerializeField] LayerMask layersToIgnore; 
 
     #endregion
     /************************************************************/

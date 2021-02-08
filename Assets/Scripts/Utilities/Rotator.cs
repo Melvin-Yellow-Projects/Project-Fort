@@ -70,16 +70,16 @@ public class Rotator : MonoBehaviour
         }
     }
 
-#endregion
+    #endregion
 
-/********** MARK: Unity Functions **********/
-#region Unity Functions
+    /********** MARK: Unity Functions **********/
+    #region Unity Functions
 
-/// <summary>
-/// Unity Method; This function is called when the script is loaded or a value is changed in the
-/// Inspector (Called in the editor only)
-/// </summary>
-private void OnValidate()
+    /// <summary>
+    /// Unity Method; This function is called when the script is loaded or a value is changed in the
+    /// Inspector (Called in the editor only)
+    /// </summary>
+    private void OnValidate()
     {
         IsRotatingClockwise = isRotatingClockwise;
 

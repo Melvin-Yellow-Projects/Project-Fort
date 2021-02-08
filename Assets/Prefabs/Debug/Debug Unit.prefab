@@ -213,7 +213,7 @@ SphereCollider:
   m_GameObject: {fileID: 7171782581471012597}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -556,7 +556,7 @@ GameObject:
   - component: {fileID: 1896499282891379940}
   - component: {fileID: 7160831275196350366}
   - component: {fileID: 1777634141379692881}
-  m_Layer: 9
+  m_Layer: 31
   m_Name: Vision Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
