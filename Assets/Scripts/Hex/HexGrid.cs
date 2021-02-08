@@ -94,10 +94,10 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
-    private void Start() // FIXME DESTROY THIS
-    {
-        InitializeMap();
-    }
+    //private void Start() // FIXME DESTROY THIS
+    //{
+    //    InitializeMap();
+    //}
 
     private void OnDestroy()
     {
