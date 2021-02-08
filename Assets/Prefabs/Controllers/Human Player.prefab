@@ -110,10 +110,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grabLayers:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 3072
   terrainLayers:
     serializedVersion: 2
     m_Bits: 256
+  moveSpeed: 0
 --- !u!1001 &7856691846112463873
 PrefabInstance:
   m_ObjectHideFlags: 0

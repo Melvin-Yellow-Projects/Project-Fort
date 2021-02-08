@@ -168,6 +168,16 @@ public class GameSession : NetworkBehaviour
         SetGameSettings(settings);
     }
 
+    [Command(ignoreAuthority = true)] // HACK: i dont like this function here
+    public void CmdStartGame(NetworkConnectionToClient conn = null)
+    {
+        if (!conn.identity.GetComponent<PlayerInfo>().IsPartyLeader) return;
+
+        if (GameNetworkManager.IsGameInProgress) return;
+
+        GameNetworkManager.Singleton.ServerStartGame();
+    }
+
     #endregion
     /************************************************************/
     #region Class Functions

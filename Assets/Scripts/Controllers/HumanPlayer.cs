@@ -71,20 +71,6 @@ public class HumanPlayer : Player
 
     #endregion
     /************************************************************/
-    #region Server Functions
-
-    [Command] // HACK: i dont like this function here
-    public void CmdStartGame() 
-    {
-        if (!GetComponent<PlayerInfo>().IsPartyLeader) return;
-
-        if (GameNetworkManager.IsGameInProgress) return;
-
-        GameNetworkManager.Singleton.ServerStartGame();
-    }
-
-    #endregion
-    /************************************************************/
     #region Client Input Functions
 
     [Client]

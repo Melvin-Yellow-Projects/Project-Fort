@@ -13,7 +13,11 @@ public class DebugHand : MonoBehaviour
     [Tooltip("layers for the HexMap")]
     [SerializeField] LayerMask terrainLayers;
 
+    [Tooltip("speed of the piece when it changes position")]
+    [SerializeField, Range(0, 10)] float moveSpeed;
+
     Unit grabbedUnit = null;
+    Vector3 currentPosition;
 
     #endregion
     /************************************************************/
@@ -53,6 +57,7 @@ public class DebugHand : MonoBehaviour
 
     private void LetGoOfPiece()
     {
+        StopAllCoroutines();
         //grabbedUnit.transform.position = grabbedUnit.MyCell.Position;
         grabbedUnit.ValidateLocation();
         grabbedUnit = null;
@@ -60,20 +65,46 @@ public class DebugHand : MonoBehaviour
 
     private void UpdateGrabbedPiecePosition()
     {
+        //if (currentPosition == PlayerMenu.MyPlayer.currentCell.Position) return;
+
         //grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //StopAllCoroutines();
+        //StartCoroutine(ChangePiecePosition());
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 1000, terrainLayers)) return;
+        // instantly sets the position of the piece
+        grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
 
-        HexCell cell = HexGrid.Singleton.GetCell(hit.point);
-        if (!cell || !cell.IsExplored) return;
 
-        grabbedUnit.transform.position = new Vector3(
-            hit.point.x,
-            PlayerMenu.MyPlayer.currentCell.Position.y,
-            hit.point.z
-        );
+        // piece follows the raycast hit of the mouse on the HexGrid
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        //if (!Physics.Raycast(ray, out RaycastHit hit, 1000, terrainLayers)) return;
+
+        //HexCell cell = HexGrid.Singleton.GetCell(hit.point);
+        //if (!cell || !cell.IsExplored) return;
+
+        //grabbedUnit.transform.position = new Vector3(
+        //    hit.point.x,
+        //    (PlayerMenu.MyPlayer.currentCell.Position.y + hit.point.y) / 2,
+        //    hit.point.z
+        //);
+    }
+
+    private IEnumerator ChangePiecePosition()
+    {
+        currentPosition = grabbedUnit.transform.position;
+        for (float interpolator = 0; interpolator < 1; interpolator += Time.deltaTime * moveSpeed)
+        {
+            grabbedUnit.transform.position = Vector3.Lerp(
+                currentPosition,
+                PlayerMenu.MyPlayer.currentCell.Position,
+                interpolator);
+
+            yield return null;
+        }
+
+        currentPosition = PlayerMenu.MyPlayer.currentCell.Position;
     }
 
     #endregion

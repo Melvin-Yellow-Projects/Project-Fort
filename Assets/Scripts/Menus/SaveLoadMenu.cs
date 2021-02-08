@@ -154,8 +154,7 @@ public class SaveLoadMenu : MonoBehaviour
     {
         PrepareReader();
 
-        // HACK: This line is kinda fishy
-        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+        GameSession.Singleton.CmdStartGame();
     }
 
     private void PrepareReader()
