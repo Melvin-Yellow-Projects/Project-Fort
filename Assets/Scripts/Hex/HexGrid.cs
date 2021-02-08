@@ -153,7 +153,7 @@ public class HexGrid : NetworkBehaviour
     [Command(ignoreAuthority = true)]
     private void CmdRequestMap(NetworkConnectionToClient conn = null)
     {
-        TargetLoadMap(SaveLoadMenu.MapReader);
+        TargetLoadMap(conn, SaveLoadMenu.MapReader);
     }
 
     [Server]
@@ -216,7 +216,7 @@ public class HexGrid : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetLoadMap(BinaryReader mapReader)
+    private void TargetLoadMap(NetworkConnection target, BinaryReader mapReader)
     {
         SaveLoadMenu.MapReader = mapReader;
         SaveLoadMenu.LoadMapFromReader();
