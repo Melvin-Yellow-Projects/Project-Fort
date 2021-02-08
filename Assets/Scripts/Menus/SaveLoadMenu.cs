@@ -56,7 +56,7 @@ public class SaveLoadMenu : MonoBehaviour
     /************************************************************/
     #region Properties
 
-    private static BinaryReader MapReader { get; set; }
+    public static BinaryReader MapReader { get; set; } // HACK shouldnt be publix
 
     #endregion
     /************************************************************/
@@ -259,9 +259,9 @@ public class SaveLoadMenu : MonoBehaviour
             Debug.LogWarning("Unknown map format " + header);
         }
 
-        MapReader.Close();
-        MapReader = null;
-        //GameSession.Singleton.MapHexBuffer.Clear();
+        // FIXME uncomment this!
+        //MapReader.Close();
+        //MapReader = null;
     }
 
     private bool IsPathValid(string path)

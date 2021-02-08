@@ -150,6 +150,12 @@ public class HexGrid : NetworkBehaviour
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
 
+    [Command(ignoreAuthority = true)]
+    private void CmdRequestMap(NetworkConnectionToClient conn = null)
+    {
+        TargetLoadMap(SaveLoadMenu.MapReader);
+    }
+
     [Server]
     public static void ServerSpawnMapEntities()
     {
@@ -184,8 +190,10 @@ public class HexGrid : NetworkBehaviour
 
         InitializeMap();
 
-        Debug.Log("I am a client and I'm fetching the Map!");
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+        CmdRequestMap();
+
+        //Debug.Log("I am a client and I'm fetching the Map!");
+        //for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
     }
 
     [TargetRpc]
@@ -205,6 +213,13 @@ public class HexGrid : NetworkBehaviour
         float percent = (float)numberOfCellsLoaded / cells.Length;
         LoadingDisplay.SetFillProgress(percent);
         if (numberOfCellsLoaded == cells.Length) LoadingDisplay.Done();
+    }
+
+    [TargetRpc]
+    private void TargetLoadMap(BinaryReader mapReader)
+    {
+        SaveLoadMenu.MapReader = mapReader;
+        SaveLoadMenu.LoadMapFromReader();
     }
 
     #endregion
