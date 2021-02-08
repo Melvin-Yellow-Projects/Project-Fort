@@ -1,4 +1,14 @@
-﻿using System.Collections;
+﻿/**
+ * File Name: DebugHand.cs
+ * Description: 
+ * 
+ * Authors: Will Lacey
+ * Date Created: February 5, 2021
+ * 
+ * Additional Comments: 
+ **/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,11 +17,11 @@ public class DebugHand : MonoBehaviour
     /************************************************************/
     #region Variables
 
-    [Tooltip("layers affected by grabbing")]
+    [Tooltip("layer(s) affected by the hand")] // HACK: is this the name we want
     [SerializeField] LayerMask grabLayers;
 
-    [Tooltip("layers for the HexMap")]
-    [SerializeField] LayerMask terrainLayers;
+    [Tooltip("layer(s) for the HexGrid Map")]
+    [SerializeField] LayerMask mapLayers;
 
     [Tooltip("speed of the piece when it changes position")]
     [SerializeField, Range(0, 10)] float moveSpeed;

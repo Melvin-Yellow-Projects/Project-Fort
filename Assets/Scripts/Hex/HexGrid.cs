@@ -48,8 +48,8 @@ public class HexGrid : NetworkBehaviour
     [SyncVar]
     public int cellCountZ = 15;
 
-    [Tooltip("layers to ignore when raycasting")]
-    [SerializeField] LayerMask layersToIgnore; 
+    [Tooltip("layer(s) for the HexGrid Map")]
+    [SerializeField] LayerMask mapLayers; 
 
     #endregion
     /************************************************************/
@@ -457,7 +457,7 @@ public class HexGrid : NetworkBehaviour
         RaycastHit hit;
 
         // did we hit anything? then return that HexCell
-        if (!Physics.Raycast(inputRay, out hit, 1000, ~layersToIgnore)) return null;
+        if (!Physics.Raycast(inputRay, out hit, 1000, mapLayers)) return null;
 
         // draw line for 1 second
         Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);

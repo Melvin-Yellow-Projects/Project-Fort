@@ -23,7 +23,7 @@ using Mirror;
 /// </summary>
 public class SaveLoadMenu : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     public Text menuLabel;
@@ -37,8 +37,7 @@ public class SaveLoadMenu : MonoBehaviour
     public SaveLoadItem itemPrefab;
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -54,15 +53,13 @@ public class SaveLoadMenu : MonoBehaviour
     Controls controls;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     private static BinaryReader MapReader { get; set; }
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void OnEnable()
@@ -78,8 +75,7 @@ public class SaveLoadMenu : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void Open(int menuMode)
@@ -294,5 +290,36 @@ public class SaveLoadMenu : MonoBehaviour
         FillList();
     }
 
+    #endregion
+}
+
+/// <summary>
+/// 
+/// </summary>
+public static class BinaryReaderSerializer
+{
+    /************************************************************/
+    #region BinaryReader Serializer
+
+    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader data)
+    {
+        int length = (int) data.BaseStream.Length;
+        byte[] buffer = new byte[length];
+
+        data.Read(buffer, 0, length);
+
+        writer.WriteInt32(length);
+        for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
+    }
+
+    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
+    {
+        int length = reader.ReadInt32();
+        byte[] buffer = new byte[length];
+
+        for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
+
+        return new BinaryReader(new MemoryStream(buffer));
+    }
     #endregion
 }

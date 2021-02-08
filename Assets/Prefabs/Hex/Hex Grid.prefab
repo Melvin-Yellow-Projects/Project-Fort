@@ -70,6 +70,6 @@ MonoBehaviour:
     type: 3}
   cellCountX: 20
   cellCountZ: 15
-  layersToIgnore:
+  mapLayers:
     serializedVersion: 2
-    m_Bits: 2147485239
+    m_Bits: 256

@@ -111,7 +111,7 @@ MonoBehaviour:
   grabLayers:
     serializedVersion: 2
     m_Bits: 3072
-  terrainLayers:
+  mapLayers:
     serializedVersion: 2
     m_Bits: 256
   moveSpeed: 0
