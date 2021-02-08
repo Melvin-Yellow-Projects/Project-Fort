@@ -94,6 +94,11 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
+    private void Start() // FIXME DESTROY THIS
+    {
+        InitializeMap();
+    }
+
     private void OnDestroy()
     {
         Debug.LogWarning("HexGrid calling OnDestroy()");
@@ -150,8 +155,9 @@ public class HexGrid : NetworkBehaviour
         TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     }
 
+    // HACK this function should not be public
     [Command(ignoreAuthority = true)]
-    private void CmdRequestMap(NetworkConnectionToClient conn = null)
+    public void CmdRequestMap(NetworkConnectionToClient conn = null)
     {
         TargetLoadMap(conn, SaveLoadMenu.MapReader);
     }
