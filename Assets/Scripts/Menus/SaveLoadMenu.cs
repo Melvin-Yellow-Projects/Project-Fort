@@ -150,7 +150,7 @@ public class SaveLoadMenu : MonoBehaviour
     {
         PrepareReader();
 
-        GameSession.Singleton.CmdStartGame();
+        GameSession.Singleton.CmdStartGame(); // HACK: are you sure you want this here?
     }
 
     private void PrepareReader()
@@ -313,7 +313,7 @@ public static class BinaryReaderSerializer
         writer.WriteInt32(length);
         for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
 
-        foreach (byte b in buffer) Debug.Log(b);
+        //foreach (byte b in buffer) Debug.Log(b);
     }
 
     public static BinaryReader ReadBinaryReader(this NetworkReader reader)
@@ -323,7 +323,7 @@ public static class BinaryReaderSerializer
 
         for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
 
-        foreach (byte b in buffer) Debug.Log(b);
+        //foreach (byte b in buffer) Debug.Log(b);
 
         return new BinaryReader(new MemoryStream(buffer));
     }

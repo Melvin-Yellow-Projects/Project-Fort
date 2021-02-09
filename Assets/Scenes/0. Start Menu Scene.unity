@@ -1286,6 +1286,47 @@ PrefabInstance:
       propertyPath: maxConnections
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 661696987785951891, guid: 79bda6422235f4e5aba76dd2ac926692,
+        type: 3}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 2400661251502749445, guid: 00775140048754ae6a56a9e2da1ae881,
+        type: 3}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[4]
+      value: 
+      objectReference: {fileID: 2400661251502749445, guid: 481f1ac5ac1d94d14ad6a3c28f4ad0d8,
+        type: 3}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[5]
+      value: 
+      objectReference: {fileID: 2400661251502749445, guid: 63eb5cb93b5e44d7e8e61d77208c3d08,
+        type: 3}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[6]
+      value: 
+      objectReference: {fileID: 2400661251502749445, guid: ced11a457a69f41faa32deedf3f4db29,
+        type: 3}
+    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
+        type: 3}
+      propertyPath: spawnPrefabs.Array.data[7]
+      value: 
+      objectReference: {fileID: 2400661251502749445, guid: ffaed2756a51a4e6b9e29b04fe534fc8,
+        type: 3}
     - target: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: m_Name
@@ -3036,7 +3077,7 @@ PrefabInstance:
     - target: {fileID: 4903426235945761979, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}
       propertyPath: m_Text
-      value: 192.168.11.24
+      value: 192.168.86.248
       objectReference: {fileID: 0}
     - target: {fileID: 4903426236037027071, guid: 696b560a3a69ac94faeb025effe188e5,
         type: 3}

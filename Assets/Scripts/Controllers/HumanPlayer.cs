@@ -35,7 +35,7 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Properties
 
-    public bool HasCreatedMap { get; [Server] set; } = false;
+    public bool IsReadyForMapData { get; set; } = false;
 
     #endregion
     /************************************************************/

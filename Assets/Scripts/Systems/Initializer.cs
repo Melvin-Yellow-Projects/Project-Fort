@@ -106,9 +106,6 @@ public class Initializer : MonoBehaviour
         /** HexMetrics **/
         if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
 
-        /** HexGrid **/
-        if (hexGridPrefab && !HexGrid.Prefab) HexGrid.Prefab = hexGridPrefab;
-
         /** Fort **/
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;
         if (fortHighlightColor != null && Fort.HighlightColor != null)
