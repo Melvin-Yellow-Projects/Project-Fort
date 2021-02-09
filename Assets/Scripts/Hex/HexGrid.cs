@@ -207,7 +207,7 @@ public class HexGrid : NetworkBehaviour
                 if (i * packetSize + j >= data.Length) break;
                 packet[j] = data[i * packetSize + j];
             }
-            RpcSpawnMapTerrain(cellCountX, cellCountZ, data);
+            RpcSpawnMapTerrain(cellCountX, cellCountZ, packet);
         }
     }
 
