@@ -303,29 +303,44 @@ public static class BinaryReaderSerializer
 
     public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader data)
     {
-        data.BaseStream.Position = 0;
+        if (data == null)
+        {
+            writer.WriteInt32(-1);
+        }
+        else
+        {
+            data.BaseStream.Position = 0;
 
-        int length = (int) data.BaseStream.Length;
-        byte[] buffer = new byte[length];
+            int length = (int)data.BaseStream.Length;
+            byte[] buffer = new byte[length];
 
-        data.Read(buffer, 0, length);
+            data.Read(buffer, 0, length);
 
-        writer.WriteInt32(length);
-        for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
+            writer.WriteInt32(length);
+            for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
 
-        //foreach (byte b in buffer) Debug.Log(b);
+            //foreach (byte b in buffer) Debug.Log(b);
+        }
     }
 
     public static BinaryReader ReadBinaryReader(this NetworkReader reader)
     {
         int length = reader.ReadInt32();
-        byte[] buffer = new byte[length];
 
-        for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
+        if (length == -1)
+        {
+            return null;
+        }
+        else
+        {
+            byte[] buffer = new byte[length];
 
-        //foreach (byte b in buffer) Debug.Log(b);
+            for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
 
-        return new BinaryReader(new MemoryStream(buffer));
+            //foreach (byte b in buffer) Debug.Log(b);
+
+            return new BinaryReader(new MemoryStream(buffer));
+        }
     }
     #endregion
 }
