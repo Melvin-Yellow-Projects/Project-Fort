@@ -125,8 +125,18 @@ public class UnitPath : MonoBehaviour
     /// <param name="canBackTrack"></param>
     public void AddCellToPath(HexCell cell, bool canBackTrack)
     {
-        // HACK: wow this code is really confusing
+        /* pseudocode */
         // initialize if new path
+        // if the path doesn't have the cell or if you can back track
+            // if we can add the cell
+                // add it
+                // if the path is now too long, remove the last cell
+            // (we can't add cell) check a* route for potential new path
+
+        // else (we have the cell and we can't backtrack)
+            // if this is the penultimate cell, remove it (makes it easy for user to play w/ paths)
+            // else A* to create new path
+
         if (cells.Count == 0) cells.Add(unit.MyCell);
 
         if (!cells.Contains(cell) || canBackTrack)
@@ -136,21 +146,26 @@ public class UnitPath : MonoBehaviour
                 cells.Add(cell);
 
                 if (UnitPathfinding.GetMoveCostCalculation(cells) <= movement.CurrentMovement)
-                {
-                    return; // ...otherwise reset the path if the path is too long
-                }
-            }
-        }
+                    return; // exit function
 
-        if (PenultimateCell == cell)
-        {
-            cells.Remove(EndCell);
+                cells.Remove(EndCell);
+            }
+
+            CheckForBetterPath(cell);
         }
         else
         {
-            Clear(clearCursor: false);
-            cells = UnitPathfinding.FindPath(unit, StartCell, cell);
+            if (PenultimateCell == cell) cells.Remove(EndCell);
+            else cells = UnitPathfinding.FindPath(unit, StartCell, cell);
         }
+    }
+
+    private void CheckForBetterPath(HexCell cell)
+    {
+        List<HexCell> potentialPath = UnitPathfinding.FindPath(unit, StartCell, cell);
+
+        if (UnitPathfinding.GetMoveCostCalculation(potentialPath) <= movement.CurrentMovement)
+            cells = potentialPath;
     }
 
     public void RemoveTailCells(int numberToRemove)
