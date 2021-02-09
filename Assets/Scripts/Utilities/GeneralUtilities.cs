@@ -29,6 +29,11 @@ public static class GeneralUtilities
         return (value - min) / (max - min);
     }
 
+    public static int RoundUp (float value)
+    {
+        return (int) Mathf.Ceil(value);
+    }
+
     public static void LogMonoBehaviour(GameObject gameObject)
     {
         Debug.LogWarning("Logging " + gameObject.name);

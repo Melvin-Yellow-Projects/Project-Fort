@@ -137,8 +137,6 @@ public class GameManager : NetworkBehaviour
     {
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
-        gameObject.SetActive(true); // turn on for just Server
-
         ServerStartRound();
     }
 
@@ -295,6 +293,8 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcInvokeClientOnStartRound()
     {
+        if (LoadingDisplay.Singleton) LoadingDisplay.Done();
+
         Debug.Log("RpcInvokeClientOnStartRound");
         if (isClientOnly)
         {

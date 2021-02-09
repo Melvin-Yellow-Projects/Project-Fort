@@ -153,24 +153,6 @@ public class HexGrid : NetworkBehaviour
     //    TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
     //}
 
-    [Server]
-    public static void ServerSpawnMapEntities()
-    {
-        Debug.Log("Spawning Map Entities");
-
-        for (int i = 0; i < Units.Count; i++)
-        {
-            NetworkServer.Spawn(Units[i].gameObject,
-                ownerConnection: Units[i].MyTeam.AuthoritiveConnection);
-        }
-        for (int i = 0; i < Forts.Count; i++)
-        {
-            NetworkServer.Spawn(Forts[i].gameObject,
-                ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
-        }
-        if (LoadingDisplay.Singleton) LoadingDisplay.Done();
-    }
-
     #endregion
     /************************************************************/
     #region Server Map Loading Functions
@@ -191,23 +173,24 @@ public class HexGrid : NetworkBehaviour
         }
 
         if (!GameNetworkManager.ServerArePlayersReadyForMapData()) return;
-
         GameNetworkManager.ServerSetPlayersToNotReadyForMapData();
 
         HexCellData[] data = new HexCellData[cells.Length];
         for (int i = 0; i < cells.Length; i++) data[i] = HexCellData.Instantiate(cells[i]);
 
-        int numberOfPackets = 10;
-        int packetSize = (int) Mathf.Ceil((float) data.Length / numberOfPackets);
+        // HACK: 15 is a hardcoded value -> (because only ~10 bytes per cell)
+        int numberOfPackets = GeneralUtilities.RoundUp(data.Length * 15f / 1000f); 
+        int packetSize = GeneralUtilities.RoundUp((float) data.Length / numberOfPackets);
         for (int i = 0; i < numberOfPackets; i++)
         {
-            HexCellData[] packet = new HexCellData[packetSize];
+            List<HexCellData> packet = new List<HexCellData>();
             for (int j = 0; j < packetSize; j++)
             {
                 if (i * packetSize + j >= data.Length) break;
-                packet[j] = data[i * packetSize + j];
+                packet.Add(data[i * packetSize + j]);
             }
-            RpcSpawnMapTerrain(cellCountX, cellCountZ, packet);
+            // HACK: maybe this should be TargetRpc?
+            RpcSpawnMapTerrain(cellCountX, cellCountZ, packet.ToArray()); 
         }
     }
 
@@ -223,10 +206,24 @@ public class HexGrid : NetworkBehaviour
         ServerSpawnMapEntities();
     }
 
-    [Command(ignoreAuthority = true)]
-    private void CmdReadyForGameStart(NetworkConnectionToClient conn = null)
+    [Server]
+    public static void ServerSpawnMapEntities()
     {
-        
+        Debug.Log("Spawning Map Entities");
+
+        for (int i = 0; i < Units.Count; i++)
+        {
+            NetworkServer.Spawn(Units[i].gameObject,
+                ownerConnection: Units[i].MyTeam.AuthoritiveConnection);
+        }
+        for (int i = 0; i < Forts.Count; i++)
+        {
+            NetworkServer.Spawn(Forts[i].gameObject,
+                ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
+        }
+
+        // TODO: do clients need to send ready message after they attempted to spawn all the units?
+        GameManager.Singleton.ServerStartGame();
     }
 
     #endregion
@@ -236,6 +233,12 @@ public class HexGrid : NetworkBehaviour
     [ClientRpc]
     private void RpcSpawnMapTerrain(int cellCountX, int cellCountZ, HexCellData[] data)
     {
+        if (isServer)
+        {
+            CmdReadyForMapEntities();
+            return;
+        }
+
         if (this.cellCountX != cellCountX || this.cellCountZ != cellCountZ)
             CreateMap(cellCountX, cellCountZ);
 
@@ -256,11 +259,7 @@ public class HexGrid : NetworkBehaviour
 
         float percent = (float) numberOfCellsLoaded / cells.Length;
         LoadingDisplay.SetFillProgress(percent);
-        if (numberOfCellsLoaded == cells.Length)
-        {
-            LoadingDisplay.Done();
-            CmdReadyForMapEntities();
-        }
+        if (numberOfCellsLoaded == cells.Length) CmdReadyForMapEntities();
     }
 
     //[ClientRpc]
