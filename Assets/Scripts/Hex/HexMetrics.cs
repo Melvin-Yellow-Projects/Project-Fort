@@ -10,6 +10,7 @@
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
  *
+ *      TODO: convert this into a ScriptableObject
  *      TODO: remove private and protected headers from functions that do not need it
  *      TODO: remove private and protected headers from variables that do not need it
  *      TODO: comment shaders
@@ -38,7 +39,7 @@ public static class HexMetrics
     /// <summary>
     /// a hex's outer radius
     /// </summary>
-    public const float outerRadius = 10f;
+    public const float outerRadius = 12f;
 
     /// <summary>
     /// percent of a HexCell that is solid and unaltered by its neighbors
@@ -53,7 +54,7 @@ public static class HexMetrics
     /// <summary>
     /// number of terraces per slope (small elevation connection between hex cells)
     /// </summary>
-    public const int terracesPerSlope = 2;
+    public const int terracesPerSlope = 3;
 
     /// <summary>
     /// how high the elevation delta must be to be considered a cliff (set to 0 for only cliffs)
@@ -63,7 +64,7 @@ public static class HexMetrics
     /// <summary>
     /// strength of hex grid vertex noise; max displacement will equal [2 * (value ** 2)] ** 0.5
     /// </summary>
-    public const float cellPerturbStrength = 0;
+    public const float cellPerturbStrength = 6f;
 
     /// <summary>
     /// strength of hex grid elevation noise; this should be relatively related to a vertical

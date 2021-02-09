@@ -31,8 +31,10 @@ public class MapEditor : MonoBehaviour
 
     /* Cached References */
     [Header("Cached References")]
+    [SerializeField] MapCamera mapCamera = null;
+
     [Tooltip("prefab reference to the HexGrid material")]
-    public Material terrainMaterial;
+    [SerializeField] Material terrainMaterial;
 
     #endregion
 
@@ -105,6 +107,8 @@ public class MapEditor : MonoBehaviour
 
         controls.Enable();
         enabled = false;
+
+        mapCamera.enabled = true;
     }
 
     /// <summary>

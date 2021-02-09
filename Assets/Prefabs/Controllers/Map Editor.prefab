@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad9b5c926a06848ee8bd69adcfa9a462, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapCamera: {fileID: 4606008641266195715}
   terrainMaterial: {fileID: 2100000, guid: 8ba138d4ec4d65147ad637816778008d, type: 2}
 --- !u!1001 &1777196126522591971
 PrefabInstance:
@@ -121,6 +122,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1777196126522591971}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4606008641266195715 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2828834522174937056, guid: 369237ee3fec44141a8aceee509d2d14,
+    type: 3}
+  m_PrefabInstance: {fileID: 1777196126522591971}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3be07c6993f64a31a9a1ff76c83e475, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2786041007548305841
 PrefabInstance:
   m_ObjectHideFlags: 0

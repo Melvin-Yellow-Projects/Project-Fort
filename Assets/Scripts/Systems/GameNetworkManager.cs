@@ -36,6 +36,8 @@ public class GameNetworkManager : NetworkManager
 
     Coroutine waitCoroutine;
 
+    bool hasSpawnedComputers = false;
+
     #endregion
     /************************************************************/
     #region Class Events
@@ -235,6 +237,8 @@ public class GameNetworkManager : NetworkManager
         {
             item.Value.identity.GetComponent<HumanPlayer>().IsReadyForMapData = false;
         }
+
+        if (!hasSpawnedComputers) ServerPadGameWithComputerPlayers();
     }
 
     //[Server]
