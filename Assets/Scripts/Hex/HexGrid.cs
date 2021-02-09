@@ -197,7 +197,18 @@ public class HexGrid : NetworkBehaviour
         HexCellData[] data = new HexCellData[cells.Length];
         for (int i = 0; i < cells.Length; i++) data[i] = HexCellData.Instantiate(cells[i]);
 
-        RpcSpawnMapTerrain(cellCountX, cellCountZ, data);
+        int numberOfPackets = 10;
+        int packetSize = (int) Mathf.Ceil((float) data.Length / numberOfPackets);
+        for (int i = 0; i < numberOfPackets; i++)
+        {
+            HexCellData[] packet = new HexCellData[packetSize];
+            for (int j = 0; j < packetSize; j++)
+            {
+                if (i * packetSize + j >= data.Length) break;
+                packet[j] = data[i * packetSize + j];
+            }
+            RpcSpawnMapTerrain(cellCountX, cellCountZ, data);
+        }
     }
 
     [Command(ignoreAuthority = true)]
@@ -217,19 +228,22 @@ public class HexGrid : NetworkBehaviour
     #region Client Map Loading Functions
 
     [ClientRpc]
-    private void RpcSpawnMapTerrain(int cellCountX, int cellCountY, HexCellData[] data)
+    private void RpcSpawnMapTerrain(int cellCountX, int cellCountZ, HexCellData[] data)
     {
-        CreateMap(cellCountX, cellCountY);
+        if (this.cellCountX != cellCountX || this.cellCountZ != cellCountZ)
+            CreateMap(cellCountX, cellCountZ);
 
-        for (int i = 0; i < data.Length; i++)
+        int index;
+        foreach (HexCellData d in data)
         {
-            cells[i].Elevation = data[i].elevation;
-            cells[i].TerrainTypeIndex = data[i].terrainTypeIndex;
-            cells[i].IsExplored = data[i].isExplored;
+            index = d.index;
+            cells[index].Elevation = data[index].elevation;
+            cells[index].TerrainTypeIndex = data[index].terrainTypeIndex;
+            cells[index].IsExplored = data[index].isExplored;
 
             // FIXME: Is this code correct?
-            cells[i].ShaderData.RefreshTerrain(cells[i]);
-            cells[i].ShaderData.RefreshVisibility(cells[i]);
+            cells[index].ShaderData.RefreshTerrain(cells[index]);
+            cells[index].ShaderData.RefreshVisibility(cells[index]);
         }
 
         CmdReadyForMapEntities();
