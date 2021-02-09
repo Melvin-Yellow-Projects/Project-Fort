@@ -83,22 +83,22 @@ public class DebugHand : MonoBehaviour
         //StartCoroutine(ChangePiecePosition());
 
         // instantly sets the position of the piece
-        grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
+        //grabbedUnit.transform.position = PlayerMenu.MyPlayer.currentCell.Position;
 
 
-        // piece follows the raycast hit of the mouse on the HexGrid
-        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //piece follows the raycast hit of the mouse on the HexGrid
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        //if (!Physics.Raycast(ray, out RaycastHit hit, 1000, terrainLayers)) return;
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000, mapLayers)) return;
 
-        //HexCell cell = HexGrid.Singleton.GetCell(hit.point);
-        //if (!cell || !cell.IsExplored) return;
+        HexCell cell = HexGrid.Singleton.GetCell(hit.point);
+        if (!cell || !cell.IsExplored) return;
 
-        //grabbedUnit.transform.position = new Vector3(
-        //    hit.point.x,
-        //    (PlayerMenu.MyPlayer.currentCell.Position.y + hit.point.y) / 2,
-        //    hit.point.z
-        //);
+        grabbedUnit.transform.position = new Vector3(
+            hit.point.x,
+            (PlayerMenu.MyPlayer.currentCell.Position.y + hit.point.y) / 2,
+            hit.point.z
+        );
     }
 
     private IEnumerator ChangePiecePosition()
@@ -115,6 +115,20 @@ public class DebugHand : MonoBehaviour
         }
 
         currentPosition = PlayerMenu.MyPlayer.currentCell.Position;
+    }
+
+    #endregion
+    /************************************************************/
+    #region Event Handler Functions
+
+    private void Subscribe()
+    {
+        //GameManager.ClientOnPlayTurn 
+    }
+
+    private void Unsubscribe()
+    {
+
     }
 
     #endregion

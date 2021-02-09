@@ -17,7 +17,7 @@ using UnityEngine;
 
 public class UnitCursor : MonoBehaviour
 {
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /* Cached References */
@@ -46,8 +46,7 @@ public class UnitCursor : MonoBehaviour
     //float deltaT = 0.1f;
 
     #endregion
-
-    /********** MARK: Public Properties **********/
+    /************************************************************/
     #region Public Properties
 
     public static UnitCursor Prefab { get; set; }
@@ -97,8 +96,7 @@ public class UnitCursor : MonoBehaviour
     //}
 
     #endregion
-
-    /********** MARK: Private Properties **********/
+    /************************************************************/
     #region Private Properties
 
     private Vector3 PenultimatePoint
@@ -129,8 +127,7 @@ public class UnitCursor : MonoBehaviour
         }
     }
     #endregion
-
-    /********** MARK: Initialization Functions **********/
+    /************************************************************/
     #region Initialization Functions
 
     public static UnitCursor Initialize(List<Vector3> points)
@@ -176,8 +173,7 @@ public class UnitCursor : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Update Functions **********/
+    /************************************************************/
     #region Update Functions
 
     /// <summary>
@@ -218,8 +214,7 @@ public class UnitCursor : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Other Functions **********/
+    /************************************************************/
     #region Other Functions
 
     public void AddPoint(Vector3 point)

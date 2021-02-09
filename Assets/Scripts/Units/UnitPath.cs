@@ -22,7 +22,7 @@ using UnityEngine.UI;
 /// </summary>
 public class UnitPath : MonoBehaviour
 {
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     Unit unit;
@@ -34,8 +34,7 @@ public class UnitPath : MonoBehaviour
     UnitCursor cursor;
 
     #endregion
-
-    /********** MARK: Public Properties **********/
+    /************************************************************/
     #region Public Properties
 
     public int Length
@@ -106,9 +105,8 @@ public class UnitPath : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Public Properties **********/
-    #region Public Properties
+    /************************************************************/
+    #region Unity Functions
 
     private void Awake()
     {
@@ -117,8 +115,7 @@ public class UnitPath : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     /// <summary>
@@ -256,8 +253,7 @@ public class UnitPath : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Debug **********/
+    /************************************************************/
     #region Debug
 
     public void LogPath()
