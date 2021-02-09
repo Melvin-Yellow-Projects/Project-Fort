@@ -259,9 +259,8 @@ public class SaveLoadMenu : MonoBehaviour
             Debug.LogWarning("Unknown map format " + header);
         }
 
-        // FIXME uncomment this!
-        //MapReader.Close();
-        //MapReader = null;
+        MapReader.Close();
+        MapReader = null;
     }
 
     private bool IsPathValid(string path)
