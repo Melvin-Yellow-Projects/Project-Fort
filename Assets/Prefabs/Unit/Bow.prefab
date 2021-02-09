@@ -31,6 +31,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70808dab1409e42f0ba4d82895317278, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxStepsBeforeFire: 2
+  range: 3
 --- !u!1001 &4291586569108868397
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -152,7 +154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_IsActive
@@ -160,27 +162,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100002, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100006, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100008, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100010, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 100012, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 261349baf8e8a8847bbf284dacc59201, type: 3}
       propertyPath: m_RootOrder

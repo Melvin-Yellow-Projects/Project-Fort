@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2533712665060378437}
   - component: {fileID: 2533712665060378436}
   - component: {fileID: 2533712665060378439}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2533712665694807427}
   - component: {fileID: 8047540563214710014}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hex Grid Chunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 2533712666010125815}
   - component: {fileID: 2533712666010125813}
   - component: {fileID: 2533712666010125812}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hex Grid Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

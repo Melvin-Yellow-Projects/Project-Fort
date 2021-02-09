@@ -13,8 +13,9 @@ TagManager:
   - UI
   - 
   - 
-  - Unit
-  - Vision
+  - Terrain
+  - 
+  - Piece
   - Combat Handler
   - 
   - 
@@ -35,8 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Vision
   m_SortingLayers:
   - name: Default
     uniqueID: 0

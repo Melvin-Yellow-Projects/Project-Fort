@@ -36,6 +36,8 @@ public class GameNetworkManager : NetworkManager
 
     Coroutine waitCoroutine;
 
+    bool hasSpawnedComputers = false;
+
     #endregion
     /************************************************************/
     #region Class Events
@@ -207,47 +209,70 @@ public class GameNetworkManager : NetworkManager
         // HACK: this code is really jank
         // HACK: move part of this into SceneLoader?
 
-        Debug.Log($"Server has changed the Scene to {sceneName}");
+        //Debug.Log($"Server has changed the Scene to {sceneName}");
 
-        HexGrid.ServerSpawnMapTerrain();
+        //HexGrid.ServerSpawnMapTerrain();
 
-        if (!SceneLoader.IsGameScene) return;
+        //if (!SceneLoader.IsGameScene) return;
 
-        ServerPadGameWithComputerPlayers();
+        //ServerPadGameWithComputerPlayers();
     }
 
     [Server]
-    public void ServerPlayerHasCreatedMap(HumanPlayer player)
+    public static bool ServerArePlayersReadyForMapData()
     {
-        if (player.HasCreatedMap) return;
-        player.HasCreatedMap = true;
-
-        // checks every connection to see if they are ready to load the rest of the map
         bool isReady = true;
         foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
         {
-            isReady &= item.Value.identity.GetComponent<HumanPlayer>().HasCreatedMap;
+            isReady &= item.Value.identity.GetComponent<HumanPlayer>().IsReadyForMapData;
         }
 
-        if (waitCoroutine != null) StopCoroutine(waitCoroutine);
-
-        // if connections aren't ready, set function param "isWaiting" to true
-        waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(isWaiting: !isReady)); 
+        return isReady;
     }
 
-    [Server] // HACK: maybe this could be named better
-    private IEnumerator WaitToSpawnMapEntities(bool isWaiting)
+    [Server]
+    public static void ServerSetPlayersToNotReadyForMapData()
     {
-        // forces wait for one frame so subscription methods can fire before units are spawned
-        if (isWaiting) yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
-        else yield return null;
+        foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
+        {
+            item.Value.identity.GetComponent<HumanPlayer>().IsReadyForMapData = false;
+        }
 
-        HexGrid.ServerSpawnMapEntities();
-
-        yield return null; // waits one frame for connections to spawn entities, then launches game
-
-        GameManager.Singleton.ServerStartGame();
+        if (!Singleton.hasSpawnedComputers) ServerPadGameWithComputerPlayers();
     }
+
+    //[Server]
+    //public void ServerPlayerHasCreatedMap(HumanPlayer player)
+    //{
+    //    if (player.IsReadyForMapData) return;
+    //    player.IsReadyForMapData = true;
+
+    //    // checks every connection to see if they are ready to load the rest of the map
+    //    bool isReady = true;
+    //    foreach (KeyValuePair<int, NetworkConnectionToClient> item in NetworkServer.connections)
+    //    {
+    //        isReady &= item.Value.identity.GetComponent<HumanPlayer>().IsReadyForMapData;
+    //    }
+
+    //    if (waitCoroutine != null) StopCoroutine(waitCoroutine);
+
+    //    // if connections aren't ready, set function param "isWaiting" to true
+    //    waitCoroutine = StartCoroutine(WaitToSpawnMapEntities(isWaiting: !isReady)); 
+    //}
+
+    //[Server] // HACK: maybe this could be named better
+    //private IEnumerator WaitToSpawnMapEntities(bool isWaiting)
+    //{
+    //    // forces wait for one frame so subscription methods can fire before units are spawned
+    //    if (isWaiting) yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
+    //    else yield return null;
+
+    //    HexGrid.ServerSpawnMapEntities();
+
+    //    yield return null; // waits one frame for connections to spawn entities, then launches game
+
+    //    GameManager.Singleton.ServerStartGame();
+    //}
 
     [Server]
     public static void ServerPadGameWithComputerPlayers()
@@ -267,6 +292,8 @@ public class GameNetworkManager : NetworkManager
                 if (!isTeamOwnedByHumanPlayer) ServerSpawnComputerPlayer(i + 1);
             }
         }
+
+        Singleton.hasSpawnedComputers = true;
     }
 
     [Server]

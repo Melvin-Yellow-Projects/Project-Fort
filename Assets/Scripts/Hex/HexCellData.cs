@@ -59,7 +59,7 @@ public static class HexCellSerializer
 
     public static void WriteHexCellData(this NetworkWriter writer, HexCellData data)
     {
-        writer.WriteInt32(data.index); // HACK not needed?
+        writer.WriteInt32(data.index);
         writer.WriteByte((byte)data.elevation);
         writer.WriteByte((byte)data.terrainTypeIndex);
         writer.WriteBoolean(data.isExplored);
@@ -77,6 +77,22 @@ public static class HexCellSerializer
 
         return data;
     }
+
+    public static void WriteHexCellDataArray(this NetworkWriter writer, HexCellData[] data)
+    {
+        writer.WriteInt32(data.Length);
+        foreach (HexCellData d in data) WriteHexCellData(writer, d);
+    }
+
+    public static HexCellData[] ReadHexCellDataArray(this NetworkReader reader)
+    {
+        HexCellData[] data = new HexCellData[reader.ReadInt32()];
+
+        for (int i = 0; i < data.Length; i++) data[i] = ReadHexCellData(reader);
+
+        return data;
+    }
+
     #endregion
 
     /************************************************************/

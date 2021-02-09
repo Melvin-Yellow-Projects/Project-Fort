@@ -42,6 +42,38 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stone Pawn
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100010, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100012, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 100014, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 4f15a7d3e7f0a1e49b63de3d5c8d9c70, type: 3}
       propertyPath: m_RootOrder
       value: 2

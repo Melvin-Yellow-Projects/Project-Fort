@@ -15,30 +15,38 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cinemachine;
 
 /// <summary>
 ///     Operable hex map camera class
 /// </summary>
 public class MapCamera : MonoBehaviour
 {
-	/********** MARK: Variables **********/
+	/************************************************************/
 	#region Variables
 
-	Transform swivel, stick;
+	[Header("Cached References")]
+	[SerializeField] Transform swivel = null;
+	[SerializeField] Transform stick = null;
+	[SerializeField] CinemachineVirtualCamera virtualCamera = null;
+
+	[Header("Settings")]
+	[SerializeField] float stickMinZoom;
+	[SerializeField] float stickMaxZoom;
+
+	[SerializeField] float swivelMinZoom;
+	[SerializeField] float swivelMaxZoom;
+
+	[SerializeField] float moveSpeedMinZoom;
+	[SerializeField] float moveSpeedMaxZoom;
+
+	[SerializeField] float rotationSpeed;
 
 	Vector2 moveDelta;
 	//float rotateDelta;
 	//float zoomDelta;
 
 	float zoom = 1f;
-
-	public float stickMinZoom, stickMaxZoom;
-
-	public float swivelMinZoom, swivelMaxZoom;
-
-	public float moveSpeedMinZoom, moveSpeedMaxZoom;
-
-	public float rotationSpeed;
 
 	float rotationAngle;
 
@@ -47,8 +55,7 @@ public class MapCamera : MonoBehaviour
 	bool isRotatePressed = false;
 
 	#endregion
-
-	/********** MARK: Properties **********/
+	/************************************************************/
 	#region Properties
 
 	public static MapCamera Singleton { get; set; }
@@ -62,20 +69,18 @@ public class MapCamera : MonoBehaviour
 	}
 
 	#endregion
-
-	/********** MARK: Unity Functions **********/
+	/************************************************************/
 	#region Unity Functions
 
 	protected void Awake()
 	{
-		swivel = transform.GetChild(0);
-		stick = swivel.GetChild(0);
-
 		Singleton = this;
 	}
 
-	protected void Start()
-	{
+    private void OnEnable()
+    {
+		virtualCamera.enabled = true;
+
 		controls = new Controls();
 
 		controls.Camera.Move.performed += AdjustPosition;
@@ -90,7 +95,14 @@ public class MapCamera : MonoBehaviour
 		controls.Enable();
 	}
 
-	void Update()
+    private void OnDisable()
+    {
+		virtualCamera.enabled = false;
+
+		controls.Dispose();
+	}
+
+    void Update()
 	{
 		float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
 		if (zoomDelta != 0f) AdjustZoom(zoomDelta);
@@ -106,17 +118,15 @@ public class MapCamera : MonoBehaviour
 
     private void OnDestroy()
     {
-		controls.Dispose();
+		Singleton = null;
     }
 
     #endregion
-
-    /********** MARK: Input Functions **********/
+    /************************************************************/
     #region Input Functions
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public static void ValidatePosition()

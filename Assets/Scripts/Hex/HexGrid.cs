@@ -48,8 +48,8 @@ public class HexGrid : NetworkBehaviour
     [SyncVar]
     public int cellCountZ = 15;
 
-    [Tooltip("layers to ignore when raycasting")]
-    [SerializeField] LayerMask layersToIgnore; // TODO: this would probably be better as a cell layer
+    [Tooltip("layer(s) for the HexGrid Map")]
+    [SerializeField] LayerMask mapLayers; 
 
     #endregion
     /************************************************************/
@@ -81,8 +81,6 @@ public class HexGrid : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Public Properties
-
-    public static HexGrid Prefab { get; set; }
 
     public static HexGrid Singleton { get; private set; }
 
@@ -116,38 +114,55 @@ public class HexGrid : NetworkBehaviour
         Debug.LogWarning($"number of forts after OnStopServer(): {Forts.Count}");
     }
 
-    [Server]
-    public static void ServerSpawnMapTerrain()
+    [Command(ignoreAuthority = true)]
+    private void CmdReadyForMapTerrain(
+        BinaryReader mapReader, NetworkConnectionToClient conn = null)
     {
-        Debug.Log("Spawning Map Terrain");
-        if (LoadingDisplay.Singleton) LoadingDisplay.IsFillProgressFake = true;
+        if (conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData) return;
+        conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData = true;
 
-        Instantiate(Prefab).InitializeMap();
+        // TODO: validate whether or not game has begun
 
-        SaveLoadMenu.LoadMapFromReader();
-
-        if (!GameSession.IsEditorMode)
+        if (mapReader != null)
         {
-            HumanPlayer player = NetworkServer.localConnection.identity.GetComponent<HumanPlayer>();
-            GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
-            //NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
+            SaveLoadMenu.MapReader = mapReader;
+            SaveLoadMenu.LoadMapFromReader();
         }
 
-        NetworkServer.Spawn(Singleton.gameObject); 
+        if (!GameNetworkManager.ServerArePlayersReadyForMapData()) return;
+        GameNetworkManager.ServerSetPlayersToNotReadyForMapData();
+
+        HexCellData[] data = new HexCellData[cells.Length];
+        for (int i = 0; i < cells.Length; i++) data[i] = HexCellData.Instantiate(cells[i]);
+
+        // HACK: 15 is a hardcoded value -> (because only ~10 bytes per cell)
+        int numberOfPackets = GeneralUtilities.RoundUp(data.Length * 15f / 1000f); 
+        int packetSize = GeneralUtilities.RoundUp((float) data.Length / numberOfPackets);
+        for (int i = 0; i < numberOfPackets; i++)
+        {
+            List<HexCellData> packet = new List<HexCellData>();
+            for (int j = 0; j < packetSize; j++)
+            {
+                if (i * packetSize + j >= data.Length) break;
+                packet.Add(data[i * packetSize + j]);
+            }
+            // HACK: maybe this should be TargetRpc?
+            RpcSpawnMapTerrain(cellCountX, cellCountZ, packet.ToArray()); 
+        }
     }
 
     [Command(ignoreAuthority = true)]
-    private void CmdUpdateCellData(int index, NetworkConnectionToClient conn = null)
+    private void CmdReadyForMapEntities(NetworkConnectionToClient conn = null)
     {
-        // TODO: Validation Logic, can this connection see this cell? if not return
-        HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
-        GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
+        if (conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData) return;
+        conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData = true;
 
-        //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-        //NetworkConnection conn = playerIdentity.connectionToClient; 
+        // TODO: validate whether or not game has begun
 
-        // HACK: this function could be inside of the HexCell class
-        TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
+        if (!GameNetworkManager.ServerArePlayersReadyForMapData()) return;
+        GameNetworkManager.ServerSetPlayersToNotReadyForMapData();
+
+        ServerSpawnMapEntities();
     }
 
     [Server]
@@ -165,7 +180,9 @@ public class HexGrid : NetworkBehaviour
             NetworkServer.Spawn(Forts[i].gameObject,
                 ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
         }
-        if (LoadingDisplay.Singleton) LoadingDisplay.Done();
+
+        // TODO: do clients need to send ready message after they attempted to spawn all the units?
+        GameManager.Singleton.ServerStartGame();
     }
 
     #endregion
@@ -175,36 +192,50 @@ public class HexGrid : NetworkBehaviour
     // HACK: this function can be improved
     public override void OnStartClient()
     {
-        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
-        if (SceneLoader.IsGameScene)
-            NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
-        // HACK: perhaps a static event that logs to clients to enable player is better
-
-        if (!isClientOnly) return;
-
         InitializeMap();
 
-        Debug.Log("I am a client and I'm fetching the Map!");
-        for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
+        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
+        // HACK: perhaps a static event that logs to clients to enable player is better
+        if (!SceneLoader.IsGameScene) return;
+
+        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
+
+        CmdReadyForMapTerrain(SaveLoadMenu.MapReader);
+
+        LoadingDisplay.SetFillProgress(0.05f);
     }
 
-    [TargetRpc]
-    private void TargetUpdateCellData(NetworkConnection target, HexCellData data)
+    [ClientRpc]
+    private void RpcSpawnMapTerrain(int cellCountX, int cellCountZ, HexCellData[] data)
     {
-        int index = data.index;
-        cells[index].Elevation = data.elevation;
-        cells[index].TerrainTypeIndex = data.terrainTypeIndex;
-        cells[index].IsExplored = data.isExplored;
+        numberOfCellsLoaded += data.Length;
 
-        // FIXME: Is this code correct?
-        cells[index].ShaderData.RefreshTerrain(cells[index]);
-        cells[index].ShaderData.RefreshVisibility(cells[index]);
+        if (isServer)
+        {
+            if (numberOfCellsLoaded == cells.Length) CmdReadyForMapEntities();
+            LoadingDisplay.SetFillProgress(0.5f);
+            return;
+        }
 
-        numberOfCellsLoaded++;
+        if (this.cellCountX != cellCountX || this.cellCountZ != cellCountZ)
+            CreateMap(cellCountX, cellCountZ);
+
+        int index;
+        for (int i = 0; i < data.Length; i++)
+        {
+            index = data[i].index;
+            cells[index].Elevation = data[i].elevation;
+            cells[index].TerrainTypeIndex = data[i].terrainTypeIndex;
+            cells[index].IsExplored = data[i].isExplored;
+
+            // FIXME: Is this code correct?
+            cells[index].ShaderData.RefreshTerrain(cells[index]);
+            cells[index].ShaderData.RefreshVisibility(cells[index]);
+        }
 
         float percent = (float)numberOfCellsLoaded / cells.Length;
         LoadingDisplay.SetFillProgress(percent);
-        if (numberOfCellsLoaded == cells.Length) LoadingDisplay.Done();
+        if (numberOfCellsLoaded == cells.Length) CmdReadyForMapEntities();
     }
 
     #endregion
@@ -457,7 +488,7 @@ public class HexGrid : NetworkBehaviour
         RaycastHit hit;
 
         // did we hit anything? then return that HexCell
-        if (!Physics.Raycast(inputRay, out hit, 1000, ~layersToIgnore)) return null;
+        if (!Physics.Raycast(inputRay, out hit, 1000, mapLayers)) return null;
 
         // draw line for 1 second
         Debug.DrawLine(inputRay.origin, hit.point, Color.white, 1f);

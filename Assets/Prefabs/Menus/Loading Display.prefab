@@ -583,8 +583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fader: {fileID: 231159704}
   fillProgressImage: {fileID: 1594795264}
-  isFillProgressFake: 0
-  fakeFillSpeed: 1
+  fillSpeed: 2
 --- !u!114 &231159704
 MonoBehaviour:
   m_ObjectHideFlags: 0

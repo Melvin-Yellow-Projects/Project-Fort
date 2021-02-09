@@ -23,7 +23,7 @@ using Mirror;
 /// </summary>
 public class SaveLoadMenu : MonoBehaviour
 {
-    /********** MARK: Public Variables **********/
+    /************************************************************/
     #region Public Variables
 
     public Text menuLabel;
@@ -37,8 +37,7 @@ public class SaveLoadMenu : MonoBehaviour
     public SaveLoadItem itemPrefab;
 
     #endregion
-
-    /********** MARK: Private Variables **********/
+    /************************************************************/
     #region Private Variables
 
     /// <summary>
@@ -54,15 +53,13 @@ public class SaveLoadMenu : MonoBehaviour
     Controls controls;
 
     #endregion
-
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
-    private static BinaryReader MapReader { get; set; }
+    public static BinaryReader MapReader { get; set; } // HACK shouldnt be publix
 
     #endregion
-
-    /********** MARK: Unity Functions **********/
+    /************************************************************/
     #region Unity Functions
 
     private void OnEnable()
@@ -78,8 +75,7 @@ public class SaveLoadMenu : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public void Open(int menuMode)
@@ -154,8 +150,7 @@ public class SaveLoadMenu : MonoBehaviour
     {
         PrepareReader();
 
-        // HACK: This line is kinda fishy
-        Mirror.NetworkClient.connection.identity.GetComponent<HumanPlayer>().CmdStartGame();
+        GameSession.Singleton.CmdStartGame(); // HACK: are you sure you want this here?
     }
 
     private void PrepareReader()
@@ -266,7 +261,6 @@ public class SaveLoadMenu : MonoBehaviour
 
         MapReader.Close();
         MapReader = null;
-        //GameSession.Singleton.MapHexBuffer.Clear();
     }
 
     private bool IsPathValid(string path)
@@ -295,5 +289,57 @@ public class SaveLoadMenu : MonoBehaviour
         FillList();
     }
 
+    #endregion
+}
+
+/// <summary>
+/// 
+/// </summary>
+public static class BinaryReaderSerializer
+{
+    /************************************************************/
+    #region BinaryReader Serializer
+
+    public static void WriteBinaryReader(this NetworkWriter writer, BinaryReader data)
+    {
+        if (data == null)
+        {
+            writer.WriteInt32(-1);
+        }
+        else
+        {
+            data.BaseStream.Position = 0;
+
+            int length = (int)data.BaseStream.Length;
+            byte[] buffer = new byte[length];
+
+            data.Read(buffer, 0, length);
+
+            writer.WriteInt32(length);
+            for (int i = 0; i < length; i++) writer.WriteByte(buffer[i]);
+
+            //foreach (byte b in buffer) Debug.Log(b);
+        }
+    }
+
+    public static BinaryReader ReadBinaryReader(this NetworkReader reader)
+    {
+        int length = reader.ReadInt32();
+
+        if (length == -1)
+        {
+            return null;
+        }
+        else
+        {
+            byte[] buffer = new byte[length];
+
+            for (int i = 0; i < length; i++) buffer[i] = reader.ReadByte();
+
+            //foreach (byte b in buffer) Debug.Log(b);
+
+            return new BinaryReader(new MemoryStream(buffer));
+        }
+    }
     #endregion
 }

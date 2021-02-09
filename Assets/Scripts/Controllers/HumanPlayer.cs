@@ -23,7 +23,7 @@ public class HumanPlayer : Player
     [Header("Cached References")]
     [SerializeField] MapCamera mapCamera = null;
 
-    HexCell currentCell;
+    public HexCell currentCell; // HACK this shouldnt be public
 
     Unit selectedUnit;
 
@@ -35,7 +35,7 @@ public class HumanPlayer : Player
     /************************************************************/
     #region Properties
 
-    public bool HasCreatedMap { get; [Server] set; } = false;
+    public bool IsReadyForMapData { get; set; } = false;
 
     #endregion
     /************************************************************/
@@ -67,20 +67,6 @@ public class HumanPlayer : Player
     {
         if (currentCell) currentCell.DisableHighlight();
         base.OnDestroy();
-    }
-
-    #endregion
-    /************************************************************/
-    #region Server Functions
-
-    [Command] // HACK: i dont like this function here
-    public void CmdStartGame() 
-    {
-        if (!GetComponent<PlayerInfo>().IsPartyLeader) return;
-
-        if (GameNetworkManager.IsGameInProgress) return;
-
-        GameNetworkManager.Singleton.ServerStartGame();
     }
 
     #endregion
