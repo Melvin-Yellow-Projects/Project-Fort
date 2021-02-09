@@ -29,7 +29,7 @@ public class LoadingDisplay : MonoBehaviour
 
     [Header("Settings")]
     [Tooltip("max loading progress speed")]
-    [SerializeField] float maxFillSpeed = 1f;
+    [SerializeField, Range(0.1f, 5f)] float fillSpeed = 1f;
 
     Coroutine fillCoroutine = null;
 
@@ -61,7 +61,7 @@ public class LoadingDisplay : MonoBehaviour
     private IEnumerator Fill(float percent)
     {
         float prevPercent = Singleton.fillProgressImage.fillAmount;
-        for (float interpolator = 0; interpolator < 1; interpolator += Time.deltaTime)
+        for (float interpolator = 0; interpolator < 1; interpolator += Time.deltaTime * fillSpeed)
         {
             Singleton.fillProgressImage.fillAmount = Mathf.Lerp(prevPercent, percent, interpolator);
             yield return null;
