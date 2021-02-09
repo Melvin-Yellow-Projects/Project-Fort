@@ -157,6 +157,8 @@ public class HexGrid : NetworkBehaviour
         if (conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData) return;
         conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData = true;
 
+        // TODO: validate whether or not game has begun
+
         if (!GameNetworkManager.ServerArePlayersReadyForMapData()) return;
         GameNetworkManager.ServerSetPlayersToNotReadyForMapData();
 
@@ -206,9 +208,11 @@ public class HexGrid : NetworkBehaviour
     [ClientRpc]
     private void RpcSpawnMapTerrain(int cellCountX, int cellCountZ, HexCellData[] data)
     {
+        numberOfCellsLoaded += data.Length;
+
         if (isServer)
         {
-            CmdReadyForMapEntities();
+            if (numberOfCellsLoaded == cells.Length) CmdReadyForMapEntities();
             LoadingDisplay.SetFillProgress(0.5f);
             return;
         }
@@ -227,8 +231,6 @@ public class HexGrid : NetworkBehaviour
             // FIXME: Is this code correct?
             cells[index].ShaderData.RefreshTerrain(cells[index]);
             cells[index].ShaderData.RefreshVisibility(cells[index]);
-
-            numberOfCellsLoaded++;
         }
 
         float percent = (float)numberOfCellsLoaded / cells.Length;

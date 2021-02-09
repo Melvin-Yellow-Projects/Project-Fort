@@ -238,7 +238,7 @@ public class GameNetworkManager : NetworkManager
             item.Value.identity.GetComponent<HumanPlayer>().IsReadyForMapData = false;
         }
 
-        if (!hasSpawnedComputers) ServerPadGameWithComputerPlayers();
+        if (!Singleton.hasSpawnedComputers) ServerPadGameWithComputerPlayers();
     }
 
     //[Server]
@@ -292,6 +292,8 @@ public class GameNetworkManager : NetworkManager
                 if (!isTeamOwnedByHumanPlayer) ServerSpawnComputerPlayer(i + 1);
             }
         }
+
+        Singleton.hasSpawnedComputers = true;
     }
 
     [Server]

@@ -49,7 +49,7 @@ public static class HexMetrics
     /// <summary>
     /// height of each successive elevation change
     /// </summary>
-    public const float elevationStep = 3f;
+    public const float elevationStep = 4f;
 
     /// <summary>
     /// number of terraces per slope (small elevation connection between hex cells)
@@ -70,7 +70,7 @@ public static class HexMetrics
     /// strength of hex grid elevation noise; this should be relatively related to a vertical
     /// terrace step and an elevation step
     /// </summary>
-    public const float elevationPerturbStrength = 1.5f;
+    public const float elevationPerturbStrength = 2f;
 
     /// <summary>
     /// how often the noise repeats itself; repeats every [1 / (2 * noiseScale * innerRadius)]
