@@ -39,11 +39,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013797562108657598}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3be07c6993f64a31a9a1ff76c83e475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swivel: {fileID: 6771422248317370735}
+  stick: {fileID: 6771422249552706627}
+  virtualCamera: {fileID: 2474138884983674811}
   stickMinZoom: -250
   stickMaxZoom: -45
   swivelMinZoom: 90
@@ -152,7 +155,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7734525109324956999}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
   m_Name: 
