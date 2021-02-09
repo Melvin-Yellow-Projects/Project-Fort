@@ -214,13 +214,19 @@ public class HexGrid : NetworkBehaviour
     [Command(ignoreAuthority = true)]
     private void CmdReadyForMapEntities(NetworkConnectionToClient conn = null)
     {
+        if (conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData) return;
+        conn.identity.GetComponent<HumanPlayer>().IsReadyForMapData = true;
 
+        if (!GameNetworkManager.ServerArePlayersReadyForMapData()) return;
+        GameNetworkManager.ServerSetPlayersToNotReadyForMapData();
+
+        ServerSpawnMapEntities();
     }
 
     [Command(ignoreAuthority = true)]
     private void CmdReadyForGameStart(NetworkConnectionToClient conn = null)
     {
-
+        
     }
 
     #endregion
@@ -244,14 +250,17 @@ public class HexGrid : NetworkBehaviour
             // FIXME: Is this code correct?
             cells[index].ShaderData.RefreshTerrain(cells[index]);
             cells[index].ShaderData.RefreshVisibility(cells[index]);
+
+            numberOfCellsLoaded++;
         }
 
-        CmdReadyForMapEntities();
-        //numberOfCellsLoaded++;
-
-        //float percent = (float)numberOfCellsLoaded / cells.Length;
-        //LoadingDisplay.SetFillProgress(percent);
-        //if (numberOfCellsLoaded == cells.Length) LoadingDisplay.Done();
+        float percent = (float) numberOfCellsLoaded / cells.Length;
+        LoadingDisplay.SetFillProgress(percent);
+        if (numberOfCellsLoaded == cells.Length)
+        {
+            LoadingDisplay.Done();
+            CmdReadyForMapEntities();
+        }
     }
 
     //[ClientRpc]
