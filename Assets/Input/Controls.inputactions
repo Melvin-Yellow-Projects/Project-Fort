@@ -47,6 +47,22 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Toggle",
+                    "type": "Button",
+                    "id": "d7c6a416-eaff-42f7-9260-6fb23fbe0a1a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Clear",
+                    "type": "Button",
+                    "id": "a3a75b0a-18fa-4afb-a99a-ab197cc13720",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -69,6 +85,28 @@
                     "processors": "",
                     "groups": "Keyboard & Mouse",
                     "action": "Command",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "774046d1-4d9d-417c-b723-3f88e211fc70",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Toggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cfd708a7-bf64-44d8-b856-d109e21606a3",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Clear",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -99,6 +137,14 @@
                     "type": "Value",
                     "id": "a56ad01d-9073-4b40-8454-1e2e833de99d",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Next",
+                    "type": "Button",
+                    "id": "2bda5772-2946-41ca-ba0d-366ff6e8f2d0",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -255,6 +301,17 @@
                     "processors": "",
                     "groups": "Keyboard & Mouse",
                     "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "120f2708-515c-49c8-a5e9-0a4b026b02f0",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "Next",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

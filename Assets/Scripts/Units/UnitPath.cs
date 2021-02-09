@@ -230,6 +230,11 @@ public class UnitPath : MonoBehaviour
         movement.Display.RefreshMovementDisplay(movement.CurrentMovement - cells.Count + 1);
     }
 
+    public void Hide()
+    {
+        if (cursor != null) cursor.DestroyCursor();
+    }
+
     private IEnumerator AnimatePath()
     {
         Image highlight;

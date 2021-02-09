@@ -512,22 +512,22 @@ PrefabInstance:
     - target: {fileID: 5849001562683165968, guid: 68353ad86101d4deda4e7fc45d338e03,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 31.819805
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5849001562683165968, guid: 68353ad86101d4deda4e7fc45d338e03,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -31.819805
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5849001562683165968, guid: 68353ad86101d4deda4e7fc45d338e03,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.92387956
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5849001562683165968, guid: 68353ad86101d4deda4e7fc45d338e03,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.38268343
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5849001562683165968, guid: 68353ad86101d4deda4e7fc45d338e03,
         type: 3}
@@ -558,6 +558,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 5849001562683166063, guid: 68353ad86101d4deda4e7fc45d338e03,
+        type: 3}
+      propertyPath: field of view
+      value: 40
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68353ad86101d4deda4e7fc45d338e03, type: 3}
@@ -2650,6 +2655,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: fortHighlightColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: fortHighlightColor.b
+      value: 0.12941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: fortHighlightColor.g
+      value: 0.13333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: fortHighlightColor.r
+      value: 0.1254902
+      objectReference: {fileID: 0}
     - target: {fileID: 1281260488067124436, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: m_Name

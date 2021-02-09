@@ -31,6 +31,8 @@ public class HumanPlayer : Player
 
     Controls controls;
 
+    bool isShowingUnitPaths = true;
+
     #endregion
     /************************************************************/
     #region Properties
@@ -111,6 +113,21 @@ public class HumanPlayer : Player
         }
     }
 
+    [Client]
+    private void Toggle(InputAction.CallbackContext context)
+    {
+        isShowingUnitPaths = !isShowingUnitPaths;
+
+        if (isShowingUnitPaths) foreach (Unit unit in MyUnits) unit.Movement.Path.Show();
+        else foreach (Unit unit in MyUnits) unit.Movement.Path.Hide();
+    }
+
+    [Client]
+    private void Clear(InputAction.CallbackContext context)
+    {
+        foreach (Unit unit in MyUnits) CmdClearAction(UnitData.Instantiate(unit));
+    }
+
     #endregion
     /************************************************************/
     #region Client Functions
@@ -130,9 +147,17 @@ public class HumanPlayer : Player
 
         if (cell != currentCell)
         {
-            if (currentCell) currentCell.DisableHighlight();
+            if (currentCell)
+            {
+                currentCell.DisableHighlight();
+                if (!isShowingUnitPaths && currentCell.MyUnit)
+                    currentCell.MyUnit.Movement.Path.Hide();
+            }
 
             currentCell = cell;
+            if (currentCell && currentCell.MyUnit && currentCell.MyUnit.MyTeam == MyTeam)
+                currentCell.MyUnit.Movement.Path.Show();
+
             hasCurrentCellUpdated = true; // whether or not current cell has updated
         }
         else
@@ -179,6 +204,8 @@ public class HumanPlayer : Player
     {
         if (!selectedUnit) return;
 
+        if (!isShowingUnitPaths) selectedUnit.Movement.Path.Hide();
+
         selectedUnit.IsSelected = false;
         selectedUnit = null;
     }
@@ -216,6 +243,8 @@ public class HumanPlayer : Player
         controls = new Controls();
         controls.Player.Command.performed += Command;
         controls.Player.Cancel.performed += Cancel;
+        controls.Player.Toggle.performed += Toggle;
+        controls.Player.Clear.performed += Clear;
         controls.Enable();
 
         base.AuthoritySubscribe();

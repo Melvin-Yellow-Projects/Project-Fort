@@ -53,26 +53,43 @@ public class Team : NetworkBehaviour
         get
         {
             // TODO: add settable color
+            Color color;
             switch (id)
             {
                 case 0:
                     return Color.gray;
                 case 1:
-                    return Color.blue;
+                    ColorUtility.TryParseHtmlString("#67A383FF", out color); // sea green
+                    //return Color.blue;
+                    return color;
                 case 2:
-                    return Color.red;
+                    ColorUtility.TryParseHtmlString("#732B1CFF", out color); // adobe red
+                    //return Color.red;
+                    return color;
                 case 3:
-                    return Color.green;
+                    ColorUtility.TryParseHtmlString("#8ABFD1FF", out color); // beige blue
+                    //return Color.green;
+                    return color;
                 case 4:
-                    return Color.yellow;
+                    ColorUtility.TryParseHtmlString("#B097C9FF", out color); // lavender
+                    //return Color.yellow;
+                    return color;
                 case 5:
-                    return Color.magenta;
+                    ColorUtility.TryParseHtmlString("#A37476FF", out color); // rose gold
+                    //return Color.magenta;
+                    return color;
                 case 6:
-                    return Color.cyan;
+                    ColorUtility.TryParseHtmlString("#033882FF", out color); // saphire
+                    //return Color.cyan;
+                    return color;
                 case 7:
-                    return Color.red + Color.yellow;
+                    ColorUtility.TryParseHtmlString("#C9A253FF", out color); // gold
+                    //return Color.red + Color.yellow;
+                    return color;
                 case 8:
-                    return new Color(143f / 255f, 0.4f, 1f, 1); // lavender
+                    ColorUtility.TryParseHtmlString("#053D1BFF", out color); // rust/emerald green
+                    //return new Color(143f / 255f, 0.4f, 1f, 1); // lavender
+                    return color;
                 case 9:
                     return Color.black; // this team is for when a unit dies
             }

@@ -55,6 +55,7 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
     /// <subscriber class="HumanPlayer">updates player's buy cells and unit displays</subscriber>
+    /// <subscriber class="MapCamera">refreshes 'Next' index</subscriber>
     public static event Action ClientOnStartRound;
 
     /// <summary>
@@ -67,6 +68,7 @@ public class GameManager : NetworkBehaviour
     /// Client event for when a new turn has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
+    /// <subscriber class="MapCamera">refreshes 'Next' index</subscriber>
     public static event Action ClientOnStartTurn;
 
     /// <summary>

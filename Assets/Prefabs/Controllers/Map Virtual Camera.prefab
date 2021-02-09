@@ -53,7 +53,7 @@ MonoBehaviour:
   swivelMaxZoom: 45
   moveSpeedMinZoom: 400
   moveSpeedMaxZoom: 100
-  rotationSpeed: 180
+  rotationSpeed: 0.8
 --- !u!1 &6771422248317370734
 GameObject:
   m_ObjectHideFlags: 0

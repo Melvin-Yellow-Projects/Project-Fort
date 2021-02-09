@@ -11,10 +11,12 @@
  *      Hex Map; this file has been updated it to better fit this project
  *
  *      TODO: Comment this script
+ *      HACK: this class is just a complete jank mess
  **/
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 using Cinemachine;
 
 /// <summary>
@@ -29,6 +31,7 @@ public class MapCamera : MonoBehaviour
 	[SerializeField] Transform swivel = null;
 	[SerializeField] Transform stick = null;
 	[SerializeField] CinemachineVirtualCamera virtualCamera = null;
+	//[SerializeField] CinemachineVirtualCamera nextVirtualCamera = null;
 
 	[Header("Settings")]
 	[SerializeField] float stickMinZoom;
@@ -54,6 +57,9 @@ public class MapCamera : MonoBehaviour
 	bool isMovePressed = false;
 	bool isRotatePressed = false;
 
+	static int rotationIndex;
+	static Quaternion currentQuaternion;
+
 	#endregion
 	/************************************************************/
 	#region Properties
@@ -67,6 +73,29 @@ public class MapCamera : MonoBehaviour
             if (Singleton) Singleton.enabled = !value;
         }
 	}
+
+	static int nextIndex;
+	private static int NextIndex
+    {
+		get
+        {
+			return nextIndex;
+		}
+		set
+        {
+			nextIndex = value;
+
+			// HACK i really dont like fetching the player through PlayerMenu
+			if (GameManager.IsEconomyPhase) 
+            {
+				if (nextIndex >= PlayerMenu.MyPlayer.MyForts.Count) nextIndex = 0;
+			}
+			else
+            {
+				if (nextIndex >= PlayerMenu.MyPlayer.MyUnits.Count) nextIndex = 0;
+			}
+		}
+    }
 
 	#endregion
 	/************************************************************/
@@ -87,10 +116,12 @@ public class MapCamera : MonoBehaviour
 		controls.Camera.Move.canceled += AdjustPosition;
 
 		controls.Camera.Rotate.performed += AdjustRotation;
-		controls.Camera.Rotate.canceled += AdjustRotation;
+		//controls.Camera.Rotate.canceled += AdjustRotation;
 
 		controls.Camera.Zoom.performed += AdjustZoom;
 		controls.Camera.Zoom.canceled += AdjustZoom;
+
+		controls.Camera.Next.performed += FocusOnNextEntity;
 
 		controls.Enable();
 	}
@@ -107,8 +138,8 @@ public class MapCamera : MonoBehaviour
 		float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
 		if (zoomDelta != 0f) AdjustZoom(zoomDelta);
 
-		float rotationDelta = Input.GetAxis("Rotation");
-		if (rotationDelta != 0f) AdjustRotation(rotationDelta);
+		//float rotationDelta = Input.GetAxis("Rotation");
+		//if (rotationDelta != 0f) AdjustRotation(rotationDelta);
 
 		float xDelta = Input.GetAxis("Horizontal");
         float zDelta = Input.GetAxis("Vertical");
@@ -121,15 +152,56 @@ public class MapCamera : MonoBehaviour
 		Singleton = null;
     }
 
-    #endregion
-    /************************************************************/
-    #region Input Functions
+	#endregion
+	/************************************************************/
+	#region Input Functions
 
-    #endregion
-    /************************************************************/
-    #region Class Functions
+	void AdjustRotation(InputAction.CallbackContext ctx)
+	{
+		rotationIndex += (int) ctx.ReadValue<float>();
 
-    public static void ValidatePosition()
+		StopAllCoroutines();
+		StartCoroutine(AdjustRotation(rotationIndex * 45f));
+
+		if (rotationIndex == 8) rotationIndex = 0;
+	}
+
+	private IEnumerator AdjustRotation(float targetAngle)
+    {
+		currentQuaternion = transform.rotation;
+		for (float interpolator = 0; interpolator < 1f; interpolator += Time.deltaTime * rotationSpeed)
+        {
+			transform.localRotation = Quaternion.Lerp(
+				transform.rotation,
+				Quaternion.Euler(0f, targetAngle, 0f),
+				interpolator
+			);
+			yield return null;
+        }
+
+		transform.localRotation = Quaternion.Euler(0f, targetAngle, 0f);
+	}
+
+	private void FocusOnNextEntity(InputAction.CallbackContext ctx)
+    {
+		// HACK attacc but it a snacc
+		Player player = PlayerMenu.MyPlayer;
+
+		if (!player) return;
+
+		Vector3 pos;
+		if (GameManager.IsEconomyPhase) pos = player.MyForts[NextIndex].transform.position;
+		else pos = player.MyUnits[NextIndex].transform.position;
+		transform.position = new Vector3(pos.x, transform.position.y, pos.z);
+
+		NextIndex++;
+	}
+
+	#endregion
+	/************************************************************/
+	#region Class Functions
+
+	public static void ValidatePosition()
 	{
 		Singleton.AdjustPosition(0f, 0f);
 	}
@@ -172,24 +244,19 @@ public class MapCamera : MonoBehaviour
         return position;
 	}
 
-	void AdjustRotation(InputAction.CallbackContext ctx)
-	{
-		//Debug.Log("Rotating Camera");
-	}
-
-	void AdjustRotation(float delta)
-	{
-		rotationAngle += delta * rotationSpeed * Time.deltaTime;
-		if (rotationAngle < 0f)
-		{
-			rotationAngle += 360f;
-		}
-		else if (rotationAngle >= 360f)
-		{
-			rotationAngle -= 360f;
-		}
-		transform.localRotation = Quaternion.Euler(0f, rotationAngle, 0f);
-	}
+	//void AdjustRotation(float delta)
+	//{
+	//	rotationAngle += delta * rotationSpeed * Time.deltaTime;
+	//	if (rotationAngle < 0f)
+	//	{
+	//		rotationAngle += 360f;
+	//	}
+	//	else if (rotationAngle >= 360f)
+	//	{
+	//		rotationAngle -= 360f;
+	//	}
+	//	transform.localRotation = Quaternion.Euler(0f, rotationAngle, 0f);
+	//}
 
 	void AdjustZoom(InputAction.CallbackContext ctx)
 	{
@@ -207,5 +274,31 @@ public class MapCamera : MonoBehaviour
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
 	}
 
-    #endregion
+	#endregion
+	/************************************************************/
+	#region Event Handler Functions
+
+	private void Subscribe()
+    {
+		GameManager.ClientOnStartRound += HandleClientOnStartRound;
+		GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
+	}
+
+	private void Unsubscribe()
+    {
+		GameManager.ClientOnStartRound -= HandleClientOnStartRound;
+		GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
+	}
+
+	private void HandleClientOnStartRound()
+    {
+		NextIndex = 0;
+    }
+
+	private void HandleClientOnStartTurn()
+    {
+		NextIndex = 0;
+	}
+
+	#endregion
 }

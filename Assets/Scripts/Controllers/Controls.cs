@@ -60,6 +60,22 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Toggle"",
+                    ""type"": ""Button"",
+                    ""id"": ""d7c6a416-eaff-42f7-9260-6fb23fbe0a1a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Clear"",
+                    ""type"": ""Button"",
+                    ""id"": ""a3a75b0a-18fa-4afb-a99a-ab197cc13720"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -82,6 +98,28 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard & Mouse"",
                     ""action"": ""Command"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""774046d1-4d9d-417c-b723-3f88e211fc70"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Toggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cfd708a7-bf64-44d8-b856-d109e21606a3"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Clear"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -112,6 +150,14 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""a56ad01d-9073-4b40-8454-1e2e833de99d"",
                     ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Next"",
+                    ""type"": ""Button"",
+                    ""id"": ""2bda5772-2946-41ca-ba0d-366ff6e8f2d0"",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -270,6 +316,17 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""120f2708-515c-49c8-a5e9-0a4b026b02f0"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""Next"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -357,11 +414,14 @@ public class @Controls : IInputActionCollection, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Command = m_Player.FindAction("Command", throwIfNotFound: true);
         m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
+        m_Player_Toggle = m_Player.FindAction("Toggle", throwIfNotFound: true);
+        m_Player_Clear = m_Player.FindAction("Clear", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
         m_Camera_Rotate = m_Camera.FindAction("Rotate", throwIfNotFound: true);
         m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
+        m_Camera_Next = m_Camera.FindAction("Next", throwIfNotFound: true);
         // Map Editor
         m_MapEditor = asset.FindActionMap("Map Editor", throwIfNotFound: true);
         m_MapEditor_Selection = m_MapEditor.FindAction("Selection", throwIfNotFound: true);
@@ -450,12 +510,16 @@ public class @Controls : IInputActionCollection, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Command;
     private readonly InputAction m_Player_Cancel;
+    private readonly InputAction m_Player_Toggle;
+    private readonly InputAction m_Player_Clear;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
         public PlayerActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Command => m_Wrapper.m_Player_Command;
         public InputAction @Cancel => m_Wrapper.m_Player_Cancel;
+        public InputAction @Toggle => m_Wrapper.m_Player_Toggle;
+        public InputAction @Clear => m_Wrapper.m_Player_Clear;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -471,6 +535,12 @@ public class @Controls : IInputActionCollection, IDisposable
                 @Cancel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                @Toggle.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggle;
+                @Toggle.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggle;
+                @Toggle.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnToggle;
+                @Clear.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClear;
+                @Clear.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClear;
+                @Clear.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClear;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -481,6 +551,12 @@ public class @Controls : IInputActionCollection, IDisposable
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @Toggle.started += instance.OnToggle;
+                @Toggle.performed += instance.OnToggle;
+                @Toggle.canceled += instance.OnToggle;
+                @Clear.started += instance.OnClear;
+                @Clear.performed += instance.OnClear;
+                @Clear.canceled += instance.OnClear;
             }
         }
     }
@@ -492,6 +568,7 @@ public class @Controls : IInputActionCollection, IDisposable
     private readonly InputAction m_Camera_Move;
     private readonly InputAction m_Camera_Rotate;
     private readonly InputAction m_Camera_Zoom;
+    private readonly InputAction m_Camera_Next;
     public struct CameraActions
     {
         private @Controls m_Wrapper;
@@ -499,6 +576,7 @@ public class @Controls : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Camera_Move;
         public InputAction @Rotate => m_Wrapper.m_Camera_Rotate;
         public InputAction @Zoom => m_Wrapper.m_Camera_Zoom;
+        public InputAction @Next => m_Wrapper.m_Camera_Next;
         public InputActionMap Get() { return m_Wrapper.m_Camera; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -517,6 +595,9 @@ public class @Controls : IInputActionCollection, IDisposable
                 @Zoom.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoom;
                 @Zoom.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoom;
                 @Zoom.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnZoom;
+                @Next.started -= m_Wrapper.m_CameraActionsCallbackInterface.OnNext;
+                @Next.performed -= m_Wrapper.m_CameraActionsCallbackInterface.OnNext;
+                @Next.canceled -= m_Wrapper.m_CameraActionsCallbackInterface.OnNext;
             }
             m_Wrapper.m_CameraActionsCallbackInterface = instance;
             if (instance != null)
@@ -530,6 +611,9 @@ public class @Controls : IInputActionCollection, IDisposable
                 @Zoom.started += instance.OnZoom;
                 @Zoom.performed += instance.OnZoom;
                 @Zoom.canceled += instance.OnZoom;
+                @Next.started += instance.OnNext;
+                @Next.performed += instance.OnNext;
+                @Next.canceled += instance.OnNext;
             }
         }
     }
@@ -592,12 +676,15 @@ public class @Controls : IInputActionCollection, IDisposable
     {
         void OnCommand(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnToggle(InputAction.CallbackContext context);
+        void OnClear(InputAction.CallbackContext context);
     }
     public interface ICameraActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
+        void OnNext(InputAction.CallbackContext context);
     }
     public interface IMapEditorActions
     {
