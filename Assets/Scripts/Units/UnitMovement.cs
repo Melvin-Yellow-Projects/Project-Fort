@@ -490,11 +490,22 @@ public abstract class UnitMovement : NetworkBehaviour
         return true;
     }
 
-    public void RefreshPath()
+    // TODO: this should show attack cells as well, maybe also be override-able 
+    public void ShowMovementRange()
     {
-        // updates path HACK: kinda sloppy
-        Path.Show();
+
     }
+
+    public void HideMovementRange()
+    {
+
+    }
+
+    //public void RefreshPath()
+    //{
+    //    // updates path HACK: kinda sloppy, but used for when a piece is selected
+    //    Path.Show();
+    //}
 
     #endregion
     /************************************************************/

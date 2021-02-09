@@ -92,6 +92,14 @@ public class UnitPath : MonoBehaviour
         }
     }
 
+    public int MovementCost
+    {
+        get
+        {
+            return UnitPathfinding.GetMoveCostCalculation(cells);
+        }
+    }
+
     public HexCell this[int i]
     {
         get
@@ -145,8 +153,7 @@ public class UnitPath : MonoBehaviour
             {
                 cells.Add(cell);
 
-                if (UnitPathfinding.GetMoveCostCalculation(cells) <= movement.CurrentMovement)
-                    return; // exit function
+                if (MovementCost <= movement.CurrentMovement) return; // exit function
 
                 cells.Remove(EndCell);
             }
@@ -194,6 +201,7 @@ public class UnitPath : MonoBehaviour
         if (!HasPath)
         {
             if (cursor != null) cursor.DestroyCursor();
+            movement.Display.RefreshMovementDisplay(movement.CurrentMovement);
             return;
         }
 
@@ -213,11 +221,13 @@ public class UnitPath : MonoBehaviour
         if (cursor) cursor.Redraw(points);
         else cursor = UnitCursor.Initialize(points);
 
-        cursor.IsSelected = unit.IsSelected;
-        cursor.HasError =
-            (UnitPathfinding.GetMoveCostCalculation(cells) > movement.CurrentMovement);
+        //cursor.IsSelected = unit.IsSelected;
+        //cursor.HasError =
+        //    (UnitPathfinding.GetMoveCostCalculation(cells) > movement.CurrentMovement);
 
         //StartCoroutine(AnimatePath());
+
+        movement.Display.RefreshMovementDisplay(movement.CurrentMovement - cells.Count + 1);
     }
 
     private IEnumerator AnimatePath()
@@ -252,12 +262,12 @@ public class UnitPath : MonoBehaviour
     //    }
     //}
 
-    public void Clear(bool clearCursor=true)
+    public void Clear(bool clearCursor = true)
     {
         //Hide(); // TODO: i think there needs to be a hide function for the cursor
         if (clearCursor && cursor != null) cursor.DestroyCursor();
 
-        //moveCost = 0;
+        movement.Display.RefreshMovementDisplay(movement.CurrentMovement);
 
         //for (int i = 0; i < cells.Count; i++)
         //{

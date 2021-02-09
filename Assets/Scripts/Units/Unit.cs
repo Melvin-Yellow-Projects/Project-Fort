@@ -109,7 +109,11 @@ public class Unit : NetworkBehaviour
         set
         {
             isSelected = value;
-            Movement.RefreshPath(); 
+
+            //Movement.RefreshPath(); // shows that the unit is selected or not
+
+            if (value) Movement.ShowMovementRange();
+            else Movement.HideMovementRange();
         }
     }
 
