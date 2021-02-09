@@ -234,12 +234,12 @@ public class HexGrid : NetworkBehaviour
             CreateMap(cellCountX, cellCountZ);
 
         int index;
-        foreach (HexCellData d in data)
+        for (int i = 0; i < data.Length; i++)
         {
-            index = d.index;
-            cells[index].Elevation = data[index].elevation;
-            cells[index].TerrainTypeIndex = data[index].terrainTypeIndex;
-            cells[index].IsExplored = data[index].isExplored;
+            index = data[i].index;
+            cells[index].Elevation = data[i].elevation;
+            cells[index].TerrainTypeIndex = data[i].terrainTypeIndex;
+            cells[index].IsExplored = data[i].isExplored;
 
             // FIXME: Is this code correct?
             cells[index].ShaderData.RefreshTerrain(cells[index]);
