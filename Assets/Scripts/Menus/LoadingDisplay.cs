@@ -28,31 +28,16 @@ public class LoadingDisplay : MonoBehaviour
     [SerializeField] Image fillProgressImage = null;
 
     [Header("Settings")]
-    [Tooltip("whether or not to use a fake loading wheel")]
-    [SerializeField] bool isFillProgressFake = false;
-    [Tooltip("fake loading progress speed")]
-    [SerializeField] float fakeFillSpeed = 1f;
+    [Tooltip("max loading progress speed")]
+    [SerializeField] float maxFillSpeed = 1f;
 
-    float interpolator = 0;
+    Coroutine fillCoroutine = null;
 
     #endregion
     /************************************************************/
     #region Properties
 
     public static LoadingDisplay Singleton { get; private set; }
-
-    public static bool IsFillProgressFake
-    {
-        get
-        {
-            return Singleton.isFillProgressFake;
-        }
-        set
-        {
-            Singleton.isFillProgressFake = value;
-            if (value) Singleton.enabled = true;
-        }
-    }
 
     #endregion
     /************************************************************/
@@ -61,21 +46,6 @@ public class LoadingDisplay : MonoBehaviour
     private void Awake()
     {
         Singleton = this;
-        enabled = isFillProgressFake;
-    }
-
-    private void OnEnable()
-    {
-        interpolator = 0;
-    }
-
-    private void Update()
-    {
-        SetFillProgress(interpolator);
-
-        interpolator += Time.deltaTime * fakeFillSpeed;
-
-        if (interpolator > 1) enabled = false;
     }
 
     #endregion
@@ -84,20 +54,24 @@ public class LoadingDisplay : MonoBehaviour
 
     public static void SetFillProgress(float percent)
     {
-        Singleton.fillProgressImage.fillAmount = percent;
+        if (Singleton.fillCoroutine != null) Singleton.StopCoroutine(Singleton.fillCoroutine);
+        Singleton.fillCoroutine = Singleton.StartCoroutine(Singleton.Fill(percent));
+    }
+
+    private IEnumerator Fill(float percent)
+    {
+        float prevPercent = Singleton.fillProgressImage.fillAmount;
+        for (float interpolator = 0; interpolator < 1; interpolator += Time.deltaTime)
+        {
+            Singleton.fillProgressImage.fillAmount = Mathf.Lerp(prevPercent, percent, interpolator);
+            yield return null;
+        }
     }
 
     public static void Done()
     {
-        Singleton.Done(dummy: false);
-
-        // HACK: for some bizarre reason this doesn't work 
-        //Singleton.StartCoroutine(FadeOutAndDestroyDisplay());
-    }
-
-    private void Done(bool dummy)
-    {
-        Singleton.StartCoroutine(FadeOutAndDestroyDisplay());
+        SetFillProgress(1);
+        Singleton.StartCoroutine(Singleton.FadeOutAndDestroyDisplay());
     }
 
     private IEnumerator FadeOutAndDestroyDisplay()

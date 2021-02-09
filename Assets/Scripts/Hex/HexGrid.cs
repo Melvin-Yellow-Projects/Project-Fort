@@ -92,11 +92,6 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Unity Functions
 
-    //private void Start() // FIXME DESTROY THIS
-    //{
-    //    InitializeMap();
-    //}
-
     private void OnDestroy()
     {
         Debug.LogWarning("HexGrid calling OnDestroy()");
@@ -118,44 +113,6 @@ public class HexGrid : NetworkBehaviour
 
         Debug.LogWarning($"number of forts after OnStopServer(): {Forts.Count}");
     }
-
-    //[Server]
-    //public static void ServerSpawnMapTerrain()
-    //{
-    //    Debug.Log("Spawning Map Terrain");
-    //    if (LoadingDisplay.Singleton) LoadingDisplay.IsFillProgressFake = true;
-
-    //    Instantiate(Prefab).InitializeMap();
-
-    //    SaveLoadMenu.LoadMapFromReader();
-
-    //    if (!GameSession.IsEditorMode)
-    //    {
-    //        HumanPlayer player = NetworkServer.localConnection.identity.GetComponent<HumanPlayer>();
-    //        GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
-    //        //NetworkServer.localConnection.identity.GetComponent<HumanPlayer>().HasCreatedMap = true;
-    //    }
-
-    //    NetworkServer.Spawn(Singleton.gameObject);
-    //}
-
-    //[Command(ignoreAuthority = true)]
-    //private void CmdUpdateCellData(int index, NetworkConnectionToClient conn = null)
-    //{
-    //    // TODO: Validation Logic, can this connection see this cell? if not return
-    //    HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
-    //    GameNetworkManager.Singleton.ServerPlayerHasCreatedMap(player);
-
-    //    //NetworkConnection conn = GameNetworkManager.HumanPlayers[1].netIdentity.connectionToClient;
-    //    //NetworkConnection conn = playerIdentity.connectionToClient; 
-
-    //    // HACK: this function could be inside of the HexCell class
-    //    TargetUpdateCellData(conn, HexCellData.Instantiate(cells[index]));
-    //}
-
-    #endregion
-    /************************************************************/
-    #region Server Map Loading Functions
 
     [Command(ignoreAuthority = true)]
     private void CmdReadyForMapTerrain(
@@ -228,7 +185,23 @@ public class HexGrid : NetworkBehaviour
 
     #endregion
     /************************************************************/
-    #region Client Map Loading Functions
+    #region Client Functions
+
+    // HACK: this function can be improved
+    public override void OnStartClient()
+    {
+        InitializeMap();
+
+        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
+        // HACK: perhaps a static event that logs to clients to enable player is better
+        if (!SceneLoader.IsGameScene) return;
+
+        NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
+
+        CmdReadyForMapTerrain(SaveLoadMenu.MapReader);
+
+        LoadingDisplay.SetFillProgress(0.05f);
+    }
 
     [ClientRpc]
     private void RpcSpawnMapTerrain(int cellCountX, int cellCountZ, HexCellData[] data)
@@ -236,6 +209,7 @@ public class HexGrid : NetworkBehaviour
         if (isServer)
         {
             CmdReadyForMapEntities();
+            LoadingDisplay.SetFillProgress(0.5f);
             return;
         }
 
@@ -257,62 +231,9 @@ public class HexGrid : NetworkBehaviour
             numberOfCellsLoaded++;
         }
 
-        float percent = (float) numberOfCellsLoaded / cells.Length;
+        float percent = (float)numberOfCellsLoaded / cells.Length;
         LoadingDisplay.SetFillProgress(percent);
         if (numberOfCellsLoaded == cells.Length) CmdReadyForMapEntities();
-    }
-
-    //[ClientRpc]
-    //private void RpcSpawnMapTerrain()
-    //{
-
-    //}
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    // HACK: this function can be improved
-    public override void OnStartClient()
-    {
-        // this is needed because the HumanPlayer Script causes errors in the lobby menu if enabled
-        if (SceneLoader.IsGameScene)
-            NetworkClient.connection.identity.GetComponent<HumanPlayer>().enabled = true;
-
-        // HACK: perhaps a static event that logs to clients to enable player is better
-
-        InitializeMap();
-
-        CmdReadyForMapTerrain(SaveLoadMenu.MapReader);
-
-        //Debug.Log("I am a client and I'm fetching the Map!");
-        //for (int index = 0; index < cells.Length; index++) CmdUpdateCellData(index);
-    }
-
-    //[TargetRpc]
-    //private void TargetUpdateCellData(NetworkConnection target, HexCellData data)
-    //{
-    //    int index = data.index;
-    //    cells[index].Elevation = data.elevation;
-    //    cells[index].TerrainTypeIndex = data.terrainTypeIndex;
-    //    cells[index].IsExplored = data.isExplored;
-
-    //    // FIXME: Is this code correct?
-    //    cells[index].ShaderData.RefreshTerrain(cells[index]);
-    //    cells[index].ShaderData.RefreshVisibility(cells[index]);
-
-    //    numberOfCellsLoaded++;
-
-    //    float percent = (float)numberOfCellsLoaded / cells.Length;
-    //    LoadingDisplay.SetFillProgress(percent);
-    //    if (numberOfCellsLoaded == cells.Length) LoadingDisplay.Done();
-    //}
-
-    [TargetRpc]
-    private void TargetLoadMap(NetworkConnection target, BinaryReader mapReader)
-    {
-        SaveLoadMenu.MapReader = mapReader;
-        SaveLoadMenu.LoadMapFromReader();
     }
 
     #endregion
@@ -333,9 +254,6 @@ public class HexGrid : NetworkBehaviour
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
         CreateMap(cellCountX, cellCountZ);
-
-        //if (isServer) return;
-        //CmdHasInitMap();
     }
 
     public bool CreateMap(int x, int z)
