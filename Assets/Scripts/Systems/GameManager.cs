@@ -111,6 +111,11 @@ public class GameManager : NetworkBehaviour
     {
         enabled = false;
         Singleton = this;
+
+        IsGameInProgress = false;
+        RoundCount = 0;
+        TurnCount = 0;
+        IsPlayingTurn = false;
     }
 
     /// <summary>

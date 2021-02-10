@@ -1268,7 +1268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveCountText: {fileID: 3349601793530250214}
-  resourcesText: {fileID: 938479623926143659}
+  creditsText: {fileID: 938479623926143659}
   gamePhaseText: {fileID: 222441539091241718}
   turnTimerText: {fileID: 7365562797296854019}
   buyPanel: {fileID: 1631468002733100924}
@@ -3753,7 +3753,7 @@ GameObject:
   - component: {fileID: 7199930674655155518}
   - component: {fileID: 938479623926143659}
   m_Layer: 5
-  m_Name: Resources Text
+  m_Name: Credits Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
