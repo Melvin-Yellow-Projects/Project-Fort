@@ -39,12 +39,6 @@ public abstract class Player : NetworkBehaviour
     #region Class Events
 
     /// <summary>
-    /// Server event for when a player has been defeated
-    /// </summary>
-    /// <subscriber class="GameOverHandler">handles the defeated player</subscriber>
-    public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
-
-    /// <summary>
     /// Client event for when a player's resources have updated
     /// </summary>
     //public static event Action ClientOnResourcesUpdated;
@@ -147,8 +141,8 @@ public abstract class Player : NetworkBehaviour
     {
         // HACK: maybe event should fire after unsub()
         // HACK: not certain this works
-        if (GameNetworkManager.IsGameInProgress)
-            ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
+        if (GameManager.IsGameInProgress)
+            GameOverHandler.Singleton.ServerPlayerHasLost(this, WinConditionType.Disconnect);
         ServerUnsubscribe();
 
         Debug.Log($"{name} OnStopServer");
@@ -411,9 +405,6 @@ public abstract class Player : NetworkBehaviour
     {
         MyUnits.Remove(unit);
         if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
-
-        // HACK: should this event fire instantly when a player loses?
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
     }
 
     [TargetRpc] // HACK: this could be UnitData? ...but i mean it is coming from the server so idk
@@ -427,8 +418,6 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartRound()
     {
-        if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
-
         MoveCount = 0;
         HasEndedTurn = false;
     }
@@ -436,8 +425,6 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartTurn()
     {
-        if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
 
         MoveCount = GameSession.MovesPerTurn;
         HasEndedTurn = false;

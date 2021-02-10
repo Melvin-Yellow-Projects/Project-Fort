@@ -89,6 +89,8 @@ public class GameManager : NetworkBehaviour
 
     public static GameManager Singleton { get; private set; }
 
+    public static bool IsGameInProgress { get; private set; } = false;
+
     public static int RoundCount { get; private set; }
 
     public static int TurnCount { get; private set; }
@@ -139,12 +141,17 @@ public class GameManager : NetworkBehaviour
     {
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
+        IsGameInProgress = true;
+        RoundCount = 0;
+
         ServerStartRound();
     }
 
     [Server]
     public void ServerStartRound() 
     {
+        if (!IsGameInProgress) return;
+
         RoundCount++;
         TurnCount = 0;
         IsEconomyPhase = true;
@@ -162,6 +169,8 @@ public class GameManager : NetworkBehaviour
     [Server]
     private void ServerStartTurn()
     {
+        if (!IsGameInProgress) return;
+
         TurnCount++;
 
         ServerOnStartTurn?.Invoke();
@@ -176,6 +185,15 @@ public class GameManager : NetworkBehaviour
     {
         StopAllCoroutines();
         StartCoroutine(ServerPlayTurn(8));
+    }
+
+    [Server]
+    public static void ServerStopGame()
+    {
+        if (!IsGameInProgress) return;
+
+        Players.Clear();
+        IsGameInProgress = false;
     }
 
     #endregion
@@ -197,6 +215,8 @@ public class GameManager : NetworkBehaviour
         enabled = false;
         if (IsEconomyPhase)
         {
+            ServerCheckIfPlayerLost();
+
             IsEconomyPhase = false;
             RpcInvokeClientOnStopEconomyPhase();
             ServerStartTurn();
@@ -204,6 +224,21 @@ public class GameManager : NetworkBehaviour
         else
         {
             ServerPlayTurn();
+        }
+    }
+
+    [Server]
+    public void ServerCheckIfPlayerLost()
+    {
+        for (int i = Players.Count; i > 0; i--)
+        {
+            Player player = Players[i - 1];
+
+            Debug.Log($"{player.name} has {player.MyForts.Count} forts");
+            if (player.MyForts.Count == 0)
+                GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Conquest);
+            else if (player.MyUnits.Count == 0)
+                GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Routed);
         }
     }
 
@@ -228,6 +263,8 @@ public class GameManager : NetworkBehaviour
         RpcInvokeClientOnStopTurn();
 
         IsPlayingTurn = false;
+
+        ServerCheckIfPlayerLost();
 
         // Finished Turn, either start new one or start a new round
         if (TurnCount >= GameSession.TurnsPerRound) ServerStartRound();

@@ -18,8 +18,8 @@ public class BowCombat : UnitCombat
     #region Variables
 
     [Header("Bow Settings")]
-    [SerializeField, Range(1, 3)] int maxStepsBeforeFire = 2;
-    [SerializeField, Range(1, 10)] int range = 3;
+    [SerializeField, Range(1, 10)] int maxStepsBeforeFire = 2;
+    [SerializeField] int range = 3;
 
     #endregion
     /************************************************************/

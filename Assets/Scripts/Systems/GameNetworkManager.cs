@@ -80,7 +80,7 @@ public class GameNetworkManager : NetworkManager
 
     public static ulong LobbyId { get; set; }
 
-    public static bool IsGameInProgress { get; set; }
+    public static bool HasLaunchedGame { get; set; }
 
     #endregion
     /************************************************************/
@@ -119,14 +119,14 @@ public class GameNetworkManager : NetworkManager
         if (!GameSession.IsOnline) return;
 
         // TODO: make player a spectator
-        if (!IsGameInProgress) return;
+        if (!HasLaunchedGame) return;
 
         conn.Disconnect();
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (!SceneLoader.IsGameScene) return;
+        if (!SceneLoader.IsGameScene || !GameManager.IsGameInProgress) return;
 
         Player player = conn.identity.GetComponent<Player>();
 
@@ -138,10 +138,11 @@ public class GameNetworkManager : NetworkManager
         }
 
         //base.OnServerDisconnect(conn);
-        NetworkServer.Destroy(conn.identity.gameObject);
+        //NetworkServer.Destroy(conn.identity.gameObject);
 
         // TODO: revoke authority and team on previously owned entities, see the code ->
-        //          base.OnServerDisconnect(conn);
+        //base.OnServerDisconnect(conn);
+        //RpcClientHasDisconnected();
     }
 
     public override void OnStopServer()
@@ -153,13 +154,13 @@ public class GameNetworkManager : NetworkManager
 
         Singleton.hasSpawnedComputers = false;
 
-        GameManager.Players.Clear();
+        GameManager.ServerStopGame();
 
         autoCreatePlayer = true;
         GameSession.IsOnline = false;
         GameSession.IsEditorMode = false;
 
-        IsGameInProgress = false;
+        HasLaunchedGame = false;
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -196,11 +197,11 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public void ServerStartGame() // HACK move this into SceneLoader?
+    public void ServerLaunchGame() // HACK move this into SceneLoader?
     {
         if (GameManager.Players.Count < MinConnections) return;
 
-        IsGameInProgress = true;
+        HasLaunchedGame = true;
 
         Debug.Log("Changing scene");
 
@@ -335,9 +336,13 @@ public class GameNetworkManager : NetworkManager
 
         // TODO remove player from client's list of players
         //conn.identity.GetComponent<Player>();
-
-        if (GameSession.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
+
+    //[ClientRpc]
+    //private void RpcClientHasDisconnected()
+    //{
+    //    OnClientDisconnectEvent?.Invoke();
+    //}
 
     public override void OnStopClient()
     {
@@ -354,7 +359,7 @@ public class GameNetworkManager : NetworkManager
         // HACK you shouldn't manually have to destroy these
         if (HexGrid.Singleton) Destroy(HexGrid.Singleton.gameObject);
 
-        GameManager.Players.Clear();
+        GameManager.ServerStopGame();
     }
 
     #endregion

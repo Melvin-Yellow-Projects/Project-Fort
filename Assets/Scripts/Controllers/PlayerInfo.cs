@@ -115,7 +115,7 @@ public class PlayerInfo : NetworkBehaviour
     [Command]
     public void CmdChangePartyLeaderToNewPlayer(NetworkIdentity playerNetId)
     {
-        if (GameNetworkManager.IsGameInProgress) return;
+        if (GameNetworkManager.HasLaunchedGame) return;
         if (!playerNetId.TryGetComponent(out PlayerInfo playerInfo)) return;
 
         IsPartyLeader = false;

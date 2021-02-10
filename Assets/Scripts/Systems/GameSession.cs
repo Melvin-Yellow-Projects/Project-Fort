@@ -159,7 +159,7 @@ public class GameSession : NetworkBehaviour
     [Command(ignoreAuthority = true)]
     public void CmdSetGameSettings(GameSettings settings, NetworkConnectionToClient conn = null)
     {
-        if (GameNetworkManager.IsGameInProgress) return;
+        if (GameNetworkManager.HasLaunchedGame) return;
 
         Player player = conn.identity.GetComponent<Player>();
         if (!player.Info.IsPartyLeader) return;
@@ -169,13 +169,13 @@ public class GameSession : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)] // HACK: i dont like this function here
-    public void CmdStartGame(NetworkConnectionToClient conn = null)
+    public void CmdLaunchGame(NetworkConnectionToClient conn = null)
     {
         if (!conn.identity.GetComponent<PlayerInfo>().IsPartyLeader) return;
 
-        if (GameNetworkManager.IsGameInProgress) return;
+        if (GameNetworkManager.HasLaunchedGame) return;
 
-        GameNetworkManager.Singleton.ServerStartGame();
+        GameNetworkManager.Singleton.ServerLaunchGame();
     }
 
     #endregion
