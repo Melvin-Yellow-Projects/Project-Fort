@@ -39,6 +39,12 @@ public class GameSession : NetworkBehaviour
     /// <subscriber class="GameSettingsMenu">refreshes Game Settings Menu informtion</subscriber>
     public static event Action ClientOnGameSettingsChanged;
 
+    /// <summary>
+    /// Event for when a client disconnects from the server
+    /// </summary>
+    /// <subscriber class="LobbyMenu">...</subscriber>
+    public static event Action OnClientDisconnectEvent;
+
     #endregion
     /************************************************************/
     #region Public Properties
@@ -176,6 +182,18 @@ public class GameSession : NetworkBehaviour
         if (GameNetworkManager.HasLaunchedGame) return;
 
         GameNetworkManager.Singleton.ServerLaunchGame();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+    
+    [ClientRpc]
+    public void RpcClientHasDisconnected()
+    {
+        Debug.LogError("Client has disconnected");
+
+        OnClientDisconnectEvent?.Invoke();
     }
 
     #endregion

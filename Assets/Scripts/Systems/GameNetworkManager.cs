@@ -50,12 +50,6 @@ public class GameNetworkManager : NetworkManager
     /// <subscriber class="LobbyMenu">...</subscriber>
     public static event Action OnClientConnectEvent;
 
-    /// <summary>
-    /// Event for when a client disconnects from the server
-    /// </summary>
-    /// <subscriber class="LobbyMenu">...</subscriber>
-    public static event Action OnClientDisconnectEvent;
-
     #endregion
     /************************************************************/
     #region Properties
@@ -143,7 +137,7 @@ public class GameNetworkManager : NetworkManager
         if (GameManager.IsGameInProgress)
             GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Disconnect);
 
-        //RpcClientHasDisconnected();
+        GameSession.Singleton.RpcClientHasDisconnected();
         // TODO: revoke authority and team on previously owned entities, see the code ->
         //base.OnServerDisconnect(conn);
     }
@@ -341,17 +335,7 @@ public class GameNetworkManager : NetworkManager
 
         // TODO remove player from client's list of players
         //conn.identity.GetComponent<Player>();
-
-        Debug.LogError("Client has disconnected");
-
-        OnClientDisconnectEvent?.Invoke();
     }
-
-    //[ClientRpc]
-    //private void RpcClientHasDisconnected()
-    //{
-    //    OnClientDisconnectEvent?.Invoke();
-    //}
 
     public override void OnStopClient()
     {
