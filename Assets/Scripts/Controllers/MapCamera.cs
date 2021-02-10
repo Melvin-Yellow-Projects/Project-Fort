@@ -122,6 +122,13 @@ public class MapCamera : MonoBehaviour
 		controls.Camera.Next.performed += FocusOnNextEntity;
 
 		controls.Enable();
+
+		// HACK this is really rushed
+		Player player = PlayerMenu.MyPlayer;
+		if (!player) return;
+
+		Vector3 pos = player.MyForts[0].transform.position;
+		transform.position = new Vector3(pos.x, transform.position.y, pos.z);
 	}
 
     private void OnDisable()
