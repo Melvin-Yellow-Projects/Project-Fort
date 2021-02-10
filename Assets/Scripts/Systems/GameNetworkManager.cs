@@ -120,26 +120,27 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (!SceneLoader.IsGameScene || !GameManager.IsGameInProgress) return;
+        if (conn == null || conn.identity == null) return;
 
         Player player = conn.identity.GetComponent<Player>();
+        if (!player) return;
 
-        if (player)
+        if (GameManager.IsGameInProgress)
+        {
+            GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Disconnect);
+        }
+        else
         {
             GameManager.Players.Remove(player);
 
-            if (player.Info.IsPartyLeader) GameManager.Players[0].Info.IsPartyLeader = true;
+            bool wasPlayerThePartyLeader = player.Info.IsPartyLeader;
+            base.OnServerDisconnect(conn); // <- this code is really elegant
+
+            if (wasPlayerThePartyLeader && GameManager.Players.Count > 0)
+                GameManager.Players[0].Info.IsPartyLeader = true;
         }
 
-        //base.OnServerDisconnect(conn);
-        //NetworkServer.Destroy(conn.identity.gameObject);
-
-        if (GameManager.IsGameInProgress)
-            GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Disconnect);
-
-        GameSession.Singleton.RpcClientHasDisconnected();
-        // TODO: revoke authority and team on previously owned entities, see the code ->
-        //base.OnServerDisconnect(conn);
+        if (GameSession.Singleton) GameSession.Singleton.RpcClientHasDisconnected();
     }
 
     public override void OnStopServer()

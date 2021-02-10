@@ -59,16 +59,6 @@ public class LobbyMenu : MonoBehaviour
 
     public void LeaveLobby()
     {
-        if (NetworkServer.active && NetworkClient.isConnected) // are you a host?
-        {
-            NetworkManager.singleton.StopHost();
-        }
-        else // you must be a client
-        {
-            NetworkManager.singleton.StopClient();
-        }
-
-        // this reloads the start menu, it's the lazy way rather than turning on/off various UI
         SceneLoader.LoadStartScene();
     }
 
