@@ -40,10 +40,18 @@ public class SceneLoader : MonoBehaviour
     /********** MARK: Class Functions **********/
     #region Class Functions
 
+    public static void LoadStartScene()
+    {
+        // HACK should be elsewhere, but if removed, clients never clear their map reader
+        SaveLoadMenu.MapReader = null;
+
+        SceneManager.LoadScene(MenuSceneName);
+    }
+
     /// <summary>
     /// Loads the starting scene
     /// </summary>
-    public static void LoadStartScene()
+    public static void StopConnectionAndLoadStartScene()
     {
         // FIXME: This needs to work for host/server/client; i can't figure it out yeesh
         if (NetworkServer.active && NetworkClient.isConnected)
@@ -56,10 +64,7 @@ public class SceneLoader : MonoBehaviour
             NetworkManager.singleton.StopClient();
         }
 
-        // HACK should be elsewhere, but if removed, clients never clear their map reader
-        SaveLoadMenu.MapReader = null;
-
-        SceneManager.LoadScene(MenuSceneName); 
+        LoadStartScene();
     }
 
     public static void LoadLocalGame()

@@ -88,7 +88,7 @@ public class SystemMenu : MonoBehaviour
             string description = "would you like to leave?";
 
             PopupMenu.Open(title, description,
-                isConfirmationPopup: true, func: SceneLoader.LoadStartScene); 
+                isConfirmationPopup: true, func: SceneLoader.StopConnectionAndLoadStartScene); 
         }
         else
         {

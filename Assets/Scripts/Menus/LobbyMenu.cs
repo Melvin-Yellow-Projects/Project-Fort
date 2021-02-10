@@ -59,7 +59,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void LeaveLobby()
     {
-        SceneLoader.LoadStartScene();
+        SceneLoader.StopConnectionAndLoadStartScene();
     }
 
     private bool ArePlayersOnDifferentTeams()

@@ -354,6 +354,7 @@ public class GameNetworkManager : NetworkManager
         if (HexGrid.Singleton) Destroy(HexGrid.Singleton.gameObject);
 
         GameManager.ServerStopGame();
+        SceneLoader.LoadStartScene();
     }
 
     #endregion
