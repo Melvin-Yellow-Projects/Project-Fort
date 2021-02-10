@@ -48,7 +48,6 @@ public class SceneLoader : MonoBehaviour
         // FIXME: This needs to work for host/server/client; i can't figure it out yeesh
         if (NetworkServer.active && NetworkClient.isConnected)
         {
-            
             NetworkManager.singleton.StopHost();
             //Application.Quit();
         }

@@ -113,7 +113,7 @@ public class GameOverHandler : NetworkBehaviour
     {
         TargetOnDefeat?.Invoke();
 
-        Destroy(PlayerMenu.Singleton.gameObject);
+        PlayerMenu.PlayerHasLost();
 
         if (isServer) return;
 

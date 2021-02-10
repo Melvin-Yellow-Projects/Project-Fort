@@ -142,6 +142,7 @@ public class GameManager : NetworkBehaviour
         Debug.LogWarning($"Starting Game with {Players.Count} Players");
 
         IsGameInProgress = true;
+        IsPlayingTurn = false;
         RoundCount = 0;
 
         ServerStartRound();

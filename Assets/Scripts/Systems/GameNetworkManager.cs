@@ -147,6 +147,8 @@ public class GameNetworkManager : NetworkManager
 
     public override void OnStopServer()
     {
+        Debug.LogWarning("Server has stopped");
+
         // FIXME: Server needs to unspawn objects on server
 
         // HACK: fat chance this works

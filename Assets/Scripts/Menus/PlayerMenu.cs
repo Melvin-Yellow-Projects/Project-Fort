@@ -139,12 +139,20 @@ public class PlayerMenu : MonoBehaviour
         MyPlayer.EndTurnButtonPressed();
     }
 
+    public static void PlayerHasLost()
+    {
+        Singleton.endTurnButton.gameObject.SetActive(false);
+        Singleton.buyPanel.gameObject.SetActive(false);
+    }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()
     {
+        Debug.Log("PlayerMenu Subscribing");
+
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
         GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
@@ -155,6 +163,8 @@ public class PlayerMenu : MonoBehaviour
 
     private void Unsubscribe()
     {
+        Debug.Log("PlayerMenu Unsubscribing");
+
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
@@ -167,7 +177,7 @@ public class PlayerMenu : MonoBehaviour
     {
         gamePhaseText.text = "Economy Phase";
 
-        buyPanel.SetActive(true);
+        if (MyPlayer.enabled) buyPanel.SetActive(true);
 
         RefreshMoveCountText();
     }
