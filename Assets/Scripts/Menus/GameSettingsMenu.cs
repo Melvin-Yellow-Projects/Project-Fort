@@ -83,7 +83,7 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
-        SetTurnTimerInteractable();
+        turnTimerText.text = GetTurnTimerText();
 
         /** Player Credit **/
         GameSession.StartingCredit = (int) startingCreditSlider.value * 25;
@@ -101,35 +101,22 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
-        SetTurnTimerInteractable();
+        turnTimerText.text = GetTurnTimerText();
 
         /** Player Credit **/
         startingCreditSlider.value = GameSession.StartingCredit / 25;
         creditPerFortSlider.value = GameSession.CreditPerFort / 25;
         startingCreditText.text = $"{GameSession.StartingCredit}";
         creditPerFortText.text = $"{GameSession.CreditPerFort}";
+
+        // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
+        Player player = GeneralUtilities.GetPlayerFromClientConnection();
+        if (!player) return;
+        Interactable = player.Info.IsPartyLeader;
     }
     #endregion
     /************************************************************/
     #region Private Functions
-
-    private void SetTurnTimerInteractable()
-    {
-        // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
-        Player player = GeneralUtilities.GetPlayerFromClientConnection();
-
-        if (player && player.Info.IsPartyLeader)
-        {
-            turnTimerToggle.interactable = true;
-            turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;
-        }
-        else
-        {
-            turnTimerToggle.interactable = false;
-            turnTimerSlider.interactable = false;
-        }
-        turnTimerText.text = GetTurnTimerText();
-    }
 
     private string GetTurnTimerText()
     {
