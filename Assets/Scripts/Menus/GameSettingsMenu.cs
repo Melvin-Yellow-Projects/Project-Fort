@@ -79,7 +79,6 @@ public class GameSettingsMenu : MonoBehaviour
         // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
         Player player = GeneralUtilities.GetPlayerFromClientConnection();
         if (!player || !player.Info.IsPartyLeader) return;
-
         Interactable = player.Info.IsPartyLeader;
 
         /** Turn Timer **/
@@ -110,6 +109,11 @@ public class GameSettingsMenu : MonoBehaviour
         creditPerFortSlider.value = GameSession.CreditPerFort / 25;
         startingCreditText.text = $"{GameSession.StartingCredit}";
         creditPerFortText.text = $"{GameSession.CreditPerFort}";
+
+        // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
+        Player player = GeneralUtilities.GetPlayerFromClientConnection();
+        if (!player || !player.Info.IsPartyLeader) return;
+        Interactable = player.Info.IsPartyLeader;
     }
     #endregion
     /************************************************************/
