@@ -84,7 +84,8 @@ public class PlayerMenu : MonoBehaviour
 
         for (int i = 0; i < Unit.Prefabs.Count; i++)
         {
-            unitTexts[i].text = Unit.Prefabs[i].Title;
+            unitTexts[i].text = Unit.Prefabs[i].ClassTitle;
+            //unitTexts[i].text = Unit.Prefabs[i].PieceTitle;
             costTexts[i].text = $"{Unit.Prefabs[i].Resources}";
         }
 

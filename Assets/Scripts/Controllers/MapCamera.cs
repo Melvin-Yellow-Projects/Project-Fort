@@ -12,6 +12,7 @@
  *
  *      TODO: Comment this script
  *      HACK: this class is just a complete jank mess
+ *				this class uses a singleton which won't work if there are ever multiple cameras
  **/
 
 using UnityEngine;
@@ -101,13 +102,10 @@ public class MapCamera : MonoBehaviour
 	/************************************************************/
 	#region Unity Functions
 
-	protected void Awake()
-	{
-		Singleton = this;
-	}
-
     private void OnEnable()
     {
+		Singleton = this;
+
 		virtualCamera.enabled = true;
 
 		controls = new Controls();
@@ -150,13 +148,13 @@ public class MapCamera : MonoBehaviour
     private void OnDestroy()
     {
 		Singleton = null;
-    }
+	}
 
-	#endregion
-	/************************************************************/
-	#region Input Functions
+    #endregion
+    /************************************************************/
+    #region Input Functions
 
-	void AdjustRotation(InputAction.CallbackContext ctx)
+    void AdjustRotation(InputAction.CallbackContext ctx)
 	{
 		rotationIndex += (int) ctx.ReadValue<float>();
 

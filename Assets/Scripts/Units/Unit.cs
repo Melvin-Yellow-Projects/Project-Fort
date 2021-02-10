@@ -33,8 +33,11 @@ public class Unit : NetworkBehaviour
     [Tooltip("ID for this unit")]
     [SerializeField] int id = 0;
 
-    [Tooltip("title name for this unit")]
-    [SerializeField] string title = null;
+    [Tooltip("class title name for this unit")]
+    [SerializeField] string classTitle = null;
+
+    [Tooltip("piece title name for this unit")]
+    [SerializeField] string pieceTitle = null;
 
     [Tooltip("how much this unit costs")]
     [SerializeField] int resources = 0;
@@ -76,11 +79,19 @@ public class Unit : NetworkBehaviour
         }
     }
 
-    public string Title
+    public string ClassTitle
     {
         get
         {
-            return title;
+            return classTitle;
+        }
+    }
+
+    public string PieceTitle
+    {
+        get
+        {
+            return pieceTitle;
         }
     }
 

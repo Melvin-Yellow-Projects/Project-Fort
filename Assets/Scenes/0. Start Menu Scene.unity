@@ -2663,17 +2663,17 @@ PrefabInstance:
     - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: fortHighlightColor.b
-      value: 0.12941177
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: fortHighlightColor.g
-      value: 0.13333334
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: fortHighlightColor.r
-      value: 0.1254902
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1281260488067124436, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}

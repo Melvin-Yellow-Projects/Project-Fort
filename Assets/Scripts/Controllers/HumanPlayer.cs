@@ -143,7 +143,9 @@ public class HumanPlayer : Player
         HexCell cell = HexGrid.Singleton.GetCellUnderMouse();
 
         // HACK: this color is hardcoded, it should probably reflect the team color?
-        if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+        //if (cell && cell.IsExplored) cell.EnableHighlight(new Color(1f, 0f, 0f, 0.6f));
+        if (cell && cell.IsExplored)
+            cell.EnableHighlight(MyTeam.TeamColor * new Vector4(0.8f, 0.8f, 0.8f, 1f));
 
         if (cell != currentCell)
         {

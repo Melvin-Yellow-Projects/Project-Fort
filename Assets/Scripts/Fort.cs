@@ -199,6 +199,7 @@ public class Fort : NetworkBehaviour
     // HACK: maybe we could shorted some code here
     private IEnumerator HighlightCellNeighbors()
     {
+        HighlightColor = MyTeam.TeamColor * 1.5f;
         currentColor = HighlightColor;
         currentColor.a = 0;
         interpolator = 0;

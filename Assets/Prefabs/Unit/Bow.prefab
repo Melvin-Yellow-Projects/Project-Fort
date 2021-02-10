@@ -32,7 +32,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStepsBeforeFire: 2
-  range: 3
+  range: 4
 --- !u!1001 &4291586569108868397
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -113,7 +113,17 @@ PrefabInstance:
     - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
         type: 3}
       propertyPath: resources
-      value: 125
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: classTitle
+      value: Bow
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: pieceTitle
+      value: Dhole
       objectReference: {fileID: 0}
     - target: {fileID: 9140632859970485494, guid: 42403f62e5c024786b85537907da21f9,
         type: 3}

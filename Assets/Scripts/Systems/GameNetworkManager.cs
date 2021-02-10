@@ -148,7 +148,8 @@ public class GameNetworkManager : NetworkManager
     {
         // FIXME: Server needs to unspawn objects on server
 
-        GameSession.Singleton.DestroySession(); // HACK: fat chance this works
+        // HACK: fat chance this works
+        if (GameSession.Singleton) GameSession.Singleton.DestroySession(); 
 
         GameManager.Players.Clear();
 

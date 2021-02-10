@@ -6,7 +6,8 @@
  * Date Created: November 14, 2020
  * 
  * Additional Comments: 
- *      Line length: 100 Characters
+ *      
+ *      HACK This whole class is just very rushed
  **/
 
 using System.Collections;
@@ -29,6 +30,8 @@ public class PopupMenu : MonoBehaviour
     [SerializeField] TMP_Text description = null;
     [SerializeField] Button confirmationButton = null;
 
+    [SerializeField] GameObject helpMenu = null;
+
     #endregion
     /************************************************************/
     #region Variables
@@ -41,8 +44,14 @@ public class PopupMenu : MonoBehaviour
     /************************************************************/
     #region Unity Functions
 
+    private void Awake()
+    {
+        MapCamera.Locked = true;
+    }
+
     private void OnDestroy()
     {
+        MapCamera.Locked = false;
         Singleton = null;
     }
 
@@ -62,8 +71,6 @@ public class PopupMenu : MonoBehaviour
         Singleton.confirmationButton.gameObject.SetActive(isConfirmationPopup);
 
         Singleton.confirmationButton.onClick.AddListener(func);
-
-        MapCamera.Locked = true;
     }
 
     public static void Close()
@@ -73,6 +80,12 @@ public class PopupMenu : MonoBehaviour
         Singleton.confirmationButton.onClick.RemoveAllListeners();
 
         Destroy(Singleton.gameObject);
+    }
+
+    public static void Help()
+    {
+        Singleton = Instantiate(Prefab);
+        Singleton.helpMenu.SetActive(true);
     }
 
     #endregion

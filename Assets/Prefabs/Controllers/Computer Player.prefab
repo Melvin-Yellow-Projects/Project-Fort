@@ -162,6 +162,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Map Virtual Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 1013797562108657598, guid: 369237ee3fec44141a8aceee509d2d14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 369237ee3fec44141a8aceee509d2d14, type: 3}
 --- !u!4 &8051244373264447528 stripped

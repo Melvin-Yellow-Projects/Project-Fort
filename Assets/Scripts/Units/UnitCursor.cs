@@ -123,7 +123,9 @@ public class UnitCursor : MonoBehaviour
     {
         get
         {
-            return new Color(color, errorColor, errorColor, alpha);
+            // HACK this is bad
+            //return new Color(color, errorColor, errorColor, alpha);
+            return PlayerMenu.MyPlayer.MyTeam.TeamColor;
         }
     }
     #endregion

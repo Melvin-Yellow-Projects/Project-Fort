@@ -108,6 +108,16 @@ PrefabInstance:
       propertyPath: title
       value: Draught
       objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: classTitle
+      value: Horse
+      objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: pieceTitle
+      value: Draught
+      objectReference: {fileID: 0}
     - target: {fileID: 9140632859970485494, guid: 42403f62e5c024786b85537907da21f9,
         type: 3}
       propertyPath: m_AssetId

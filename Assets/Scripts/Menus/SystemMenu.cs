@@ -5,7 +5,9 @@
  * Authors: Will Lacey
  * Date Created: December 16, 2020
  * 
- * Additional Comments: 
+ * Additional Comments:
+ * 
+ *      HACK This whole class is just very rushed
  **/
 
 using System.Collections;
@@ -65,11 +67,7 @@ public class SystemMenu : MonoBehaviour
 
     public void HelpButtonPressed()
     {
-        // TODO: should be a help menu
-        string title = "Help";
-        string description = "sorry, this feature is not yet implemented";
-
-        PopupMenu.Open(title, description, isConfirmationPopup : false);
+        PopupMenu.Help();
     }
 
     public void SettingsButtonPressed()
