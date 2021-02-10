@@ -123,12 +123,7 @@ public class MapCamera : MonoBehaviour
 
 		controls.Enable();
 
-		// HACK this is really rushed
-		Player player = PlayerMenu.MyPlayer;
-		if (!player) return;
-
-		Vector3 pos = player.MyForts[0].transform.position;
-		transform.position = new Vector3(pos.x, transform.position.y, pos.z);
+		Subscribe();
 	}
 
     private void OnDisable()
@@ -136,6 +131,8 @@ public class MapCamera : MonoBehaviour
 		virtualCamera.enabled = false;
 
 		controls.Dispose();
+
+		Unsubscribe();
 	}
 
     void Update()
@@ -298,6 +295,17 @@ public class MapCamera : MonoBehaviour
 	private void HandleClientOnStartRound()
     {
 		NextIndex = 0;
+
+		if (GameManager.RoundCount == 1)
+        {
+			// HACK this is really rushed
+			Player player = PlayerMenu.MyPlayer;
+			if (!player) return;
+
+			Vector3 pos = player.MyForts[0].transform.position;
+			Singleton.transform.position =
+				new Vector3(pos.x, Singleton.transform.position.y, pos.z);
+		}
     }
 
 	private void HandleClientOnStartTurn()

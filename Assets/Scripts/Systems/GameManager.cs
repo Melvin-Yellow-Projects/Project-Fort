@@ -309,6 +309,7 @@ public class GameManager : NetworkBehaviour
             // TODO: check to see if connection is still active, or if this line is needed
             //NetworkClient.connection.identity.GetComponent<Player>().Resources += 100;
         }
+
         ClientOnStartRound?.Invoke();
     }
 
