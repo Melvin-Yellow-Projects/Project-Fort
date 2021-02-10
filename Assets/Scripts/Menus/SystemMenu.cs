@@ -82,7 +82,7 @@ public class SystemMenu : MonoBehaviour
     public void ExitButtonPressed()
     {
         // HACK: verify this line
-        if (Mirror.NetworkServer.active) 
+        if (Mirror.NetworkClient.isConnected) 
         {
             string title = "Exit";
             string description = "would you like to leave?";
