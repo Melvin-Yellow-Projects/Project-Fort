@@ -54,15 +54,16 @@ public class SceneLoader : MonoBehaviour
         else
         {
             NetworkManager.singleton.StopClient();
-            //Application.Quit(); // FIXME yea this line-of-code needs to line-of-go
         }
+
+        // HACK should be elsewhere, but if removed, clients never clear their map reader
+        SaveLoadMenu.MapReader = null;
 
         SceneManager.LoadScene(MenuSceneName); 
     }
 
     public static void LoadLocalGame()
     {
-        //GameSession.Singleton.IsOnline = false; // HACK: brute force line of code
         NetworkManager.singleton.StartHost();
 
         LoadSceneByName(GameSceneName); 

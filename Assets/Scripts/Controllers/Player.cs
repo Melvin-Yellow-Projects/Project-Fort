@@ -141,8 +141,8 @@ public abstract class Player : NetworkBehaviour
     {
         // HACK: maybe event should fire after unsub()
         // HACK: not certain this works
-        if (GameManager.IsGameInProgress)
-            GameOverHandler.Singleton.ServerPlayerHasLost(this, WinConditionType.Disconnect);
+        //if (GameManager.IsGameInProgress)
+        //    GameOverHandler.Singleton.ServerPlayerHasLost(this, WinConditionType.Disconnect);
         ServerUnsubscribe();
 
         Debug.Log($"{name} OnStopServer");
