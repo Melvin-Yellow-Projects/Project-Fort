@@ -143,7 +143,7 @@ public class GameNetworkManager : NetworkManager
         if (GameManager.IsGameInProgress)
             GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Disconnect);
 
-        RpcClientHasDisconnected();
+        //RpcClientHasDisconnected();
         // TODO: revoke authority and team on previously owned entities, see the code ->
         //base.OnServerDisconnect(conn);
     }
@@ -341,13 +341,17 @@ public class GameNetworkManager : NetworkManager
 
         // TODO remove player from client's list of players
         //conn.identity.GetComponent<Player>();
-    }
 
-    [ClientRpc]
-    private void RpcClientHasDisconnected()
-    {
+        Debug.LogError("Client has disconnected");
+
         OnClientDisconnectEvent?.Invoke();
     }
+
+    //[ClientRpc]
+    //private void RpcClientHasDisconnected()
+    //{
+    //    OnClientDisconnectEvent?.Invoke();
+    //}
 
     public override void OnStopClient()
     {
