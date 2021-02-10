@@ -26,7 +26,7 @@ public class PlayerMenu : MonoBehaviour
     /* Cached References */
     [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
-    [SerializeField] TMP_Text resourcesText = null;
+    [SerializeField] TMP_Text creditsText = null;
     [SerializeField] TMP_Text gamePhaseText = null;
     [SerializeField] TMP_Text turnTimerText = null;
     [SerializeField] GameObject buyPanel = null;
@@ -86,7 +86,7 @@ public class PlayerMenu : MonoBehaviour
         {
             unitTexts[i].text = Unit.Prefabs[i].ClassTitle;
             //unitTexts[i].text = Unit.Prefabs[i].PieceTitle;
-            costTexts[i].text = $"{Unit.Prefabs[i].Resources}";
+            costTexts[i].text = $"{Unit.Prefabs[i].Credits}";
         }
 
         Subscribe();
@@ -121,9 +121,9 @@ public class PlayerMenu : MonoBehaviour
         Singleton.enabled = true;
     }
 
-    public static void RefreshResourcesText()
+    public static void RefreshCreditsText()
     {
-        Singleton.resourcesText.text = $"{MyPlayer.Resources}";
+        Singleton.creditsText.text = $"{MyPlayer.Credits}";
     }
 
     private static void UpdateTimerText()
@@ -157,7 +157,6 @@ public class PlayerMenu : MonoBehaviour
         GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
 
-        //Player.ClientOnResourcesUpdated += null;
         Player.ClientOnHasEndedTurn += HandleClientOnHasEndedTurn;
     }
 
@@ -169,7 +168,6 @@ public class PlayerMenu : MonoBehaviour
         GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
 
-        //Player.ClientOnResourcesUpdated -= null;
         Player.ClientOnHasEndedTurn -= HandleClientOnHasEndedTurn;
     }
 

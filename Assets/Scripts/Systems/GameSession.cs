@@ -122,17 +122,32 @@ public class GameSession : NetworkBehaviour
     }
 
     [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
-    int startingPlayerResources;
-    public static int StartingPlayerResources
+    int startingCredit;
+    public static int StartingCredit
     {
         get
         {
-            return Singleton.startingPlayerResources;
+            return Singleton.startingCredit;
         }
         set
         {
-            Singleton.startingPlayerResources = value;
-            Singleton.gameSettings.startingPlayerResources = value;
+            Singleton.startingCredit = value;
+            Singleton.gameSettings.startingCredit = value;
+        }
+    }
+
+    [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
+    int creditPerFort;
+    public static int CreditPerFort
+    {
+        get
+        {
+            return Singleton.creditPerFort;
+        }
+        set
+        {
+            Singleton.creditPerFort = value;
+            Singleton.gameSettings.resourcesPerFort = value;
         }
     }
 
@@ -222,7 +237,8 @@ public class GameSession : NetworkBehaviour
         movesPerTurn = gameSettings.movesPerTurn;
         isUsingTurnTimer = gameSettings.isUsingTurnTimer;
         turnTimerLength = gameSettings.turnTimerLength;
-        startingPlayerResources = gameSettings.startingPlayerResources;
+        startingCredit = gameSettings.startingCredit;
+        creditPerFort = gameSettings.resourcesPerFort;
     }
 
     /// <summary>
@@ -236,7 +252,8 @@ public class GameSession : NetworkBehaviour
         Singleton.gameSettings.movesPerTurn = MovesPerTurn;
         Singleton.gameSettings.isUsingTurnTimer = IsUsingTurnTimer;
         Singleton.gameSettings.turnTimerLength = TurnTimerLength;
-        Singleton.gameSettings.startingPlayerResources = StartingPlayerResources;
+        Singleton.gameSettings.startingCredit = StartingCredit;
+        Singleton.gameSettings.resourcesPerFort = CreditPerFort;
 
         return Singleton.gameSettings;
     }

@@ -15,5 +15,6 @@ MonoBehaviour:
   turnsPerRound: 3
   movesPerTurn: 5
   isUsingTurnTimer: 1
-  turnTimerLength: 1
-  startingPlayerResources: 1200
+  turnTimerLength: 120
+  startingCredit: 1000
+  resourcesPerFort: 100

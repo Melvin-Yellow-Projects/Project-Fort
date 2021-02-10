@@ -158,8 +158,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   id: 0
-  title: Debug
-  resources: 100
+  classTitle: 
+  pieceTitle: 
+  credits: 100
 --- !u!1 &5279317163333848885
 GameObject:
   m_ObjectHideFlags: 0

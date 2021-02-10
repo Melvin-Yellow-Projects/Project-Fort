@@ -157,8 +157,8 @@ public class GameManager : NetworkBehaviour
         TurnCount = 0;
         IsEconomyPhase = true;
 
-        // give 100 to a player for each fort they own // TODO: make this a setting
-        foreach (Player player in Players) player.Resources += player.MyForts.Count * 100;
+        foreach (Player player in Players)
+            player.Credits += player.MyForts.Count * GameSession.CreditPerFort;
 
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();

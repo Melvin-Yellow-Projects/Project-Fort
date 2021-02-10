@@ -22,16 +22,20 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Variables
 
-    [Header("Cached References")]
-
-    //[Header("Turn Timer")]
+    [Header("Turn Timer")]
     [SerializeField] Toggle turnTimerToggle = null;
     [SerializeField] Slider turnTimerSlider = null;
     [SerializeField] TMP_Text turnTimerText = null;
 
+    [Header("Player Credit")]
+    [SerializeField] TMP_Text startingCreditText = null;
+    [SerializeField] Slider startingCreditSlider = null;
+    [SerializeField] TMP_Text creditPerFortText = null;
+    [SerializeField] Slider creditPerFortSlider = null;
+
     #endregion
     /************************************************************/
-    #region Public Class Functions
+    #region Properties
 
     public static GameSettingsMenu Singleton { get; private set; }
 
@@ -39,8 +43,13 @@ public class GameSettingsMenu : MonoBehaviour
     {
         set
         {
+            /** Turn Timer **/
             turnTimerToggle.interactable = value;
             turnTimerSlider.interactable = value && GameSession.IsUsingTurnTimer;
+
+            /** Player Credit **/
+            startingCreditSlider.interactable = value;
+            creditPerFortSlider.interactable = value;
         }
     }
 
@@ -63,7 +72,7 @@ public class GameSettingsMenu : MonoBehaviour
 
     #endregion
     /************************************************************/
-    #region Class Functions
+    #region Public Functions
 
     public void SetGameSettings()
     {
@@ -76,6 +85,12 @@ public class GameSettingsMenu : MonoBehaviour
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
         SetTurnTimerInteractable();
 
+        /** Player Credit **/
+        GameSession.StartingCredit = (int) startingCreditSlider.value * 25;
+        GameSession.CreditPerFort = (int) creditPerFortSlider.value * 25;
+        startingCreditText.text = $"{GameSession.StartingCredit}";
+        creditPerFortText.text = $"{GameSession.CreditPerFort}";
+
         // if this is the server, the sync var's will transmit the data
         if (player.isServer) return;
         GameSession.Singleton.CmdSetGameSettings(GameSession.GetGameSettings());
@@ -87,7 +102,16 @@ public class GameSettingsMenu : MonoBehaviour
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
         SetTurnTimerInteractable();
+
+        /** Player Credit **/
+        startingCreditSlider.value = GameSession.StartingCredit / 25;
+        creditPerFortSlider.value = GameSession.CreditPerFort / 25;
+        startingCreditText.text = $"{GameSession.StartingCredit}";
+        creditPerFortText.text = $"{GameSession.CreditPerFort}";
     }
+    #endregion
+    /************************************************************/
+    #region Private Functions
 
     private void SetTurnTimerInteractable()
     {
@@ -121,9 +145,10 @@ public class GameSettingsMenu : MonoBehaviour
             return "off";
         }
     }
+
     #endregion
     /************************************************************/
-    #region Private Class Functions
+    #region Event Handler Functions
 
     private void Subscribe()
     {
