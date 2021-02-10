@@ -83,6 +83,7 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
+        turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;
         turnTimerText.text = GetTurnTimerText();
 
         /** Player Credit **/
