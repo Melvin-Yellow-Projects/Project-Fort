@@ -206,7 +206,8 @@ public class GameSession : NetworkBehaviour
     [ClientRpc]
     public void RpcClientHasDisconnected()
     {
-        Debug.LogError("Client has disconnected");
+        // HACK: this doesn't really belong here
+        Debug.LogWarning("Client has disconnected");
 
         OnClientDisconnectEvent?.Invoke();
     }
