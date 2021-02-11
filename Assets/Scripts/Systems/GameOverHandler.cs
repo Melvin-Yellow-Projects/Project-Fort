@@ -60,7 +60,7 @@ public class GameOverHandler : NetworkBehaviour
         {
             unit.MyTeam.SetTeam(0);
             unit.MyCell.DecreaseVisibility();
-            unit.Movement.Display.HideDisplay();
+            unit.Movement.Display.HideDisplay(); // FIXME: this isn't working (actually i think it is)
         }
 
         player.MyUnits.Clear();
@@ -124,7 +124,7 @@ public class GameOverHandler : NetworkBehaviour
         foreach (Unit unit in player.MyUnits)
         {
             unit.MyCell.DecreaseVisibility();
-            unit.Movement.Display.HideDisplay();
+            unit.Movement.Display.HideDisplay(); // FIXME: this isn't working
         }
 
         player.MyUnits.Clear();
