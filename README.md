@@ -9,22 +9,22 @@ A stoic, chess-like strategy game where multiple players compete against one ano
 ![Piece Silhouette](/Images/piece_silhouette.jpg)
 
 ## Current Version Builds (*v1.1-alpha*)
-To play the current build of the game, please download the following **.zip** file to your corresponding operating system from **Dropbox**. ***Do not change any of the contents of the folder*** to run the game.
+To play the current build of the game, please download the following **.zip** file to your corresponding operating system from **Dropbox**. **Do not change any of the contents of the folder** to run the game.
 - [Windows Build Download (*tested on Windows 10*)](https://www.dropbox.com/s/tzstjnnlc2ulo8l/Windows.zip?dl=0 "Windows.zip download")
 - ~~[macOS Build Download (*test failed on macOS Mojave 10.14.6; Steamworks cannot connect to Steam*)](https://www.dropbox.com/s/8f2y0f5ssqm869s/macOs.zip?dl=0 "macOs.zip download")~~
 
 ## How to play online through Steam
-## 1. Download the .zip file of the game from Dropbox
-	![Piece Silhouette](/Images/1_dropbox.gif)
-## 2. Extract the contents of the .zip file to your machine
-	![Piece Silhouette](/Images/2_unzip.gif)
-## 3. Add the non-Steam game to your Steam Library
-	![Piece Silhouette](/Images/3_steam.gif)
-## 4. Launch the game through Steam
-## 5. Once it is open, press the Online Game button; in the next menu the Join Game button will be non-interactable *(this is not a bug)*
-## 6. Return to Steam to connect with a friend by right clicking on their name, and pressing Join Game (alternatively, you can accept their invite)
-	![Piece Silhouette](/Images/6_join.gif)
-## 7. The screen will turn black for a few seconds while you are connecting, in a moment you will be in the same lobby with your friend!
+### 1. Download the .zip file of the game from Dropbox
+![Piece Silhouette](/Images/1_dropbox.gif)
+### 2. Extract the contents of the .zip file to your machine
+![Piece Silhouette](/Images/2_unzip.gif)
+### 3. Add the non-Steam game to your Steam Library (this will look slightly different on Windows)
+![Piece Silhouette](/Images/3_steam.gif)
+### 4. Launch the game through Steam
+### 5. Once it is open, press the Online Game button; in the next menu the Join Game button will be non-interactable *(this is not a bug)*
+### 6. Return to Steam to connect with a friend by right clicking on their name, and pressing Join Game (alternatively, you can accept their invite)
+![Piece Silhouette](/Images/6_join.gif)
+### 7. The screen will turn black for a few seconds while you are connecting, in a moment you will be in the same lobby with your friend!
 
 ## Known Bugs
 List of known bugs in the current project
