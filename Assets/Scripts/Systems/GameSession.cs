@@ -122,32 +122,32 @@ public class GameSession : NetworkBehaviour
     }
 
     [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
-    int startingCredit;
-    public static int StartingCredit
+    int startingCredits;
+    public static int StartingCredits
     {
         get
         {
-            return Singleton.startingCredit;
+            return Singleton.startingCredits;
         }
         set
         {
-            Singleton.startingCredit = value;
-            Singleton.gameSettings.startingCredit = value;
+            Singleton.startingCredits = value;
+            Singleton.gameSettings.startingCredits = value;
         }
     }
 
     [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
-    int creditPerFort;
-    public static int CreditPerFort
+    int creditsPerFort;
+    public static int CreditsPerFort
     {
         get
         {
-            return Singleton.creditPerFort;
+            return Singleton.creditsPerFort;
         }
         set
         {
-            Singleton.creditPerFort = value;
-            Singleton.gameSettings.resourcesPerFort = value;
+            Singleton.creditsPerFort = value;
+            Singleton.gameSettings.creditsPerFort = value;
         }
     }
 
@@ -238,8 +238,8 @@ public class GameSession : NetworkBehaviour
         movesPerTurn = gameSettings.movesPerTurn;
         isUsingTurnTimer = gameSettings.isUsingTurnTimer;
         turnTimerLength = gameSettings.turnTimerLength;
-        startingCredit = gameSettings.startingCredit;
-        creditPerFort = gameSettings.resourcesPerFort;
+        startingCredits = gameSettings.startingCredits;
+        creditsPerFort = gameSettings.creditsPerFort;
     }
 
     /// <summary>
@@ -255,8 +255,8 @@ public class GameSession : NetworkBehaviour
         newSettings.movesPerTurn = MovesPerTurn;
         newSettings.isUsingTurnTimer = IsUsingTurnTimer;
         newSettings.turnTimerLength = TurnTimerLength;
-        newSettings.startingCredit = StartingCredit;
-        newSettings.resourcesPerFort = CreditPerFort;
+        newSettings.startingCredits = StartingCredits;
+        newSettings.creditsPerFort = CreditsPerFort;
 
         return newSettings;
     }

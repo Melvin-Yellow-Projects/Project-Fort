@@ -150,6 +150,8 @@ public class GameManager : NetworkBehaviour
         IsPlayingTurn = false;
         RoundCount = 0;
 
+        foreach (Player player in Players) player.Credits = GameSession.StartingCredits;
+
         ServerStartRound();
     }
 
@@ -163,7 +165,7 @@ public class GameManager : NetworkBehaviour
         IsEconomyPhase = true;
 
         foreach (Player player in Players)
-            player.Credits += player.MyForts.Count * GameSession.CreditPerFort;
+            player.Credits += player.MyForts.Count * GameSession.CreditsPerFort;
 
         ServerOnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();

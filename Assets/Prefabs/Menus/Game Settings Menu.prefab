@@ -273,7 +273,7 @@ GameObject:
   - component: {fileID: 5050319510640903635}
   - component: {fileID: 5217287699251472428}
   m_Layer: 0
-  m_Name: startingCreditText
+  m_Name: startingCreditsText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -541,7 +541,7 @@ GameObject:
   - component: {fileID: 5497909804832063136}
   - component: {fileID: 4356119942096595384}
   m_Layer: 0
-  m_Name: creditPerFortText
+  m_Name: creditsPerFortText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -711,7 +711,7 @@ GameObject:
   - component: {fileID: 6622187796906532697}
   - component: {fileID: 5330841701720860343}
   m_Layer: 0
-  m_Name: Credit Per Fort
+  m_Name: Credits Per Fort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Credit Per Fort
+  m_text: Credits Per Fort
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1353,7 +1353,7 @@ GameObject:
   - component: {fileID: 2613830148179588618}
   - component: {fileID: 2499706977942540770}
   m_Layer: 5
-  m_Name: creditPerFortSlider
+  m_Name: creditsPerFortSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1454,7 +1454,7 @@ GameObject:
   - component: {fileID: 5176493987799528410}
   - component: {fileID: 8194957812525864558}
   m_Layer: 5
-  m_Name: startingCreditSlider
+  m_Name: startingCreditsSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1724,7 +1724,7 @@ GameObject:
   - component: {fileID: 6918466993101439346}
   - component: {fileID: 838000989575952209}
   m_Layer: 0
-  m_Name: Starting Credit
+  m_Name: Starting Credits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1777,9 +1777,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Starting Credit
-
-'
+  m_text: Starting Credits
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1961,7 +1959,7 @@ GameObject:
   - component: {fileID: 9113946720419538253}
   - component: {fileID: 9114672031478987528}
   m_Layer: 5
-  m_Name: Player Credit
+  m_Name: Player Credits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2096,7 +2094,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Player Credit
+  m_text: 'Player Credits
 
 '
   m_isRightToLeft: 0
@@ -2637,7 +2635,7 @@ MonoBehaviour:
   turnTimerToggle: {fileID: 2241457143256430125}
   turnTimerSlider: {fileID: 7428896522177272236}
   turnTimerText: {fileID: 1086108980690992852}
-  startingCreditText: {fileID: 5217287699251472428}
-  startingCreditSlider: {fileID: 8194957812525864558}
-  creditPerFortText: {fileID: 4356119942096595384}
-  creditPerFortSlider: {fileID: 2499706977942540770}
+  startingCreditsText: {fileID: 0}
+  startingCreditsSlider: {fileID: 0}
+  creditsPerFortText: {fileID: 0}
+  creditsPerFortSlider: {fileID: 0}

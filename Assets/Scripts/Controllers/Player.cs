@@ -134,7 +134,6 @@ public abstract class Player : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
         ServerSubscribe();
-        credits = GameSession.StartingCredit;
     }
 
     public override void OnStopServer()

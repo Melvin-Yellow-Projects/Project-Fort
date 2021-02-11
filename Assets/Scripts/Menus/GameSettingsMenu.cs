@@ -27,11 +27,11 @@ public class GameSettingsMenu : MonoBehaviour
     [SerializeField] Slider turnTimerSlider = null;
     [SerializeField] TMP_Text turnTimerText = null;
 
-    [Header("Player Credit")]
-    [SerializeField] TMP_Text startingCreditText = null;
-    [SerializeField] Slider startingCreditSlider = null;
-    [SerializeField] TMP_Text creditPerFortText = null;
-    [SerializeField] Slider creditPerFortSlider = null;
+    [Header("Player Credits")]
+    [SerializeField] TMP_Text startingCreditsText = null;
+    [SerializeField] Slider startingCreditsSlider = null;
+    [SerializeField] TMP_Text creditsPerFortText = null;
+    [SerializeField] Slider creditsPerFortSlider = null;
 
     #endregion
     /************************************************************/
@@ -48,8 +48,8 @@ public class GameSettingsMenu : MonoBehaviour
             turnTimerSlider.interactable = value && GameSession.IsUsingTurnTimer;
 
             /** Player Credit **/
-            startingCreditSlider.interactable = value;
-            creditPerFortSlider.interactable = value;
+            startingCreditsSlider.interactable = value;
+            creditsPerFortSlider.interactable = value;
         }
     }
 
@@ -87,10 +87,10 @@ public class GameSettingsMenu : MonoBehaviour
         turnTimerText.text = GetTurnTimerText();
 
         /** Player Credit **/
-        GameSession.StartingCredit = (int) startingCreditSlider.value * 25;
-        GameSession.CreditPerFort = (int) creditPerFortSlider.value * 25;
-        startingCreditText.text = $"{GameSession.StartingCredit}";
-        creditPerFortText.text = $"{GameSession.CreditPerFort}";
+        GameSession.StartingCredits = (int) startingCreditsSlider.value * 25;
+        GameSession.CreditsPerFort = (int) creditsPerFortSlider.value * 25;
+        startingCreditsText.text = $"{GameSession.StartingCredits}";
+        creditsPerFortText.text = $"{GameSession.CreditsPerFort}";
 
         // if this is the server, the sync var's will transmit the data
         if (player.isServer) return;
@@ -105,10 +105,10 @@ public class GameSettingsMenu : MonoBehaviour
         turnTimerText.text = GetTurnTimerText();
 
         /** Player Credit **/
-        startingCreditSlider.value = GameSession.StartingCredit / 25;
-        creditPerFortSlider.value = GameSession.CreditPerFort / 25;
-        startingCreditText.text = $"{GameSession.StartingCredit}";
-        creditPerFortText.text = $"{GameSession.CreditPerFort}";
+        startingCreditsSlider.value = GameSession.StartingCredits / 25;
+        creditsPerFortSlider.value = GameSession.CreditsPerFort / 25;
+        startingCreditsText.text = $"{GameSession.StartingCredits}";
+        creditsPerFortText.text = $"{GameSession.CreditsPerFort}";
 
         // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
         Player player = GeneralUtilities.GetPlayerFromClientConnection();
