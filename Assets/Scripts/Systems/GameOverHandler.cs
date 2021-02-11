@@ -60,6 +60,7 @@ public class GameOverHandler : NetworkBehaviour
         {
             unit.MyTeam.SetTeam(0);
             unit.MyCell.DecreaseVisibility();
+            unit.Movement.Display.HideDisplay();
         }
 
         player.MyUnits.Clear();
@@ -120,7 +121,11 @@ public class GameOverHandler : NetworkBehaviour
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
 
         foreach (Fort fort in player.MyForts) fort.HideBuyCells();
-        foreach (Unit unit in player.MyUnits) unit.MyCell.DecreaseVisibility();
+        foreach (Unit unit in player.MyUnits)
+        {
+            unit.MyCell.DecreaseVisibility();
+            unit.Movement.Display.HideDisplay();
+        }
 
         player.MyUnits.Clear();
         player.MyForts.Clear();

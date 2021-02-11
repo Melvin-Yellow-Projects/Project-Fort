@@ -36,7 +36,7 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] TMP_Text[] unitTexts = null;
     [SerializeField] TMP_Text[] costTexts = null;
 
-    static HumanPlayer player = null; 
+    static HumanPlayer player = null;
     static int unitId = 0;
 
     static float timer = 0;
@@ -47,7 +47,7 @@ public class PlayerMenu : MonoBehaviour
 
     public static PlayerMenu Singleton { get; set; }
 
-    public static HumanPlayer MyPlayer 
+    public static HumanPlayer MyPlayer
     {
         get
         {
@@ -71,7 +71,7 @@ public class PlayerMenu : MonoBehaviour
         {
             unitId = Mathf.Clamp(value, 0, Unit.Prefabs.Count);
         }
-    } 
+    }
 
     #endregion
     /************************************************************/
