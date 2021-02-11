@@ -8,7 +8,7 @@ A stoic, chess-like strategy game where multiple players compete against one ano
 
 ![Piece Silhouette](/Images/piece_silhouette.jpg)
 
-### Current Version Builds (v1.1-alpha)
+### Current Version Builds (*v1.1-alpha*)
 To play the current build of the game, please download the following **.zip** file to your corresponding operating system from **Dropbox**. ***Do not change any of the contents of the folder*** to run the game.
 - [Windows Build Download (*tested on Windows 10*)](https://www.dropbox.com/s/tzstjnnlc2ulo8l/Windows.zip?dl=0 "Windows.zip download")
 - ~~[macOS Build Download (*test failed on macOS Mojave 10.14.6; Steamworks cannot connect to Steam*)](https://www.dropbox.com/s/8f2y0f5ssqm869s/macOs.zip?dl=0 "macOs.zip download")~~
@@ -16,8 +16,13 @@ To play the current build of the game, please download the following **.zip** fi
 ### How to play
 Directions on how to play fort online
 1. Download the .zip file of the game from Dropbox
+	![Piece Silhouette](/Images/1_dropbox.gif)
 2. Extract the contents of the .zip file to your machine
-3. asd
+	![Piece Silhouette](/Images/2_unzip.gif)
+3. Stuf
+	![Piece Silhouette](/Images/piece_silhouette.jpg)
+4. more stuff
+	![Piece Silhouette](/Images/piece_silhouette.jpg)
 
 ### Known Bugs
 List of known bugs in the current project
