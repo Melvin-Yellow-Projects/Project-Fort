@@ -94,7 +94,7 @@ public class GameSettingsMenu : MonoBehaviour
 
         // if this is the server, the sync var's will transmit the data
         if (player.isServer) return;
-        GameSession.Singleton.CmdSetGameSettings(GameSession.GetGameSettings());
+        GameSession.Singleton.CmdSetGameSettings(GameSession.GetCopyOfGameSettings());
     }
 
     public void RefreshGameSettings()

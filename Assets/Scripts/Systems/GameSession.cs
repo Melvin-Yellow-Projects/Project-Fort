@@ -247,16 +247,18 @@ public class GameSession : NetworkBehaviour
     /// data over the internet
     /// </summary>
     /// <returns></returns>
-    public static GameSettings GetGameSettings()
+    public static GameSettings GetCopyOfGameSettings()
     {
-        Singleton.gameSettings.turnsPerRound = TurnsPerRound;
-        Singleton.gameSettings.movesPerTurn = MovesPerTurn;
-        Singleton.gameSettings.isUsingTurnTimer = IsUsingTurnTimer;
-        Singleton.gameSettings.turnTimerLength = TurnTimerLength;
-        Singleton.gameSettings.startingCredit = StartingCredit;
-        Singleton.gameSettings.resourcesPerFort = CreditPerFort;
+        GameSettings newSettings = ScriptableObject.CreateInstance<GameSettings>();
 
-        return Singleton.gameSettings;
+        newSettings.turnsPerRound = TurnsPerRound;
+        newSettings.movesPerTurn = MovesPerTurn;
+        newSettings.isUsingTurnTimer = IsUsingTurnTimer;
+        newSettings.turnTimerLength = TurnTimerLength;
+        newSettings.startingCredit = StartingCredit;
+        newSettings.resourcesPerFort = CreditPerFort;
+
+        return newSettings;
     }
 
     /// <summary>
