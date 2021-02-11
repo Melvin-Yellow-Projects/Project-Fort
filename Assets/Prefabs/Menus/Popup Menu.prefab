@@ -1673,7 +1673,7 @@ MonoBehaviour:
     WALL invinsible to all pieces except the AXE
 
     BOW
-    has range of 4, but must move up to 2 cells
+    infinite straight attack, must move under 2
 
 
     > don''t lose all your Forts
