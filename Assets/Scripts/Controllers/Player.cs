@@ -103,7 +103,8 @@ public abstract class Player : NetworkBehaviour
         {
             hasEndedTurn = value;
             if (isServer && connectionToClient != null)
-                TargetSetHasEndedTurn(connectionToClient, value);
+                //TargetSetHasEndedTurn(connectionToClient, value);
+                TargetSetHasEndedTurn(value);
         }
     }
 
@@ -277,7 +278,7 @@ public abstract class Player : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetSetHasEndedTurn(NetworkConnection target, bool status)
+    public void TargetSetHasEndedTurn(bool status)
     {
         if (!isServer) HasEndedTurn = status;
         ClientOnHasEndedTurn?.Invoke(); 
