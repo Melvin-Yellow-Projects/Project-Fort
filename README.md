@@ -16,17 +16,16 @@ To play the current build of the game, please download the following **.zip** fi
 
 ### How to play
 Directions on how to play fort online
-
-	- Download the game from Dropbox
+* Download the game from Dropbox
 
 
 ### Known Bugs
 List of known bugs in the current project
 
-	- When a player has joined multiple lobbies, their Steam avatar picture might fail to load
-	- When a player has lost, their movement displays might not hide
-	- *(maybe fixed)* End turn button can untoggle after a player has pressed it; however, it only changes the text, it doesn't actually disable a player's turn end
-	- Mac 
+* When a player has joined multiple lobbies, their Steam avatar picture might fail to load
+* When a player has lost, their movement displays might not hide
+* *(maybe fixed)* End turn button can untoggle after a player has pressed it; however, it only changes the text, it doesn't actually disable a player's turn end
+* Mac 
 
 
 ### Tags
