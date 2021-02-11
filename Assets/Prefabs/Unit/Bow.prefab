@@ -32,7 +32,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStepsBeforeFire: 2
-  range: 4
+  range: 10000
 --- !u!1001 &4291586569108868397
 PrefabInstance:
   m_ObjectHideFlags: 0

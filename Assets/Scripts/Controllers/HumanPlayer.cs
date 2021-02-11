@@ -47,7 +47,7 @@ public class HumanPlayer : Player
     {
         mapCamera.enabled = true;
         PlayerMenu.MyPlayer = this;
-        PlayerMenu.RefreshResourcesText();
+        PlayerMenu.RefreshCreditsText();
     }
 
     protected void LateUpdate() 
@@ -293,9 +293,9 @@ public class HumanPlayer : Player
     }
 
     [Client]
-    protected override void HookOnResources(int oldValue, int newValue)
+    protected override void HookOnCredits(int oldValue, int newValue)
     {
-        if (PlayerMenu.MyPlayer) PlayerMenu.RefreshResourcesText();
+        if (PlayerMenu.MyPlayer) PlayerMenu.RefreshCreditsText();
     }
 
     [Client]

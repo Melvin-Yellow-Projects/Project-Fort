@@ -150,7 +150,7 @@ public class SaveLoadMenu : MonoBehaviour
     {
         PrepareReader();
 
-        GameSession.Singleton.CmdStartGame(); // HACK: are you sure you want this here?
+        GameSession.Singleton.CmdLaunchGame(); // HACK: are you sure you want this here?
     }
 
     private void PrepareReader()

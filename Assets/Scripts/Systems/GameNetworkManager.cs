@@ -26,7 +26,7 @@ public class GameNetworkManager : NetworkManager
 
     [Header("Settings")]
     [Tooltip("whether or not this build is using Steam")]
-    [SerializeField] bool isUsingSteam = false;
+    [SerializeField] bool isUsingSteam = true;
 
     [Tooltip("minimum number of concurrent connections to start game")]
     [SerializeField, Range(1, 2)] int minConnections = 1;
@@ -49,12 +49,6 @@ public class GameNetworkManager : NetworkManager
     /// <subscriber class="PreLobbyMenu">...</subscriber>
     /// <subscriber class="LobbyMenu">...</subscriber>
     public static event Action OnClientConnectEvent;
-
-    /// <summary>
-    /// Event for when a client disconnects from the server
-    /// </summary>
-    /// <subscriber class="LobbyMenu">...</subscriber>
-    public static event Action OnClientDisconnectEvent;
 
     #endregion
     /************************************************************/
@@ -80,11 +74,19 @@ public class GameNetworkManager : NetworkManager
 
     public static ulong LobbyId { get; set; }
 
-    public static bool IsGameInProgress { get; set; }
+    public static bool HasLaunchedGame { get; set; }
 
     #endregion
     /************************************************************/
     #region Unity Functions
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        // the build has been changed from before, now time to change the transport
+        if (isUsingSteam != IsUsingSteam) ChangeTransport();
+    }
 
     public override void OnValidate()
     {
@@ -119,33 +121,40 @@ public class GameNetworkManager : NetworkManager
         if (!GameSession.IsOnline) return;
 
         // TODO: make player a spectator
-        if (!IsGameInProgress) return;
+        if (!HasLaunchedGame) return;
 
         conn.Disconnect();
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (!SceneLoader.IsGameScene) return;
+        if (conn == null || conn.identity == null) return;
 
         Player player = conn.identity.GetComponent<Player>();
+        if (!player) return;
 
-        if (player)
+        if (GameManager.IsGameInProgress)
+        {
+            GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Disconnect);
+        }
+        else
         {
             GameManager.Players.Remove(player);
 
-            if (player.Info.IsPartyLeader) GameManager.Players[0].Info.IsPartyLeader = true;
+            bool wasPlayerThePartyLeader = player.Info.IsPartyLeader;
+            base.OnServerDisconnect(conn); // <- this code is really elegant
+
+            if (wasPlayerThePartyLeader && GameManager.Players.Count > 0)
+                GameManager.Players[0].Info.IsPartyLeader = true;
         }
 
-        //base.OnServerDisconnect(conn);
-        NetworkServer.Destroy(conn.identity.gameObject);
-
-        // TODO: revoke authority and team on previously owned entities, see the code ->
-        //          base.OnServerDisconnect(conn);
+        if (GameSession.Singleton) GameSession.Singleton.RpcClientHasDisconnected();
     }
 
     public override void OnStopServer()
     {
+        Debug.LogWarning("Server has stopped");
+
         // FIXME: Server needs to unspawn objects on server
 
         // HACK: fat chance this works
@@ -153,13 +162,13 @@ public class GameNetworkManager : NetworkManager
 
         Singleton.hasSpawnedComputers = false;
 
-        GameManager.Players.Clear();
+        GameManager.ServerStopGame();
 
         autoCreatePlayer = true;
         GameSession.IsOnline = false;
         GameSession.IsEditorMode = false;
 
-        IsGameInProgress = false;
+        HasLaunchedGame = false;
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -196,11 +205,11 @@ public class GameNetworkManager : NetworkManager
     }
 
     [Server]
-    public void ServerStartGame() // HACK move this into SceneLoader?
+    public void ServerLaunchGame() // HACK move this into SceneLoader?
     {
         if (GameManager.Players.Count < MinConnections) return;
 
-        IsGameInProgress = true;
+        HasLaunchedGame = true;
 
         Debug.Log("Changing scene");
 
@@ -335,8 +344,6 @@ public class GameNetworkManager : NetworkManager
 
         // TODO remove player from client's list of players
         //conn.identity.GetComponent<Player>();
-
-        if (GameSession.IsOnline) OnClientDisconnectEvent?.Invoke();
     }
 
     public override void OnStopClient()
@@ -354,7 +361,8 @@ public class GameNetworkManager : NetworkManager
         // HACK you shouldn't manually have to destroy these
         if (HexGrid.Singleton) Destroy(HexGrid.Singleton.gameObject);
 
-        GameManager.Players.Clear();
+        GameManager.ServerStopGame();
+        SceneLoader.LoadStartScene();
     }
 
     #endregion

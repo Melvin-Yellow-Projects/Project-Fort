@@ -152,7 +152,7 @@ public class Team : NetworkBehaviour
     [Command]
     public void CmdChangeTeam()
     {
-        if (GameNetworkManager.IsGameInProgress) return;
+        if (GameNetworkManager.HasLaunchedGame) return;
 
         Debug.LogWarning($"{name} is Changing Teams!");
 

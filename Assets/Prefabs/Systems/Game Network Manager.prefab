@@ -53,9 +53,9 @@ MonoBehaviour:
   serverTickRate: 30
   offlineScene: Assets/Scenes/0. Start Menu Scene.unity
   onlineScene: 
-  transport: {fileID: -6134402128047789783}
+  transport: {fileID: 1838490279}
   networkAddress: localhost
-  maxConnections: 4
+  maxConnections: 8
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
@@ -66,7 +66,6 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 5207390952724036994, guid: 64f2c9b84aa0c4428a54d3f15acedf1e, type: 3}
   - {fileID: 3526458366338087291, guid: e13c3345ac9a24999a438fe916ef8f24, type: 3}
-  - {fileID: 5510439269666843771, guid: 43caec3ffa22a400ebf8c051572d3235, type: 3}
   - {fileID: 661696987785951891, guid: 79bda6422235f4e5aba76dd2ac926692, type: 3}
   - {fileID: 2400661251502749445, guid: 00775140048754ae6a56a9e2da1ae881, type: 3}
   - {fileID: 2400661251502749445, guid: 481f1ac5ac1d94d14ad6a3c28f4ad0d8, type: 3}
@@ -75,7 +74,7 @@ MonoBehaviour:
   - {fileID: 2400661251502749445, guid: ffaed2756a51a4e6b9e29b04fe534fc8, type: 3}
   gameSession: {fileID: 5207390952724036993, guid: 64f2c9b84aa0c4428a54d3f15acedf1e,
     type: 3}
-  isUsingSteam: 0
+  isUsingSteam: 1
   minConnections: 1
   waitForPlayerToSpawnTerrain: 30
 --- !u!114 &-6134402128047789783
@@ -85,7 +84,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
@@ -129,7 +128,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
   m_Name: 
@@ -141,7 +140,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
   m_Name: 

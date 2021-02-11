@@ -40,7 +40,7 @@ public class Unit : NetworkBehaviour
     [SerializeField] string pieceTitle = null;
 
     [Tooltip("how much this unit costs")]
-    [SerializeField] int resources = 0;
+    [SerializeField] int credits = 0;
 
     //[Tooltip("sprite asset for the unit")]
     //[SerializeField] Sprite artwork = null;
@@ -95,11 +95,11 @@ public class Unit : NetworkBehaviour
         }
     }
 
-    public int Resources
+    public int Credits
     {
         get
         {
-            return resources;
+            return credits;
         }
     }
 

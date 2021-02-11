@@ -22,16 +22,20 @@ public class GameSettingsMenu : MonoBehaviour
     /************************************************************/
     #region Variables
 
-    [Header("Cached References")]
-
-    //[Header("Turn Timer")]
+    [Header("Turn Timer")]
     [SerializeField] Toggle turnTimerToggle = null;
     [SerializeField] Slider turnTimerSlider = null;
     [SerializeField] TMP_Text turnTimerText = null;
 
+    [Header("Player Credits")]
+    [SerializeField] TMP_Text startingCreditsText = null;
+    [SerializeField] Slider startingCreditsSlider = null;
+    [SerializeField] TMP_Text creditsPerFortText = null;
+    [SerializeField] Slider creditsPerFortSlider = null;
+
     #endregion
     /************************************************************/
-    #region Public Class Functions
+    #region Properties
 
     public static GameSettingsMenu Singleton { get; private set; }
 
@@ -39,8 +43,13 @@ public class GameSettingsMenu : MonoBehaviour
     {
         set
         {
+            /** Turn Timer **/
             turnTimerToggle.interactable = value;
             turnTimerSlider.interactable = value && GameSession.IsUsingTurnTimer;
+
+            /** Player Credit **/
+            startingCreditsSlider.interactable = value;
+            creditsPerFortSlider.interactable = value;
         }
     }
 
@@ -63,7 +72,7 @@ public class GameSettingsMenu : MonoBehaviour
 
     #endregion
     /************************************************************/
-    #region Class Functions
+    #region Public Functions
 
     public void SetGameSettings()
     {
@@ -74,11 +83,18 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         GameSession.IsUsingTurnTimer = turnTimerToggle.isOn;
         GameSession.TurnTimerLength = (int) turnTimerSlider.value * 10;
-        SetTurnTimerInteractable();
+        turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;
+        turnTimerText.text = GetTurnTimerText();
+
+        /** Player Credit **/
+        GameSession.StartingCredits = (int) startingCreditsSlider.value * 25;
+        GameSession.CreditsPerFort = (int) creditsPerFortSlider.value * 25;
+        startingCreditsText.text = $"{GameSession.StartingCredits}";
+        creditsPerFortText.text = $"{GameSession.CreditsPerFort}";
 
         // if this is the server, the sync var's will transmit the data
         if (player.isServer) return;
-        GameSession.Singleton.CmdSetGameSettings(GameSession.GetGameSettings());
+        GameSession.Singleton.CmdSetGameSettings(GameSession.GetCopyOfGameSettings());
     }
 
     public void RefreshGameSettings()
@@ -86,26 +102,22 @@ public class GameSettingsMenu : MonoBehaviour
         /** Turn Timer **/
         turnTimerToggle.isOn = GameSession.IsUsingTurnTimer;
         turnTimerSlider.value = GameSession.TurnTimerLength / 10;
-        SetTurnTimerInteractable();
-    }
+        turnTimerText.text = GetTurnTimerText();
 
-    private void SetTurnTimerInteractable()
-    {
+        /** Player Credit **/
+        startingCreditsSlider.value = GameSession.StartingCredits / 25;
+        creditsPerFortSlider.value = GameSession.CreditsPerFort / 25;
+        startingCreditsText.text = $"{GameSession.StartingCredits}";
+        creditsPerFortText.text = $"{GameSession.CreditsPerFort}";
+
         // HACK this code is a work around for toggle's OnValueChanged activating with toggle.isOn
         Player player = GeneralUtilities.GetPlayerFromClientConnection();
-
-        if (player && player.Info.IsPartyLeader)
-        {
-            turnTimerToggle.interactable = true;
-            turnTimerSlider.interactable = GameSession.IsUsingTurnTimer;
-        }
-        else
-        {
-            turnTimerToggle.interactable = false;
-            turnTimerSlider.interactable = false;
-        }
-        turnTimerText.text = GetTurnTimerText();
+        if (!player) return;
+        Interactable = player.Info.IsPartyLeader;
     }
+    #endregion
+    /************************************************************/
+    #region Private Functions
 
     private string GetTurnTimerText()
     {
@@ -121,9 +133,10 @@ public class GameSettingsMenu : MonoBehaviour
             return "off";
         }
     }
+
     #endregion
     /************************************************************/
-    #region Private Class Functions
+    #region Event Handler Functions
 
     private void Subscribe()
     {

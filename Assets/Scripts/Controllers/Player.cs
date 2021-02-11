@@ -29,20 +29,14 @@ public abstract class Player : NetworkBehaviour
     [SyncVar(hook = nameof(HookOnMoveCount))]
     int moveCount = 0; // HACK: wrong, other clients shouldnt know this data.
 
-    [SyncVar(hook = nameof(HookOnResources))]
-    int resources = 0; // HACK: wrong, other clients shouldnt know this data, or should they? 
+    [SyncVar(hook = nameof(HookOnCredits))]
+    int credits = 0; // HACK: wrong, other clients shouldnt know this data, or should they? 
 
     bool hasEndedTurn = false;
 
     #endregion
     /************************************************************/
     #region Class Events
-
-    /// <summary>
-    /// Server event for when a player has been defeated
-    /// </summary>
-    /// <subscriber class="GameOverHandler">handles the defeated player</subscriber>
-    public static event Action<Player, WinConditionType> ServerOnPlayerDefeat;
 
     /// <summary>
     /// Client event for when a player's resources have updated
@@ -87,15 +81,15 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int Resources
+    public int Credits
     {
         get
         {
-            return resources;
+            return credits;
         }
         set
         {
-            resources = value;
+            credits = value;
         }
     }
 
@@ -108,7 +102,9 @@ public abstract class Player : NetworkBehaviour
         set
         {
             hasEndedTurn = value;
-            if (isServer && connectionToClient != null) TargetSetHasEndedTurn(value);
+            if (isServer && connectionToClient != null)
+                //TargetSetHasEndedTurn(connectionToClient, value);
+                TargetSetHasEndedTurn(connectionToClient, value);
         }
     }
 
@@ -140,15 +136,14 @@ public abstract class Player : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
         ServerSubscribe();
-        resources = GameSession.StartingPlayerResources;
     }
 
     public override void OnStopServer()
     {
         // HACK: maybe event should fire after unsub()
         // HACK: not certain this works
-        if (GameNetworkManager.IsGameInProgress)
-            ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
+        //if (GameManager.IsGameInProgress)
+        //    GameOverHandler.Singleton.ServerPlayerHasLost(this, WinConditionType.Disconnect);
         ServerUnsubscribe();
 
         Debug.Log($"{name} OnStopServer");
@@ -215,7 +210,7 @@ public abstract class Player : NetworkBehaviour
 
         //if (0 <= unitId && unitId < Unit.Prefabs.Count)
         Unit unit = Unit.Prefabs[unitId];
-        if (Resources < unit.Resources) return;
+        if (Credits < unit.Credits) return;
 
         if (!CanBuyOnCell(cell)) return;
 
@@ -226,7 +221,7 @@ public abstract class Player : NetworkBehaviour
 
         NetworkServer.Spawn(instance.gameObject, connectionToClient);
 
-        Resources -= unit.Resources;
+        Credits -= unit.Credits;
     }
 
     [Command]
@@ -240,7 +235,7 @@ public abstract class Player : NetworkBehaviour
 
         if (!CanBuyOnCell(cell)) return;
 
-        Resources += cell.MyUnit.Resources;
+        Credits += cell.MyUnit.Credits;
 
         cell.MyUnit.Die();
     }
@@ -283,7 +278,7 @@ public abstract class Player : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetSetHasEndedTurn(bool status)
+    public void TargetSetHasEndedTurn(NetworkConnection target, bool status)
     {
         if (!isServer) HasEndedTurn = status;
         ClientOnHasEndedTurn?.Invoke(); 
@@ -411,9 +406,6 @@ public abstract class Player : NetworkBehaviour
     {
         MyUnits.Remove(unit);
         if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
-
-        // HACK: should this event fire instantly when a player loses?
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
     }
 
     [TargetRpc] // HACK: this could be UnitData? ...but i mean it is coming from the server so idk
@@ -427,8 +419,6 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartRound()
     {
-        if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
-
         MoveCount = 0;
         HasEndedTurn = false;
     }
@@ -436,8 +426,6 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStartTurn()
     {
-        if (MyForts.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Conquest);
-        if (MyUnits.Count == 0) ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Routed);
 
         MoveCount = GameSession.MovesPerTurn;
         HasEndedTurn = false;
@@ -450,7 +438,7 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Client]
-    protected virtual void HookOnResources(int oldValue, int newValue) { }
+    protected virtual void HookOnCredits(int oldValue, int newValue) { }
 
     [Client]
     protected virtual void HookOnMoveCount(int oldValue, int newValue) { }

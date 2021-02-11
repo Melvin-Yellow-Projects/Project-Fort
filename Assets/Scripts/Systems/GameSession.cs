@@ -39,6 +39,12 @@ public class GameSession : NetworkBehaviour
     /// <subscriber class="GameSettingsMenu">refreshes Game Settings Menu informtion</subscriber>
     public static event Action ClientOnGameSettingsChanged;
 
+    /// <summary>
+    /// Event for when a client disconnects from the server
+    /// </summary>
+    /// <subscriber class="LobbyMenu">...</subscriber>
+    public static event Action OnClientDisconnectEvent;
+
     #endregion
     /************************************************************/
     #region Public Properties
@@ -116,17 +122,32 @@ public class GameSession : NetworkBehaviour
     }
 
     [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
-    int startingPlayerResources;
-    public static int StartingPlayerResources
+    int startingCredits;
+    public static int StartingCredits
     {
         get
         {
-            return Singleton.startingPlayerResources;
+            return Singleton.startingCredits;
         }
         set
         {
-            Singleton.startingPlayerResources = value;
-            Singleton.gameSettings.startingPlayerResources = value;
+            Singleton.startingCredits = value;
+            Singleton.gameSettings.startingCredits = value;
+        }
+    }
+
+    [SyncVar(hook = nameof(HookOnGameSettingsInt32))]
+    int creditsPerFort;
+    public static int CreditsPerFort
+    {
+        get
+        {
+            return Singleton.creditsPerFort;
+        }
+        set
+        {
+            Singleton.creditsPerFort = value;
+            Singleton.gameSettings.creditsPerFort = value;
         }
     }
 
@@ -159,7 +180,7 @@ public class GameSession : NetworkBehaviour
     [Command(ignoreAuthority = true)]
     public void CmdSetGameSettings(GameSettings settings, NetworkConnectionToClient conn = null)
     {
-        if (GameNetworkManager.IsGameInProgress) return;
+        if (GameNetworkManager.HasLaunchedGame) return;
 
         Player player = conn.identity.GetComponent<Player>();
         if (!player.Info.IsPartyLeader) return;
@@ -169,13 +190,26 @@ public class GameSession : NetworkBehaviour
     }
 
     [Command(ignoreAuthority = true)] // HACK: i dont like this function here
-    public void CmdStartGame(NetworkConnectionToClient conn = null)
+    public void CmdLaunchGame(NetworkConnectionToClient conn = null)
     {
         if (!conn.identity.GetComponent<PlayerInfo>().IsPartyLeader) return;
 
-        if (GameNetworkManager.IsGameInProgress) return;
+        if (GameNetworkManager.HasLaunchedGame) return;
 
-        GameNetworkManager.Singleton.ServerStartGame();
+        GameNetworkManager.Singleton.ServerLaunchGame();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client Functions
+    
+    [ClientRpc]
+    public void RpcClientHasDisconnected()
+    {
+        // HACK: this doesn't really belong here
+        Debug.LogWarning("Client has disconnected");
+
+        OnClientDisconnectEvent?.Invoke();
     }
 
     #endregion
@@ -204,7 +238,8 @@ public class GameSession : NetworkBehaviour
         movesPerTurn = gameSettings.movesPerTurn;
         isUsingTurnTimer = gameSettings.isUsingTurnTimer;
         turnTimerLength = gameSettings.turnTimerLength;
-        startingPlayerResources = gameSettings.startingPlayerResources;
+        startingCredits = gameSettings.startingCredits;
+        creditsPerFort = gameSettings.creditsPerFort;
     }
 
     /// <summary>
@@ -212,15 +247,18 @@ public class GameSession : NetworkBehaviour
     /// data over the internet
     /// </summary>
     /// <returns></returns>
-    public static GameSettings GetGameSettings()
+    public static GameSettings GetCopyOfGameSettings()
     {
-        Singleton.gameSettings.turnsPerRound = TurnsPerRound;
-        Singleton.gameSettings.movesPerTurn = MovesPerTurn;
-        Singleton.gameSettings.isUsingTurnTimer = IsUsingTurnTimer;
-        Singleton.gameSettings.turnTimerLength = TurnTimerLength;
-        Singleton.gameSettings.startingPlayerResources = StartingPlayerResources;
+        GameSettings newSettings = ScriptableObject.CreateInstance<GameSettings>();
 
-        return Singleton.gameSettings;
+        newSettings.turnsPerRound = TurnsPerRound;
+        newSettings.movesPerTurn = MovesPerTurn;
+        newSettings.isUsingTurnTimer = IsUsingTurnTimer;
+        newSettings.turnTimerLength = TurnTimerLength;
+        newSettings.startingCredits = StartingCredits;
+        newSettings.creditsPerFort = CreditsPerFort;
+
+        return newSettings;
     }
 
     /// <summary>

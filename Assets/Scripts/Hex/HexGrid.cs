@@ -456,6 +456,7 @@ public class HexGrid : NetworkBehaviour
         int index = coordinates.X + (coordinates.Z * cellCountX) + (coordinates.Z / 2);
 
         // return cell using index
+        if (index < 0 || index >= cells.Length) return null; // FIXME: why is this error happening?
         return cells[index];
     }
 

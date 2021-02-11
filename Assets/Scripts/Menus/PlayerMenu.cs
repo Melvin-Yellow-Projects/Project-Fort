@@ -26,7 +26,7 @@ public class PlayerMenu : MonoBehaviour
     /* Cached References */
     [Header("Cached References")]
     [SerializeField] TMP_Text moveCountText = null;
-    [SerializeField] TMP_Text resourcesText = null;
+    [SerializeField] TMP_Text creditsText = null;
     [SerializeField] TMP_Text gamePhaseText = null;
     [SerializeField] TMP_Text turnTimerText = null;
     [SerializeField] GameObject buyPanel = null;
@@ -36,7 +36,7 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] TMP_Text[] unitTexts = null;
     [SerializeField] TMP_Text[] costTexts = null;
 
-    static HumanPlayer player = null; 
+    static HumanPlayer player = null;
     static int unitId = 0;
 
     static float timer = 0;
@@ -47,7 +47,7 @@ public class PlayerMenu : MonoBehaviour
 
     public static PlayerMenu Singleton { get; set; }
 
-    public static HumanPlayer MyPlayer 
+    public static HumanPlayer MyPlayer
     {
         get
         {
@@ -71,7 +71,7 @@ public class PlayerMenu : MonoBehaviour
         {
             unitId = Mathf.Clamp(value, 0, Unit.Prefabs.Count);
         }
-    } 
+    }
 
     #endregion
     /************************************************************/
@@ -86,7 +86,7 @@ public class PlayerMenu : MonoBehaviour
         {
             unitTexts[i].text = Unit.Prefabs[i].ClassTitle;
             //unitTexts[i].text = Unit.Prefabs[i].PieceTitle;
-            costTexts[i].text = $"{Unit.Prefabs[i].Resources}";
+            costTexts[i].text = $"{Unit.Prefabs[i].Credits}";
         }
 
         Subscribe();
@@ -121,9 +121,9 @@ public class PlayerMenu : MonoBehaviour
         Singleton.enabled = true;
     }
 
-    public static void RefreshResourcesText()
+    public static void RefreshCreditsText()
     {
-        Singleton.resourcesText.text = $"{MyPlayer.Resources}";
+        Singleton.creditsText.text = $"{MyPlayer.Credits}";
     }
 
     private static void UpdateTimerText()
@@ -139,27 +139,35 @@ public class PlayerMenu : MonoBehaviour
         MyPlayer.EndTurnButtonPressed();
     }
 
+    public static void PlayerHasLost()
+    {
+        Singleton.endTurnButton.gameObject.SetActive(false);
+        Singleton.buyPanel.gameObject.SetActive(false);
+    }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions
 
     private void Subscribe()
     {
+        Debug.Log("PlayerMenu Subscribing");
+
         GameManager.ClientOnStartRound += HandleClientOnStartRound;
         GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
 
-        //Player.ClientOnResourcesUpdated += null;
         Player.ClientOnHasEndedTurn += HandleClientOnHasEndedTurn;
     }
 
     private void Unsubscribe()
     {
+        Debug.Log("PlayerMenu Unsubscribing");
+
         GameManager.ClientOnStartRound -= HandleClientOnStartRound;
         GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
         GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
 
-        //Player.ClientOnResourcesUpdated -= null;
         Player.ClientOnHasEndedTurn -= HandleClientOnHasEndedTurn;
     }
 
@@ -167,7 +175,7 @@ public class PlayerMenu : MonoBehaviour
     {
         gamePhaseText.text = "Economy Phase";
 
-        buyPanel.SetActive(true);
+        if (MyPlayer.enabled) buyPanel.SetActive(true);
 
         RefreshMoveCountText();
     }

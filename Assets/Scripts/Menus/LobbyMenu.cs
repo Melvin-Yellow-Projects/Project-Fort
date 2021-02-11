@@ -59,17 +59,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void LeaveLobby()
     {
-        if (NetworkServer.active && NetworkClient.isConnected) // are you a host?
-        {
-            NetworkManager.singleton.StopHost();
-        }
-        else // you must be a client
-        {
-            NetworkManager.singleton.StopClient();
-        }
-
-        // this reloads the start menu, it's the lazy way rather than turning on/off various UI
-        SceneLoader.LoadStartScene();
+        SceneLoader.StopConnectionAndLoadStartScene();
     }
 
     private bool ArePlayersOnDifferentTeams()
@@ -96,7 +86,7 @@ public class LobbyMenu : MonoBehaviour
         hasSubscribed = true;
 
         GameNetworkManager.OnClientConnectEvent += HandleOnClientConnectEvent;
-        GameNetworkManager.OnClientDisconnectEvent += RefreshLobbyItems;
+        GameSession.OnClientDisconnectEvent += RefreshLobbyItems;
 
         PlayerInfo.ClientOnPartyLeaderChanged += HandleClientOnPartyLeaderChanged;
         PlayerInfo.ClientOnPlayerInfoUpdate += RefreshLobbyItems;
@@ -108,7 +98,7 @@ public class LobbyMenu : MonoBehaviour
     {
         hasSubscribed = false;
         GameNetworkManager.OnClientConnectEvent -= HandleOnClientConnectEvent;
-        GameNetworkManager.OnClientDisconnectEvent -= RefreshLobbyItems;
+        GameSession.OnClientDisconnectEvent -= RefreshLobbyItems;
 
         PlayerInfo.ClientOnPartyLeaderChanged -= HandleClientOnPartyLeaderChanged;
         PlayerInfo.ClientOnPlayerInfoUpdate -= RefreshLobbyItems;

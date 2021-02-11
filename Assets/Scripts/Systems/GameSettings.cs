@@ -36,7 +36,9 @@ public class GameSettings : ScriptableObject
 
     [SerializeField] public int turnTimerLength = 10;
 
-    [SerializeField] public int startingPlayerResources = 1200;
+    [SerializeField] public int startingCredits = 1200;
+
+    [SerializeField] public int creditsPerFort = 100;
 
     //[SerializeField] bool isHotseat = false;
 

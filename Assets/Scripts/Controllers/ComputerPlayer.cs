@@ -19,6 +19,8 @@ public class ComputerPlayer : Player
     #region Variables
 
     [Header("Settings")]
+    [SerializeField] bool canMakeMoves = true;
+
     [SerializeField, Range(0, 10)] float maxActionWaitTime = 5f;
 
     [SerializeField, Range(0, 1)] float chanceToSkipAction = 0.5f;
@@ -48,6 +50,8 @@ public class ComputerPlayer : Player
                     ServerTryBuyUnit(Random.Range(0, 3), cell);
             }
         }
+        HasEndedTurn = true;
+        GameManager.Singleton.ServerTryEndTurn();
     }
 
     private IEnumerator MoveUnits()
@@ -65,6 +69,8 @@ public class ComputerPlayer : Player
                 ServerSetAction(this, UnitData.Instantiate(unit));
             }
         }
+        HasEndedTurn = true;
+        GameManager.Singleton.ServerTryEndTurn();
     }
 
     private HexCell GetTargetCell()
@@ -107,10 +113,9 @@ public class ComputerPlayer : Player
     {
         base.HandleServerOnStartRound();
 
-        HasEndedTurn = true; // player can prematurely end a cpu's turn
-
         Debug.Log($"{name} is buying");
-        StartCoroutine(BuyUnits());
+        if (canMakeMoves) StartCoroutine(BuyUnits());
+        else HasEndedTurn = true; 
     }
 
     [Server]
@@ -119,12 +124,11 @@ public class ComputerPlayer : Player
         StopAllCoroutines();
         base.HandleServerOnStartTurn();
 
-        HasEndedTurn = true; // player can kinda prematurely end a cpu's turn, but not really
-
         // HACK should the cpu listen to a lost flag from the base function call?
 
         Debug.Log($"{name} is moving");
-        StartCoroutine(MoveUnits());
+        if (canMakeMoves) StartCoroutine(MoveUnits());
+        else HasEndedTurn = true;
     }
 
     [Server]

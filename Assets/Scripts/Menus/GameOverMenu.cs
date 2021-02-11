@@ -46,7 +46,7 @@ public class GameOverMenu : MonoBehaviour
 
     public void LeaveGame()
     {
-        SceneLoader.LoadStartScene();
+        SceneLoader.StopConnectionAndLoadStartScene();
     }
 
     #endregion
