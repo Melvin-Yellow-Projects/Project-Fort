@@ -240,7 +240,7 @@ public class GameManager : NetworkBehaviour
     {
         for (int i = Players.Count; i > 0; i--)
         {
-            if (IsGameInProgress) return;
+            if (!IsGameInProgress) return;
 
             Player player = Players[i - 1];
 
