@@ -12,6 +12,11 @@ A stoic, chess-like strategy game where multiple players compete against one ano
 
 ### General *(add more description)*
 * Game is split up into an Economy Phase and a Player Phase
+* Economy Phase
+	* At the start of every round, a player is able to buy pieces
+	* A player may purchase and sell pieces
+* Player Phase
+	* After the Economy Phase, a player will have 3 Turns to execute their plans
 
 ### Pieces
 * **Axe**
