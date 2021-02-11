@@ -2635,7 +2635,7 @@ MonoBehaviour:
   turnTimerToggle: {fileID: 2241457143256430125}
   turnTimerSlider: {fileID: 7428896522177272236}
   turnTimerText: {fileID: 1086108980690992852}
-  startingCreditsText: {fileID: 0}
-  startingCreditsSlider: {fileID: 0}
-  creditsPerFortText: {fileID: 0}
-  creditsPerFortSlider: {fileID: 0}
+  startingCreditsText: {fileID: 5217287699251472428}
+  startingCreditsSlider: {fileID: 8194957812525864558}
+  creditsPerFortText: {fileID: 4356119942096595384}
+  creditsPerFortSlider: {fileID: 2499706977942540770}
