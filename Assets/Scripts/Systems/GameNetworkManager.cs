@@ -26,7 +26,7 @@ public class GameNetworkManager : NetworkManager
 
     [Header("Settings")]
     [Tooltip("whether or not this build is using Steam")]
-    [SerializeField] bool isUsingSteam = false;
+    [SerializeField] bool isUsingSteam = true;
 
     [Tooltip("minimum number of concurrent connections to start game")]
     [SerializeField, Range(1, 2)] int minConnections = 1;
@@ -79,6 +79,14 @@ public class GameNetworkManager : NetworkManager
     #endregion
     /************************************************************/
     #region Unity Functions
+
+    public override void Awake()
+    {
+        base.Awake();
+
+        // the build has been changed from before, now time to change the transport
+        if (isUsingSteam != IsUsingSteam) ChangeTransport();
+    }
 
     public override void OnValidate()
     {
