@@ -53,7 +53,7 @@ MonoBehaviour:
   serverTickRate: 30
   offlineScene: Assets/Scenes/0. Start Menu Scene.unity
   onlineScene: 
-  transport: {fileID: 1838490279}
+  transport: {fileID: -6134402128047789783}
   networkAddress: localhost
   maxConnections: 8
   disconnectInactiveConnections: 0
@@ -74,7 +74,7 @@ MonoBehaviour:
   - {fileID: 2400661251502749445, guid: ffaed2756a51a4e6b9e29b04fe534fc8, type: 3}
   gameSession: {fileID: 5207390952724036993, guid: 64f2c9b84aa0c4428a54d3f15acedf1e,
     type: 3}
-  isUsingSteam: 1
+  isUsingSteam: 0
   minConnections: 1
   waitForPlayerToSpawnTerrain: 30
 --- !u!114 &-6134402128047789783
@@ -84,7 +84,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
   m_Name: 
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1778299518641466868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
   m_Name: 

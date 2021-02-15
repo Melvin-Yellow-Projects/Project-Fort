@@ -559,11 +559,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
-    - target: {fileID: 5849001562683166063, guid: 68353ad86101d4deda4e7fc45d338e03,
-        type: 3}
-      propertyPath: field of view
-      value: 40
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68353ad86101d4deda4e7fc45d338e03, type: 3}
 --- !u!1 &230804595
@@ -1286,29 +1281,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -6134402128047789783, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: transport
-      value: 
-      objectReference: {fileID: 755730889}
-    - target: {fileID: -170377524941410652, guid: 809fe4a4a9a794e9193a092e63594b3e,
-        type: 3}
-      propertyPath: isUsingSteam
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1838490279, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1838490280, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1778299518641466868, guid: 809fe4a4a9a794e9193a092e63594b3e,
         type: 3}
       propertyPath: m_Name
@@ -1371,18 +1343,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 809fe4a4a9a794e9193a092e63594b3e, type: 3}
---- !u!114 &755730889 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -6134402128047789783, guid: 809fe4a4a9a794e9193a092e63594b3e,
-    type: 3}
-  m_PrefabInstance: {fileID: 755730888}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &756895154
 GameObject:
   m_ObjectHideFlags: 0
@@ -2644,26 +2604,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: fortHighlightColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: fortHighlightColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: fortHighlightColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
-        type: 3}
-      propertyPath: fortHighlightColor.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1281260488067124436, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: m_Name
@@ -3224,11 +3164,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2418506821338460504, guid: caf4da95add9a8a4c9eaab2540fd7911,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3953701095290871864, guid: caf4da95add9a8a4c9eaab2540fd7911,
         type: 3}
       propertyPath: lobbyMenu
@@ -3243,11 +3178,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Main Menu
-      objectReference: {fileID: 0}
-    - target: {fileID: 4727842035428128448, guid: caf4da95add9a8a4c9eaab2540fd7911,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5732967479878212571, guid: caf4da95add9a8a4c9eaab2540fd7911,
         type: 3}
