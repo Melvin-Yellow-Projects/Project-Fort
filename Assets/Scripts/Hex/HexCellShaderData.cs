@@ -99,10 +99,13 @@ public class HexCellShaderData : MonoBehaviour
             cellTexture = new Texture2D(x, z, TextureFormat.RGBA32, false, true);
             cellTexture.filterMode = FilterMode.Point;
             cellTexture.wrapMode = TextureWrapMode.Clamp;
-            Shader.SetGlobalTexture("_HexCellData", cellTexture);
+            //GetComponent<Material>().SetTexture("_HexCellData", cellTexture);
+            //GetComponentInChildren<Material>().SetTexture("_HexCellData", cellTexture);
+            Shader.SetGlobalTexture("_HexGridData", cellTexture);
         }
 
-        Shader.SetGlobalVector("_HexCellData_TexelSize", new Vector4(1f / x, 1f / z, x, z));
+        // this isn't called _HexGridData_TexelSize because ShaderGraph will throw an error
+        Shader.SetGlobalVector("_HexGridData_Texel_Size", new Vector4(1f / x, 1f / z, x, z));
 
         // "Instead of applying cell data one pixel at a time, we'll use a color buffer and apply
         // all cell data in one go."
