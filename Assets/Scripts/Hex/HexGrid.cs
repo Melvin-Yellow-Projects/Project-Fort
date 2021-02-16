@@ -249,8 +249,8 @@ public class HexGrid : NetworkBehaviour
         Singleton = this;
 
         //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
-        if (GameSession.IsEditorMode) Shader.EnableKeyword("_EditMode");
-        else Shader.DisableKeyword("_EditMode");
+        if (GameSession.IsEditorMode) Shader.EnableKeyword("MAP_EDITOR_MODE");
+        else Shader.DisableKeyword("MAP_EDITOR_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");
 
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
