@@ -1,10 +1,10 @@
 ﻿sampler2D _HexCellData;
-float4 _HexCellData_TexelSize;
+float4 _HexGridData_Texel_Size;
 
 // toggles visibility and exploration for a hex cell
 float4 FilterCellData (float4 data)
 {
-	#if defined(HEX_MAP_EDIT_MODE)
+	#if defined(MAP_EDITOR_MODE)
 		data.xy = 1;
 	#endif
 	return data;
@@ -14,11 +14,11 @@ float4 FilterCellData (float4 data)
 float4 GetCellData (appdata_full v, int index)
 {
     // first step of constructing the U coordinate is to divide the cell index by the texture width;
-    // we can do this by multiplying with _HexCellData_TexelSize.x; Because we're sampling a 
+    // we can do this by multiplying with _HexGridData_Texel_Size.x; Because we're sampling a 
     // texture, we want to use UV coordinates that align with the centers of pixels. That ensures 
     // that we sample the correct pixels. So add ½ before dividing by the texture sizes.
     float2 uv;
-	uv.x = (v.texcoord2[index] + 0.5) * _HexCellData_TexelSize.x;
+	uv.x = (v.texcoord2[index] + 0.5) * _HexGridData_Texel_Size.x;
 
     // The result is a number of the form Z.U, where Z is the row index and U is the U coordinate of
     // the cell. We can extract the row by flooring the number, then subtract that from the number
@@ -27,8 +27,8 @@ float4 GetCellData (appdata_full v, int index)
 	uv.x -= row;
 
 	// The V coordinate is found by dividing the row by the texture height; we can do this by 
-	// multiplying with _HexCellData_TexelSize.y
-    uv.y = (row + 0.5) * _HexCellData_TexelSize.y;
+	// multiplying with _HexGridData_Texel_Size.y
+    uv.y = (row + 0.5) * _HexGridData_Texel_Size.y;
 
     // Now that we have the desired cell data coordinates, we can sample _HexCellData. Because we're
     // sampling the texture in the vertex program, we have to explicitly tell the shader which 

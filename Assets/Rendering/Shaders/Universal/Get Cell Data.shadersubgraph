@@ -161,21 +161,6 @@
                 "height": 341.0
             },
             "m_GroupGuidSerialized": "a7628193-4bec-4247-91d2-95878b46308a"
-        },
-        {
-            "m_GuidSerialized": "fcd5b6af-b592-4297-a398-001814745d04",
-            "m_Title": "FIXME",
-            "m_Content": "Maybe this texel size node should actually be read from HexCellData",
-            "m_TextSize": 1,
-            "m_Theme": 0,
-            "m_Position": {
-                "serializedVersion": "2",
-                "x": -1116.0,
-                "y": 272.0,
-                "width": 200.00001525878907,
-                "height": 198.61248779296876
-            },
-            "m_GroupGuidSerialized": "00000000-0000-0000-0000-000000000000"
         }
     ],
     "m_SerializableEdges": [
