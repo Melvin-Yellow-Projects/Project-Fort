@@ -10,6 +10,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      HACK Removed UVs when upgrading graphics
  **/
 
 using System;
@@ -24,7 +26,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour
 {
-	/********** MARK: Public Variables **********/
+	/************************************************************/
 	#region Public Variables
 
 	/* Settings */
@@ -42,8 +44,7 @@ public class HexMesh : MonoBehaviour
 	//public bool useUV2Coordinates;
 
 	#endregion
-
-	/********** MARK: Private Variables **********/
+	/************************************************************/
 	#region Private Variables
 
 	/// <summary>
@@ -65,19 +66,19 @@ public class HexMesh : MonoBehaviour
     /// </summary>
     [NonSerialized] List<Color> cellWeights;
 
-	/// <summary>
-	/// mesh's uvs; this variable is used as a placeholder for the static ListPool struct
-	/// </summary>
-	[NonSerialized] List<Vector2> uvs;
+    ///// <summary>
+    ///// mesh's uvs; this variable is used as a placeholder for the static ListPool struct
+    ///// </summary>
+    //[NonSerialized] List<Vector2> uvs;
 
-	//[NonSerialized] List<Vector2> uv2s;
+    //[NonSerialized] List<Vector2> uv2s;
 
-	/// <summary>
-	/// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
-	/// triangles than vertices to save space); this variable is used as a placeholder for the 
-	/// static ListPool struct
-	/// </summary>
-	[NonSerialized] List<int> triangles;
+    /// <summary>
+    /// mesh's triangle draw order (how to draw the mesh from the vertices, i.e. there might be more
+    /// triangles than vertices to save space); this variable is used as a placeholder for the 
+    /// static ListPool struct
+    /// </summary>
+    [NonSerialized] List<int> triangles;
 
 	/// <summary>
     /// mesh's optional collider 
@@ -85,8 +86,7 @@ public class HexMesh : MonoBehaviour
 	protected MeshCollider meshCollider;
 
 	#endregion
-
-	/********** MARK: Unity Functions **********/
+	/************************************************************/
 	#region Unity Functions
 
 	/// <summary>
@@ -104,13 +104,12 @@ public class HexMesh : MonoBehaviour
 	}
 
 	#endregion
-
-	/********** MARK: Class Functions **********/
+	/************************************************************/
 	#region Class Functions
 
-    /// <summary>
-    /// Clears the hex mesh by clearing the ListPool structs
-    /// </summary>
+	/// <summary>
+	/// Clears the hex mesh by clearing the ListPool structs
+	/// </summary>
 	public void Clear()
 	{
 		hexMesh.Clear();
@@ -123,7 +122,7 @@ public class HexMesh : MonoBehaviour
 			cellIndices = ListPool<Vector3>.Get();
 		}
         
-		if (useUVCoordinates) uvs = ListPool<Vector2>.Get();
+		//if (useUVCoordinates) uvs = ListPool<Vector2>.Get();
 
 		//if (useUV2Coordinates) uv2s = ListPool<Vector2>.Get();
 
@@ -143,15 +142,15 @@ public class HexMesh : MonoBehaviour
 		{
 			hexMesh.SetColors(cellWeights);
 			ListPool<Color>.Add(cellWeights);
-			hexMesh.SetUVs(2, cellIndices);
-			ListPool<Vector3>.Add(cellIndices);
+            hexMesh.SetUVs(2, cellIndices);
+            ListPool<Vector3>.Add(cellIndices);
 		}
 
         // set optional UV coordinates
 		if (useUVCoordinates)
 		{
-			hexMesh.SetUVs(0, uvs);
-			ListPool<Vector2>.Add(uvs);
+			//hexMesh.SetUVs(0, uvs);
+			//ListPool<Vector2>.Add(uvs);
 		}
 
 		//// set optional UV2 coordinates
@@ -172,17 +171,18 @@ public class HexMesh : MonoBehaviour
 		if (useCollider) meshCollider.sharedMesh = hexMesh;
 	}
 
-	/********** MARK: Triangle Functions **********/
-	#region Triangle Functions
+    #endregion
+    /************************************************************/
+    #region Triangle Functions
 
-	/// <summary>
-	/// Adds a triangle to the mesh; can also perturb this triangle's vertices
-	/// </summary>
-	/// <param name="v1">first triangle vertex</param>
-	/// <param name="v2">second triangle vertex</param>
-	/// <param name="v3">third triangle vertex</param>
-	/// <param name="perturb">optional perturb flag, default is set to true</param>
-	public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, bool perturb = true)
+    /// <summary>
+    /// Adds a triangle to the mesh; can also perturb this triangle's vertices
+    /// </summary>
+    /// <param name="v1">first triangle vertex</param>
+    /// <param name="v2">second triangle vertex</param>
+    /// <param name="v3">third triangle vertex</param>
+    /// <param name="perturb">optional perturb flag, default is set to true</param>
+    public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3, bool perturb = true)
 	{
 		int vertexIndex = vertices.Count;
 
@@ -202,19 +202,6 @@ public class HexMesh : MonoBehaviour
         triangles.Add(vertexIndex);
 		triangles.Add(vertexIndex + 1);
 		triangles.Add(vertexIndex + 2);
-	}
-
-	/// <summary>
-	/// Adds three UV coordinates to a triangle
-	/// </summary>
-	/// <param name="uv1">first UV coordinate</param>
-	/// <param name="uv2">second UV coordinate</param>
-	/// <param name="uv3">third UV coordinate</param>
-	public void AddTriangleUV(Vector2 uv1, Vector2 uv2, Vector2 uv3)
-	{
-		uvs.Add(uv1);
-		uvs.Add(uv2);
-		uvs.Add(uv3);
 	}
 
 	/// <summary>
@@ -244,18 +231,18 @@ public class HexMesh : MonoBehaviour
 		AddTriangleCellData(indices, weights, weights, weights);
 	}
 
-    #endregion
+	#endregion
+	/************************************************************/
+	#region Quad Functions
 
-    /********** MARK: Quad Functions **********/
-
-    /// <summary>
-    /// Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3, v4)
-    /// </summary>
-    /// <param name="v1">first vertex</param>
-    /// <param name="v2">second vertex</param>
-    /// <param name="v3">third vertex</param>
-    /// <param name="v4">fourth vertex</param>
-    public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
+	/// <summary>
+	/// Triangulates a quad given four vertices; structure adheres to (v1, v3, v2) & (v2, v3, v4)
+	/// </summary>
+	/// <param name="v1">first vertex</param>
+	/// <param name="v2">second vertex</param>
+	/// <param name="v3">third vertex</param>
+	/// <param name="v4">fourth vertex</param>
+	public void AddQuad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
 	{
 		int vertexIndex = vertices.Count;
         vertices.Add(HexMetrics.Perturb(v1));
@@ -270,37 +257,6 @@ public class HexMesh : MonoBehaviour
 		triangles.Add(vertexIndex + 1); // v2
 		triangles.Add(vertexIndex + 2); // v3
 		triangles.Add(vertexIndex + 3); // v4
-	}
-
-	/// <summary>
-	/// Adds four UV coordinates to a triangulated quad
-	/// </summary>
-	/// <param name="uv1">first UV coordinate</param>
-	/// <param name="uv2">second UV coordinate</param>
-	/// <param name="uv3">third UV coordinate</param>
-	/// <param name="uv4">fourth UV coordinate</param>
-	public void AddQuadUV(Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
-	{
-		uvs.Add(uv1);
-		uvs.Add(uv2);
-		uvs.Add(uv3);
-		uvs.Add(uv4);
-	}
-
-	/// <summary>
-	/// Adds four UV coordinates to a triangulated quad using 4 uv values; TODO: TBH I don't get 
-	/// this function 
-	/// </summary>
-	/// <param name="uMin"></param>
-	/// <param name="uMax"></param>
-	/// <param name="vMin"></param>
-	/// <param name="vMax"></param>
-	public void AddQuadUV(float uMin, float uMax, float vMin, float vMax)
-	{
-		uvs.Add(new Vector2(uMin, vMin));
-		uvs.Add(new Vector2(uMax, vMin));
-		uvs.Add(new Vector2(uMin, vMax));
-		uvs.Add(new Vector2(uMax, vMax));
 	}
 
 	// TODO Comment AddQuadCellData
@@ -330,4 +286,56 @@ public class HexMesh : MonoBehaviour
 	}
 
 	#endregion
+	/************************************************************/
+	#region Debug Functions
+
+	/** Unused UV Functions
+
+	/// <summary>
+	/// Adds three UV coordinates to a triangle
+	/// </summary>
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
+	public void AddTriangleUV(Vector2 uv1, Vector2 uv2, Vector2 uv3)
+	{
+		uvs.Add(uv1);
+		uvs.Add(uv2);
+		uvs.Add(uv3);
+	}
+
+	/// <summary>
+	/// Adds four UV coordinates to a triangulated quad using 4 uv values; TODO: TBH I don't get 
+	/// this function 
+	/// </summary>
+	/// <param name="uMin"></param>
+	/// <param name="uMax"></param>
+	/// <param name="vMin"></param>
+	/// <param name="vMax"></param>
+	public void AddQuadUV(float uMin, float uMax, float vMin, float vMax)
+	{
+		uvs.Add(new Vector2(uMin, vMin));
+		uvs.Add(new Vector2(uMax, vMin));
+		uvs.Add(new Vector2(uMin, vMax));
+		uvs.Add(new Vector2(uMax, vMax));
+	}
+
+	/// <summary>
+	/// Adds four UV coordinates to a triangulated quad
+	/// </summary>
+	/// <param name="uv1">first UV coordinate</param>
+	/// <param name="uv2">second UV coordinate</param>
+	/// <param name="uv3">third UV coordinate</param>
+	/// <param name="uv4">fourth UV coordinate</param>
+	public void AddQuadUV(Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)
+    {
+        uvs.Add(uv1);
+        uvs.Add(uv2);
+        uvs.Add(uv3);
+        uvs.Add(uv4);
+    }
+
+	**/
+
+    #endregion
 }

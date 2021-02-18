@@ -23,7 +23,7 @@ using UnityEngine;
 /// </summary>
 public static class HexMetrics
 {
-    /********** MARK: Metric Variables **********/
+    /************************************************************/
     #region Metric Variables
 
     /// <summary>
@@ -78,8 +78,7 @@ public static class HexMetrics
     public const float noiseScale = 0.003f;
 
     #endregion
-
-    /********** MARK: Metric Constants **********/
+    /************************************************************/
     #region Metric Constants
 
     /// <summary>
@@ -139,8 +138,7 @@ public static class HexMetrics
     public static Texture2D noiseSource;
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     /// <summary>
@@ -306,74 +304,77 @@ public static class HexMetrics
     }
 
     #endregion
-
-    /********** MARK: Archived Functions **********/
+    /************************************************************/
     #region Archived Functions
 
-    //// HACK: idk man this is probably not what i want
-    //public static Vector3 GetBridge2(HexDirection direction)
-    //{
-    //    return (corners[(int)direction] + corners[(int)direction + 1]);
-    //}
+    /**
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    ///// <param name="dir1"></param>
-    ///// <param name="dir2"></param>
-    ///// <returns></returns>
-    //public static bool IsFlank(HexDirection dir1, HexDirection dir2)
-    //{
-    //    return ((int)dir1 / 3) != ((int)dir2 / 3);
-    //}
+    // HACK: idk man this is probably not what i want
+    public static Vector3 GetBridge2(HexDirection direction)
+    {
+        return (corners[(int)direction] + corners[(int)direction + 1]);
+    }
 
-    ///// <summary>
-    ///// Converts an angle to a hex direction; HACK: this does not cover angles outside the range of
-    ///// 360 degrees
-    ///// </summary>
-    ///// <param name="angle">angle to convert</param>
-    ///// <returns>a hex direction</returns>
-    //public static HexDirection AngleToDirection(float angle)
-    //{
-    //    return (HexDirection)(Mathf.RoundToInt((Mathf.Abs(angle) - 30f) / 60f));
-    //}
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dir1"></param>
+    /// <param name="dir2"></param>
+    /// <returns></returns>
+    public static bool IsFlank(HexDirection dir1, HexDirection dir2)
+    {
+        return ((int)dir1 / 3) != ((int)dir2 / 3);
+    }
 
-    ///// <summary>
-    ///// Gets the hex direction given a point inside of the hex cell; essentially this returns which
-    ///// triangle the point is in; for a diagram see the link: http://bit.ly/HexRelativeDirection
-    ///// </summary>
-    ///// <param name="localPoint">a point inside of a hex cell</param>
-    ///// <returns>relative hex direction that is in the general vicinity of the point</returns>
-    //public static HexDirection GetRelativeDirection(Vector3 localPoint)
-    //{
-    //    // check if point is east or west given the x coordinate
-    //    if (localPoint.x > corners[0].x)
-    //    {
-    //        // checks if point is above or below the Northeast region and then East region
-    //        if (Vector3.Cross(localPoint, corners[1]).y > 0)
-    //        {
-    //            return HexDirection.NE;
-    //        }
-    //        else
-    //        {
-    //            if (Vector3.Cross(localPoint, corners[2]).y > 0) return HexDirection.E;
-    //            else return HexDirection.SE;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        // checks if point is above or below the Northwest region and then West region
-    //        if (Vector3.Cross(localPoint, corners[5]).y < 0)
-    //        {
-    //            return HexDirection.NW;
-    //        }
-    //        else
-    //        {
-    //            if (Vector3.Cross(localPoint, corners[4]).y < 0) return HexDirection.W;
-    //            else return HexDirection.SW;
-    //        }
-    //    }
-    //}
+    /// <summary>
+    /// Converts an angle to a hex direction; HACK: this does not cover angles outside the range of
+    /// 360 degrees
+    /// </summary>
+    /// <param name="angle">angle to convert</param>
+    /// <returns>a hex direction</returns>
+    public static HexDirection AngleToDirection(float angle)
+    {
+        return (HexDirection)(Mathf.RoundToInt((Mathf.Abs(angle) - 30f) / 60f));
+    }
+
+    /// <summary>
+    /// Gets the hex direction given a point inside of the hex cell; essentially this returns which
+    /// triangle the point is in; for a diagram see the link: http://bit.ly/HexRelativeDirection
+    /// </summary>
+    /// <param name="localPoint">a point inside of a hex cell</param>
+    /// <returns>relative hex direction that is in the general vicinity of the point</returns>
+    public static HexDirection GetRelativeDirection(Vector3 localPoint)
+    {
+        // check if point is east or west given the x coordinate
+        if (localPoint.x > corners[0].x)
+        {
+            // checks if point is above or below the Northeast region and then East region
+            if (Vector3.Cross(localPoint, corners[1]).y > 0)
+            {
+                return HexDirection.NE;
+            }
+            else
+            {
+                if (Vector3.Cross(localPoint, corners[2]).y > 0) return HexDirection.E;
+                else return HexDirection.SE;
+            }
+        }
+        else
+        {
+            // checks if point is above or below the Northwest region and then West region
+            if (Vector3.Cross(localPoint, corners[5]).y < 0)
+            {
+                return HexDirection.NW;
+            }
+            else
+            {
+                if (Vector3.Cross(localPoint, corners[4]).y < 0) return HexDirection.W;
+                else return HexDirection.SW;
+            }
+        }
+    }
+
+    **/
 
     #endregion
 }

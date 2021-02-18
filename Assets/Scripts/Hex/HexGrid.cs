@@ -248,10 +248,10 @@ public class HexGrid : NetworkBehaviour
 
         Singleton = this;
 
-        //GameSession.Singleton.IsEditorMode = true; // FIXME: this line is for debugging
-        if (GameSession.IsEditorMode) Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
-        else Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        if (GameSession.IsEditorMode) Shader.EnableKeyword("MAP_EDITOR_MODE");
+        else Shader.DisableKeyword("MAP_EDITOR_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");
+        Shader.SetGlobalFloat("_HexCellSize", HexMetrics.outerRadius);
 
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
