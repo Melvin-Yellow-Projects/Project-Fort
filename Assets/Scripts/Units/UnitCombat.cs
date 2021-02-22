@@ -17,12 +17,19 @@ using Mirror;
 
 public abstract class UnitCombat : MonoBehaviour
 {
+    //[SerializeField] Skill[] AllyCollisionSkills;
+    //[SerializeField] Skill[] ActiveCenterSkills;
+    //[SerializeField] Skill[] ActiveBorderCollisionSkills;
+    //[SerializeField] Skill[] IdleCollisionSkills;
+
     /************************************************************/
     #region Properties
 
     public Unit MyUnit { get; private set; }
 
     public bool HasCaptured { get; set; }
+
+    public bool HasBonked { get; set; }
 
     #endregion
     /************************************************************/
@@ -87,6 +94,9 @@ public abstract class UnitCombat : MonoBehaviour
 
     protected virtual void AllyCollision(Unit otherUnit)
     {
+        //foreach (Skill skill in AllyCollisionSkills)
+
+        //Bonk(otherUnit);
         MyUnit.Movement.CancelAction();
     }
 
@@ -105,6 +115,11 @@ public abstract class UnitCombat : MonoBehaviour
     {
         MyUnit.Movement.CanMove = false;
     }
+
+    //protected virtual void Bonk(Unit otherUnit)
+    //{
+    //    MyUnit.Movement.CancelAction();
+    //}
 
     #endregion
 }
