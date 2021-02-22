@@ -1,11 +1,13 @@
 ﻿/**
- * File Name: UnitMovement.cs
+ * File Name: PieceMovement.cs
  * Description: 
  * 
  * Authors: Will Lacey
  * Date Created: December 17, 2020
  * 
  * Additional Comments: 
+ * 
+ *      previously known as UnitMovement.cs
  **/
 
 using System.Collections;
@@ -13,27 +15,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public abstract class UnitMovement : NetworkBehaviour
+public abstract class PieceMovement : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
 
     /** Class Parameters **/
     [Header("Gameplay Settings")]
-    [Tooltip("ID for this unit")]
+    [Tooltip("ID for this piece")]
     [SerializeField] protected int maxMovement = 4;
 
-    [Tooltip("ID for this unit")]
+    [Tooltip("ID for this piece")]
     [SerializeField] protected int visionRange = 1;
 
-    [Tooltip("ID for this unit")]
+    [Tooltip("ID for this piece")]
     [SerializeField] protected int movesPerStep = 1;
 
     [Header("Aesthetic Settings")]
-    [Tooltip("ID for this unit")]
+    [Tooltip("ID for this piece")]
     [SerializeField] protected float travelSpeed = 6f;
 
-    [Tooltip("ID for this unit")]
+    [Tooltip("ID for this piece")]
     [SerializeField] protected float rotationSpeed = 360f;
 
     /** Other Variables **/
@@ -47,11 +49,11 @@ public abstract class UnitMovement : NetworkBehaviour
     /************************************************************/
     #region Properties
 
-    public Unit MyUnit { get; private set; }
+    public Piece MyPiece { get; private set; }
 
-    public UnitDisplay Display { get; private set; }
+    public PieceDisplay Display { get; private set; }
 
-    public UnitPath Path { get; private set; }
+    public PiecePath Path { get; private set; }
 
     public HexCell MyCell
     {
@@ -62,23 +64,23 @@ public abstract class UnitMovement : NetworkBehaviour
         set
         {
             // if there is a previous cell...
-            if (myCell && myCell.MyUnit == MyUnit)
+            if (myCell && myCell.MyPiece == MyPiece)
             {
-                //UnitPathfinding.DecreaseVisibility(myCell, visionRange);
-                myCell.MyUnit = null;
+                //PiecePathfinding.DecreaseVisibility(myCell, visionRange);
+                myCell.MyPiece = null;
             }
 
             // update for new location
             myCell = value;
-            myCell.MyUnit = MyUnit; // sets this hex cell's unit to this one
+            myCell.MyPiece = MyPiece; // sets this hex cell's piece to this one
 
-            MyUnit.ValidateLocation(); // FIXME: Why doesn't this work?
-            //MyUnit.ServerValidateLocation();
+            MyPiece.ValidateLocation(); // FIXME: Why doesn't this work?
+            //MyPiece.ServerValidateLocation();
         }
     }
 
     /// <summary>
-    /// A unit's rotation around the Y axis, in degrees
+    /// A piece's rotation around the Y axis, in degrees
     /// </summary>
     public float Orientation
     {
@@ -118,8 +120,8 @@ public abstract class UnitMovement : NetworkBehaviour
 
             Display.RefreshMovementDisplay(currentMovement);
 
-            // refreshes color given if the unit can move
-            MyUnit.MyColorSetter.SetColor(MyUnit.MyTeam.TeamColor, isSaturating: !CanMove);
+            // refreshes color given if the piece can move
+            MyPiece.MyColorSetter.SetColor(MyPiece.MyTeam.TeamColor, isSaturating: !CanMove);
 
             if (CanMove) Display.ShowDisplay();
             else Display.HideDisplay();
@@ -142,7 +144,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
     public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
 
-    // HACK: might be better broken up into a property and function FreezeUnit()/CannotMove() 
+    // HACK: might be better broken up into a property and function FreezePiece()/CannotMove() 
     public bool CanMove
     {
         get
@@ -171,10 +173,10 @@ public abstract class UnitMovement : NetworkBehaviour
 
     private void Awake()
     {
-        MyUnit = GetComponent<Unit>();
-        Path = GetComponent<UnitPath>();
+        MyPiece = GetComponent<Piece>();
+        Path = GetComponent<PiecePath>();
 
-        Display = GetComponent<UnitDisplay>();
+        Display = GetComponent<PieceDisplay>();
         Display.HideDisplay();
 
         currentMovement = maxMovement; // TODO: create sync var for variable
@@ -201,7 +203,7 @@ public abstract class UnitMovement : NetworkBehaviour
         Orientation = Random.Range(0, 360f);
 
         // this is called by the LateUpdate's reset in HexCellShaderData
-        UnitPathfinding.IncreaseVisibility(MyCell, VisionRange);
+        PiecePathfinding.IncreaseVisibility(MyCell, VisionRange);
     }
 
     [Server]
@@ -209,7 +211,7 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         if (!HasAction) return;
 
-        // HACK: removing line causes errors, HasAction should better reflect action status of unit
+        // HACK: removing line causes errors, HasAction should better reflect action status of piece
         if (!Path.HasPath || CurrentMovement == 0) return;
 
         List<HexCell> cells = new List<HexCell>();
@@ -222,10 +224,10 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     public void ServerCompleteAction()
     {
-        if (GetComponent<UnitDeath>().IsDying)
+        if (GetComponent<PieceDeath>().IsDying)
         {
             // TODO: Brute Force repitition, this can be improved
-            MyUnit.CombatHandler.gameObject.SetActive(false);
+            MyPiece.CombatHandler.gameObject.SetActive(false);
             Debug.Log("Disabling Combat Handler");
             return;
         }
@@ -252,7 +254,7 @@ public abstract class UnitMovement : NetworkBehaviour
     public void CancelAction()
     {
         // HACK: there must be a better implementation
-        if (!EnRouteCell || GetComponent<UnitDeath>().IsDying || HadActionCanceled) return;
+        if (!EnRouteCell || GetComponent<PieceDeath>().IsDying || HadActionCanceled) return;
 
         CanMove = false;
         HadActionCanceled = true;
@@ -264,7 +266,7 @@ public abstract class UnitMovement : NetworkBehaviour
     }
 
     /// <summary>
-    /// TODO: comment this; apparently a unit's velocity will slow down when changing directions,
+    /// TODO: comment this; apparently a piece's velocity will slow down when changing directions,
     /// why?
     /// </summary>
     /// <returns></returns>
@@ -278,7 +280,7 @@ public abstract class UnitMovement : NetworkBehaviour
         //yield return LookAt(cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
-        UnitPathfinding.DecreaseVisibility(
+        PiecePathfinding.DecreaseVisibility(
             (EnRouteCell) ? EnRouteCell : cells[0],
             visionRange
         );
@@ -292,7 +294,7 @@ public abstract class UnitMovement : NetworkBehaviour
             b = cells[i - 1].Position;
             c = (b + EnRouteCell.Position) * 0.5f;
 
-            UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
+            PiecePathfinding.IncreaseVisibility(EnRouteCell, visionRange);
 
             for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
             {
@@ -304,7 +306,7 @@ public abstract class UnitMovement : NetworkBehaviour
                 yield return null;
             }
 
-            UnitPathfinding.DecreaseVisibility(EnRouteCell, visionRange);
+            PiecePathfinding.DecreaseVisibility(EnRouteCell, visionRange);
 
             interpolator -= 1f;
         }
@@ -315,7 +317,7 @@ public abstract class UnitMovement : NetworkBehaviour
         b = EnRouteCell.Position; // We can simply use the destination here.
         c = b;
 
-        UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
+        PiecePathfinding.IncreaseVisibility(EnRouteCell, visionRange);
 
         for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
         {
@@ -339,7 +341,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         //yield return LookAt(myCell.Position);
 
-        UnitPathfinding.DecreaseVisibility(EnRouteCell, visionRange);
+        PiecePathfinding.DecreaseVisibility(EnRouteCell, visionRange);
 
         Vector3 a = myCell.Position;
         Vector3 b = EnRouteCell.Position;
@@ -357,7 +359,7 @@ public abstract class UnitMovement : NetworkBehaviour
             yield return null;
         }
 
-        UnitPathfinding.IncreaseVisibility(EnRouteCell, visionRange);
+        PiecePathfinding.IncreaseVisibility(EnRouteCell, visionRange);
 
         IsEnRoute = false;
     }
@@ -405,7 +407,7 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         bool hadAction = HasAction;
 
-        //Debug.Log($"Clearing Action for Unit, {name}");
+        //Debug.Log($"Clearing Action for piece, {name}");
 
         Path.Clear();
         HasAction = false;
@@ -415,11 +417,11 @@ public abstract class UnitMovement : NetworkBehaviour
     }
 
     [Server] // HACK: not sure if this is correct
-    public bool ServerSetAction(UnitData data)
+    public bool ServerSetAction(PieceData data)
     {
         if (!CanMove || data.pathCells.Count < 2) return false;
 
-        Path.Cells = UnitPathfinding.GetValidCells(MyUnit, data.pathCells);
+        Path.Cells = PiecePathfinding.GetValidCells(MyPiece, data.pathCells);
 
         HasAction = true;
 
@@ -478,8 +480,8 @@ public abstract class UnitMovement : NetworkBehaviour
 
     public virtual bool IsValidCellForPath(HexCell current, HexCell neighbor)
     {
-        // if a Unit exists on this cell
-        //if (neighbor.MyUnit && neighbor.MyUnit.Team == Team) return false; // TODO: check unit type
+        // if a Piece exists on this cell // TODO: check unit type
+        //if (neighbor.MyPiece && neighbor.MyPiece.Team == Team) return false; 
 
         // invalid if cell is unexplored
         if (!neighbor.Explorable) return false;
@@ -515,14 +517,14 @@ public abstract class UnitMovement : NetworkBehaviour
     {
         GameManager.ServerOnStartRound += HandleServerOnStartRound;
         GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
-        UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
+        PieceDeath.ServerOnPieceDeath += HandleServerOnPieceDeath;
     }
 
     private void Unsubscribe()
     {
         GameManager.ServerOnStartRound -= HandleServerOnStartRound;
         GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
-        UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
+        PieceDeath.ServerOnPieceDeath -= HandleServerOnPieceDeath;
     }
 
     [Server]
@@ -543,7 +545,7 @@ public abstract class UnitMovement : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStopTurn()
     {
-        MyUnit.CombatHandler.HasCaptured = false;
+        MyPiece.CombatHandler.HasCaptured = false;
         HasAction = false;
         HandleRpcOnStopTurn();
     }
@@ -552,18 +554,18 @@ public abstract class UnitMovement : NetworkBehaviour
     protected virtual void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
-        MyUnit.CombatHandler.HasCaptured = false;
+        MyPiece.CombatHandler.HasCaptured = false;
         HasAction = false;
     }
 
     [Server]
-    private void HandleServerOnUnitDeath(Unit unit)
+    private void HandleServerOnPieceDeath(Piece piece)
     {
-        if (unit != MyUnit) return;
+        if (piece != MyPiece) return;
 
         StopAllCoroutines();
 
-        MyCell.MyUnit = null;
+        MyCell.MyPiece = null;
 
         IsEnRoute = false;
 
@@ -571,7 +573,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         HexCell cell = (EnRouteCell)? EnRouteCell : MyCell;
 
-        UnitPathfinding.DecreaseVisibility(cell, VisionRange);
+        PiecePathfinding.DecreaseVisibility(cell, VisionRange);
 
         HandleRpcOnDeath(cell);
     }
@@ -583,7 +585,7 @@ public abstract class UnitMovement : NetworkBehaviour
 
         CanMove = false;
 
-        UnitPathfinding.DecreaseVisibility(cell, VisionRange);
+        PiecePathfinding.DecreaseVisibility(cell, VisionRange);
     }
 
     [Client]
@@ -593,8 +595,8 @@ public abstract class UnitMovement : NetworkBehaviour
 
         if (myCell) MyCell = myCell;
 
-        if (oldValue) UnitPathfinding.DecreaseVisibility(oldValue, VisionRange);
-        UnitPathfinding.IncreaseVisibility(newValue, VisionRange);
+        if (oldValue) PiecePathfinding.DecreaseVisibility(oldValue, VisionRange);
+        PiecePathfinding.IncreaseVisibility(newValue, VisionRange);
     }
 
     #endregion

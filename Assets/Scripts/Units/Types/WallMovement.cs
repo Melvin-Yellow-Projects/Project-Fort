@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class WallMovement : UnitMovement
+public class WallMovement : PieceMovement
 {
     /************************************************************/
     #region Variables

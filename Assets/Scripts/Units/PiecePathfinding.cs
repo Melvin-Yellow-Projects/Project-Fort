@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: UnitPathfinding.cs
+ * File Name: PiecePathfinding.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -10,7 +10,7 @@
  *      here: https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial 
  *      series: Hex Map; this file has been updated it to better fit this project
  *      
- *      Previously known as HexPathfinding.cs
+ *      Previously known as UnitPathfinding.cs & HexPathfinding.cs
  *      
  *      TODO: Display A* calculation
  **/
@@ -19,7 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitPathfinding : MonoBehaviour
+public class PiecePathfinding : MonoBehaviour
 {
     /************************************************************/
     #region Private Variables
@@ -27,7 +27,7 @@ public class UnitPathfinding : MonoBehaviour
     /// <summary>
     /// singleton instance of this class
     /// </summary>
-    static UnitPathfinding instance;
+    static PiecePathfinding instance;
 
     /// <summary>
     /// priority queue data structure
@@ -50,31 +50,31 @@ public class UnitPathfinding : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        UnitPathfinding.SayHi();
+        PiecePathfinding.SayHi();
     }
 
     #endregion
     /************************************************************/
     #region Pathing Functions
 
-    public static bool CanAddCellToPath(Unit unit, HexCell cell)
+    public static bool CanAddCellToPath(Piece piece, HexCell cell)
     {
-        UnitPath path = unit.Movement.Path;
+        PiecePath path = piece.Movement.Path;
         if (!path.EndCell.IsNeighbor(cell)) return false;
 
-        if (!IsValidCellForSearch(unit, path.EndCell, cell, isUsingQueue: false)) return false;
+        if (!IsValidCellForSearch(piece, path.EndCell, cell, isUsingQueue: false)) return false;
 
-        if (!unit.Movement.IsValidEdgeForPath(path.EndCell, cell)) return false;
+        if (!piece.Movement.IsValidEdgeForPath(path.EndCell, cell)) return false;
 
         return true;
     }
 
     // TODO: comment FindPath
-    public static List<HexCell> FindPath(Unit unit, HexCell startCell, HexCell endCell)
+    public static List<HexCell> FindPath(Piece piece, HexCell startCell, HexCell endCell)
     {
         startCell.PathFrom = null;
 
-        return Search(unit, startCell, endCell);
+        return Search(piece, startCell, endCell);
     }
 
     /// <summary>
@@ -83,11 +83,11 @@ public class UnitPathfinding : MonoBehaviour
     /// HACK: cells[i].Distance and cells[i].PathFrom are not cleared from previous searches, it's
     /// not necessary to do so... but it might make future features or debugging easier
     /// </summary>
-    /// <param name="unit"></param>
+    /// <param name="piece"></param>
     /// <param name="fromCell"></param>
     /// <param name="toCell"></param>
     /// <returns></returns>
-    private static List<HexCell> Search(Unit unit, HexCell startCell, HexCell endCell)
+    private static List<HexCell> Search(Piece piece, HexCell startCell, HexCell endCell)
     {
         searchFrontierPhase += 2; // initialize new search frontier phase
 
@@ -113,15 +113,15 @@ public class UnitPathfinding : MonoBehaviour
                 return GetPathCells(startCell, endCell);
             }
 
-            int currentTurn = (current.Distance - 1) / unit.Movement.MaxMovement;
+            int currentTurn = (current.Distance - 1) / piece.Movement.MaxMovement;
 
             // search all neighbors of the current cell
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)
             {
                 // check if the neighbors are valid cells to search
                 HexCell neighbor = current.GetNeighbor(d);
-                if (IsValidCellForSearch(unit, current, neighbor, isUsingQueue: true) &&
-                    unit.Movement.IsValidEdgeForPath(current, neighbor))
+                if (IsValidCellForSearch(piece, current, neighbor, isUsingQueue: true) &&
+                    piece.Movement.IsValidEdgeForPath(current, neighbor))
                 {
                     // if they are valid, calculate distance and add them to the queue
                     int moveCost = GetMoveCostCalculation(current, neighbor);
@@ -175,13 +175,14 @@ public class UnitPathfinding : MonoBehaviour
     /// <param name="current"></param>
     /// <param name="neighbor"></param>
     /// <returns></returns>
-    private static bool IsValidCellForSearch(Unit unit, HexCell current, HexCell neighbor,
+    private static bool IsValidCellForSearch(Piece piece, HexCell current, HexCell neighbor,
         bool isUsingQueue)
     {
         // invalid if neighbor is null or if the cell is already out of the queue
-        if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase)) return false;
+        if (isUsingQueue && (neighbor == null || neighbor.SearchPhase > searchFrontierPhase))
+            return false;
 
-        return unit.Movement.IsValidCellForPath(current, neighbor);
+        return piece.Movement.IsValidCellForPath(current, neighbor);
     }
 
     /// <summary>
@@ -222,18 +223,18 @@ public class UnitPathfinding : MonoBehaviour
         return moveCost;
     }
 
-    public static List<HexCell> GetValidCells(Unit unit, List<HexCell> cells)
+    public static List<HexCell> GetValidCells(Piece piece, List<HexCell> cells)
     {
-        //unit.Movement.Path.Clear();
+        //piece.Movement.Path.Clear();
         //for (int i = 1; i < cells.Count; i++)
         //{
-        //    unit.Movement.Path.AddCellToPath(cells[i], canBackTrack: true);
+        //    piece.Movement.Path.AddCellToPath(cells[i], canBackTrack: true);
         //}
 
         // HACK: this function isn't really great
-        
+
         List<HexCell> validCells = new List<HexCell>();
-        if (unit.MyCell == cells[0]) validCells.Add(cells[0]);
+        if (piece.MyCell == cells[0]) validCells.Add(cells[0]);
 
         HexCell current, next;
         
@@ -244,9 +245,9 @@ public class UnitPathfinding : MonoBehaviour
 
             if (!current.IsNeighbor(next)) return validCells;
 
-            if (!IsValidCellForSearch(unit, current, next, isUsingQueue: false)) return validCells;
+            if (!IsValidCellForSearch(piece, current, next, isUsingQueue: false)) return validCells;
 
-            if (!unit.Movement.IsValidEdgeForPath(current, next)) return validCells;
+            if (!piece.Movement.IsValidEdgeForPath(current, next)) return validCells;
 
             validCells.Add(next);
         }

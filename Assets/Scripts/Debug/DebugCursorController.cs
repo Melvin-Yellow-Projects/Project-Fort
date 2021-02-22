@@ -21,7 +21,7 @@ public class DebugCursorController : MonoBehaviour
     /********** MARK: Private Variables **********/
     #region Private Variables
 
-    UnitCursor currentCurser = null;
+    PieceCursor currentCurser = null;
 
     Vector3 point;
 
@@ -52,7 +52,7 @@ public class DebugCursorController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             if (currentCurser) currentCurser.IsSelected = false;
-            currentCurser = UnitCursor.Initialize(new Vector3(), point);
+            currentCurser = PieceCursor.Initialize(new Vector3(), point);
         }
 
         // right click, add point

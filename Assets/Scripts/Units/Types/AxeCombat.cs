@@ -12,22 +12,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AxeCombat : UnitCombat
+public class AxeCombat : PieceCombat
 {
     /************************************************************/
     #region Base Class Functions
 
-    protected override void AllyCollision(Unit otherUnit)
+    protected override void AllyCollision(Piece otherUnit)
     {
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
-    protected override void ActiveCenterCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CanMove = false; // capture wall
+            MyPiece.Movement.CanMove = false; // capture wall
 
             // TODO: flag for galeforce
         }
@@ -35,17 +35,17 @@ public class AxeCombat : UnitCombat
         // active combat has been triggered
         else
         {
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 
-    protected override void ActiveBorderCollision(Unit otherUnit)
+    protected override void ActiveBorderCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CanMove = false; // capture wall
+            MyPiece.Movement.CanMove = false; // capture wall
 
             // TODO: flag for galeforce
         }
@@ -54,17 +54,17 @@ public class AxeCombat : UnitCombat
         else
         {
             gameObject.SetActive(false);
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 
-    protected override void IdleCollision(Unit otherUnit)
+    protected override void IdleCollision(Piece otherUnit)
     {
         // TODO: maybe retreat if the poison wall has moved?
 
         // I have captured enemy piece, now stop
-        MyUnit.Movement.CanMove = false;
+        MyPiece.Movement.CanMove = false;
 
         // TODO: flag for galeforce
     }

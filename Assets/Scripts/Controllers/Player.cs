@@ -108,7 +108,7 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public List<Unit> MyUnits { get; set; } = new List<Unit>(); 
+    public List<Piece> MyPieces { get; set; } = new List<Piece>(); 
 
     public List<Fort> MyForts { get; set; } = new List<Fort>();
 
@@ -119,7 +119,7 @@ public abstract class Player : NetworkBehaviour
     protected virtual void Start()
     {
         // HACK: this should just show the defeat, not the player has won screen
-        //if (isServer && MyUnits.Count == 0 && MyForts.Count == 0)
+        //if (isServer && MyPieces.Count == 0 && MyForts.Count == 0)
         //    ServerOnPlayerDefeat?.Invoke(this, WinConditionType.Disconnect);
     }
 
@@ -163,7 +163,7 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Command]
-    protected void CmdSetAction(UnitData data)
+    protected void CmdSetAction(PieceData data)
     {
         //if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
@@ -171,73 +171,73 @@ public abstract class Player : NetworkBehaviour
     }
 
     [Server]
-    protected void ServerSetAction(Player player, UnitData data)
+    protected void ServerSetAction(Player player, PieceData data)
     {
         if (GameManager.IsEconomyPhase || GameManager.IsPlayingTurn) return;
         if (!CanMove()) return;
 
-        if (player.MyTeam != data.MyUnit.MyTeam) return;
+        if (player.MyTeam != data.MyPiece.MyTeam) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
-        if (data.MyUnit.Movement.ServerSetAction(data)) MoveCount--;
+        if (data.MyPiece.Movement.ServerSetAction(data)) MoveCount--;
     }
 
     [Command]
-    protected void CmdClearAction(UnitData data)
+    protected void CmdClearAction(PieceData data)
     {
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
-        if (data.MyUnit.Movement.ServerClearAction()) MoveCount++;
+        if (data.MyPiece.Movement.ServerClearAction()) MoveCount++;
     }
 
     /// <summary>
-    /// HACK: is unitId Validation needed?
+    /// HACK: is pieceId Validation needed?
     /// HACK: should this return bool?
     /// </summary>
-    /// <param name="unitId"></param>
+    /// <param name="pieceId"></param>
     /// <param name="cell"></param>
     [Command] 
-    protected void CmdTryBuyUnit(int unitId, HexCell cell)
+    protected void CmdTryBuyPiece(int pieceId, HexCell cell)
     {
-        ServerTryBuyUnit(unitId, cell);
+        ServerTryBuyPiece(pieceId, cell);
     }
 
     [Server]
-    protected void ServerTryBuyUnit(int unitId, HexCell cell)
+    protected void ServerTryBuyPiece(int pieceId, HexCell cell)
     {
         if (!GameManager.IsEconomyPhase) return;
-        if (cell.MyUnit) return;
+        if (cell.MyPiece) return;
 
-        //if (0 <= unitId && unitId < Unit.Prefabs.Count)
-        Unit unit = Unit.Prefabs[unitId];
-        if (Credits < unit.Credits) return;
+        //if (0 <= pieceId && pieceId < Piece.Prefabs.Count)
+        Piece piece = Piece.Prefabs[pieceId];
+        if (Credits < piece.Credits) return;
 
         if (!CanBuyOnCell(cell)) return;
 
-        // HACK: create unit instantiation method
-        Unit instance = Instantiate(unit);
+        // HACK: create piece instantiation method
+        Piece instance = Instantiate(piece);
         instance.MyCell = cell;
         instance.MyTeam.SetTeam(MyTeam);
 
         NetworkServer.Spawn(instance.gameObject, connectionToClient);
 
-        Credits -= unit.Credits;
+        Credits -= piece.Credits;
     }
 
     [Command]
-    protected void CmdTrySellUnit(HexCell cell)
+    protected void CmdTrySellPiece(HexCell cell)
     {
         if (!GameManager.IsEconomyPhase) return;
 
-        if (MyUnits.Count == 1) return;
+        if (MyPieces.Count == 1) return;
 
-        if (!cell.MyUnit || cell.MyUnit.MyTeam != MyTeam) return;
+        if (!cell.MyPiece || cell.MyPiece.MyTeam != MyTeam) return;
 
         if (!CanBuyOnCell(cell)) return;
 
-        Credits += cell.MyUnit.Credits;
+        Credits += cell.MyPiece.Credits;
 
-        cell.MyUnit.Die();
+        cell.MyPiece.Die();
     }
 
     #endregion
@@ -312,12 +312,12 @@ public abstract class Player : NetworkBehaviour
     protected virtual void ServerSubscribe()
     {
         Debug.LogWarning($"ServerSubscribe on {name}");
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Piece.OnPieceSpawned += HandleOnPieceSpawned;
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
 
-        UnitDeath.ServerOnUnitDeath += HandleServerOnUnitDeath;
+        PieceDeath.ServerOnPieceDeath += HandleServerOnPieceDeath;
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
@@ -329,12 +329,12 @@ public abstract class Player : NetworkBehaviour
     protected virtual void ServerUnsubscribe()
     {
         Debug.LogWarning($"ServerUnsubscribe on {name}");
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Piece.OnPieceSpawned -= HandleOnPieceSpawned;
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
 
-        UnitDeath.ServerOnUnitDeath -= HandleServerOnUnitDeath;
+        PieceDeath.ServerOnPieceDeath -= HandleServerOnPieceDeath;
 
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
@@ -347,7 +347,7 @@ public abstract class Player : NetworkBehaviour
     {
         if (isServer) return;
         Debug.LogWarning($"AuthoritySubscribe on {name}");
-        Unit.OnUnitSpawned += HandleOnUnitSpawned;
+        Piece.OnPieceSpawned += HandleOnPieceSpawned;
 
         Fort.OnFortSpawned += HandleOnFortSpawned;
         Fort.OnFortDespawned += HandleOnFortDespawned;
@@ -356,7 +356,7 @@ public abstract class Player : NetworkBehaviour
     protected virtual void AuthorityUnsubscribe()
     {
         Debug.LogWarning($"AuthorityUnsubscribe on {name}");
-        Unit.OnUnitSpawned -= HandleOnUnitSpawned;
+        Piece.OnPieceSpawned -= HandleOnPieceSpawned;
 
         Fort.OnFortSpawned -= HandleOnFortSpawned;
         Fort.OnFortDespawned -= HandleOnFortDespawned;
@@ -394,26 +394,26 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    private void HandleOnUnitSpawned(Unit unit)
+    private void HandleOnPieceSpawned(Piece piece)
     {
-        if (unit.MyTeam != MyTeam) return;
+        if (piece.MyTeam != MyTeam) return;
 
-        MyUnits.Add(unit);
+        MyPieces.Add(piece);
     }
 
     [Server]
-    private void HandleServerOnUnitDeath(Unit unit)
+    private void HandleServerOnPieceDeath(Piece piece)
     {
-        MyUnits.Remove(unit);
-        if (connectionToClient != null) HandleTargetOnUnitDeath(unit.netIdentity);
+        MyPieces.Remove(piece);
+        if (connectionToClient != null) HandleTargetOnPieceDeath(piece.netIdentity);
     }
 
-    [TargetRpc] // HACK: this could be UnitData? ...but i mean it is coming from the server so idk
-    private void HandleTargetOnUnitDeath(NetworkIdentity unitNetId)
+    [TargetRpc] // HACK: this could be PieceData? ...but i mean it is coming from the server so idk
+    private void HandleTargetOnPieceDeath(NetworkIdentity pieceNetId)
     {
         if (isServer) return;
 
-        MyUnits.Remove(unitNetId.GetComponent<Unit>());
+        MyPieces.Remove(pieceNetId.GetComponent<Piece>());
     }
 
     [Server]

@@ -74,7 +74,7 @@ public class HexGrid : NetworkBehaviour
     HexCellShaderData cellShaderData;
 
     int fortCount = 0;
-    int unitCount = 0;
+    int pieceCount = 0;
 
     int numberOfCellsLoaded = 0;
 
@@ -84,7 +84,7 @@ public class HexGrid : NetworkBehaviour
 
     public static HexGrid Singleton { get; private set; }
 
-    public static List<Unit> Units { get; private set; } = new List<Unit>();
+    public static List<Piece> Pieces { get; private set; } = new List<Piece>();
 
     public static List<Fort> Forts { get; private set; } = new List<Fort>();
 
@@ -97,7 +97,7 @@ public class HexGrid : NetworkBehaviour
         Debug.LogWarning("HexGrid calling OnDestroy()");
 
         // HACK brute force clearing
-        Units.Clear();
+        Pieces.Clear();
         Forts.Clear();
 
         Singleton = null;
@@ -170,10 +170,10 @@ public class HexGrid : NetworkBehaviour
     {
         Debug.Log("Spawning Map Entities");
 
-        for (int i = 0; i < Units.Count; i++)
+        for (int i = 0; i < Pieces.Count; i++)
         {
-            NetworkServer.Spawn(Units[i].gameObject,
-                ownerConnection: Units[i].MyTeam.AuthoritiveConnection);
+            NetworkServer.Spawn(Pieces[i].gameObject,
+                ownerConnection: Pieces[i].MyTeam.AuthoritiveConnection);
         }
         for (int i = 0; i < Forts.Count; i++)
         {
@@ -181,7 +181,7 @@ public class HexGrid : NetworkBehaviour
                 ownerConnection: Forts[i].MyTeam.AuthoritiveConnection);
         }
 
-        // TODO: do clients need to send ready message after they attempted to spawn all the units?
+        // TODO: do clients need to send ready message after they attempted to spawn all the pieces?
         GameManager.Singleton.ServerStartGame();
     }
 
@@ -518,19 +518,19 @@ public class HexGrid : NetworkBehaviour
 
     public void ClearPaths()
     {
-        for (int i = 0; i < Units.Count; i++)
+        for (int i = 0; i < Pieces.Count; i++)
         {
-            Units[i].Movement.Path.Clear();
+            Pieces[i].Movement.Path.Clear();
         }
     }
 
     private void ClearEntities()
     {
-        for (int i = 0; i < Units.Count; i++)
+        for (int i = 0; i < Pieces.Count; i++)
         {
-            Destroy(Units[i].gameObject);
+            Destroy(Pieces[i].gameObject);
         }
-        Units.Clear();
+        Pieces.Clear();
 
         for (int i = 0; i < Forts.Count; i++)
         {
@@ -546,10 +546,10 @@ public class HexGrid : NetworkBehaviour
             cells[i].ResetVisibility();
         }
 
-        for (int i = 0; i < Units.Count; i++)
+        for (int i = 0; i < Pieces.Count; i++)
         {
-            Unit unit = Units[i];
-            UnitPathfinding.IncreaseVisibility(unit.MyCell, unit.Movement.VisionRange);
+            Piece piece = Pieces[i];
+            PiecePathfinding.IncreaseVisibility(piece.MyCell, piece.Movement.VisionRange);
         }
     }
 
@@ -571,8 +571,8 @@ public class HexGrid : NetworkBehaviour
         writer.Write(Forts.Count);
         for (int i = 0; i < Forts.Count; i++) Forts[i].Save(writer);
 
-        writer.Write(Units.Count);
-        for (int i = 0; i < Units.Count; i++) Units[i].Save(writer);
+        writer.Write(Pieces.Count);
+        for (int i = 0; i < Pieces.Count; i++) Pieces[i].Save(writer);
     }
 
     /// <summary>
@@ -611,10 +611,10 @@ public class HexGrid : NetworkBehaviour
             Fort.Load(mapReader, header);
         }
 
-        int unitCount = mapReader.ReadInt32();
-        for (int i = 0; i < unitCount; i++)
+        int pieceCount = mapReader.ReadInt32();
+        for (int i = 0; i < pieceCount; i++)
         {
-            Unit.Load(mapReader, header);
+            Piece.Load(mapReader, header);
         }
 
         cellShaderData.ImmediateMode = originalImmediateMode;

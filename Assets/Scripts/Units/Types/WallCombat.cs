@@ -12,38 +12,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WallCombat : UnitCombat
+public class WallCombat : PieceCombat
 {
     /************************************************************/
     #region Class Functions
 
-    protected override void AllyCollision(Unit otherUnit)
+    protected override void AllyCollision(Piece otherUnit)
     {
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
-    protected override void ActiveCenterCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Piece otherUnit)
     {
         // is the enemy an axe?
         if (otherUnit.Id == 0)
         {
-            MyUnit.Die(); // I am captured by the axe
+            MyPiece.Die(); // I am captured by the axe
             otherUnit.CombatHandler.HasCaptured = true;
         }
 
         // is the enemy a wall? 
         else if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         else
         {
-            MyUnit.Movement.CanMove = false;
+            MyPiece.Movement.CanMove = false;
         }
     }
 
-    protected override void ActiveBorderCollision(Unit otherUnit)
+    protected override void ActiveBorderCollision(Piece otherUnit)
     {
         //// is the enemy an axe?
         //if (otherUnit.Id == 0)
@@ -60,10 +60,10 @@ public class WallCombat : UnitCombat
         ActiveCenterCollision(otherUnit); // TODO: allow for walls to creep
     }
 
-    protected override void IdleCollision(Unit otherUnit)
+    protected override void IdleCollision(Piece otherUnit)
     {
         // TODO: unless I am the poison?
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
     #endregion

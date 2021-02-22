@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class HorseMovement : UnitMovement
+public class HorseMovement : PieceMovement
 {
     /************************************************************/
     #region Variables

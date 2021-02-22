@@ -12,7 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BowCombat : UnitCombat
+public class BowCombat : PieceCombat
 {
     /************************************************************/
     #region Variables
@@ -29,7 +29,7 @@ public class BowCombat : UnitCombat
     {
         get
         {
-            UnitMovement movement = MyUnit.Movement;
+            PieceMovement movement = MyPiece.Movement;
             int stepsTaken = movement.MaxMovement - movement.CurrentMovement;
             return (0 < stepsTaken && stepsTaken <= maxStepsBeforeFire && !movement.Path.HasPath);
         }
@@ -39,47 +39,47 @@ public class BowCombat : UnitCombat
     /************************************************************/
     #region Base Class Functions
 
-    protected override void AllyCollision(Unit otherUnit)
+    protected override void AllyCollision(Piece otherUnit)
     {
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
-    protected override void ActiveCenterCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Piece otherUnit)
     {
         // is the enemy a wall or bow?
         if (otherUnit.Id == 3 || otherUnit.Id == 4)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // active combat has been triggered
         else
         {
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 
-    protected override void ActiveBorderCollision(Unit otherUnit)
+    protected override void ActiveBorderCollision(Piece otherUnit)
     {
         // is the enemy a wall or bow?
         if (otherUnit.Id == 3 || otherUnit.Id == 4)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // active combat has been triggered
         else
         {
             gameObject.SetActive(false);
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 
-    protected override void IdleCollision(Unit otherUnit)
+    protected override void IdleCollision(Piece otherUnit)
     {
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
     #endregion
@@ -87,29 +87,29 @@ public class BowCombat : UnitCombat
     #region Class Functions
 
     // HACK this function is so jank home slice
-    public Unit Fire()
+    public Piece Fire()
     {
         //Debug.LogError($"{MyUnit.name} is FIRING");
 
-        Unit unit = null;
+        Piece unit = null;
 
-        HexCell targetCell = MyUnit.MyCell.GetNeighbor(MyUnit.Movement.Direction);
+        HexCell targetCell = MyPiece.MyCell.GetNeighbor(MyPiece.Movement.Direction);
         for (int i = 0; !unit && targetCell && i < range; i++)
         {
             //Debug.Log($"{i}: {targetCell.Index}");
 
-            if (targetCell.HasTheHighGround(MyUnit.MyCell)) break;
+            if (targetCell.HasTheHighGround(MyPiece.MyCell)) break;
 
-            if (targetCell.MyUnit) unit = targetCell.MyUnit;
+            if (targetCell.MyPiece) unit = targetCell.MyPiece;
 
-            targetCell = targetCell.GetNeighbor(MyUnit.Movement.Direction);
+            targetCell = targetCell.GetNeighbor(MyPiece.Movement.Direction);
         }
 
-        MyUnit.Movement.CanMove = false;
+        MyPiece.Movement.CanMove = false;
 
         if (!unit) return null;
 
-        if (unit.MyTeam == MyUnit.MyTeam) return null;
+        if (unit.MyTeam == MyPiece.MyTeam) return null;
 
         if (unit.Id == 3) return null;
 

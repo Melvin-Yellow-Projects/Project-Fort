@@ -62,19 +62,19 @@ public class Initializer : MonoBehaviour
     [Tooltip("highlight color that shows buy area for economy phase")]
     [SerializeField] Color fortHighlightColor;
 
-    [Header("Units")]
-    [Tooltip("references to the Unit prefabs")]
-    [SerializeField] Unit axePrefab;
-    [SerializeField] Unit horsePrefab;
-    [SerializeField] Unit pikePrefab;
-    [SerializeField] Unit wallPrefab;
-    [SerializeField] Unit bowPrefab;
+    [Header("Piece")]
+    [Tooltip("references to the piece prefabs")]
+    [SerializeField] Piece axePrefab;
+    [SerializeField] Piece horsePrefab;
+    [SerializeField] Piece pikePrefab;
+    [SerializeField] Piece wallPrefab;
+    [SerializeField] Piece bowPrefab;
 
-    [Header("UnitCursor")]
-    [Tooltip("unit cursor prefab reference")]
-    [SerializeField] UnitCursor unitCursorPrefab = null;
-    [Tooltip("unit cursor material reference")]
-    [SerializeField] Material unitCursorMaterial = null;
+    [Header("PieceCursor")]
+    [Tooltip("piece cursor prefab reference")]
+    [SerializeField] PieceCursor pieceCursorPrefab = null;
+    [Tooltip("piece cursor material reference")]
+    [SerializeField] Material pieceCursorMaterial = null;
 
     #endregion
     /************************************************************/
@@ -111,10 +111,10 @@ public class Initializer : MonoBehaviour
         if (fortHighlightColor != null && Fort.HighlightColor != null)
             Fort.HighlightColor = fortHighlightColor;
 
-        /** Unit **/
-        if (Unit.Prefabs == null)
+        /** Piece **/
+        if (Piece.Prefabs == null)
         {
-            Unit.Prefabs = new List<Unit>
+            Piece.Prefabs = new List<Piece>
             {
                 axePrefab,
                 horsePrefab,
@@ -124,10 +124,10 @@ public class Initializer : MonoBehaviour
             };
         }
 
-        /** UnitCursor **/
-        if (unitCursorPrefab && !UnitCursor.Prefab) UnitCursor.Prefab = unitCursorPrefab;
-        if (unitCursorMaterial && !UnitCursor.MyMaterial)
-            UnitCursor.MyMaterial = unitCursorMaterial;
+        /** PieceCursor **/
+        if (pieceCursorPrefab && !PieceCursor.Prefab) PieceCursor.Prefab = pieceCursorPrefab;
+        if (pieceCursorMaterial && !PieceCursor.MyMaterial)
+            PieceCursor.MyMaterial = pieceCursorMaterial;
     }
 
     #endregion

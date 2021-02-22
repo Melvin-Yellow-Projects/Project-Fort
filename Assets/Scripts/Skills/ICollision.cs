@@ -14,5 +14,5 @@ using UnityEngine;
 
 public interface ICollision
 {
-    void Invoke(Unit unit, Unit otherUnit);
+    void Invoke(Piece unit, Piece otherUnit);
 }

@@ -93,7 +93,7 @@ public class MapCamera : MonoBehaviour
 			}
 			else
             {
-				if (nextIndex >= PlayerMenu.MyPlayer.MyUnits.Count) nextIndex = 0;
+				if (nextIndex >= PlayerMenu.MyPlayer.MyPieces.Count) nextIndex = 0;
 			}
 		}
     }
@@ -193,7 +193,7 @@ public class MapCamera : MonoBehaviour
 
 		Vector3 pos;
 		if (GameManager.IsEconomyPhase) pos = player.MyForts[NextIndex].transform.position;
-		else pos = player.MyUnits[NextIndex].transform.position;
+		else pos = player.MyPieces[NextIndex].transform.position;
 		transform.position = new Vector3(pos.x, transform.position.y, pos.z);
 
 		NextIndex++;

@@ -25,13 +25,13 @@ public class HumanPlayer : Player
 
     public HexCell currentCell; // HACK this shouldnt be public
 
-    Unit selectedUnit;
+    Piece selectedPiece;
 
     bool hasCurrentCellUpdated = false;
 
     Controls controls;
 
-    bool isShowingUnitPaths = true;
+    bool isShowingPiecePaths = true;
 
     #endregion
     /************************************************************/
@@ -62,7 +62,7 @@ public class HumanPlayer : Player
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
         UpdateCurrentCell();
-        if (selectedUnit) DoPathfinding();
+        if (selectedPiece) DoPathfinding();
     }
 
     protected override void OnDestroy()
@@ -82,20 +82,20 @@ public class HumanPlayer : Player
 
         if (GameManager.IsEconomyPhase)
         {
-            CmdTryBuyUnit(PlayerMenu.UnitId, currentCell);
+            CmdTryBuyPiece(PlayerMenu.PieceId, currentCell);
         }
         else
         {
-            if (selectedUnit)
+            if (selectedPiece)
             {
-                CmdSetAction(UnitData.Instantiate(selectedUnit));
+                CmdSetAction(PieceData.Instantiate(selectedPiece));
                 PlayerMenu.RefreshMoveCountText();
-                DeselectUnit();
+                DeselectPiece();
             }
             else
             {
-                //DeselectUnitAndClearItsPath();
-                SelectUnit(currentCell.MyUnit);
+                //DeselectPieceAndClearItsPath();
+                SelectPiece(currentCell.MyPiece);
             }
         }
     }
@@ -105,27 +105,27 @@ public class HumanPlayer : Player
     {
         if (GameManager.IsEconomyPhase && currentCell)
         {
-            CmdTrySellUnit(currentCell);
+            CmdTrySellPiece(currentCell);
         }
         else
         {
-            DeselectUnitAndClearItsPath();
+            DeselectPieceAndClearItsPath();
         }
     }
 
     [Client]
     private void Toggle(InputAction.CallbackContext context)
     {
-        isShowingUnitPaths = !isShowingUnitPaths;
+        isShowingPiecePaths = !isShowingPiecePaths;
 
-        if (isShowingUnitPaths) foreach (Unit unit in MyUnits) unit.Movement.Path.Show();
-        else foreach (Unit unit in MyUnits) unit.Movement.Path.Hide();
+        if (isShowingPiecePaths) foreach (Piece piece in MyPieces) piece.Movement.Path.Show();
+        else foreach (Piece piece in MyPieces) piece.Movement.Path.Hide();
     }
 
     [Client]
     private void Clear(InputAction.CallbackContext context)
     {
-        foreach (Unit unit in MyUnits) CmdClearAction(UnitData.Instantiate(unit));
+        foreach (Piece piece in MyPieces) CmdClearAction(PieceData.Instantiate(piece));
     }
 
     #endregion
@@ -152,13 +152,13 @@ public class HumanPlayer : Player
             if (currentCell)
             {
                 currentCell.DisableHighlight();
-                if (!isShowingUnitPaths && currentCell.MyUnit)
-                    currentCell.MyUnit.Movement.Path.Hide();
+                if (!isShowingPiecePaths && currentCell.MyPiece)
+                    currentCell.MyPiece.Movement.Path.Hide();
             }
 
             currentCell = cell;
-            if (currentCell && currentCell.MyUnit && currentCell.MyUnit.MyTeam == MyTeam)
-                currentCell.MyUnit.Movement.Path.Show();
+            if (currentCell && currentCell.MyPiece && currentCell.MyPiece.MyTeam == MyTeam)
+                currentCell.MyPiece.Movement.Path.Show();
 
             hasCurrentCellUpdated = true; // whether or not current cell has updated
         }
@@ -175,53 +175,53 @@ public class HumanPlayer : Player
 
         if (Input.GetKey("left shift")) // HACK: this is a hardcoded input
         {
-            selectedUnit.Movement.Path.AddCellToPath(currentCell, canBackTrack: true);
+            selectedPiece.Movement.Path.AddCellToPath(currentCell, canBackTrack: true);
         }
         else
         {
-            selectedUnit.Movement.Path.AddCellToPath(currentCell, canBackTrack: false);
+            selectedPiece.Movement.Path.AddCellToPath(currentCell, canBackTrack: false);
         }
 
-        selectedUnit.Movement.Path.Show();
+        selectedPiece.Movement.Path.Show();
     }
 
     [Client]
-    private void SelectUnit(Unit unit)
+    private void SelectPiece(Piece piece)
     {
-        if (!MyUnits.Contains(unit)) return;
-        //if (!unit) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
+        if (!MyPieces.Contains(piece)) return;
+        //if (!piece) return; // THIS LINE IS FOR DEBUG PURPOSES (allows you to control enemies)
 
-        if (!unit.Movement.CanMove) return;
+        if (!piece.Movement.CanMove) return;
 
-        if (unit) CmdClearAction(UnitData.Instantiate(unit));
+        if (piece) CmdClearAction(PieceData.Instantiate(piece));
 
         if (!CanMove()) return;
 
-        selectedUnit = unit;
-        selectedUnit.IsSelected = true;
+        selectedPiece = piece;
+        selectedPiece.IsSelected = true;
     }
 
     [Client]
-    private void DeselectUnit()
+    private void DeselectPiece()
     {
-        if (!selectedUnit) return;
+        if (!selectedPiece) return;
 
-        if (!isShowingUnitPaths) selectedUnit.Movement.Path.Hide();
+        if (!isShowingPiecePaths) selectedPiece.Movement.Path.Hide();
 
-        selectedUnit.IsSelected = false;
-        selectedUnit = null;
+        selectedPiece.IsSelected = false;
+        selectedPiece = null;
     }
 
     [Client]
-    private void DeselectUnitAndClearItsPath()
+    private void DeselectPieceAndClearItsPath()
     {
-        if (!selectedUnit) return;
+        if (!selectedPiece) return;
 
-        selectedUnit.Movement.Path.Clear();
+        selectedPiece.Movement.Path.Clear();
 
-        DeselectUnit();
+        DeselectPiece();
 
-        //Debug.Log("There is a Unit to DeselectUnitAndClearItsPath");
+        //Debug.Log("There is a piece to DeselectPieceAndClearItsPath");
     }
 
     [Client] 
@@ -268,21 +268,21 @@ public class HumanPlayer : Player
     private void HandleClientOnStartRound()
     {
         foreach (Fort fort in MyForts) fort.ShowBuyCells();
-        foreach (Unit unit in MyUnits) unit.Movement.Display.HideDisplay();
+        foreach (Piece piece in MyPieces) piece.Movement.Display.HideDisplay();
     }
 
     [Client]
     private void HandleClientOnStopEconomyPhase()
     {
         foreach (Fort fort in MyForts) fort.HideBuyCells();
-        foreach (Unit unit in MyUnits) unit.Movement.Display.ShowDisplay();
+        foreach (Piece piece in MyPieces) piece.Movement.Display.ShowDisplay();
     }
 
     [Client]
     private void HandleClientOnPlayTurn()
     {
         // HACK: i dont think you need to clear it's path, the path shouldn't be set
-        DeselectUnitAndClearItsPath(); 
+        DeselectPieceAndClearItsPath(); 
         controls.Disable();
     }
 

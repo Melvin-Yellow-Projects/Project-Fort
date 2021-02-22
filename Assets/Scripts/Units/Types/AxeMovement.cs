@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class AxeMovement : UnitMovement
+public class AxeMovement : PieceMovement
 {
     /************************************************************/
     #region Variables
@@ -39,7 +39,7 @@ public class AxeMovement : UnitMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (MyUnit.CombatHandler.HasCaptured)
+        if (MyPiece.CombatHandler.HasCaptured)
         {
             CanMove = true;
             // HACK: this is not a good solution
@@ -58,7 +58,7 @@ public class AxeMovement : UnitMovement
     {
         if (!isClientOnly) return;
 
-        if (MyUnit.CombatHandler.HasCaptured) CanMove = true;
+        if (MyPiece.CombatHandler.HasCaptured) CanMove = true;
         else if (currentMovement < maxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();

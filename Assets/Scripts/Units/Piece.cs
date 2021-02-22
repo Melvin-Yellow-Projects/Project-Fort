@@ -1,6 +1,6 @@
 ﻿/**
- * File Name: Unit.cs
- * Description: Script for managing a hex unit
+ * File Name: Piece.cs
+ * Description: Script for managing a piece
  * 
  * Authors: Catlike Coding, Will Lacey
  * Date Created: October 6, 2020
@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      Previously known as Unit.cs & HexUnit.cs
  **/
 
 using UnityEngine;
@@ -19,30 +21,30 @@ using System;
 using Mirror;
 
 /// <summary>
-/// a unit that is able to interact with a hex map 
+/// a piece that is able to interact with a hex map 
 /// </summary>
 [RequireComponent(typeof(Team))]
 [RequireComponent(typeof(ColorSetter))]
-[RequireComponent(typeof(UnitDisplay))]
-public class Unit : NetworkBehaviour
+[RequireComponent(typeof(PieceDisplay))]
+public class Piece : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
 
     [Header("Settings")]
-    [Tooltip("ID for this unit")]
+    [Tooltip("ID for this piece")]
     [SerializeField] int id = 0;
 
-    [Tooltip("class title name for this unit")]
+    [Tooltip("class title name for this piece")]
     [SerializeField] string classTitle = null;
 
-    [Tooltip("piece title name for this unit")]
+    [Tooltip("piece title name for this piece")]
     [SerializeField] string pieceTitle = null;
 
-    [Tooltip("how much this unit costs")]
+    [Tooltip("how much this piece costs")]
     [SerializeField] int credits = 0;
 
-    //[Tooltip("sprite asset for the unit")]
+    //[Tooltip("sprite asset for the piece")]
     //[SerializeField] Sprite artwork = null;
 
     bool isSelected = false;
@@ -52,24 +54,24 @@ public class Unit : NetworkBehaviour
     #region Class Events
 
     /// <summary>
-    /// Event for when a unit is spawned, called in the Start Method
+    /// Event for when a piece is spawned, called in the Start Method
     /// </summary>
-    /// <subscriber class="Player">adds unit to player's list of owned units</subscriber>
+    /// <subscriber class="Player">adds piece to player's list of owned units</subscriber>
     /// <subscriber class="Grid">adds unit to list of units</subscriber>
-    public static event Action<Unit> OnUnitSpawned;
+    public static event Action<Piece> OnPieceSpawned;
 
     /// <summary>
     /// Event for when a unit is despawned, called in the OnDestroy Method
     /// </summary>
     /// <subscriber class="Player">removes unit from player's list of owned units</subscriber>
     /// <subscriber class="Grid">removes unit from list of units</subscriber>
-    public static event Action<Unit> OnUnitDepawned;
+    public static event Action<Piece> OnPieceDespawned;
 
     #endregion
     /************************************************************/
     #region Properties
 
-    public static List<Unit> Prefabs { get; set; }
+    public static List<Piece> Prefabs { get; set; }
 
     public int Id
     {
@@ -107,9 +109,9 @@ public class Unit : NetworkBehaviour
 
     public ColorSetter MyColorSetter { get; private set; }
 
-    public UnitMovement Movement { get; private set; }
+    public PieceMovement Movement { get; private set; }
 
-    public UnitCombat CombatHandler { get; private set; }
+    public PieceCombat CombatHandler { get; private set; }
 
     public bool IsSelected
     {
@@ -148,19 +150,19 @@ public class Unit : NetworkBehaviour
     {
         MyTeam = GetComponent<Team>();
         MyColorSetter = GetComponent<ColorSetter>();
-        Movement = GetComponent<UnitMovement>();
-        CombatHandler = GetComponentInChildren<UnitCombat>();
+        Movement = GetComponent<PieceMovement>();
+        CombatHandler = GetComponentInChildren<PieceCombat>();
 
         if (!MyTeam || !MyColorSetter || !Movement || !CombatHandler)
-            Debug.LogError($"unit {name} is missing an essential component");
+            Debug.LogError($"piece {name} is missing an essential component");
 
-        HexGrid.Units.Add(this); // HACK: should this be an event?
-        name = $"unit {UnityEngine.Random.Range(0, 100000)}";
+        HexGrid.Pieces.Add(this); // HACK: should this be an event?
+        name = $"piece {UnityEngine.Random.Range(0, 100000)}";
     }
 
     private void OnDestroy()
     {
-        HexGrid.Units.Remove(this); // HACK: should this be an event?
+        HexGrid.Pieces.Remove(this); // HACK: should this be an event?
     }
 
     #endregion
@@ -169,14 +171,14 @@ public class Unit : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        OnUnitSpawned?.Invoke(this);
+        OnPieceSpawned?.Invoke(this);
 
         ValidateLocation();
     }
 
     public override void OnStopServer()
     {
-        OnUnitDepawned?.Invoke(this);
+        OnPieceDespawned?.Invoke(this);
     }
 
     #endregion
@@ -185,12 +187,12 @@ public class Unit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (!isServer) OnUnitSpawned?.Invoke(this);
+        if (!isServer) OnPieceSpawned?.Invoke(this);
     }
 
     public override void OnStopClient()
     {
-        if (!isServer) OnUnitDepawned?.Invoke(this);
+        if (!isServer) OnPieceDespawned?.Invoke(this);
     }
 
     #endregion
@@ -206,7 +208,7 @@ public class Unit : NetworkBehaviour
     public void Die(bool isPlayingAnimation = true)
     {
         MyTeam.SetTeam(9); // black team
-        GetComponent<UnitDeath>().Die(isPlayingAnimation);
+        GetComponent<PieceDeath>().Die(isPlayingAnimation);
     }
 
     #endregion
@@ -225,17 +227,17 @@ public class Unit : NetworkBehaviour
     {
         HexCoordinates coordinates = HexCoordinates.Load(reader);
 
-        Unit unit = Instantiate(Prefabs[reader.ReadByte()]);
+        Piece piece = Instantiate(Prefabs[reader.ReadByte()]);
 
-        unit.MyTeam.SetTeam(reader.ReadByte());
+        piece.MyTeam.SetTeam(reader.ReadByte());
 
-        unit.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
-        unit.Movement.Orientation = reader.ReadSingle();
+        piece.Movement.MyCell = HexGrid.Singleton.GetCell(coordinates);
+        piece.Movement.Orientation = reader.ReadSingle();
 
-        // HACK: figure out to do with ParentTransformToGrid line (Unit.cs)
-        //HexGrid.Singleton.ParentTransformToGrid(unit.transform);
+        // HACK: figure out to do with ParentTransformToGrid line (Piece.cs)
+        //HexGrid.Singleton.ParentTransformToGrid(piece.transform);
 
-        //NetworkServer.Spawn(unit.gameObject);
+        //NetworkServer.Spawn(piece.gameObject);
     }
 
     #endregion

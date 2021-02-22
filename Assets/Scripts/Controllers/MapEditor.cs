@@ -295,9 +295,9 @@ public class MapEditor : MonoBehaviour
 
     private void CreateUnit(HexCell cell)
     {
-        if (cell.MyUnit) return;
+        if (cell.MyPiece) return;
 
-        Unit unit = Instantiate(Unit.Prefabs[activeUnitTypeIndex]);
+        Piece unit = Instantiate(Piece.Prefabs[activeUnitTypeIndex]);
 
         unit.MyCell = cell;
         unit.MyTeam.SetTeam(teamIndex);
@@ -321,7 +321,7 @@ public class MapEditor : MonoBehaviour
 
     private void ClearCellOfUnitsAndForts(HexCell cell)
     {
-        if (cell.MyUnit) cell.MyUnit.Die(isPlayingAnimation: false);
+        if (cell.MyPiece) cell.MyPiece.Die(isPlayingAnimation: false);
         if (cell.MyFort) Destroy(cell.MyFort.gameObject);
     }
 

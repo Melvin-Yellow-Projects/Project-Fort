@@ -1,12 +1,12 @@
 ﻿/**
- * File Name: UnitCursor.cs
+ * File Name: PieceCursor.cs
  * Description: 
  * 
  * Authors: Will Lacey
  * Date Created: October 12, 2020
  * 
  * Additional Comments: 
- *      Previously known as HexCursor.cs
+ *      Previously known as UnitCursor & HexCursor.cs
  *      
  *      FIXME: will flash red if it is initialized with error on frame 1
  **/
@@ -15,7 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitCursor : MonoBehaviour
+public class PieceCursor : MonoBehaviour
 {
     /************************************************************/
     #region Private Variables
@@ -49,7 +49,7 @@ public class UnitCursor : MonoBehaviour
     /************************************************************/
     #region Public Properties
 
-    public static UnitCursor Prefab { get; set; }
+    public static PieceCursor Prefab { get; set; }
 
     public static Material MyMaterial { get; set; }
 
@@ -132,11 +132,11 @@ public class UnitCursor : MonoBehaviour
     /************************************************************/
     #region Initialization Functions
 
-    public static UnitCursor Initialize(List<Vector3> points)
+    public static PieceCursor Initialize(List<Vector3> points)
     {
-        if (!Prefab || !MyMaterial) Debug.LogError("UnitCursor prefab and material are not found");
+        if (!Prefab || !MyMaterial) Debug.LogError("PieceCursor prefab and material are not found");
 
-        UnitCursor cursor = Instantiate<UnitCursor>(Prefab);
+        PieceCursor cursor = Instantiate<PieceCursor>(Prefab);
 
         cursor.bodyTransform = cursor.transform.Find("Body");
 
@@ -150,11 +150,11 @@ public class UnitCursor : MonoBehaviour
         return cursor;
     }
 
-    public static UnitCursor Initialize(Vector3 tail, Vector3 head)
+    public static PieceCursor Initialize(Vector3 tail, Vector3 head)
     {
-        if (!Prefab || !MyMaterial) Debug.LogError("UnitCursor prefab and material are not found");
+        if (!Prefab || !MyMaterial) Debug.LogError("PieceCursor prefab and material are not found");
 
-        UnitCursor cursor = Instantiate<UnitCursor>(Prefab);
+        PieceCursor cursor = Instantiate<PieceCursor>(Prefab);
 
         cursor.bodyTransform = cursor.transform.Find("Body");
 

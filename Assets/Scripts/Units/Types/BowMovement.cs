@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class BowMovement : UnitMovement
+public class BowMovement : PieceMovement
 {
     /************************************************************/
     #region Class Functions

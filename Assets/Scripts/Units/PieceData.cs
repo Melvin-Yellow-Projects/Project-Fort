@@ -1,11 +1,12 @@
 ﻿/**
- * File Name: UnitData.cs
+ * File Name: PieceData.cs
  * Description: 
  * 
  * Authors: Will Lacey
  * Date Created: January 24, 2020
  * 
  * Additional Comments: 
+ *      Previously known as UnitData.cs
  * 
  *      HACK: Move the serializer code into it's own class?
  **/
@@ -18,7 +19,7 @@ using Mirror;
 /// <summary>
 /// 
 /// </summary>
-public struct UnitData
+public struct PieceData
 {
     /************************************************************/
     #region Variables
@@ -27,34 +28,34 @@ public struct UnitData
 
     public List<HexCell> pathCells;
 
-    //public UnitAction action
+    //public PieceAction action
 
     #endregion
 
-    public Unit MyUnit
+    public Piece MyPiece
     {
         get
         {
-            return netIdentity.GetComponent<Unit>();
+            return netIdentity.GetComponent<Piece>();
         }
     }
 
     /************************************************************/
     #region Struct Functions
 
-    public static UnitData Instantiate(Unit unit)
+    public static PieceData Instantiate(Piece piece)
     {
-        return new UnitData
+        return new PieceData
         {
-            netIdentity = unit.netIdentity,
-            pathCells = unit.Movement.Path.Cells
+            netIdentity = piece.netIdentity,
+            pathCells = piece.Movement.Path.Cells
         };
     }
 
     // HACK: can this be added to general utilities?
     public bool DoesConnectionHaveAuthority(NetworkConnection conn)
     {
-        return MyUnit.connectionToClient.connectionId == conn.connectionId;
+        return MyPiece.connectionToClient.connectionId == conn.connectionId;
     }
 
     #endregion
@@ -63,20 +64,20 @@ public struct UnitData
 /// <summary>
 /// 
 /// </summary>
-public static class UnitDataSerializer
+public static class PieceDataSerializer
 {
     /************************************************************/
     #region HexCellData
 
-    public static void WriteUnitData(this NetworkWriter writer, UnitData data)
+    public static void WritePieceData(this NetworkWriter writer, PieceData data)
     {
         writer.WriteNetworkIdentity(data.netIdentity);
         HexCellSerializer.WriteHexCellIndices(writer, data.pathCells);
     }
 
-    public static UnitData ReadUnitData(this NetworkReader reader)
+    public static PieceData ReadPieceData(this NetworkReader reader)
     {
-        UnitData data = new UnitData
+        PieceData data = new PieceData
         {
             netIdentity = reader.ReadNetworkIdentity(),
             pathCells = HexCellSerializer.ReadHexCellIndices(reader)

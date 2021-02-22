@@ -16,7 +16,7 @@ using Mirror;
 /// <summary>
 /// 
 /// </summary>
-public class PikeMovement : UnitMovement
+public class PikeMovement : PieceMovement
 {
     /************************************************************/
     #region Variables

@@ -64,7 +64,7 @@ public class HexCell : MonoBehaviour
 
     bool explored;
 
-    List<Unit> myUnitQueue = new List<Unit>(); 
+    List<Piece> myUnitQueue = new List<Piece>(); 
 
     #endregion
 
@@ -212,11 +212,11 @@ public class HexCell : MonoBehaviour
     /// <summary>
     /// TODO: comment Unit
     /// </summary>
-    public Unit MyUnit { get; set; }
+    public Piece MyPiece { get; set; }
 
     public Fort MyFort { get; set; }
 
-    public List<Unit> MyUnitQueue
+    public List<Piece> MyUnitQueue
     {
         get
         {
@@ -360,7 +360,7 @@ public class HexCell : MonoBehaviour
         }
 
         // refresh unit location
-        if (MyUnit) MyUnit.ValidateLocation();
+        if (MyPiece) MyPiece.ValidateLocation();
         if (MyFort) MyFort.ValidateLocation();
     }
 

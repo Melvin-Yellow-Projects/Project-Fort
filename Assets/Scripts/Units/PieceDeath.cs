@@ -1,10 +1,26 @@
-﻿using System.Collections;
+﻿/**
+ * File Name: PieceDeath.cs
+ * Description: 
+ * 
+ * Authors: Will Lacey
+ * Date Created: ???
+ * 
+ * Additional Comments: 
+ *      Previously known as UnitDeath.cs
+ * 
+ *      TODO: find date created
+ **/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Mirror;
 
-public class UnitDeath : MonoBehaviour
+/// <summary>
+/// 
+/// </summary>
+public class PieceDeath : MonoBehaviour
 {
     /************************************************************/
     #region Public Variables
@@ -29,11 +45,11 @@ public class UnitDeath : MonoBehaviour
     #region Class Events
 
     /// <summary>
-    /// Event for when a unit is killed/destroyed
+    /// Event for when a piece is killed/destroyed
     /// </summary>
-    /// <subscriber class="Player">removes unit from owned units</subscriber>
-    /// <subscriber class="UnitMovement">clears movement data and removes visibility</subscriber>
-    public static event Action<Unit> ServerOnUnitDeath;
+    /// <subscriber class="Player">removes piece from owned pieces</subscriber>
+    /// <subscriber class="PieceMovement">clears movement data and removes visibility</subscriber>
+    public static event Action<Piece> ServerOnPieceDeath;
 
     #endregion
     /************************************************************/
@@ -42,7 +58,7 @@ public class UnitDeath : MonoBehaviour
     [Server]
     public void Die(bool isPlayingAnimation = true)
     {
-        ServerOnUnitDeath?.Invoke(GetComponent<Unit>());
+        ServerOnPieceDeath?.Invoke(GetComponent<Piece>());
 
         IsDying = true;
 

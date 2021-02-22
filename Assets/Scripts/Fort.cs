@@ -298,7 +298,7 @@ public class Fort : NetworkBehaviour
     [Server]
     public void HandleServerOnStopTurn()
     {
-        Unit unit = myCell.MyUnit;
+        Piece unit = myCell.MyPiece;
 
         if (!unit || MyTeam == unit.MyTeam) return;
 

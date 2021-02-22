@@ -28,7 +28,7 @@ public class GameManager : NetworkBehaviour
     /// <summary>
     /// Server event for when a new round has begun
     /// </summary>
-    /// <subscriber class="Unit">refreshes unit's movement</subscriber>
+    /// <subscriber class="Piece">refreshes piece's movement</subscriber>
     public static event Action ServerOnStartRound;
 
     /// <summary>
@@ -47,21 +47,21 @@ public class GameManager : NetworkBehaviour
     /// Server event for turn has stopped playing
     /// </summary>
     /// <subscriber class="Fort">checks to see if team has updated</subscriber>
-    /// <subscriber class="UnitMovement">sets a unit's movement to 0 if it has moved</subscriber>
+    /// <subscriber class="PieceMovement">sets a piece's movement to 0 if it has moved</subscriber>
     public static event Action ServerOnStopTurn;
 
     /// <summary>
     /// Client event for when a new round has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
-    /// <subscriber class="HumanPlayer">updates player's buy cells and unit displays</subscriber>
+    /// <subscriber class="HumanPlayer">updates player's buy cells and piece displays</subscriber>
     /// <subscriber class="MapCamera">refreshes 'Next' index</subscriber>
     public static event Action ClientOnStartRound;
 
     /// <summary>
     /// Client event for when the Economy Phase ends
     /// </summary>
-    /// <subscriber class="HumanPlayer">updates player's buy cells and unit displays</subscriber>
+    /// <subscriber class="HumanPlayer">updates player's buy cells and piece displays</subscriber>
     public static event Action ClientOnStopEconomyPhase;
 
     /// <summary>
@@ -74,13 +74,13 @@ public class GameManager : NetworkBehaviour
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
-    /// <subscriber class="HumanPlayer">disables controls when units are moving</subscriber>
+    /// <subscriber class="HumanPlayer">disables controls when pieces are moving</subscriber>
     public static event Action ClientOnPlayTurn;
 
     /// <summary>
     /// Client event for turn has stopped playing
     /// </summary>
-    /// <subscriber class="HumanPlayer">enables controls when units are moving</subscriber>
+    /// <subscriber class="HumanPlayer">enables controls when pieces are moving</subscriber>
     public static event Action ClientOnStopTurn;
 
     #endregion
@@ -247,24 +247,24 @@ public class GameManager : NetworkBehaviour
             Debug.Log($"{player.name} has {player.MyForts.Count} forts");
             if (player.MyForts.Count == 0)
                 GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Conquest);
-            else if (player.MyUnits.Count == 0)
+            else if (player.MyPieces.Count == 0)
                 GameOverHandler.Singleton.ServerPlayerHasLost(player, WinConditionType.Routed);
         }
     }
 
-    [Server] // HACK:  units are looped over several times
+    [Server] // HACK:  pieces are looped over several times
     private IEnumerator ServerPlayTurn(int numberOfTurnSteps) 
     {
         IsPlayingTurn = true;
         ServerOnPlayTurn?.Invoke();
         RpcInvokeClientOnPlayTurn();
 
-        // How many Moves/Steps Units can Utilize
+        // How many Moves/Steps pieces can Utilize
         for (int step = 0; step < numberOfTurnSteps; step++)
         {
-            ServerMoveUnits();
+            ServerMovePieces();
 
-            yield return ServerWaitForUnits();
+            yield return ServerWaitForPieces();
 
             ServerCompleteTurnStep();
         }
@@ -282,24 +282,24 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    private void ServerMoveUnits()
+    private void ServerMovePieces()
     {
-        // Moving Units
-        for (int i = 0; i < HexGrid.Units.Count; i++)
+        // Moving pieces
+        for (int i = 0; i < HexGrid.Pieces.Count; i++)
         {
-            Unit unit = HexGrid.Units[i];
-            unit.Movement.ServerDoAction(); // TODO: correct number of steps
+            Piece piece = HexGrid.Pieces[i];
+            piece.Movement.ServerDoAction(); // TODO: correct number of steps
         }
     }
 
     [Server]
-    private IEnumerator ServerWaitForUnits()
+    private IEnumerator ServerWaitForPieces()
     {
-        // Waiting for Units
-        for (int i = 0; i < HexGrid.Units.Count; i++)
+        // Waiting for piece
+        for (int i = 0; i < HexGrid.Pieces.Count; i++)
         {
-            Unit unit = HexGrid.Units[i];
-            if (unit.Movement.IsEnRoute)
+            Piece piece = HexGrid.Pieces[i];
+            if (piece.Movement.IsEnRoute)
             {
                 i = -1;
                 yield return null;
@@ -310,11 +310,11 @@ public class GameManager : NetworkBehaviour
     [Server]
     private void ServerCompleteTurnStep()
     {
-        // Setting new cell for Units now that they moved
-        for (int i = 0; i < HexGrid.Units.Count; i++)
+        // Setting new cell for pieces now that they moved
+        for (int i = 0; i < HexGrid.Pieces.Count; i++)
         {
-            Unit unit = HexGrid.Units[i];
-            unit.Movement.ServerCompleteAction();
+            Piece piece = HexGrid.Pieces[i];
+            piece.Movement.ServerCompleteAction();
         }
 
         // HACK: Bow Calculations
@@ -324,15 +324,15 @@ public class GameManager : NetworkBehaviour
     [Server]
     private void ServerBowCalculations()
     {
-        List<Unit> deadUnits = new List<Unit>();
+        List<Piece> deadPieces = new List<Piece>();
 
-        for (int i = 0; i < HexGrid.Units.Count; i++)
+        for (int i = 0; i < HexGrid.Pieces.Count; i++)
         {
-            BowCombat bow = HexGrid.Units[i].CombatHandler as BowCombat;
+            BowCombat bow = HexGrid.Pieces[i].CombatHandler as BowCombat;
 
-            if (bow && bow.CanFire) deadUnits.Add(bow.Fire());
+            if (bow && bow.CanFire) deadPieces.Add(bow.Fire());
         }
-        foreach (Unit unit in deadUnits) if (unit) unit.Die();
+        foreach (Piece piece in deadPieces) if (piece) piece.Die();
     }
 
     #endregion

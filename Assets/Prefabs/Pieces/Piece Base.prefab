@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8563784658003125489}
   - component: {fileID: 1936015192140806703}
   m_Layer: 10
-  m_Name: Unit Base
+  m_Name: Piece Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -233,7 +233,7 @@ PrefabInstance:
     - target: {fileID: 3679637525880972599, guid: c79296bc249854a01bd22b31cb536431,
         type: 3}
       propertyPath: m_Name
-      value: Unit Movement Display
+      value: Movement Display
       objectReference: {fileID: 0}
     - target: {fileID: 7344736491404139329, guid: c79296bc249854a01bd22b31cb536431,
         type: 3}

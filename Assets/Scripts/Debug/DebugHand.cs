@@ -26,7 +26,7 @@ public class DebugHand : MonoBehaviour
     [Tooltip("speed of the piece when it changes position")]
     [SerializeField, Range(0, 10)] float moveSpeed;
 
-    Unit grabbedUnit = null;
+    Piece grabbedUnit = null;
     Vector3 currentPosition;
 
     #endregion
@@ -62,7 +62,7 @@ public class DebugHand : MonoBehaviour
 
         Debug.Log(hit.rigidbody.transform.parent.name);
 
-        grabbedUnit = hit.rigidbody.GetComponentInParent<Unit>();
+        grabbedUnit = hit.rigidbody.GetComponentInParent<Piece>();
     }
 
     private void LetGoOfPiece()

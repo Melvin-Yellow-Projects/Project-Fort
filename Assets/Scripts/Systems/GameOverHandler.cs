@@ -56,14 +56,14 @@ public class GameOverHandler : NetworkBehaviour
             fort.HideBuyCells();
             fort.MyTeam.SetTeam(0);
         }
-        foreach (Unit unit in player.MyUnits)
+        foreach (Piece piece in player.MyPieces)
         {
-            unit.MyTeam.SetTeam(0);
-            unit.MyCell.DecreaseVisibility();
-            unit.Movement.Display.HideDisplay(); // FIXME: this isn't working (actually i think it is)
+            piece.MyTeam.SetTeam(0);
+            piece.MyCell.DecreaseVisibility();
+            piece.Movement.Display.HideDisplay(); // FIXME: this isn't working (actually i think it is)
         }
 
-        player.MyUnits.Clear();
+        player.MyPieces.Clear();
         player.MyForts.Clear();
 
         // HACK: fix this function up later
@@ -121,13 +121,13 @@ public class GameOverHandler : NetworkBehaviour
         HumanPlayer player = conn.identity.GetComponent<HumanPlayer>();
 
         foreach (Fort fort in player.MyForts) fort.HideBuyCells();
-        foreach (Unit unit in player.MyUnits)
+        foreach (Piece piece in player.MyPieces)
         {
-            unit.MyCell.DecreaseVisibility();
-            unit.Movement.Display.HideDisplay(); // FIXME: this isn't working
+            piece.MyCell.DecreaseVisibility();
+            piece.Movement.Display.HideDisplay(); // FIXME: this isn't working
         }
 
-        player.MyUnits.Clear();
+        player.MyPieces.Clear();
         player.MyForts.Clear();
 
         player.enabled = false;

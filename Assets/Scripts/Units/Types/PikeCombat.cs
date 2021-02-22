@@ -12,28 +12,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PikeCombat : UnitCombat
+public class PikeCombat : PieceCombat
 {
     /************************************************************/
     #region Base Class Functions
 
-    protected override void AllyCollision(Unit otherUnit)
+    protected override void AllyCollision(Piece otherUnit)
     {
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
-    protected override void ActiveCenterCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // if the enemy is not a horse, die
         else if (otherUnit.Id != 1)
         {
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
 
@@ -43,19 +43,19 @@ public class PikeCombat : UnitCombat
         }
     }
 
-    protected override void ActiveBorderCollision(Unit otherUnit)
+    protected override void ActiveBorderCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // if the enemy is not a horse, die
         else if (otherUnit.Id != 1)
         {
             gameObject.SetActive(false);
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
 
@@ -65,12 +65,12 @@ public class PikeCombat : UnitCombat
         }
     }
 
-    protected override void IdleCollision(Unit otherUnit)
+    protected override void IdleCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         else

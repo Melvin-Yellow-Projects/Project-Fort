@@ -61,7 +61,7 @@ public class PlayerMenu : MonoBehaviour
         }
     }
 
-    public static int UnitId
+    public static int PieceId
     {
         get
         {
@@ -69,7 +69,7 @@ public class PlayerMenu : MonoBehaviour
         }
         set
         {
-            unitId = Mathf.Clamp(value, 0, Unit.Prefabs.Count);
+            unitId = Mathf.Clamp(value, 0, Piece.Prefabs.Count);
         }
     }
 
@@ -82,11 +82,11 @@ public class PlayerMenu : MonoBehaviour
         Singleton = this;
         enabled = false;
 
-        for (int i = 0; i < Unit.Prefabs.Count; i++)
+        for (int i = 0; i < Piece.Prefabs.Count; i++)
         {
-            unitTexts[i].text = Unit.Prefabs[i].ClassTitle;
+            unitTexts[i].text = Piece.Prefabs[i].ClassTitle;
             //unitTexts[i].text = Unit.Prefabs[i].PieceTitle;
-            costTexts[i].text = $"{Unit.Prefabs[i].Credits}";
+            costTexts[i].text = $"{Piece.Prefabs[i].Credits}";
         }
 
         Subscribe();

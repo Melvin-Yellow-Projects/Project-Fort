@@ -1,15 +1,15 @@
 ﻿/**
- * File Name: UnitPath.cs
+ * File Name: PiecePath.cs
  * Description: TODO: write this
  * 
  * Authors: Will Lacey
  * Date Created: October 18, 2020
  * 
  * Additional Comments:
- *      TODO: Update Path to better track the pathing of the unit, in particular the tail of the
- *              path does a poor job in showing where the unit is moving during its move
+ *      TODO: Update Path to better track the pathing of the piece, in particular the tail of the
+ *              path does a poor job in showing where the piece is moving during its move
  *      
- *      Previously known as HexPath.cs
+ *      Previously known as UnitPath.cs & HexPath.cs
  **/
 
 using System.Collections;
@@ -20,18 +20,18 @@ using UnityEngine.UI;
 /// <summary>
 /// 
 /// </summary>
-public class UnitPath : MonoBehaviour
+public class PiecePath : MonoBehaviour
 {
     /************************************************************/
     #region Private Variables
 
-    Unit unit;
-    UnitMovement movement;
+    Piece piece;
+    PieceMovement movement;
 
     //List<HexCell> cells = ListPool<HexCell>.Get();
     List<HexCell> cells = new List<HexCell>();
 
-    UnitCursor cursor;
+    PieceCursor cursor;
 
     #endregion
     /************************************************************/
@@ -70,7 +70,7 @@ public class UnitPath : MonoBehaviour
     {
         get
         {
-            return unit.MyCell;
+            return piece.MyCell;
             //return cells[0]; // this is the same thing
         }
     }
@@ -96,7 +96,7 @@ public class UnitPath : MonoBehaviour
     {
         get
         {
-            return UnitPathfinding.GetMoveCostCalculation(cells);
+            return PiecePathfinding.GetMoveCostCalculation(cells);
         }
     }
 
@@ -118,8 +118,8 @@ public class UnitPath : MonoBehaviour
 
     private void Awake()
     {
-        unit = GetComponent<Unit>();
-        movement = GetComponent<UnitMovement>();
+        piece = GetComponent<Piece>();
+        movement = GetComponent<PieceMovement>();
     }
 
     #endregion
@@ -145,11 +145,11 @@ public class UnitPath : MonoBehaviour
             // if this is the penultimate cell, remove it (makes it easy for user to play w/ paths)
             // else A* to create new path
 
-        if (cells.Count == 0) cells.Add(unit.MyCell);
+        if (cells.Count == 0) cells.Add(piece.MyCell);
 
         if (!cells.Contains(cell) || canBackTrack)
         {
-            if (UnitPathfinding.CanAddCellToPath(unit, cell))
+            if (PiecePathfinding.CanAddCellToPath(piece, cell))
             {
                 cells.Add(cell);
 
@@ -163,15 +163,15 @@ public class UnitPath : MonoBehaviour
         else
         {
             if (PenultimateCell == cell) cells.Remove(EndCell);
-            else cells = UnitPathfinding.FindPath(unit, StartCell, cell);
+            else cells = PiecePathfinding.FindPath(piece, StartCell, cell);
         }
     }
 
     private void CheckForBetterPath(HexCell cell)
     {
-        List<HexCell> potentialPath = UnitPathfinding.FindPath(unit, StartCell, cell);
+        List<HexCell> potentialPath = PiecePathfinding.FindPath(piece, StartCell, cell);
 
-        if (UnitPathfinding.GetMoveCostCalculation(potentialPath) <= movement.CurrentMovement)
+        if (PiecePathfinding.GetMoveCostCalculation(potentialPath) <= movement.CurrentMovement)
             cells = potentialPath;
     }
 
@@ -185,8 +185,8 @@ public class UnitPath : MonoBehaviour
             cells.RemoveAt(0);
         }
 
-        if (unit.isServer && unit.MyCell != cells[0])
-            Debug.LogWarning("Tail cell is not Unit's cell!");
+        if (piece.isServer && piece.MyCell != cells[0])
+            Debug.LogWarning("Tail cell is not piece's cell!");
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ public class UnitPath : MonoBehaviour
 
         for (int i = 0; i < cells.Count; i++)
         {
-            //int turn = (cells[i].Distance - 1) / unit.Speed;
+            //int turn = (cells[i].Distance - 1) / piece.Speed;
             //cells[i].SetLabel(turn.ToString(), FontStyle.Bold, fontSize: 8);
             //cells[i].EnableHighlight(Color.white);
 
@@ -219,11 +219,11 @@ public class UnitPath : MonoBehaviour
         //endCell.EnableHighlight(Color.red);
 
         if (cursor) cursor.Redraw(points);
-        else cursor = UnitCursor.Initialize(points);
+        else cursor = PieceCursor.Initialize(points);
 
-        //cursor.IsSelected = unit.IsSelected;
+        //cursor.IsSelected = piece.IsSelected;
         //cursor.HasError =
-        //    (UnitPathfinding.GetMoveCostCalculation(cells) > movement.CurrentMovement);
+        //    (PiecePathfinding.GetMoveCostCalculation(cells) > movement.CurrentMovement);
 
         //StartCoroutine(AnimatePath());
 
@@ -240,7 +240,7 @@ public class UnitPath : MonoBehaviour
         Image highlight;
         ColorSetter setter;
         int i = 0;
-        while (HasPath && unit.IsSelected)
+        while (HasPath && piece.IsSelected)
         {
             highlight = cells[i].uiRectTransform.GetChild(0).GetComponent<Image>();
             setter = cells[i].uiRectTransform.GetChild(0).GetComponent<ColorSetter>();

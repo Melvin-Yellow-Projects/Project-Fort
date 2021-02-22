@@ -12,62 +12,62 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HorseCombat : UnitCombat
+public class HorseCombat : PieceCombat
 {
     /************************************************************/
     #region Base Class Functions
 
-    protected override void AllyCollision(Unit otherUnit)
+    protected override void AllyCollision(Piece otherUnit)
     {
-        MyUnit.Movement.CancelAction();
+        MyPiece.Movement.CancelAction();
     }
 
-    protected override void ActiveCenterCollision(Unit otherUnit)
+    protected override void ActiveCenterCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // active combat has been triggered
         else
         {
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 
-    protected override void ActiveBorderCollision(Unit otherUnit)
+    protected override void ActiveBorderCollision(Piece otherUnit)
     {
         // is the enemy a wall?
         if (otherUnit.Id == 3)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // active combat has been triggered
         else
         {
             gameObject.SetActive(false);
-            MyUnit.Die();
+            MyPiece.Die();
             otherUnit.CombatHandler.HasCaptured = true;
         }
     }
 
-    protected override void IdleCollision(Unit otherUnit)
+    protected override void IdleCollision(Piece otherUnit)
     {
         // is the enemy a wall or a pike?
         if (otherUnit.Id == 3 || otherUnit.Id == 2)
         {
-            MyUnit.Movement.CancelAction();
+            MyPiece.Movement.CancelAction();
         }
 
         // I have captured enemy piece
         else
         {
             //MyUnit.Movement.Path.Clear();
-            MyUnit.Movement.ServerClearAction();
+            MyPiece.Movement.ServerClearAction();
         }
     }
     #endregion

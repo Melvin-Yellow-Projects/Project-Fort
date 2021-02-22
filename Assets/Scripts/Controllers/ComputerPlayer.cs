@@ -37,7 +37,7 @@ public class ComputerPlayer : Player
     /************************************************************/
     #region Class Functions
 
-    private IEnumerator BuyUnits()
+    private IEnumerator BuyPieces()
     {
         foreach (Fort fort in MyForts)
         {
@@ -47,26 +47,26 @@ public class ComputerPlayer : Player
 
                 // HACK cpu's will not buy the Bow (because they don't know how to use it)
                 if (Random.Range(0f, 1f) > chanceToSkipAction)
-                    ServerTryBuyUnit(Random.Range(0, 3), cell);
+                    ServerTryBuyPiece(Random.Range(0, 3), cell);
             }
         }
         HasEndedTurn = true;
         GameManager.Singleton.ServerTryEndTurn();
     }
 
-    private IEnumerator MoveUnits()
+    private IEnumerator MovePieces()
     {
-        foreach (Unit unit in MyUnits)
+        foreach (Piece piece in MyPieces)
         {
             yield return null;
 
-            if (unit.Movement.CanMove && Random.Range(0f, 1f) > chanceToSkipAction)
+            if (piece.Movement.CanMove && Random.Range(0f, 1f) > chanceToSkipAction)
             {
                 if (!targetCell) targetCell = GetTargetCell();
 
-                unit.Movement.Path.Cells = UnitPathfinding.FindPath(unit, unit.MyCell, targetCell);
+                piece.Movement.Path.Cells = PiecePathfinding.FindPath(piece, piece.MyCell, targetCell);
 
-                ServerSetAction(this, UnitData.Instantiate(unit));
+                ServerSetAction(this, PieceData.Instantiate(piece));
             }
         }
         HasEndedTurn = true;
@@ -114,7 +114,7 @@ public class ComputerPlayer : Player
         base.HandleServerOnStartRound();
 
         Debug.Log($"{name} is buying");
-        if (canMakeMoves) StartCoroutine(BuyUnits());
+        if (canMakeMoves) StartCoroutine(BuyPieces());
         else HasEndedTurn = true; 
     }
 
@@ -127,7 +127,7 @@ public class ComputerPlayer : Player
         // HACK should the cpu listen to a lost flag from the base function call?
 
         Debug.Log($"{name} is moving");
-        if (canMakeMoves) StartCoroutine(MoveUnits());
+        if (canMakeMoves) StartCoroutine(MovePieces());
         else HasEndedTurn = true;
     }
 
@@ -141,10 +141,10 @@ public class ComputerPlayer : Player
     private void HandleServerOnStopTurn()
     {
         if (!targetCell) return;
-        // if one of my units get to the target, break
-        foreach (Unit unit in MyUnits)
+        // if one of my pieces get to the target, break
+        foreach (Piece piece in MyPieces)
         {
-            if (unit.MyCell.Index == targetCell.Index)
+            if (piece.MyCell.Index == targetCell.Index)
             {
                 targetCell = null;
                 break;
