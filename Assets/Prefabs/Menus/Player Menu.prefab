@@ -86,7 +86,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1371442636790107013}
         m_TargetAssemblyTypeName: PlayerMenu, Assembly-CSharp
-        m_MethodName: set_UnitId
+        m_MethodName: set_PieceId
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1151,7 +1151,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1371442636790107013}
         m_TargetAssemblyTypeName: PlayerMenu, Assembly-CSharp
-        m_MethodName: set_UnitId
+        m_MethodName: set_PieceId
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1286,7 +1286,7 @@ MonoBehaviour:
   buyPanel: {fileID: 1631468002733100924}
   endTurnButton: {fileID: 3050329159846015767}
   endTurnButtonText: {fileID: 5777944978535289457}
-  unitTexts:
+  pieceTexts:
   - {fileID: 1255135799402866355}
   - {fileID: 5755796196297086311}
   - {fileID: 7520837633914399581}
@@ -1384,7 +1384,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1371442636790107013}
         m_TargetAssemblyTypeName: PlayerMenu, Assembly-CSharp
-        m_MethodName: set_UnitId
+        m_MethodName: set_PieceId
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1481,7 +1481,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1371442636790107013}
         m_TargetAssemblyTypeName: PlayerMenu, Assembly-CSharp
-        m_MethodName: set_UnitId
+        m_MethodName: set_PieceId
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2945,7 +2945,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1371442636790107013}
         m_TargetAssemblyTypeName: PlayerMenu, Assembly-CSharp
-        m_MethodName: set_UnitId
+        m_MethodName: set_PieceId
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

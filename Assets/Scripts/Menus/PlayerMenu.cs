@@ -81,6 +81,7 @@ public class PlayerMenu : MonoBehaviour
     {
         Singleton = this;
         enabled = false;
+        PieceId = 0;
 
         for (int i = 0; i < Piece.Prefabs.Count; i++)
         {
