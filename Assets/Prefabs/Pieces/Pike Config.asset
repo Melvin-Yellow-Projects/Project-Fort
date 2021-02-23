@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf5922753fdf84d10876191117d1be06, type: 3}
+  m_Name: Pike Config
+  m_EditorClassIdentifier: 
+  id: 0
+  classTitle: 
+  pieceTitle: 
+  credits: 0
+  maxMovement: 4
+  visionRange: 1
+  movesPerStep: 1
+  travelSpeed: 6
+  rotationSpeed: 360
+  unitId: 
+  AllySharedBorderSkill: {fileID: 0}
+  AllySharedCenterSkill: {fileID: 0}
+  AllyIdleSkill: {fileID: 0}
+  EnemySharedBorderSkill: {fileID: 0}
+  EnemySharedCenterSkill: {fileID: 0}
+  EnemyIdleSkill: {fileID: 0}

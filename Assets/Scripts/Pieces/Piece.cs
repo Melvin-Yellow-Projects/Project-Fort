@@ -32,6 +32,9 @@ public class Piece : NetworkBehaviour
     #region Variables
 
     [Header("Settings")]
+    [Tooltip("configuration file for this piece")]
+    [SerializeField] PieceConfig configuration = null;
+
     [Tooltip("ID for this piece")]
     [SerializeField] int id = 0;
 

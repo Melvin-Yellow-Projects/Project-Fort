@@ -43,29 +43,44 @@ public class PieceConfig : ScriptableObject
 
     /** Movement Settings **/
     [Header("Movement Settings")]
-    [Tooltip("ID for this piece")]
+    [Tooltip("max movement this piece is capable of")]
     [SerializeField] protected int maxMovement = 4;
 
-    [Tooltip("ID for this piece")]
+    [Tooltip("how far this piece can see")]
     [SerializeField] protected int visionRange = 1;
 
-    [Tooltip("ID for this piece")]
+    [Tooltip("how many actions this unit is able to perform per turn step")]
     [SerializeField] protected int movesPerStep = 1;
 
-    [Header("Aesthetic Settings")]
-    [Tooltip("ID for this piece")]
+    [Tooltip("how fast the piece physically moves during turn step")]
     [SerializeField] protected float travelSpeed = 6f;
 
-    [Tooltip("ID for this piece")]
+    [Tooltip("how fast the piece physically rotates during turn step")]
     [SerializeField] protected float rotationSpeed = 360f;
+
+    /** Block Settings **/
+    [Header("Block Settings")]
+    [Tooltip("")]
+    [SerializeField] int[] unitId;
 
     /** Collision Skill Settings **/
     [Header("Collision Skill Settings")]
+    [Tooltip("")]
     [SerializeField] Skill AllySharedBorderSkill;
+
+    [Tooltip("")]
     [SerializeField] Skill AllySharedCenterSkill;
+
+    [Tooltip("")]
     [SerializeField] Skill AllyIdleSkill;
+
+    [Tooltip("")]
     [SerializeField] Skill EnemySharedBorderSkill;
+
+    [Tooltip("")]
     [SerializeField] Skill EnemySharedCenterSkill;
+
+    [Tooltip("")]
     [SerializeField] Skill EnemyIdleSkill;
 
     #endregion
