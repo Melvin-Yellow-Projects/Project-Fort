@@ -64,7 +64,7 @@ public class HexCell : MonoBehaviour
 
     bool explored;
 
-    List<Piece> myUnitQueue = new List<Piece>(); 
+    //List<Piece> myUnitQueue = new List<Piece>(); 
 
     #endregion
 
@@ -210,19 +210,19 @@ public class HexCell : MonoBehaviour
     public int SearchPhase { get; set; }
 
     /// <summary>
-    /// TODO: comment Unit
+    /// TODO: comment MyPiece
     /// </summary>
     public Piece MyPiece { get; set; }
 
     public Fort MyFort { get; set; }
 
-    public List<Piece> MyUnitQueue
-    {
-        get
-        {
-            return myUnitQueue;
-        }
-    }
+    //public List<Piece> MyUnitQueue
+    //{
+    //    get
+    //    {
+    //        return myUnitQueue;
+    //    }
+    //}
 
     public HexCellData Data
     {
@@ -359,7 +359,7 @@ public class HexCell : MonoBehaviour
             if (neighbor != null && neighbor.chunk != chunk) neighbor.chunk.Refresh();
         }
 
-        // refresh unit location
+        // refresh piece location
         if (MyPiece) MyPiece.ValidateLocation();
         if (MyFort) MyFort.ValidateLocation();
     }
@@ -367,7 +367,7 @@ public class HexCell : MonoBehaviour
     //void RefreshSelfOnly()
     //{
     //    chunk.Refresh();
-    //    if (Unit) Unit.ValidateLocation();
+    //    if (Piece) Piece.ValidateLocation();
     //}
 
     /// <summary>

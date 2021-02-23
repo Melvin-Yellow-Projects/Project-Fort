@@ -275,7 +275,7 @@ public class GameNetworkManager : NetworkManager
     //[Server] // HACK: maybe this could be named better
     //private IEnumerator WaitToSpawnMapEntities(bool isWaiting)
     //{
-    //    // forces wait for one frame so subscription methods can fire before units are spawned
+    //    // forces wait for one frame so subscription methods can fire before pieces are spawned
     //    if (isWaiting) yield return new WaitForSeconds(waitForPlayerToSpawnTerrain);
     //    else yield return null;
 

@@ -33,11 +33,11 @@ public class PlayerMenu : MonoBehaviour
     [SerializeField] Button endTurnButton = null;
     [SerializeField] TMP_Text endTurnButtonText = null;
 
-    [SerializeField] TMP_Text[] unitTexts = null;
+    [SerializeField] TMP_Text[] pieceTexts = null;
     [SerializeField] TMP_Text[] costTexts = null;
 
     static HumanPlayer player = null;
-    static int unitId = 0;
+    static int pieceId = 0;
 
     static float timer = 0;
 
@@ -65,11 +65,11 @@ public class PlayerMenu : MonoBehaviour
     {
         get
         {
-            return unitId;
+            return pieceId;
         }
         set
         {
-            unitId = Mathf.Clamp(value, 0, Piece.Prefabs.Count);
+            pieceId = Mathf.Clamp(value, 0, Piece.Prefabs.Count);
         }
     }
 
@@ -84,8 +84,8 @@ public class PlayerMenu : MonoBehaviour
 
         for (int i = 0; i < Piece.Prefabs.Count; i++)
         {
-            unitTexts[i].text = Piece.Prefabs[i].ClassTitle;
-            //unitTexts[i].text = Unit.Prefabs[i].PieceTitle;
+            pieceTexts[i].text = Piece.Prefabs[i].ClassTitle;
+            //pieceTexts[i].text = Piece.Prefabs[i].PieceTitle;
             costTexts[i].text = $"{Piece.Prefabs[i].Credits}";
         }
 

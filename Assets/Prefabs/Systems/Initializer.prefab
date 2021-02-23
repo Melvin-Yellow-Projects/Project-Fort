@@ -68,6 +68,6 @@ MonoBehaviour:
     type: 3}
   bowPrefab: {fileID: 2400661251502749442, guid: ffaed2756a51a4e6b9e29b04fe534fc8,
     type: 3}
-  unitCursorPrefab: {fileID: 6044708383268903625, guid: 1251d2526ff8746989407f2a412c63a7,
+  pieceCursorPrefab: {fileID: 6044708383268903625, guid: 1251d2526ff8746989407f2a412c63a7,
     type: 3}
-  unitCursorMaterial: {fileID: 2100000, guid: 0e59f5247002dda4d886a577339ce773, type: 2}
+  pieceCursorMaterial: {fileID: 2100000, guid: 0e59f5247002dda4d886a577339ce773, type: 2}
