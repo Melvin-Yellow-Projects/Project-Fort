@@ -324,15 +324,15 @@ public class GameManager : NetworkBehaviour
     [Server]
     private void ServerBowCalculations()
     {
-        List<Piece> deadPieces = new List<Piece>();
+        //List<Piece> deadPieces = new List<Piece>();
 
-        for (int i = 0; i < HexGrid.Pieces.Count; i++)
-        {
-            BowCombat bow = HexGrid.Pieces[i].CombatHandler as BowCombat;
+        //for (int i = 0; i < HexGrid.Pieces.Count; i++)
+        //{
+        //    BowCombat bow = HexGrid.Pieces[i].CombatHandler as BowCombat;
 
-            if (bow && bow.CanFire) deadPieces.Add(bow.Fire());
-        }
-        foreach (Piece piece in deadPieces) if (piece) piece.Die();
+        //    if (bow && bow.CanFire) deadPieces.Add(bow.Fire());
+        //}
+        //foreach (Piece piece in deadPieces) if (piece) piece.Die();
     }
 
     #endregion

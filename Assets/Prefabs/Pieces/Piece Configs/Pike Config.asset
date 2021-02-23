@@ -12,19 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf5922753fdf84d10876191117d1be06, type: 3}
   m_Name: Pike Config
   m_EditorClassIdentifier: 
-  id: 0
-  classTitle: 
-  pieceTitle: 
-  credits: 0
-  maxMovement: 4
-  visionRange: 1
+  id: 3
+  classTitle: Pike
+  pieceTitle: Ibex
+  credits: 100
+  maxMovement: 3
+  visionRange: 3
   movesPerStep: 1
   travelSpeed: 6
   rotationSpeed: 360
-  unitId: 
-  AllySharedBorderSkill: {fileID: 0}
-  AllySharedCenterSkill: {fileID: 0}
-  AllyIdleSkill: {fileID: 0}
-  EnemySharedBorderSkill: {fileID: 0}
-  EnemySharedCenterSkill: {fileID: 0}
-  EnemyIdleSkill: {fileID: 0}
+  pieceIds: 
+  allySharedBorderSkill: {fileID: 0}
+  allySharedCenterSkill: {fileID: 0}
+  allyIdleSkill: {fileID: 0}
+  enemySharedBorderSkill: {fileID: 0}
+  enemySharedCenterSkill: {fileID: 0}
+  enemyIdleSkill: {fileID: 0}
+  startTurnSkill: {fileID: 0}
+  stopTurnSkill: {fileID: 0}
+  startTurnStepSkill: {fileID: 0}
+  stopTurnStepSkill: {fileID: 0}

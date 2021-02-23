@@ -45,7 +45,7 @@ public class AxeMovement : PieceMovement
             // HACK: this is not a good solution
             if (connectionToClient != null) TargetOnGaleforceActivate(CanMove);
         }
-        else if (currentMovement < maxMovement)
+        else if (currentMovement < MaxMovement)
         {
             CanMove = false;
         }
@@ -59,7 +59,7 @@ public class AxeMovement : PieceMovement
         if (!isClientOnly) return;
 
         if (MyPiece.CombatHandler.HasCaptured) CanMove = true;
-        else if (currentMovement < maxMovement) CanMove = false;
+        else if (currentMovement < MaxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
     }

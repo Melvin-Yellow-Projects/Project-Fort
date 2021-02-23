@@ -20,25 +20,6 @@ public abstract class PieceMovement : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    /** Class Parameters **/
-    [Header("Gameplay Settings")]
-    [Tooltip("ID for this piece")]
-    [SerializeField] protected int maxMovement = 4;
-
-    [Tooltip("ID for this piece")]
-    [SerializeField] protected int visionRange = 1;
-
-    [Tooltip("ID for this piece")]
-    [SerializeField] protected int movesPerStep = 1;
-
-    [Header("Aesthetic Settings")]
-    [Tooltip("ID for this piece")]
-    [SerializeField] protected float travelSpeed = 6f;
-
-    [Tooltip("ID for this piece")]
-    [SerializeField] protected float rotationSpeed = 360f;
-
-    /** Other Variables **/
     protected float orientation;
     protected int currentMovement;
 
@@ -102,7 +83,7 @@ public abstract class PieceMovement : NetworkBehaviour
     {
         get
         {
-            return visionRange;
+            return MyPiece.Configuration.VisionRange;
         }
     }
 
@@ -114,7 +95,7 @@ public abstract class PieceMovement : NetworkBehaviour
         }
         private set
         {
-            currentMovement = Mathf.Clamp(value, 0, maxMovement);
+            currentMovement = Mathf.Clamp(value, 0, MaxMovement);
 
             if (!hasAuthority) return;
 
@@ -128,13 +109,7 @@ public abstract class PieceMovement : NetworkBehaviour
         }
     }
 
-    public int MaxMovement
-    {
-        get
-        {
-            return maxMovement;
-        }
-    }
+    public int MaxMovement => MyPiece.Configuration.MaxMovement;
 
     public HexCell EnRouteCell { get; private set; }
 
@@ -155,7 +130,7 @@ public abstract class PieceMovement : NetworkBehaviour
         {
             if (value)
             {
-                CurrentMovement = maxMovement;
+                CurrentMovement = MaxMovement;
                 if (hasAuthority) Display.ShowDisplay();
             }
             else
@@ -179,7 +154,7 @@ public abstract class PieceMovement : NetworkBehaviour
         Display = GetComponent<PieceDisplay>();
         Display.HideDisplay();
 
-        currentMovement = maxMovement; // TODO: create sync var for variable
+        currentMovement = MaxMovement; // TODO: create sync var for variable
     }
 
     private void Start()
@@ -246,7 +221,7 @@ public abstract class PieceMovement : NetworkBehaviour
 
         if (!Path.HasPath) return;
 
-        Path.RemoveTailCells(numberToRemove: movesPerStep);
+        Path.RemoveTailCells(numberToRemove: MyPiece.Configuration.MovesPerStep);
         if (hasAuthority) Path.Show();
     }
 
@@ -282,10 +257,10 @@ public abstract class PieceMovement : NetworkBehaviour
         // decrease vision HACK: this ? shenanigans is confusing
         PiecePathfinding.DecreaseVisibility(
             (EnRouteCell) ? EnRouteCell : cells[0],
-            visionRange
+            MyPiece.Configuration.VisionRange
         );
 
-        float interpolator = Time.deltaTime * travelSpeed;
+        float interpolator = Time.deltaTime * MyPiece.Configuration.TravelSpeed;
         for (int i = 1; i < cells.Count; i++)
         {
             EnRouteCell = cells[i]; // prevents teleportation
@@ -294,9 +269,9 @@ public abstract class PieceMovement : NetworkBehaviour
             b = cells[i - 1].Position;
             c = (b + EnRouteCell.Position) * 0.5f;
 
-            PiecePathfinding.IncreaseVisibility(EnRouteCell, visionRange);
+            PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
-            for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
+            for (; interpolator < 1f; interpolator += Time.deltaTime * MyPiece.Configuration.TravelSpeed)
             {
                 //transform.localPosition = Vector3.Lerp(a, b, interpolator);
                 transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
@@ -306,7 +281,7 @@ public abstract class PieceMovement : NetworkBehaviour
                 yield return null;
             }
 
-            PiecePathfinding.DecreaseVisibility(EnRouteCell, visionRange);
+            PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
             interpolator -= 1f;
         }
@@ -317,9 +292,9 @@ public abstract class PieceMovement : NetworkBehaviour
         b = EnRouteCell.Position; // We can simply use the destination here.
         c = b;
 
-        PiecePathfinding.IncreaseVisibility(EnRouteCell, visionRange);
+        PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
-        for (; interpolator < 1f; interpolator += Time.deltaTime * travelSpeed)
+        for (; interpolator < 1f; interpolator += Time.deltaTime * MyPiece.Configuration.TravelSpeed)
         {
             //transform.localPosition = Vector3.Lerp(a, b, interpolator);
             transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
@@ -341,7 +316,7 @@ public abstract class PieceMovement : NetworkBehaviour
 
         //yield return LookAt(myCell.Position);
 
-        PiecePathfinding.DecreaseVisibility(EnRouteCell, visionRange);
+        PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
         Vector3 a = myCell.Position;
         Vector3 b = EnRouteCell.Position;
@@ -349,7 +324,7 @@ public abstract class PieceMovement : NetworkBehaviour
         Vector3 d; // HACK: all of this is so jank
         EnRouteCell = myCell;
         //for (; interpolator > 0; interpolator -= Time.deltaTime * travelSpeed / 10)
-        for (float t = 0; t < 1f; t += Time.deltaTime * travelSpeed / 2)
+        for (float t = 0; t < 1f; t += Time.deltaTime * MyPiece.Configuration.TravelSpeed / 2)
         {
             transform.localPosition = Vector3.Lerp(transform.localPosition, a, t);
             //transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
@@ -359,7 +334,7 @@ public abstract class PieceMovement : NetworkBehaviour
             yield return null;
         }
 
-        PiecePathfinding.IncreaseVisibility(EnRouteCell, visionRange);
+        PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
         IsEnRoute = false;
     }
@@ -388,7 +363,7 @@ public abstract class PieceMovement : NetworkBehaviour
             // normalizes the speed so that it's always the same regardless of angle; "To ensure a
             // uniform angular speed, we have to slow down our interpolation as the rotation angle
             // increases."
-            float speed = rotationSpeed / angle;
+            float speed = MyPiece.Configuration.RotationSpeed / angle;
 
             for (float t = Time.deltaTime * speed; t < 1f; t += Time.deltaTime * speed)
             {

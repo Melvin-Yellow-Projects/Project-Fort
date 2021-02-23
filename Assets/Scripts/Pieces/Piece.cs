@@ -35,21 +35,6 @@ public class Piece : NetworkBehaviour
     [Tooltip("configuration file for this piece")]
     [SerializeField] PieceConfig configuration = null;
 
-    [Tooltip("ID for this piece")]
-    [SerializeField] int id = 0;
-
-    [Tooltip("class title name for this piece")]
-    [SerializeField] string classTitle = null;
-
-    [Tooltip("piece title name for this piece")]
-    [SerializeField] string pieceTitle = null;
-
-    [Tooltip("how much this piece costs")]
-    [SerializeField] int credits = 0;
-
-    //[Tooltip("sprite asset for the piece")]
-    //[SerializeField] Sprite artwork = null;
-
     bool isSelected = false;
 
     #endregion
@@ -76,37 +61,12 @@ public class Piece : NetworkBehaviour
 
     public static List<Piece> Prefabs { get; set; }
 
-    public int Id
-    {
-        get
-        {
-            return id;
-        }
-    }
-
-    public string ClassTitle
-    {
-        get
-        {
-            return classTitle;
-        }
-    }
-
-    public string PieceTitle
-    {
-        get
-        {
-            return pieceTitle;
-        }
-    }
-
-    public int Credits
-    {
-        get
-        {
-            return credits;
-        }
-    }
+    /** Configuration Convenience Properties **/
+    public PieceConfig Configuration => configuration;
+    public int Id => configuration.Id;
+    public string ClassTitle => configuration.ClassTitle;
+    public string PieceTitle => configuration.PieceTitle;
+    public int Credits => configuration.Credits;
 
     public Team MyTeam { get; private set; }
 

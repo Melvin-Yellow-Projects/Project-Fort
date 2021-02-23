@@ -65,10 +65,10 @@ public class Initializer : MonoBehaviour
     [Header("Piece")]
     [Tooltip("references to the piece prefabs")]
     [SerializeField] Piece axePrefab;
+    [SerializeField] Piece bowPrefab;
     [SerializeField] Piece horsePrefab;
     [SerializeField] Piece pikePrefab;
     [SerializeField] Piece wallPrefab;
-    [SerializeField] Piece bowPrefab;
 
     [Header("PieceCursor")]
     [Tooltip("piece cursor prefab reference")]
@@ -117,10 +117,10 @@ public class Initializer : MonoBehaviour
             Piece.Prefabs = new List<Piece>
             {
                 axePrefab,
+                bowPrefab,
                 horsePrefab,
                 pikePrefab,
-                wallPrefab,
-                bowPrefab
+                wallPrefab
             };
         }
 

@@ -42,7 +42,7 @@ public class PikeMovement : PieceMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (currentMovement < maxMovement) CanMove = false;
+        if (currentMovement < MaxMovement) CanMove = false;
 
         base.HandleServerOnStopTurn();
     }
@@ -52,7 +52,7 @@ public class PikeMovement : PieceMovement
     {
         if (!isClientOnly) return;
 
-        if (currentMovement < maxMovement) CanMove = false;
+        if (currentMovement < MaxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
     }

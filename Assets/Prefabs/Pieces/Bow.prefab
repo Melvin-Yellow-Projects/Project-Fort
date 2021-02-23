@@ -14,25 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  maxMovement: 3
-  visionRange: 0
-  movesPerStep: 1
-  travelSpeed: 6
-  rotationSpeed: 360
---- !u!114 &6978307068676728228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8272305208188551704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70808dab1409e42f0ba4d82895317278, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxStepsBeforeFire: 2
-  range: 10000
 --- !u!1001 &4291586569108868397
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125,6 +106,12 @@ PrefabInstance:
       propertyPath: pieceTitle
       value: Dhole
       objectReference: {fileID: 0}
+    - target: {fileID: 1936015192140806703, guid: 42403f62e5c024786b85537907da21f9,
+        type: 3}
+      propertyPath: configuration
+      value: 
+      objectReference: {fileID: 11400000, guid: f532218f1773442ab83e8860cf9b35ca,
+        type: 2}
     - target: {fileID: 9140632859970485494, guid: 42403f62e5c024786b85537907da21f9,
         type: 3}
       propertyPath: m_AssetId
@@ -142,12 +129,6 @@ GameObject:
 --- !u!4 &2400661251502749443 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1936015192140806702, guid: 42403f62e5c024786b85537907da21f9,
-    type: 3}
-  m_PrefabInstance: {fileID: 4291586569108868397}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8272305208188551704 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5279317163333848885, guid: 42403f62e5c024786b85537907da21f9,
     type: 3}
   m_PrefabInstance: {fileID: 4291586569108868397}
   m_PrefabAsset: {fileID: 0}

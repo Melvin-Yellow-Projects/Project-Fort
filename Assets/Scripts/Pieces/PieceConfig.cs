@@ -3,12 +3,9 @@
  * Description: 
  * 
  * Authors: Will Lacey
- * Date Created: February 22, 2020
+ * Date Created: February 22, 2021
  * 
- * Additional Comments: 
- *      Previously known as UnitCursor & HexCursor.cs
- *      
- *      FIXME: will flash red if it is initialized with error on frame 1
+ * Additional Comments:
  **/
 
 using System.Collections;
@@ -28,60 +25,94 @@ public class PieceConfig : ScriptableObject
     [Header("General Settings")]
     [Tooltip("ID for this piece")]
     [SerializeField] int id = 0;
-
     [Tooltip("class title name for this piece")]
     [SerializeField] string classTitle = null;
-
     [Tooltip("piece title name for this piece")]
     [SerializeField] string pieceTitle = null;
-
     [Tooltip("how much this piece costs")]
     [SerializeField] int credits = 0;
-
     //[Tooltip("sprite asset for the piece")]
     //[SerializeField] Sprite icon = null;
 
     /** Movement Settings **/
     [Header("Movement Settings")]
     [Tooltip("max movement this piece is capable of")]
-    [SerializeField] protected int maxMovement = 4;
-
+    [SerializeField] int maxMovement = 4;
     [Tooltip("how far this piece can see")]
-    [SerializeField] protected int visionRange = 1;
-
+    [SerializeField] int visionRange = 1;
     [Tooltip("how many actions this unit is able to perform per turn step")]
-    [SerializeField] protected int movesPerStep = 1;
-
+    [SerializeField] int movesPerStep = 1;
     [Tooltip("how fast the piece physically moves during turn step")]
-    [SerializeField] protected float travelSpeed = 6f;
-
+    [SerializeField] float travelSpeed = 6f;
     [Tooltip("how fast the piece physically rotates during turn step")]
-    [SerializeField] protected float rotationSpeed = 360f;
+    [SerializeField] float rotationSpeed = 360f;
 
     /** Block Settings **/
     [Header("Block Settings")]
-    [Tooltip("")]
-    [SerializeField] int[] unitId;
+    [Tooltip("a list of piece IDs that this piece blocks")]
+    [SerializeField] int[] pieceIds; // HACK: this one isn't right
 
     /** Collision Skill Settings **/
     [Header("Collision Skill Settings")]
-    [Tooltip("")]
-    [SerializeField] Skill AllySharedBorderSkill;
+    [Tooltip("skill that activates during an ally shared border collision")]
+    [SerializeField] Skill allySharedBorderSkill;
+    [Tooltip("skill that activates during an ally shared center collision")]
+    [SerializeField] Skill allySharedCenterSkill;
+    [Tooltip("skill that activates during an ally idle collision")]
+    [SerializeField] Skill allyIdleSkill;
+    [Tooltip("skill that activates during an enemy shared border collision")]
+    [SerializeField] Skill enemySharedBorderSkill;
+    [Tooltip("skill that activates during an enemy shared center collision")]
+    [SerializeField] Skill enemySharedCenterSkill;
+    [Tooltip("skill that activates during an enemy idle collision")]
+    [SerializeField] Skill enemyIdleSkill;
 
-    [Tooltip("")]
-    [SerializeField] Skill AllySharedCenterSkill;
+    /** Non-Collision Skill Settings **/
+    [Header("Non-Collision Skill Settings")]
+    [Tooltip("skill that activates when a turn starts")]
+    [SerializeField] Skill startTurnSkill;
+    [Tooltip("skill that activates when a turn stops")]
+    [SerializeField] Skill stopTurnSkill;
+    [Tooltip("skill that activates when a turn step starts")]
+    [SerializeField] Skill startTurnStepSkill;
+    [Tooltip("skill that activates when a turn step stops")]
+    [SerializeField] Skill stopTurnStepSkill;
 
-    [Tooltip("")]
-    [SerializeField] Skill AllyIdleSkill;
+    #endregion
 
-    [Tooltip("")]
-    [SerializeField] Skill EnemySharedBorderSkill;
+    /************************************************************/
+    #region Properties
 
-    [Tooltip("")]
-    [SerializeField] Skill EnemySharedCenterSkill;
+    /** General Settings **/
+    public int Id => id;
+    public string ClassTitle => classTitle;
+    public string PieceTitle => pieceTitle;
+    public int Credits => credits;
+    //public Sprite Icon => icon;
 
-    [Tooltip("")]
-    [SerializeField] Skill EnemyIdleSkill;
+    /** Movement Settings **/
+    public int MaxMovement => maxMovement;
+    public int VisionRange => visionRange;
+    public int MovesPerStep => movesPerStep;
+    public float TravelSpeed => travelSpeed;
+    public float RotationSpeed => rotationSpeed;
+
+    /** Block Settings **/
+    public int[] PieceIds => pieceIds;
+
+    /** Collision Skill Settings **/
+    public Skill AllySharedBorderSkill => allySharedBorderSkill;
+    public Skill AllySharedCenterSkill => allySharedCenterSkill;
+    public Skill AllyIdleSkill => allyIdleSkill;
+    public Skill EnemySharedBorderSkill => enemySharedBorderSkill;
+    public Skill EnemySharedCenterSkill => enemySharedCenterSkill;
+    public Skill EnemyIdleSkill => enemyIdleSkill;
+
+    /** Non-Collision Skill Settings **/
+    public Skill StartTurnSkill => startTurnSkill;
+    public Skill StopTurnSkill => stopTurnSkill;
+    public Skill StartTurnStepSkill => startTurnStepSkill;
+    public Skill StopTurnStepSkill => stopTurnStepSkill;
 
     #endregion
 }

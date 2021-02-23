@@ -35,7 +35,7 @@ public class BowMovement : PieceMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (currentMovement < maxMovement) CanMove = false;
+        if (currentMovement < MaxMovement) CanMove = false;
 
         base.HandleServerOnStopTurn();
     }
@@ -45,7 +45,7 @@ public class BowMovement : PieceMovement
     {
         if (!isClientOnly) return;
 
-        if (currentMovement < maxMovement) CanMove = false;
+        if (currentMovement < MaxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
     }
