@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Capture.cs
+ * File Name: ActiveCombat.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -15,14 +15,14 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-[CreateAssetMenu(fileName = "Active Capture Skill",
-    menuName = "Skills/Collision Skill/Capture")]
-public class Capture : Skill
+[CreateAssetMenu(fileName = "Active Combat",
+    menuName = "Skills/Collision Skill/Active Combat")]
+public class ActiveCombat : Skill
 {
     /************************************************************/
     #region Variables
 
-    bool isActive;
+    bool isBorder;
 
     #endregion
     /************************************************************/
