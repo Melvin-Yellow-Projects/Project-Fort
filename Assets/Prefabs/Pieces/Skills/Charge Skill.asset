@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bfff935d0bd6488cb110201b664cd13, type: 3}
-  m_Name: Bonk
+  m_Script: {fileID: 11500000, guid: 59c3991c9f2af47bdb8b8d9ef5fe2292, type: 3}
+  m_Name: Charge Skill
   m_EditorClassIdentifier: 

@@ -113,6 +113,8 @@ public abstract class PieceMovement : NetworkBehaviour
 
     public HexCell EnRouteCell { get; private set; }
 
+    public bool IsActive => EnRouteCell;
+
     public bool IsEnRoute { get; set; }
 
     public bool HasAction { get; set; }

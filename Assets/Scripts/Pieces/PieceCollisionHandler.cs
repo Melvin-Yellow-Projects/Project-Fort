@@ -12,6 +12,7 @@
  *      TODO: does HadActionCanceled disable the collision potential of a unit? 
  *      TODO: does a swap enable the collision potential of a unit?
  *      TODO: does a shove enable the collision potential of a unit?
+ *      TODO: there is a constraint that for an inactive collision only the active piece decides
  **/
 
 using System.Collections;
@@ -55,34 +56,23 @@ public class PieceCollisionHandler : MonoBehaviour
         OtherPiece = other.GetComponent<PieceCollisionHandler>().MyPiece;
         if (!OtherPiece) Debug.LogError("Non-Piece Collision Detected!");
 
-        // detect whether the piece is moving or not
-        bool isMyPieceActive = MyPiece.Movement.EnRouteCell;
-        bool isOtherPieceActive = OtherPiece.Movement.EnRouteCell;
-
         // TODO: does HadActionCanceled disable the collision potential of a unit? or swap/shove?
         //isMyPieceActive = MyPiece.Movement.EnRouteCell && !otherPiece.Movement.HadActionCanceled;
 
-        if (isMyPieceActive && isOtherPieceActive) // Active Collision
+        if (IsActiveCollision(MyPiece, OtherPiece)) // Active Collision
         {
-            if (MyPiece.Movement.EnRouteCell == OtherPiece.Movement.EnRouteCell)
+            if (IsBorderCollision(MyPiece, OtherPiece))
             {
-                SharedBorderCollision();
+                ActiveBorderCollision();
             }
             else
             {
-                SharedCenterCollision();
+                ActiveCenterCollision();
             }
         }
-        else // Idle Collision
+        else // Inactive Collision
         {
-            if (isMyPieceActive)
-            {
-                IdleActiveCollision();
-            }
-            else
-            {
-                IdleInactiveCollision();
-            }
+            InactiveCollision();
         }
         OtherPiece = null;
     }
@@ -91,53 +81,52 @@ public class PieceCollisionHandler : MonoBehaviour
     /************************************************************/
     #region Class Functions
 
-    private void SharedBorderCollision()
+    public static bool IsActiveCollision(Piece piece, Piece otherPiece)
+    {
+        return piece.Movement.IsActive && otherPiece.Movement.IsActive;
+    }
+
+    public static bool IsBorderCollision(Piece piece, Piece otherPiece)
+    {
+        return piece.Movement.EnRouteCell == otherPiece.Movement.EnRouteCell;
+    }
+
+    private void ActiveBorderCollision()
     {
         if (MyPiece.MyTeam == OtherPiece.MyTeam)
         {
-            MyPiece.Configuration.AllySharedBorderSkill.Invoke(MyPiece);
+            MyPiece.Configuration.AllyActiveBorderCollisionSkill.Invoke(MyPiece);
         }
         else
         {
-            MyPiece.Configuration.EnemySharedBorderSkill.Invoke(MyPiece);
+            MyPiece.Configuration.EnemyActiveBorderCollisionSkill.Invoke(MyPiece);
         }
     }
 
-    private void SharedCenterCollision()
+    private void ActiveCenterCollision()
     {
         if (MyPiece.MyTeam == OtherPiece.MyTeam)
         {
-            MyPiece.Configuration.AllySharedCenterSkill.Invoke(MyPiece);
+            MyPiece.Configuration.AllyActiveCenterCollisionSkill.Invoke(MyPiece);
         }
         else
         {
-            MyPiece.Configuration.EnemySharedCenterSkill.Invoke(MyPiece);
+            MyPiece.Configuration.EnemyActiveCenterCollisionSkill.Invoke(MyPiece);
         }
     }
 
-    private void IdleActiveCollision()
+    private void InactiveCollision()
     {
+        if (!MyPiece.Movement.IsActive) return; // let the other piece decide 
+
         if (MyPiece.MyTeam == OtherPiece.MyTeam)
         {
-            MyPiece.Configuration.AllyIdleActiveSkill.Invoke(MyPiece);
+            MyPiece.Configuration.AllyInactiveCollision.Invoke(MyPiece);
         }
         else
         {
-            MyPiece.Configuration.EnemyIdleActiveSkill.Invoke(MyPiece);
+            MyPiece.Configuration.EnemyInactiveCollision.Invoke(MyPiece);
         }
     }
-
-    private void IdleInactiveCollision()
-    {
-        if (MyPiece.MyTeam == OtherPiece.MyTeam)
-        {
-            MyPiece.Configuration.AllyIdleInactiveSkill.Invoke(MyPiece);
-        }
-        else
-        {
-            MyPiece.Configuration.EnemyIdleInactiveSkill.Invoke(MyPiece);
-        }
-    }
-
     #endregion
 }

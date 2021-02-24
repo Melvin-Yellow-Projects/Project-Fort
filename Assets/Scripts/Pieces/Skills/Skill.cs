@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: ISkill.cs
+ * File Name: Skill.cs
  * Description: 
  * 
  * Authors: Will Lacey

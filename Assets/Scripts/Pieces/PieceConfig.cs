@@ -55,24 +55,23 @@ public class PieceConfig : ScriptableObject
     //[Tooltip("a list of piece types that this piece can Block")]
     //[SerializeField] PieceType[] blockTypes; 
 
-    /** Collision Skill Settings **/
-    [Header("Collision Skill Settings")]
-    [Tooltip("skill that activates during an ally shared border collision")]
-    [SerializeField] Skill allySharedBorderSkill;
-    [Tooltip("skill that Skill during an ally shared center collision")]
-    [SerializeField] Skill allySharedCenterSkill;
-    [Tooltip("skill that activates during an ally idle collision when the piece is moving")]
-    [SerializeField] Skill allyIdleActiveSkill;
-    [Tooltip("skill that activates during an ally idle collision when the piece is not moving")]
-    [SerializeField] Skill allyIdleInactiveSkill;
-    [Tooltip("skill that activates during an enemy shared border collision")]
-    [SerializeField] Skill enemySharedBorderSkill;
-    [Tooltip("skill that activates during an enemy shared center collision")]
-    [SerializeField] Skill enemySharedCenterSkill;
-    [Tooltip("skill that activates during an enemy idle collision when the piece is moving")]
-    [SerializeField] Skill enemyIdleActiveSkill;
-    [Tooltip("skill that activates during an enemy idle collision when the piece is not moving")]
-    [SerializeField] Skill enemyIdleInactiveSkill;
+    /** Ally Collision Skill Settings **/
+    [Header("Ally Collision Skill Settings")]
+    [Tooltip("skill that activates during an ally active border collision")]
+    [SerializeField] CollisionSkill allyActiveBorderCollisionSkill;
+    [Tooltip("skill that activates during an ally active center collision")]
+    [SerializeField] CollisionSkill allyActiveCenterCollisionSkill;
+    [Tooltip("skill that activates during an ally inactive collision when this piece is active")]
+    [SerializeField] CollisionSkill allyInactiveCollision;
+
+    /** Enemy Collision Skill Settings **/
+    [Header("Enemy Collision Skill Settings")]
+    [Tooltip("skill that activates during an enemy active border collision")]
+    [SerializeField] CollisionSkill enemyActiveBorderCollisionSkill;
+    [Tooltip("skill that activates during an enemy active center collision")]
+    [SerializeField] CollisionSkill enemyActiveCenterCollisionSkill;
+    [Tooltip("skill that activates during an enemy inactive collision when this piece is active")]
+    [SerializeField] CollisionSkill enemyInactiveCollision;
 
     /** Non-Collision Skill Settings **/
     [Header("Non-Collision Skill Settings")]
@@ -112,14 +111,12 @@ public class PieceConfig : ScriptableObject
     //public PieceType[] BlockTypes => blockTypes;
 
     /** Collision Skill Settings **/
-    public Skill AllySharedBorderSkill => allySharedBorderSkill;
-    public Skill AllySharedCenterSkill => allySharedCenterSkill;
-    public Skill AllyIdleActiveSkill => allyIdleActiveSkill;
-    public Skill AllyIdleInactiveSkill => allyIdleInactiveSkill;
-    public Skill EnemySharedBorderSkill => enemySharedBorderSkill;
-    public Skill EnemySharedCenterSkill => enemySharedCenterSkill;
-    public Skill EnemyIdleActiveSkill => enemyIdleActiveSkill;
-    public Skill EnemyIdleInactiveSkill => enemyIdleInactiveSkill;
+    public Skill AllyActiveBorderCollisionSkill => allyActiveBorderCollisionSkill;
+    public Skill AllyActiveCenterCollisionSkill => allyActiveCenterCollisionSkill;
+    public Skill AllyInactiveCollision => allyInactiveCollision;
+    public Skill EnemyActiveBorderCollisionSkill => enemyActiveBorderCollisionSkill;
+    public Skill EnemyActiveCenterCollisionSkill => enemyActiveCenterCollisionSkill;
+    public Skill EnemyInactiveCollision => enemyInactiveCollision;
 
     /** Non-Collision Skill Settings **/
     public Skill OnStartTurnSkill => onStartTurnSkill;

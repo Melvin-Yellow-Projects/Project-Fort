@@ -21,21 +21,14 @@ MonoBehaviour:
   travelSpeed: 6
   rotationSpeed: 360
   captureTypes: 
-  allySharedBorderSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+  allyActiveBorderCollisionSkill: {fileID: 0}
+  allyActiveCenterCollisionSkill: {fileID: 0}
+  allyInactiveCollision: {fileID: 0}
+  enemyActiveBorderCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
     type: 2}
-  allySharedCenterSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+  enemyActiveCenterCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
     type: 2}
-  allyIdleActiveSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
-    type: 2}
-  allyIdleInactiveSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
-    type: 2}
-  enemySharedBorderSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
-    type: 2}
-  enemySharedCenterSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
-    type: 2}
-  enemyIdleActiveSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
-    type: 2}
-  enemyIdleInactiveSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
+  enemyInactiveCollision: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
     type: 2}
   onStartTurnSkill: {fileID: 0}
   onStopTurnSkill: {fileID: 0}

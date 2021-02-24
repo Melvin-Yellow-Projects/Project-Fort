@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Capture.cs
+ * File Name: Charge.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -13,10 +13,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Piece attempts to take the place of the other collision piece
+/// 
 /// </summary>
-[CreateAssetMenu(fileName = "Capture Skill", menuName = "Skills/Collision Skills/Capture")]
-public class Capture : CollisionSkill
+[CreateAssetMenu(fileName = "Charge Skill", menuName = "Skills/Collision Skills/Charge")]
+public class Charge : CollisionSkill
 {
     /************************************************************/
     #region Class Functions
@@ -25,13 +25,11 @@ public class Capture : CollisionSkill
     {
         if (otherPiece.TryToCapturePiece(myPiece)) return;
         if (otherPiece.TryToBlockPiece(myPiece)) return;
-        myPiece.Movement.CanMove = false; // piece has not been captured nor blocked, it won
     }
 
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)
     {
         if (otherPiece.TryToBlockPiece(myPiece)) return;
-        myPiece.Movement.CanMove = false;
         otherPiece.Die();
     }
 

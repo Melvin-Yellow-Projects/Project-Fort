@@ -167,6 +167,37 @@ public class Piece : NetworkBehaviour
         if (isServer || !GameSession.IsOnline) transform.localPosition = MyCell.Position;
     }
 
+    public bool CanCapturePiece(Piece piece)
+    {
+        foreach (PieceType type in Configuration.CaptureTypes)
+            if (piece.Configuration.Type == type) return true;
+        return false;
+    }
+
+    public bool TryToCapturePiece(Piece piece)
+    {
+        if (CanCapturePiece(piece))
+        {
+            if (PieceCollisionHandler.IsBorderCollision(this, piece))
+                piece.CollisionHandler.gameObject.SetActive(false);
+            piece.Die();
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryToBlockPiece(Piece piece)
+    {
+        if (!piece.CanCapturePiece(this))
+        {
+            piece.Movement.CancelAction(); // tell piece to bonk
+            return true;
+        }
+
+        return false;
+    }
+
     public void Die(bool isPlayingAnimation = true)
     {
         MyTeam.SetTeam(9); // black team
