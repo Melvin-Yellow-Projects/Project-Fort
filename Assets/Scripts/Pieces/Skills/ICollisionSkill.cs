@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: ISkill.cs
+ * File Name: ICollisionSkill.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -8,21 +8,21 @@
  * Additional Comments: 
  **/
 
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// 
 /// </summary>
-public abstract class Skill : ScriptableObject
+public interface ICollisionSkill
 {
     /************************************************************/
-    #region Class Functions
+    #region Interface Functions
 
-    public virtual void Invoke(Piece myPiece)
-    {
-        throw new NotImplementedException();
-    }
+    bool IsPieceCaptured();
+
+    bool IsPieceBlocked();
 
     #endregion
 }

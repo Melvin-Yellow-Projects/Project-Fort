@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf5922753fdf84d10876191117d1be06, type: 3}
   m_Name: Pike Config
   m_EditorClassIdentifier: 
-  id: 3
-  classTitle: Pike
+  type: 3
   pieceTitle: Ibex
   credits: 100
   maxMovement: 3
@@ -21,14 +20,25 @@ MonoBehaviour:
   movesPerStep: 1
   travelSpeed: 6
   rotationSpeed: 360
-  pieceIds: 
-  allySharedBorderSkill: {fileID: 0}
-  allySharedCenterSkill: {fileID: 0}
-  allyIdleSkill: {fileID: 0}
-  enemySharedBorderSkill: {fileID: 0}
-  enemySharedCenterSkill: {fileID: 0}
-  enemyIdleSkill: {fileID: 0}
-  startTurnSkill: {fileID: 0}
-  stopTurnSkill: {fileID: 0}
-  startTurnStepSkill: {fileID: 0}
-  stopTurnStepSkill: {fileID: 0}
+  captureTypes: 00000000010000000200000003000000
+  allySharedBorderSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+    type: 2}
+  allySharedCenterSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+    type: 2}
+  allyIdleActiveSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+    type: 2}
+  allyIdleInactiveSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+    type: 2}
+  enemySharedBorderSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
+    type: 2}
+  enemySharedCenterSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
+    type: 2}
+  enemyIdleActiveSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
+    type: 2}
+  enemyIdleInactiveSkill: {fileID: 11400000, guid: 6b1af09f03a944f73887c43503bd5e76,
+    type: 2}
+  onStartTurnSkill: {fileID: 0}
+  onStopTurnSkill: {fileID: 0}
+  onStartTurnStepSkill: {fileID: 0}
+  onStopTurnStepSkill: {fileID: 0}
+  onDeathSkill: {fileID: 0}

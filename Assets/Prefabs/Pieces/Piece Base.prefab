@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 5925862171732602801}
   - component: {fileID: 4168653992508242848}
   m_Layer: 11
-  m_Name: Combat Handler
+  m_Name: Collision Handler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

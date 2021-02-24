@@ -63,8 +63,7 @@ public class Piece : NetworkBehaviour
 
     /** Configuration Convenience Properties **/
     public PieceConfig Configuration => configuration;
-    public int Id => configuration.Id;
-    public string ClassTitle => configuration.ClassTitle;
+    public PieceType Type => configuration.Type;
     public string PieceTitle => configuration.PieceTitle;
     public int Credits => configuration.Credits;
 
@@ -74,7 +73,7 @@ public class Piece : NetworkBehaviour
 
     public PieceMovement Movement { get; private set; }
 
-    public PieceCombat CombatHandler { get; private set; }
+    public PieceCollisionHandler CollisionHandler { get; private set; }
 
     public bool IsSelected
     {
@@ -114,9 +113,9 @@ public class Piece : NetworkBehaviour
         MyTeam = GetComponent<Team>();
         MyColorSetter = GetComponent<ColorSetter>();
         Movement = GetComponent<PieceMovement>();
-        CombatHandler = GetComponentInChildren<PieceCombat>();
+        CollisionHandler = GetComponentInChildren<PieceCollisionHandler>();
 
-        if (!MyTeam || !MyColorSetter || !Movement || !CombatHandler)
+        if (!MyTeam || !MyColorSetter || !Movement || !CollisionHandler)
             Debug.LogError($"piece {name} is missing an essential component");
 
         HexGrid.Pieces.Add(this); // HACK: should this be an event?
@@ -181,7 +180,7 @@ public class Piece : NetworkBehaviour
     public void Save(BinaryWriter writer)
     {
         MyCell.coordinates.Save(writer);
-        writer.Write((byte)Id);
+        writer.Write((byte)Type);
         writer.Write((byte)MyTeam.Id);
         writer.Write(Movement.Orientation);
     }

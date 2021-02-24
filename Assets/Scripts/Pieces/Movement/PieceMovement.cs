@@ -202,7 +202,7 @@ public abstract class PieceMovement : NetworkBehaviour
         if (GetComponent<PieceDeath>().IsDying)
         {
             // TODO: Brute Force repitition, this can be improved
-            MyPiece.CombatHandler.gameObject.SetActive(false);
+            MyPiece.CollisionHandler.gameObject.SetActive(false);
             Debug.Log("Disabling Combat Handler");
             return;
         }
@@ -520,7 +520,7 @@ public abstract class PieceMovement : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStopTurn()
     {
-        MyPiece.CombatHandler.HasCaptured = false;
+        MyPiece.CollisionHandler.HasCaptured = false;
         HasAction = false;
         HandleRpcOnStopTurn();
     }
@@ -529,7 +529,7 @@ public abstract class PieceMovement : NetworkBehaviour
     protected virtual void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
-        MyPiece.CombatHandler.HasCaptured = false;
+        MyPiece.CollisionHandler.HasCaptured = false;
         HasAction = false;
     }
 

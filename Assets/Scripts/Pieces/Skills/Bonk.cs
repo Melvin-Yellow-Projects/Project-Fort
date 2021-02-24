@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: ISkill.cs
+ * File Name: Bonk.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -8,20 +8,22 @@
  * Additional Comments: 
  **/
 
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// 
 /// </summary>
-public abstract class Skill : ScriptableObject
+[CreateAssetMenu(fileName = "Bonk Skill", menuName = "Skills/Collision Skill/Bonk")]
+public class Bonk : Skill
 {
     /************************************************************/
     #region Class Functions
 
-    public virtual void Invoke(Piece myPiece)
+    public override void Invoke(Piece myPiece)
     {
-        throw new NotImplementedException();
+        myPiece.Movement.CancelAction();
     }
 
     #endregion

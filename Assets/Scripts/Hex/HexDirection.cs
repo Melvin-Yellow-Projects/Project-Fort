@@ -11,7 +11,7 @@
  *      Hex Map; this file has been updated it to better fit this project
  **/
 
-/********** MARK: HexDirection Enum **********/
+/************************************************************/
 #region HexDirection Enum
 
 /// <summary>
@@ -24,8 +24,7 @@ public enum HexDirection
 }
 
 #endregion
-
-/********** MARK: HexDirection Extensions **********/
+/************************************************************/
 #region HexDirection Extensions
 
 public static class HexDirectionExtensions

@@ -24,9 +24,7 @@ public class PieceConfig : ScriptableObject
     /** General Settings **/
     [Header("General Settings")]
     [Tooltip("ID for this piece")]
-    [SerializeField] int id = 0;
-    [Tooltip("class title name for this piece")]
-    [SerializeField] string classTitle = null;
+    [SerializeField] PieceType type = PieceType.Axe;
     [Tooltip("piece title name for this piece")]
     [SerializeField] string pieceTitle = null;
     [Tooltip("how much this piece costs")]
@@ -47,36 +45,47 @@ public class PieceConfig : ScriptableObject
     [Tooltip("how fast the piece physically rotates during turn step")]
     [SerializeField] float rotationSpeed = 360f;
 
-    /** Block Settings **/
-    [Header("Block Settings")]
-    [Tooltip("a list of piece IDs that this piece blocks")]
-    [SerializeField] int[] pieceIds; // HACK: this one isn't right
+    /** Capture Settings **/
+    [Header("Capture Settings")]
+    [Tooltip("a list of piece types that this piece can Capture")]
+    [SerializeField] PieceType[] captureTypes;
+
+    ///** Block Settings **/
+    //[Header("Block Settings")]
+    //[Tooltip("a list of piece types that this piece can Block")]
+    //[SerializeField] PieceType[] blockTypes; 
 
     /** Collision Skill Settings **/
     [Header("Collision Skill Settings")]
     [Tooltip("skill that activates during an ally shared border collision")]
     [SerializeField] Skill allySharedBorderSkill;
-    [Tooltip("skill that activates during an ally shared center collision")]
+    [Tooltip("skill that Skill during an ally shared center collision")]
     [SerializeField] Skill allySharedCenterSkill;
-    [Tooltip("skill that activates during an ally idle collision")]
-    [SerializeField] Skill allyIdleSkill;
+    [Tooltip("skill that activates during an ally idle collision when the piece is moving")]
+    [SerializeField] Skill allyIdleActiveSkill;
+    [Tooltip("skill that activates during an ally idle collision when the piece is not moving")]
+    [SerializeField] Skill allyIdleInactiveSkill;
     [Tooltip("skill that activates during an enemy shared border collision")]
     [SerializeField] Skill enemySharedBorderSkill;
     [Tooltip("skill that activates during an enemy shared center collision")]
     [SerializeField] Skill enemySharedCenterSkill;
-    [Tooltip("skill that activates during an enemy idle collision")]
-    [SerializeField] Skill enemyIdleSkill;
+    [Tooltip("skill that activates during an enemy idle collision when the piece is moving")]
+    [SerializeField] Skill enemyIdleActiveSkill;
+    [Tooltip("skill that activates during an enemy idle collision when the piece is not moving")]
+    [SerializeField] Skill enemyIdleInactiveSkill;
 
     /** Non-Collision Skill Settings **/
     [Header("Non-Collision Skill Settings")]
     [Tooltip("skill that activates when a turn starts")]
-    [SerializeField] Skill startTurnSkill;
+    [SerializeField] Skill onStartTurnSkill;
     [Tooltip("skill that activates when a turn stops")]
-    [SerializeField] Skill stopTurnSkill;
+    [SerializeField] Skill onStopTurnSkill;
     [Tooltip("skill that activates when a turn step starts")]
-    [SerializeField] Skill startTurnStepSkill;
+    [SerializeField] Skill onStartTurnStepSkill;
     [Tooltip("skill that activates when a turn step stops")]
-    [SerializeField] Skill stopTurnStepSkill;
+    [SerializeField] Skill onStopTurnStepSkill;
+    [Tooltip("skill that activates when the piece dies")]
+    [SerializeField] Skill onDeathSkill;
 
     #endregion
 
@@ -84,8 +93,7 @@ public class PieceConfig : ScriptableObject
     #region Properties
 
     /** General Settings **/
-    public int Id => id;
-    public string ClassTitle => classTitle;
+    public PieceType Type => type;
     public string PieceTitle => pieceTitle;
     public int Credits => credits;
     //public Sprite Icon => icon;
@@ -97,22 +105,28 @@ public class PieceConfig : ScriptableObject
     public float TravelSpeed => travelSpeed;
     public float RotationSpeed => rotationSpeed;
 
-    /** Block Settings **/
-    public int[] PieceIds => pieceIds;
+    /** Capture Settings **/
+    public PieceType[] CaptureTypes => captureTypes;
+
+    ///** Block Settings **/
+    //public PieceType[] BlockTypes => blockTypes;
 
     /** Collision Skill Settings **/
     public Skill AllySharedBorderSkill => allySharedBorderSkill;
     public Skill AllySharedCenterSkill => allySharedCenterSkill;
-    public Skill AllyIdleSkill => allyIdleSkill;
+    public Skill AllyIdleActiveSkill => allyIdleActiveSkill;
+    public Skill AllyIdleInactiveSkill => allyIdleInactiveSkill;
     public Skill EnemySharedBorderSkill => enemySharedBorderSkill;
     public Skill EnemySharedCenterSkill => enemySharedCenterSkill;
-    public Skill EnemyIdleSkill => enemyIdleSkill;
+    public Skill EnemyIdleActiveSkill => enemyIdleActiveSkill;
+    public Skill EnemyIdleInactiveSkill => enemyIdleInactiveSkill;
 
     /** Non-Collision Skill Settings **/
-    public Skill StartTurnSkill => startTurnSkill;
-    public Skill StopTurnSkill => stopTurnSkill;
-    public Skill StartTurnStepSkill => startTurnStepSkill;
-    public Skill StopTurnStepSkill => stopTurnStepSkill;
+    public Skill OnStartTurnSkill => onStartTurnSkill;
+    public Skill OnStopTurnSkill => onStopTurnSkill;
+    public Skill OnStartTurnStepSkill => onStartTurnStepSkill;
+    public Skill OnStopTurnStepSkill => onStopTurnStepSkill;
+    public Skill OnDeathSkill => onDeathSkill;
 
     #endregion
 }

@@ -85,8 +85,8 @@ public class PlayerMenu : MonoBehaviour
 
         for (int i = 0; i < Piece.Prefabs.Count; i++)
         {
-            pieceTexts[i].text = Piece.Prefabs[i].ClassTitle;
-            //pieceTexts[i].text = Piece.Prefabs[i].PieceTitle;
+            pieceTexts[i].text = Piece.Prefabs[i].Type.ToString(); // HACK: this should be piece title
+            //pieceTexts[i].text = Piece.Prefabs[i].PieceTitle; 
             costTexts[i].text = $"{Piece.Prefabs[i].Credits}";
         }
 

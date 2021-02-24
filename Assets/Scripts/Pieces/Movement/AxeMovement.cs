@@ -39,7 +39,7 @@ public class AxeMovement : PieceMovement
     [Server]
     protected override void HandleServerOnStopTurn()
     {
-        if (MyPiece.CombatHandler.HasCaptured)
+        if (MyPiece.CollisionHandler.HasCaptured)
         {
             CanMove = true;
             // HACK: this is not a good solution
@@ -58,7 +58,7 @@ public class AxeMovement : PieceMovement
     {
         if (!isClientOnly) return;
 
-        if (MyPiece.CombatHandler.HasCaptured) CanMove = true;
+        if (MyPiece.CollisionHandler.HasCaptured) CanMove = true;
         else if (currentMovement < MaxMovement) CanMove = false;
 
         base.HandleRpcOnStopTurn();
