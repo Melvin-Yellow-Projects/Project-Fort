@@ -79,7 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  canMakeMoves: 1
+  canMakeMoves: 0
   maxActionWaitTime: 1
   chanceToSkipAction: 0.4
 --- !u!114 &-2715520160280375779

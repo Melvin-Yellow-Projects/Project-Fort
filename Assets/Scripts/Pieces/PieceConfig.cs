@@ -50,11 +50,6 @@ public class PieceConfig : ScriptableObject
     [Tooltip("a list of piece types that this piece can Capture")]
     [SerializeField] PieceType[] captureTypes;
 
-    ///** Block Settings **/
-    //[Header("Block Settings")]
-    //[Tooltip("a list of piece types that this piece can Block")]
-    //[SerializeField] PieceType[] blockTypes; 
-
     /** Ally Collision Skill Settings **/
     [Header("Ally Collision Skill Settings")]
     [Tooltip("skill that activates during an ally active border collision")]
@@ -73,12 +68,19 @@ public class PieceConfig : ScriptableObject
     [Tooltip("skill that activates during an enemy inactive collision when this piece is active")]
     [SerializeField] CollisionSkill enemyInactiveCollision;
 
-    /** Non-Collision Skill Settings **/
-    [Header("Non-Collision Skill Settings")]
+    /** Movement Skill Settings **/
+    [Header("Movement Skill Settings")]
+    //[Tooltip("skill that activates when a unit wants to ")]
+    //[SerializeField] PathfindingSkill validEdgeSkill;
+    //[Tooltip("skill that activates when a turn starts")]
+    //[SerializeField] PathfindingSkill validCellSkill;
+    [Tooltip("skill that activates when a turn ends; this is used to determine a piece's movement")]
+    [SerializeField] Skill onStopTurnSkill;
+
+    /** Other Skill Settings **/
+    [Header("Other Skill Settings")]
     [Tooltip("skill that activates when a turn starts")]
     [SerializeField] Skill onStartTurnSkill;
-    [Tooltip("skill that activates when a turn stops")]
-    [SerializeField] Skill onStopTurnSkill;
     [Tooltip("skill that activates when a turn step starts")]
     [SerializeField] Skill onStartTurnStepSkill;
     [Tooltip("skill that activates when a turn step stops")]
@@ -107,9 +109,6 @@ public class PieceConfig : ScriptableObject
     /** Capture Settings **/
     public PieceType[] CaptureTypes => captureTypes;
 
-    ///** Block Settings **/
-    //public PieceType[] BlockTypes => blockTypes;
-
     /** Collision Skill Settings **/
     public Skill AllyActiveBorderCollisionSkill => allyActiveBorderCollisionSkill;
     public Skill AllyActiveCenterCollisionSkill => allyActiveCenterCollisionSkill;
@@ -118,9 +117,11 @@ public class PieceConfig : ScriptableObject
     public Skill EnemyActiveCenterCollisionSkill => enemyActiveCenterCollisionSkill;
     public Skill EnemyInactiveCollision => enemyInactiveCollision;
 
-    /** Non-Collision Skill Settings **/
-    public Skill OnStartTurnSkill => onStartTurnSkill;
+    /** Movement Skill Settings **/
     public Skill OnStopTurnSkill => onStopTurnSkill;
+
+    /** Other Skill Settings **/
+    public Skill OnStartTurnSkill => onStartTurnSkill;
     public Skill OnStartTurnStepSkill => onStartTurnStepSkill;
     public Skill OnStopTurnStepSkill => onStopTurnStepSkill;
     public Skill OnDeathSkill => onDeathSkill;

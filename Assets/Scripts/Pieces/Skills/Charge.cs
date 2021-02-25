@@ -30,7 +30,9 @@ public class Charge : CollisionSkill
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)
     {
         if (otherPiece.TryToBlockPiece(myPiece)) return;
-        otherPiece.Die();
+
+        // HACK: this should be guaranteed to succeed
+        myPiece.TryToCapturePiece(otherPiece);
     }
 
     #endregion

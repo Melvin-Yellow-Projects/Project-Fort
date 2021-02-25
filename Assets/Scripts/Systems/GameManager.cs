@@ -317,22 +317,13 @@ public class GameManager : NetworkBehaviour
             piece.Movement.ServerCompleteAction();
         }
 
-        // HACK: Bow Calculations
-        ServerBowCalculations();
-    }
-
-    [Server]
-    private void ServerBowCalculations()
-    {
-        //List<Piece> deadPieces = new List<Piece>();
-
-        //for (int i = 0; i < HexGrid.Pieces.Count; i++)
-        //{
-        //    BowCombat bow = HexGrid.Pieces[i].CombatHandler as BowCombat;
-
-        //    if (bow && bow.CanFire) deadPieces.Add(bow.Fire());
-        //}
-        //foreach (Piece piece in deadPieces) if (piece) piece.Die();
+        // Setting new cell for pieces now that they moved
+        for (int i = 0; i < HexGrid.Pieces.Count; i++)
+        {
+            Piece piece = HexGrid.Pieces[i];
+            if (piece.Configuration.OnStopTurnStepSkill)
+                piece.Configuration.OnStopTurnStepSkill.Invoke(piece);
+        }
     }
 
     #endregion

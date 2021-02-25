@@ -23,8 +23,15 @@ public class Bonk : CollisionSkill
 
     protected override void ActiveCollision(Piece myPiece, Piece otherPiece)
     {
-        if (otherPiece.TryToCapturePiece(myPiece)) return;
-        myPiece.Movement.CancelAction();
+        if (myPiece.MyTeam == otherPiece.MyTeam)
+        {
+            myPiece.Movement.CancelAction();
+        }
+        else
+        {
+            if (otherPiece.TryToCapturePiece(myPiece)) return;
+            myPiece.Movement.CancelAction();
+        }
     }
 
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)

@@ -21,17 +21,20 @@ MonoBehaviour:
   travelSpeed: 6
   rotationSpeed: 360
   captureTypes: 00000000010000000200000003000000
-  allyActiveBorderCollisionSkill: {fileID: 0}
-  allyActiveCenterCollisionSkill: {fileID: 0}
-  allyInactiveCollision: {fileID: 0}
-  enemyActiveBorderCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
+  allyActiveBorderCollisionSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
     type: 2}
-  enemyActiveCenterCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
+  allyActiveCenterCollisionSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
     type: 2}
-  enemyInactiveCollision: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
+  allyInactiveCollision: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+    type: 2}
+  enemyActiveBorderCollisionSkill: {fileID: 11400000, guid: e18394e435b7a4a78b670cbdf0ec7229,
+    type: 2}
+  enemyActiveCenterCollisionSkill: {fileID: 11400000, guid: e18394e435b7a4a78b670cbdf0ec7229,
+    type: 2}
+  enemyInactiveCollision: {fileID: 11400000, guid: e18394e435b7a4a78b670cbdf0ec7229,
     type: 2}
   onStartTurnSkill: {fileID: 0}
-  onStopTurnSkill: {fileID: 0}
+  onStopTurnSkill: {fileID: 11400000, guid: 8a0165ceed7124aa89b6e629a8ffafac, type: 2}
   onStartTurnStepSkill: {fileID: 0}
   onStopTurnStepSkill: {fileID: 0}
   onDeathSkill: {fileID: 0}

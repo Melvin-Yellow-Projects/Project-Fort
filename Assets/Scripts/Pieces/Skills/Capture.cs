@@ -32,7 +32,9 @@ public class Capture : CollisionSkill
     {
         if (otherPiece.TryToBlockPiece(myPiece)) return;
         myPiece.Movement.CanMove = false;
-        otherPiece.Die();
+
+        // HACK: this should be guaranteed to succeed
+        myPiece.TryToCapturePiece(otherPiece); 
     }
 
     #endregion

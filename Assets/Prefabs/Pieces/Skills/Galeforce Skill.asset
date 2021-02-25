@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bfff935d0bd6488cb110201b664cd13, type: 3}
-  m_Name: Bonk Skill
+  m_Script: {fileID: 11500000, guid: 7acfcd0968c1f4a639e84846b49623ed, type: 3}
+  m_Name: Galeforce Skill
   m_EditorClassIdentifier: 

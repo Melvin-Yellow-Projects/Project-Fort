@@ -48,12 +48,12 @@ public class Piece : NetworkBehaviour
     /// <subscriber class="Grid">adds unit to list of units</subscriber>
     public static event Action<Piece> OnPieceSpawned;
 
-    /// <summary>
-    /// Event for when a unit is despawned, called in the OnDestroy Method
-    /// </summary>
-    /// <subscriber class="Player">removes unit from player's list of owned units</subscriber>
-    /// <subscriber class="Grid">removes unit from list of units</subscriber>
-    public static event Action<Piece> OnPieceDespawned;
+    ///// <summary>
+    ///// Event for when a unit is despawned, called in the OnDestroy Method
+    ///// </summary>
+    ///// <subscriber class="Player">removes unit from player's list of owned units</subscriber>
+    ///// <subscriber class="Grid">removes unit from list of units</subscriber>
+    //public static event Action<Piece> OnPieceDespawned;
 
     #endregion
     /************************************************************/
@@ -75,6 +75,18 @@ public class Piece : NetworkBehaviour
 
     public PieceCollisionHandler CollisionHandler { get; private set; }
 
+    public HexCell MyCell
+    {
+        get
+        {
+            return Movement.MyCell;
+        }
+        set
+        {
+            Movement.MyCell = value;
+        }
+    }
+
     public bool IsSelected
     {
         get
@@ -92,17 +104,7 @@ public class Piece : NetworkBehaviour
         }
     }
 
-    public HexCell MyCell
-    {
-        get
-        {
-            return Movement.MyCell;
-        }
-        set
-        {
-            Movement.MyCell = value;
-        }
-    }
+    public bool HasCaptured { get; set; }
 
     #endregion
     /************************************************************/
@@ -140,7 +142,7 @@ public class Piece : NetworkBehaviour
 
     public override void OnStopServer()
     {
-        OnPieceDespawned?.Invoke(this);
+        //OnPieceDespawned?.Invoke(this);
     }
 
     #endregion
@@ -154,7 +156,7 @@ public class Piece : NetworkBehaviour
 
     public override void OnStopClient()
     {
-        if (!isServer) OnPieceDespawned?.Invoke(this);
+        //if (!isServer) OnPieceDespawned?.Invoke(this);
     }
 
     #endregion
@@ -169,6 +171,9 @@ public class Piece : NetworkBehaviour
 
     public bool CanCapturePiece(Piece piece)
     {
+        // TODO: be absolutely certain this line is needed
+        if (piece.GetComponent<PieceDeath>().IsDying) return false; 
+
         foreach (PieceType type in Configuration.CaptureTypes)
             if (piece.Configuration.Type == type) return true;
         return false;
@@ -181,6 +186,7 @@ public class Piece : NetworkBehaviour
             if (PieceCollisionHandler.IsBorderCollision(this, piece))
                 piece.CollisionHandler.gameObject.SetActive(false);
             piece.Die();
+            HasCaptured = true;
             return true;
         }
 
@@ -192,6 +198,7 @@ public class Piece : NetworkBehaviour
         if (!piece.CanCapturePiece(this))
         {
             piece.Movement.CancelAction(); // tell piece to bonk
+            // TODO: set flag?
             return true;
         }
 

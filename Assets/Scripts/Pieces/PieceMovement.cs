@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public abstract class PieceMovement : NetworkBehaviour
+public class PieceMovement : NetworkBehaviour
 {
     /************************************************************/
     #region Variables
@@ -522,7 +522,9 @@ public abstract class PieceMovement : NetworkBehaviour
     [Server]
     protected virtual void HandleServerOnStopTurn()
     {
-        MyPiece.CollisionHandler.HasCaptured = false;
+        MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
+
+        MyPiece.HasCaptured = false;
         HasAction = false;
         HandleRpcOnStopTurn();
     }
@@ -531,7 +533,9 @@ public abstract class PieceMovement : NetworkBehaviour
     protected virtual void HandleRpcOnStopTurn()
     {
         if (!isClientOnly) return;
-        MyPiece.CollisionHandler.HasCaptured = false;
+
+        MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
+        MyPiece.HasCaptured = false;
         HasAction = false;
     }
 

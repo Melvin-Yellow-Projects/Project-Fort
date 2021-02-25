@@ -29,9 +29,7 @@ public class PieceCollisionHandler : MonoBehaviour
 
     public Piece OtherPiece { get; private set; }
 
-    public bool HasCaptured { get; set; }
-
-    public bool HasBonked { get; set; }
+    //public bool HasBonked { get; set; }
 
     #endregion
     /************************************************************/
