@@ -45,9 +45,8 @@ public class ComputerPlayer : Player
             {
                 yield return new WaitForSeconds(Random.Range(0, maxActionWaitTime));
 
-                // HACK cpu's will not buy the Bow (because they don't know how to use it)
                 if (Random.Range(0f, 1f) > chanceToSkipAction)
-                    ServerTryBuyPiece(Random.Range(0, 3), cell);
+                    ServerTryBuyPiece(Random.Range(0, 4), cell);
             }
         }
         HasEndedTurn = true;
