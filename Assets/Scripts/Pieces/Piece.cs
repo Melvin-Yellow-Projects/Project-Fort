@@ -126,6 +126,7 @@ public class Piece : NetworkBehaviour
 
     private void OnDestroy()
     {
+        Debug.LogError("Piece has been destroyed");
         HexGrid.Pieces.Remove(this); // HACK: should this be an event?
     }
 
@@ -207,7 +208,7 @@ public class Piece : NetworkBehaviour
 
     public void Die(bool isPlayingAnimation = true)
     {
-        MyTeam.SetTeam(9); // black team
+        MyTeam.SetTeam(9); // black team HACK: this is to force units to trade off better when colliding
         GetComponent<PieceDeath>().Die(isPlayingAnimation);
     }
 

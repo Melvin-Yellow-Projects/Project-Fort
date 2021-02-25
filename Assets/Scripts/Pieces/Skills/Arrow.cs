@@ -1,11 +1,13 @@
 ﻿/**
- * File Name: Laser.cs
+ * File Name: Arrow.cs
  * Description: 
  * 
  * Authors: Will Lacey
  * Date Created: February 24, 2021
  * 
  * Additional Comments: 
+ * 
+ *      Previously known as Laser.cs
  **/
 
 using System;
@@ -14,8 +16,8 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-[CreateAssetMenu(fileName = "Laser Skill", menuName = "Skills/Non-Collision Skills/Laser")]
-public class Laser : Skill
+[CreateAssetMenu(fileName = "Arrow Skill", menuName = "Skills/Non-Collision Skills/Arrow")]
+public class Arrow : Skill
 {
     /************************************************************/
     #region Variables
