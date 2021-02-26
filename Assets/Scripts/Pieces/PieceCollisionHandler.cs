@@ -29,8 +29,6 @@ public class PieceCollisionHandler : MonoBehaviour
 
     public Piece OtherPiece { get; private set; }
 
-    //public bool HasBonked { get; set; }
-
     #endregion
     /************************************************************/
     #region Unity Functions
@@ -81,7 +79,7 @@ public class PieceCollisionHandler : MonoBehaviour
 
     public static bool IsActiveCollision(Piece piece, Piece otherPiece)
     {
-        return piece.Movement.IsActive && otherPiece.Movement.IsActive;
+        return piece.IsActive && otherPiece.IsActive;
     }
 
     public static bool IsBorderCollision(Piece piece, Piece otherPiece)
@@ -115,7 +113,7 @@ public class PieceCollisionHandler : MonoBehaviour
 
     private void InactiveCollision()
     {
-        if (!MyPiece.Movement.IsActive) return; // let the other piece decide 
+        if (!MyPiece.IsActive) return; // let the other piece decide 
 
         if (MyPiece.MyTeam == OtherPiece.MyTeam)
         {

@@ -104,7 +104,22 @@ public class Piece : NetworkBehaviour
         }
     }
 
-    public bool HasCaptured { get; set; }
+    #endregion
+    /************************************************************/
+    #region Piece Flags
+
+    /// <summary>
+    /// Not only does this piece have a path, but it's path has been confirmed and it can move
+    /// </summary>
+    public bool HasMove { get; set; } = false;
+
+    public bool IsActive => Movement.EnRouteCell;
+
+    public bool HasCaptured { get; set; } = false;
+
+    public bool HasBonked { get; set; } = false;
+
+    public bool IsDying { get; set; } = false;
 
     #endregion
     /************************************************************/
@@ -173,7 +188,7 @@ public class Piece : NetworkBehaviour
     public bool CanCapturePiece(Piece piece)
     {
         // TODO: be absolutely certain this line is needed
-        if (piece.GetComponent<PieceDeath>().IsDying) return false; 
+        if (piece.IsDying) return false; 
 
         foreach (PieceType type in Configuration.CaptureTypes)
             if (piece.Configuration.Type == type) return true;
@@ -198,8 +213,7 @@ public class Piece : NetworkBehaviour
     {
         if (!piece.CanCapturePiece(this))
         {
-            piece.Movement.CancelAction(); // tell piece to bonk
-            // TODO: set flag?
+            piece.Movement.Bonk(); // tell piece to bonk
             return true;
         }
 

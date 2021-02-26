@@ -318,9 +318,8 @@ public class GameManager : NetworkBehaviour
         }
 
         // Setting new cell for pieces now that they moved
-        for (int i = 0; i < HexGrid.Pieces.Count; i++)
+        foreach (Piece piece in HexGrid.Pieces)
         {
-            Piece piece = HexGrid.Pieces[i];
             if (piece.Configuration.OnStopTurnStepSkill)
                 piece.Configuration.OnStopTurnStepSkill.Invoke(piece);
         }

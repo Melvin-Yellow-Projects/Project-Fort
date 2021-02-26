@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Bonk.cs
+ * File Name: SkBonk.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -15,8 +15,8 @@ using UnityEngine;
 /// <summary>
 /// Piece simply bounces off other piece or cancels its movement
 /// </summary>
-[CreateAssetMenu(fileName = "Bonk Skill", menuName = "Skills/Collision Skills/Bonk")]
-public class Bonk : CollisionSkill
+[CreateAssetMenu(fileName = "Bonk", menuName = "Skills/Collision Skills/Bonk")]
+public class SkBonk : CollisionSkill
 {
     /************************************************************/
     #region Class Functions
@@ -25,18 +25,18 @@ public class Bonk : CollisionSkill
     {
         if (myPiece.MyTeam == otherPiece.MyTeam)
         {
-            myPiece.Movement.CancelAction();
+            myPiece.Movement.Bonk();
         }
         else
         {
             if (otherPiece.TryToCapturePiece(myPiece)) return;
-            myPiece.Movement.CancelAction();
+            myPiece.Movement.Bonk();
         }
     }
 
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)
     {
-        myPiece.Movement.CancelAction();
+        myPiece.Movement.Bonk();
     }
 
     #endregion

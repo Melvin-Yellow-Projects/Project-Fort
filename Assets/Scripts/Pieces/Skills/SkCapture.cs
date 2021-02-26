@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Capture.cs
+ * File Name: SkCapture.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -15,8 +15,8 @@ using UnityEngine;
 /// <summary>
 /// Piece attempts to take the place of the other collision piece
 /// </summary>
-[CreateAssetMenu(fileName = "Capture Skill", menuName = "Skills/Collision Skills/Capture")]
-public class Capture : CollisionSkill
+[CreateAssetMenu(fileName = "Capture", menuName = "Skills/Collision Skills/Capture")]
+public class SkCapture : CollisionSkill
 {
     /************************************************************/
     #region Class Functions

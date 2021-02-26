@@ -35,12 +35,6 @@ public class PieceDeath : MonoBehaviour
     Vector3 originalPosition;
 
     #endregion
-    /********** MARK: Public Variables **********/
-    #region Public Variables
-
-    public bool IsDying { get; [Server] private set; } = false;
-
-    #endregion
     /************************************************************/
     #region Class Events
 
@@ -53,6 +47,12 @@ public class PieceDeath : MonoBehaviour
 
     #endregion
     /************************************************************/
+    #region Properties
+
+    Piece MyPiece => GetComponent<Piece>();
+
+    #endregion
+    /************************************************************/
     #region Server Functions
 
     [Server]
@@ -60,7 +60,7 @@ public class PieceDeath : MonoBehaviour
     {
         ServerOnPieceDeath?.Invoke(GetComponent<Piece>());
 
-        IsDying = true;
+        MyPiece.IsDying = true;
 
         if (isPlayingAnimation) StartCoroutine(DeathAnim());
         else NetworkServer.Destroy(gameObject);

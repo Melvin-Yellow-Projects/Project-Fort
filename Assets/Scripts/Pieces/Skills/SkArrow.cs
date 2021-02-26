@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Arrow.cs
+ * File Name: SkArrow.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -16,8 +16,8 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-[CreateAssetMenu(fileName = "Arrow Skill", menuName = "Skills/Non-Collision Skills/Arrow")]
-public class Arrow : Skill
+[CreateAssetMenu(fileName = "Arrow", menuName = "Skills/Non-Collision Skills/Arrow")]
+public class SkArrow : Skill
 {
     /************************************************************/
     #region Variables
@@ -72,7 +72,7 @@ public class Arrow : Skill
     private bool CanCapturePiece(Piece piece, PieceType[] withCaptureTypes)
     {
         // TODO: be absolutely certain this line is needed
-        if (piece.GetComponent<PieceDeath>().IsDying) return false;
+        if (piece.IsDying) return false;
 
         foreach (PieceType type in withCaptureTypes)
             if (piece.Configuration.Type == type) return true;

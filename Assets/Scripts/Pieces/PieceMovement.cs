@@ -30,11 +30,11 @@ public class PieceMovement : NetworkBehaviour
     /************************************************************/
     #region Properties
 
-    public Piece MyPiece { get; private set; }
+    public Piece MyPiece => GetComponent<Piece>();
 
-    public PieceDisplay Display { get; private set; }
+    public PieceDisplay Display => GetComponent<PieceDisplay>();
 
-    public PiecePath Path { get; private set; }
+    public PiecePath Path => GetComponent<PiecePath>();
 
     public HexCell MyCell
     {
@@ -113,13 +113,7 @@ public class PieceMovement : NetworkBehaviour
 
     public HexCell EnRouteCell { get; private set; }
 
-    public bool IsActive => EnRouteCell;
-
-    public bool IsEnRoute { get; set; }
-
-    public bool HasAction { get; set; }
-
-    public bool HadActionCanceled { get; private set; } = false; // HACK: i dont like this name
+    public bool IsEnRoute { get; private set; }
 
     // HACK: might be better broken up into a property and function FreezePiece()/CannotMove() 
     public bool CanMove
@@ -150,10 +144,6 @@ public class PieceMovement : NetworkBehaviour
 
     private void Awake()
     {
-        MyPiece = GetComponent<Piece>();
-        Path = GetComponent<PiecePath>();
-
-        Display = GetComponent<PieceDisplay>();
         Display.HideDisplay();
 
         currentMovement = MaxMovement; // TODO: create sync var for variable
@@ -186,7 +176,7 @@ public class PieceMovement : NetworkBehaviour
     [Server]
     public void ServerDoAction()
     {
-        if (!HasAction) return;
+        if (!MyPiece.HasMove) return;
 
         // HACK: removing line causes errors, HasAction should better reflect action status of piece
         if (!Path.HasPath || CurrentMovement == 0) return;
@@ -201,7 +191,7 @@ public class PieceMovement : NetworkBehaviour
     [Server]
     public void ServerCompleteAction()
     {
-        if (GetComponent<PieceDeath>().IsDying)
+        if (MyPiece.IsDying)
         {
             // TODO: Brute Force repitition, this can be improved
             MyPiece.CollisionHandler.gameObject.SetActive(false);
@@ -214,10 +204,10 @@ public class PieceMovement : NetworkBehaviour
         Direction = HexMetrics.GetDirection(MyCell, EnRouteCell);
         MyCell = EnRouteCell;
         EnRouteCell = null;
-        HadActionCanceled = false;
+        MyPiece.HasBonked = false;
 
         // TODO: relay this message to allies too
-        if (connectionToClient != null) TargetCompleteAction(connectionToClient); 
+        if (connectionToClient != null) TargetCompleteMove(connectionToClient); 
 
         CurrentMovement--; // FIXME assumes all tiles have the same cost
 
@@ -228,15 +218,15 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    public void CancelAction()
+    public void Bonk()
     {
         // HACK: there must be a better implementation
-        if (!EnRouteCell || GetComponent<PieceDeath>().IsDying || HadActionCanceled) return;
+        if (!EnRouteCell || MyPiece.IsDying || MyPiece.HasBonked) return;
 
         CanMove = false;
-        HadActionCanceled = true;
+        MyPiece.HasBonked = true;
 
-        RpcCancelAction(); // TODO: relay this message to allies too
+        RpcBonk(); // TODO: relay this message to allies too
 
         StopAllCoroutines();
         StartCoroutine(RouteCanceled());
@@ -380,27 +370,27 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    public bool ServerClearAction()
+    public bool ServerClearMove()
     {
-        bool hadAction = HasAction;
+        bool hadMove = MyPiece.HasMove;
 
         //Debug.Log($"Clearing Action for piece, {name}");
 
         Path.Clear();
-        HasAction = false;
+        MyPiece.HasMove = false;
         if (connectionToClient != null) TargetClearPath();
 
-        return hadAction;
+        return hadMove;
     }
 
     [Server] // HACK: not sure if this is correct
-    public bool ServerSetAction(PieceData data)
+    public bool ServerSetMove(PieceData data)
     {
         if (!CanMove || data.pathCells.Count < 2) return false;
 
         Path.Cells = PiecePathfinding.GetValidCells(MyPiece, data.pathCells);
 
-        HasAction = true;
+        MyPiece.HasMove = true;
 
         return true;
     }
@@ -414,12 +404,12 @@ public class PieceMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        HasAction = false;
+        MyPiece.HasMove = false;
         Path.Clear();
     }
 
     [TargetRpc]
-    public void TargetCompleteAction(NetworkConnection conn)
+    public void TargetCompleteMove(NetworkConnection conn)
     {
         if (!isClientOnly) return;
 
@@ -432,7 +422,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcCancelAction()
+    public void RpcBonk()
     {
         if (!isClientOnly) return;
 
@@ -525,7 +515,7 @@ public class PieceMovement : NetworkBehaviour
         MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
 
         MyPiece.HasCaptured = false;
-        HasAction = false;
+        MyPiece.HasMove = false;
         HandleRpcOnStopTurn();
     }
 
@@ -536,7 +526,7 @@ public class PieceMovement : NetworkBehaviour
 
         MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
         MyPiece.HasCaptured = false;
-        HasAction = false;
+        MyPiece.HasMove = false;
     }
 
     [Server]
@@ -550,7 +540,9 @@ public class PieceMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        CanMove = false;
+        //CanMove = false;
+        Path.Clear();
+        Display.HideDisplay();
 
         HexCell cell = (EnRouteCell)? EnRouteCell : MyCell;
 

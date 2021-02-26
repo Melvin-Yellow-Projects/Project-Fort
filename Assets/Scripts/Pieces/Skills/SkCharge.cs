@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Charge.cs
+ * File Name: SkCharge.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -15,8 +15,8 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-[CreateAssetMenu(fileName = "Charge Skill", menuName = "Skills/Collision Skills/Charge")]
-public class Charge : CollisionSkill
+[CreateAssetMenu(fileName = "Charge", menuName = "Skills/Collision Skills/Charge")]
+public class SkCharge : CollisionSkill
 {
     /************************************************************/
     #region Class Functions

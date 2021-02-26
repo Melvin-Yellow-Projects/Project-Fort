@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Conserve.cs
+ * File Name: SkConserve.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -14,8 +14,8 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-[CreateAssetMenu(fileName = "Conserve Skill", menuName = "Skills/Movement Skills/Conserve")]
-public class Conserve : Skill
+[CreateAssetMenu(fileName = "Conserve", menuName = "Skills/Movement Skills/Conserve")]
+public class SkConserve : Skill
 {
     /************************************************************/
     #region Class Functions
@@ -23,7 +23,7 @@ public class Conserve : Skill
     public override void Invoke(Piece myPiece)
     {
         // HACK: is the clear action really needed?
-        if (myPiece.Movement.CurrentMovement == 0) myPiece.Movement.ServerClearAction();
+        if (myPiece.Movement.CurrentMovement == 0) myPiece.Movement.ServerClearMove();
     }
 
     #endregion

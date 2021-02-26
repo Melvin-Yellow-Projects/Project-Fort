@@ -1,5 +1,5 @@
 ﻿/**
- * File Name: Galeforce.cs
+ * File Name: SkFatigue.cs
  * Description: 
  * 
  * Authors: Will Lacey
@@ -14,8 +14,8 @@ using UnityEngine;
 /// <summary>
 /// 
 /// </summary>
-[CreateAssetMenu(fileName = "Fatigue Skill", menuName = "Skills/Movement Skills/Fatigue")]
-public class Fatigue : Skill
+[CreateAssetMenu(fileName = "Fatigue", menuName = "Skills/Movement Skills/Fatigue")]
+public class SkFatigue : Skill
 {
     /************************************************************/
     #region Class Functions
