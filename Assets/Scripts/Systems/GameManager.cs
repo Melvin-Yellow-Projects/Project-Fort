@@ -314,8 +314,10 @@ public class GameManager : NetworkBehaviour
         for (int i = 0; i < HexGrid.Pieces.Count; i++)
         {
             Piece piece = HexGrid.Pieces[i];
-            piece.Movement.ServerCompleteAction();
+            piece.Movement.ServerCompleteAction(); // HACK bad name, should mention Step
         }
+
+        // FIXME: these two loops can be combined
 
         // Setting new cell for pieces now that they moved
         foreach (Piece piece in HexGrid.Pieces)

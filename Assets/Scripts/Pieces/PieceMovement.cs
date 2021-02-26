@@ -201,7 +201,7 @@ public class PieceMovement : NetworkBehaviour
 
         if (!EnRouteCell) return;
 
-        Direction = HexMetrics.GetDirection(MyCell, EnRouteCell);
+        Direction = HexMetrics.GetDirection(MyCell, EnRouteCell); // HACK: this can be done earlier
         MyCell = EnRouteCell;
         EnRouteCell = null;
         MyPiece.HasBonked = false;
@@ -209,7 +209,7 @@ public class PieceMovement : NetworkBehaviour
         // TODO: relay this message to allies too
         if (connectionToClient != null) TargetCompleteMove(connectionToClient); 
 
-        CurrentMovement--; // FIXME assumes all tiles have the same cost
+        CurrentMovement--; // FIXME assumes all tiles have the same cost // HACK: this can be done earlier
 
         if (!Path.HasPath) return;
 
