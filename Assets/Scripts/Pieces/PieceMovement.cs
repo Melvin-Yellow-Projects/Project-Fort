@@ -189,8 +189,11 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    public void ServerCompleteAction()
+    public void Server_CompleteTurnStep()
     {
+        //if (piece.Configuration.OnStopTurnStepSkill)
+        //    piece.Configuration.OnStopTurnStepSkill.Invoke(piece);
+
         if (MyPiece.IsDying)
         {
             // TODO: Brute Force repitition, this can be improved

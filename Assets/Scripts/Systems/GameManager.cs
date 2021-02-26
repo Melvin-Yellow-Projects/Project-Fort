@@ -311,20 +311,7 @@ public class GameManager : NetworkBehaviour
     private void ServerCompleteTurnStep()
     {
         // Setting new cell for pieces now that they moved
-        for (int i = 0; i < HexGrid.Pieces.Count; i++)
-        {
-            Piece piece = HexGrid.Pieces[i];
-            piece.Movement.ServerCompleteAction(); // HACK bad name, should mention Step
-        }
-
-        // FIXME: these two loops can be combined
-
-        // Setting new cell for pieces now that they moved
-        foreach (Piece piece in HexGrid.Pieces)
-        {
-            if (piece.Configuration.OnStopTurnStepSkill)
-                piece.Configuration.OnStopTurnStepSkill.Invoke(piece);
-        }
+        foreach (Piece piece in HexGrid.Pieces)  piece.Movement.Server_CompleteTurnStep(); 
     }
 
     #endregion
