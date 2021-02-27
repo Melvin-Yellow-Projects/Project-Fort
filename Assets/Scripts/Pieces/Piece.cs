@@ -119,7 +119,16 @@ public class Piece : NetworkBehaviour
 
     public bool HasBonked { get; set; } = false;
 
+    // HACK: if dying removes the collider too earily from a piece, racetime errors occur when 
+    //          there is a collision of 3 or more pieces; maybe this can be solved with a 
+    //          combat zone collider that would be spawned in place of the dying pieces
     public bool IsDying { get; set; } = false;
+
+    // HACK: when a piece can die but not have racetime errors, remove this to just IsDying
+    //          this also relies on the next turn step to set the piece to actually die, otherwise
+    //          it waits indefinitely until the next step; this is not noticeable unless the step 
+    //          count played is less than the number of moves left for this piece (or other pieces)
+    public bool WillDie { get; set; } = false;
 
     #endregion
     /************************************************************/
@@ -137,12 +146,6 @@ public class Piece : NetworkBehaviour
 
         HexGrid.Pieces.Add(this); // HACK: should this be an event?
         name = $"piece {UnityEngine.Random.Range(0, 100000)}";
-    }
-
-    private void OnDestroy()
-    {
-        Debug.LogError("Piece has been destroyed");
-        HexGrid.Pieces.Remove(this); // HACK: should this be an event?
     }
 
     #endregion
@@ -199,9 +202,12 @@ public class Piece : NetworkBehaviour
     {
         if (CanCapturePiece(piece))
         {
+            // HACK: i don't like this, this is only being done because the piece is "in the way"; 
+            //          can this be improved? maybe only disable when battle is decisive 
             if (PieceCollisionHandler.IsBorderCollision(this, piece))
-                piece.CollisionHandler.gameObject.SetActive(false);
-            piece.Die();
+                piece.CollisionHandler.gameObject.SetActive(false); 
+            piece.Die(); // TODO: this doesn't create racetime collision errors right?
+            //HexGrid.Pieces.Remove(this); 
             HasCaptured = true;
             return true;
         }
@@ -213,7 +219,7 @@ public class Piece : NetworkBehaviour
     {
         if (!piece.CanCapturePiece(this))
         {
-            piece.Movement.Bonk(); // tell piece to bonk
+            piece.Movement.Server_Bonk(); // tell piece to bonk
             return true;
         }
 
@@ -222,7 +228,9 @@ public class Piece : NetworkBehaviour
 
     public void Die(bool isPlayingAnimation = true)
     {
-        MyTeam.SetTeam(9); // black team HACK: this is to force units to trade off better when colliding
+        // black team HACK: this is to force units to trade off better when colliding
+        MyTeam.SetTeam(9); 
+        IsDying = true;
         GetComponent<PieceDeath>().Die(isPlayingAnimation);
     }
 

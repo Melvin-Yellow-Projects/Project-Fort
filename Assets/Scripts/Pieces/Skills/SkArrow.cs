@@ -37,8 +37,9 @@ public class SkArrow : Skill
 
     public override void Invoke(Piece myPiece)
     {
-        if (!CanLaser(myPiece)) return;
-
+        Debug.Log("hello");
+        if (!CanFire(myPiece)) return;
+        Debug.Log("hey");
         Piece piece = null;
 
         HexCell targetCell = myPiece.MyCell.GetNeighbor(myPiece.Movement.Direction);
@@ -59,10 +60,13 @@ public class SkArrow : Skill
 
         if (piece.MyTeam == myPiece.MyTeam) return;
 
-        if (CanCapturePiece(piece, captureTypes)) piece.Die();
+        // HACK: when a piece can die but not have racetime errors, change this to Die();
+        if (CanCapturePiece(piece, captureTypes)) piece.WillDie = true;
+
+        Debug.Log("hello again");
     }
 
-    private bool CanLaser(Piece myPiece)
+    private bool CanFire(Piece myPiece)
     {
         PieceMovement movement = myPiece.Movement;
         int stepsTaken = movement.MaxMovement - movement.CurrentMovement;

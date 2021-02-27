@@ -115,6 +115,9 @@ public class PieceMovement : NetworkBehaviour
 
     public bool IsEnRoute { get; private set; }
 
+    // HACK: not quite, this assumes piece has already moved it's final step
+    //public bool LastStep => MyPiece.HasMove && !(Path.HasPath); 
+
     // HACK: might be better broken up into a property and function FreezePiece()/CannotMove() 
     public bool CanMove
     {
@@ -174,7 +177,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    public void ServerDoAction()
+    public void ServerDoStep()
     {
         if (!MyPiece.HasMove) return;
 
@@ -191,20 +194,9 @@ public class PieceMovement : NetworkBehaviour
     [Server]
     public void Server_CompleteTurnStep()
     {
-        //if (piece.Configuration.OnStopTurnStepSkill)
-        //    piece.Configuration.OnStopTurnStepSkill.Invoke(piece);
-
-        if (MyPiece.IsDying)
-        {
-            // TODO: Brute Force repitition, this can be improved
-            MyPiece.CollisionHandler.gameObject.SetActive(false);
-            Debug.Log("Disabling Combat Handler");
-            return;
-        }
-
-        if (!EnRouteCell) return;
-
+        if (!EnRouteCell || MyPiece.IsDying) return;
         Direction = HexMetrics.GetDirection(MyCell, EnRouteCell); // HACK: this can be done earlier
+
         MyCell = EnRouteCell;
         EnRouteCell = null;
         MyPiece.HasBonked = false;
@@ -214,14 +206,20 @@ public class PieceMovement : NetworkBehaviour
 
         CurrentMovement--; // FIXME assumes all tiles have the same cost // HACK: this can be done earlier
 
-        if (!Path.HasPath) return;
+        if (Path.HasPath)
+        {
+            Path.RemoveTailCells(numberToRemove: MyPiece.Configuration.MovesPerStep);
+            if (hasAuthority) Path.Show();
+        }
 
-        Path.RemoveTailCells(numberToRemove: MyPiece.Configuration.MovesPerStep);
-        if (hasAuthority) Path.Show();
+        if (MyPiece.Configuration.OnStopTurnStepSkill)
+            MyPiece.Configuration.OnStopTurnStepSkill.Invoke(MyPiece);
+
+        if (!Path.HasPath) MyPiece.HasMove = false; // HACK: this might not be very useful
     }
 
     [Server]
-    public void Bonk()
+    public void Server_Bonk()
     {
         // HACK: there must be a better implementation
         if (!EnRouteCell || MyPiece.IsDying || MyPiece.HasBonked) return;

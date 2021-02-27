@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Arrow Skill
   m_EditorClassIdentifier: 
   captureTypes: 00000000010000000200000003000000
-  maxStepsBeforeFire: 2
+  maxStepsBeforeFire: 3
   range: 10000

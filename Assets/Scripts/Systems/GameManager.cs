@@ -262,7 +262,7 @@ public class GameManager : NetworkBehaviour
         // How many Moves/Steps pieces can Utilize
         for (int step = 0; step < numberOfTurnSteps; step++)
         {
-            ServerMovePieces();
+            ServerStartTurnStep();
 
             yield return ServerWaitForPieces();
 
@@ -282,13 +282,24 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    private void ServerMovePieces()
+    private void ServerStartTurnStep()
     {
         // Moving pieces
-        for (int i = 0; i < HexGrid.Pieces.Count; i++)
+        for (int i = HexGrid.Pieces.Count - 1; i >= 0; i--)
         {
             Piece piece = HexGrid.Pieces[i];
-            piece.Movement.ServerDoAction(); // TODO: correct number of steps
+
+            if (piece.IsDying || piece.WillDie)
+            {
+                if (piece.WillDie) piece.Die();
+                Debug.Log($"Disabling Combat Handler and Removing Dead {piece.name} from HexGrid");
+                HexGrid.Pieces.Remove(piece);
+                piece.CollisionHandler.gameObject.SetActive(false);
+            }
+            else
+            {
+                piece.Movement.ServerDoStep(); // TODO: correct number of steps
+            }
         }
     }
 

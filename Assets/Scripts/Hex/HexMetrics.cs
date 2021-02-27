@@ -287,6 +287,7 @@ public static class HexMetrics
 
     /// <summary>
     /// Gets the direction between two cells; assumes they are neighbors
+    /// HACK can this be done better such that an error is null?
     /// </summary>
     /// <param name="startCell">starting cell</param>
     /// <param name="endCell">end cell</param>
