@@ -291,6 +291,7 @@ public class GameManager : NetworkBehaviour
 
             if (piece.IsDying || piece.WillDie)
             {
+                Debug.Log($"Dying piece {piece.name}");
                 if (piece.WillDie) piece.Die();
                 Debug.Log($"Disabling Combat Handler and Removing Dead {piece.name} from HexGrid");
                 HexGrid.Pieces.Remove(piece);
