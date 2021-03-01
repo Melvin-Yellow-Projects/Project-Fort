@@ -33,8 +33,9 @@ MonoBehaviour:
     type: 2}
   enemyInactiveCollision: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
     type: 2}
-  onStartTurnSkill: {fileID: 0}
   onStopTurnSkill: {fileID: 11400000, guid: 8a0165ceed7124aa89b6e629a8ffafac, type: 2}
-  onStartTurnStepSkill: {fileID: 0}
+  onStartTurnSkill: {fileID: 0}
+  onStartTurnStepSkill: {fileID: 11400000, guid: 753e5acbfb3ba4add8cf4083d47a5842,
+    type: 2}
   onStopTurnStepSkill: {fileID: 0}
   onDeathSkill: {fileID: 0}

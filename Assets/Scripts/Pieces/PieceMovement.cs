@@ -184,11 +184,9 @@ public class PieceMovement : NetworkBehaviour
         // HACK: removing line causes errors, HasAction should better reflect action status of piece
         if (!Path.HasPath || CurrentMovement == 0) return;
 
-        List<HexCell> cells = new List<HexCell>();
-        cells.Add(Path[0]);
-        cells.Add(Path[1]);
+        Direction = HexMetrics.GetDirection(Path[0], Path[1]);
 
-        StartCoroutine(Route(cells));
+        StartCoroutine(Route(Path[0], Path[1]));
     }
 
     [Server]
@@ -239,46 +237,21 @@ public class PieceMovement : NetworkBehaviour
     /// </summary>
     /// <returns></returns>
     [Server]
-    private IEnumerator Route(List<HexCell> cells)
+    private IEnumerator Route(HexCell startCell, HexCell endCell)
     {
         IsEnRoute = true;
-        Vector3 a, b, c = cells[0].Position;
 
         // perform lookat
         //yield return LookAt(cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
         PiecePathfinding.DecreaseVisibility(
-            (EnRouteCell) ? EnRouteCell : cells[0],
+            (EnRouteCell) ? EnRouteCell : startCell,
             MyPiece.Configuration.VisionRange
         );
 
         float interpolator = Time.deltaTime * MyPiece.Configuration.TravelSpeed;
-        for (int i = 1; i < cells.Count; i++)
-        {
-            EnRouteCell = cells[i]; // prevents teleportation
-
-            a = c;
-            b = cells[i - 1].Position;
-            c = (b + EnRouteCell.Position) * 0.5f;
-
-            PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
-
-            for (; interpolator < 1f; interpolator += Time.deltaTime * MyPiece.Configuration.TravelSpeed)
-            {
-                //transform.localPosition = Vector3.Lerp(a, b, interpolator);
-                transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
-                //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
-                //d.y = 0f;
-                //transform.localRotation = Quaternion.LookRotation(d);
-                yield return null;
-            }
-
-            PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
-
-            interpolator -= 1f;
-        }
-        EnRouteCell = cells[cells.Count - 1];
+        EnRouteCell = endCell;
 
         // arriving at the center if the last cell
         a = c;

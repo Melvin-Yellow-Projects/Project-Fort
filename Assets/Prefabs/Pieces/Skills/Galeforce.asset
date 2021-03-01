@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59c3991c9f2af47bdb8b8d9ef5fe2292, type: 3}
-  m_Name: Charge Skill
+  m_Script: {fileID: 11500000, guid: 7acfcd0968c1f4a639e84846b49623ed, type: 3}
+  m_Name: Galeforce
   m_EditorClassIdentifier: 

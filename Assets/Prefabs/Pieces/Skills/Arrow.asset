@@ -9,6 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bfff935d0bd6488cb110201b664cd13, type: 3}
-  m_Name: Bonk Skill
+  m_Script: {fileID: 11500000, guid: 20b7727c96e004e1cbc5280ac09737db, type: 3}
+  m_Name: Arrow
   m_EditorClassIdentifier: 
+  captureTypes: 00000000010000000200000003000000
+  maxStepsBeforeFire: 3
+  range: 10000
