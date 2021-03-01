@@ -287,15 +287,10 @@ public class GameManager : NetworkBehaviour
         // Moving pieces
         for (int i = HexGrid.Pieces.Count - 1; i >= 0; i--)
         {
-            Debug.Log($"i={i}; HexGrid.Piece.Count={HexGrid.Pieces.Count}");
             Piece piece = HexGrid.Pieces[i];
-            Debug.Log($"piece={piece}; IsDying={piece.IsDying}; WillDie={piece.WillDie}");
-            Debug.Log($"piece.name={piece.name}");
             if (piece.IsDying || piece.WillDie)
             {
-                Debug.Log($"Dying piece {piece.name}");
                 if (piece.WillDie) piece.Die();
-                Debug.Log($"Disabling Combat Handler and Removing Dead {piece.name} from HexGrid");
                 HexGrid.Pieces.Remove(piece);
                 piece.CollisionHandler.gameObject.SetActive(false);
             }

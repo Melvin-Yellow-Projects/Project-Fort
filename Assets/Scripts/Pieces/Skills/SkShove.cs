@@ -23,6 +23,10 @@ public class SkShove : Skill
     public override void Invoke(Piece myPiece)
     {
         HexCell neighbor = myPiece.MyCell.GetNeighbor(myPiece.Movement.Direction);
+        if (!neighbor || !neighbor.MyPiece) return;
+
+
+
 
         Debug.Log($"myPiece's direction {myPiece.Movement.Direction}");
         Debug.Log($"myPiece's cell {myPiece.MyCell.name}");
