@@ -199,7 +199,6 @@ public class PieceMovement : NetworkBehaviour
 
         MyCell = EnRouteCell;
         EnRouteCell = null;
-        MyPiece.HasBonked = false;
 
         // TODO: relay this message to allies too
         if (connectionToClient != null) TargetCompleteMove(connectionToClient); 
@@ -212,9 +211,10 @@ public class PieceMovement : NetworkBehaviour
             if (hasAuthority) Path.Show();
         }
 
-        if (MyPiece.Configuration.OnStopTurnStepSkill)
+        if (!MyPiece.HasBonked && MyPiece.Configuration.OnStopTurnStepSkill)
             MyPiece.Configuration.OnStopTurnStepSkill.Invoke(MyPiece);
 
+        MyPiece.HasBonked = false;
         if (!Path.HasPath) MyPiece.HasMove = false; // HACK: this might not be very useful
     }
 
