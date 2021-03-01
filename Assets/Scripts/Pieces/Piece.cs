@@ -148,6 +148,12 @@ public class Piece : NetworkBehaviour
         name = $"piece {UnityEngine.Random.Range(0, 100000)}";
     }
 
+    private void OnDestroy()
+    {
+        // this forces the removal of this piece's reference from the hex grid
+        HexGrid.Pieces.Remove(this);
+    }
+
     #endregion
     /************************************************************/
     #region Server Functions

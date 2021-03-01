@@ -186,6 +186,9 @@ public class PieceMovement : NetworkBehaviour
 
         Direction = HexMetrics.GetDirection(Path[0], Path[1]);
 
+        if (MyPiece.Configuration.OnStartTurnStepSkill)
+            MyPiece.Configuration.OnStartTurnStepSkill.Invoke(MyPiece);
+
         StartCoroutine(Route(Path[0], Path[1]));
     }
 
@@ -234,12 +237,14 @@ public class PieceMovement : NetworkBehaviour
     /// <summary>
     /// TODO: comment this; apparently a piece's velocity will slow down when changing directions,
     /// why?
+    /// HACK: this method has been jank since it was created, fix this
     /// </summary>
     /// <returns></returns>
     [Server]
     private IEnumerator Route(HexCell startCell, HexCell endCell)
     {
         IsEnRoute = true;
+        Vector3 a, b, c = startCell.Position;
 
         // perform lookat
         //yield return LookAt(cells[1].Position);
@@ -251,6 +256,29 @@ public class PieceMovement : NetworkBehaviour
         );
 
         float interpolator = Time.deltaTime * MyPiece.Configuration.TravelSpeed;
+
+        EnRouteCell = endCell; // prevents teleportation
+
+        a = c;
+        b = startCell.Position;
+        c = (b + EnRouteCell.Position) * 0.5f;
+
+        PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
+
+        for (; interpolator < 1f; interpolator += Time.deltaTime * MyPiece.Configuration.TravelSpeed)
+        {
+            //transform.localPosition = Vector3.Lerp(a, b, interpolator);
+            transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
+            //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
+            //d.y = 0f;
+            //transform.localRotation = Quaternion.LookRotation(d);
+            yield return null;
+        }
+
+        PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
+
+        interpolator -= 1f;
+        
         EnRouteCell = endCell;
 
         // arriving at the center if the last cell
