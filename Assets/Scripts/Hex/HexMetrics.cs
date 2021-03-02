@@ -26,117 +26,8 @@ public static class HexMetrics
     /************************************************************/
     #region Metric Variables
 
-    /// <summary>
-    /// number of hex map chunks in the X direction
-    /// </summary>
-    public const int chunkSizeX = 4;
-
-    /// <summary>
-    /// number of hex map chunks in the Z direction
-    /// </summary>
-    public const int chunkSizeZ = 3;
-
-    /// <summary>
-    /// a hex's outer radius
-    /// </summary>
-    public const float outerRadius = 12f;
-
-    /// <summary>
-    /// percent of a HexCell that is solid and unaltered by its neighbors
-    /// </summary>
-    public const float solidFactor = 0.8f;
-
-    /// <summary>
-    /// height of each successive elevation change
-    /// </summary>
-    public const float elevationStep = 4f;
-
-    /// <summary>
-    /// number of terraces per slope (small elevation connection between hex cells)
-    /// </summary>
-    public const int terracesPerSlope = 3;
-
-    /// <summary>
-    /// how high the elevation delta must be to be considered a cliff (set to 0 for only cliffs)
-    /// </summary>
-    public const int cliffDelta = 2;
-
-    /// <summary>
-    /// strength of hex grid vertex noise; max displacement will equal [2 * (value ** 2)] ** 0.5
-    /// </summary>
-    public const float cellPerturbStrength = 6f;
-
-    /// <summary>
-    /// strength of hex grid elevation noise; this should be relatively related to a vertical
-    /// terrace step and an elevation step
-    /// </summary>
-    public const float elevationPerturbStrength = 2f;
-
-    /// <summary>
-    /// how often the noise repeats itself; repeats every [1 / (2 * noiseScale * innerRadius)]
-    /// </summary>
-    public const float noiseScale = 0.003f;
-
-    #endregion
-    /************************************************************/
-    #region Metric Constants
-
-    /// <summary>
-    /// conversion from a hex's outer radius to its inner radius
-    /// </summary>
-    public const float outerToInner = 0.866025404f;
-
-    /// <summary>
-    /// conversion from a hex's inner radius to its outer radius
-    /// </summary>
-    public const float innerToOuter = 1f / outerToInner;
-
-    /// <summary>
-    /// a hex's inner radius
-    /// </summary>
-    public const float innerRadius = outerRadius * outerToInner;
-
-    /// <summary>
-    /// a hex's 6 corners; has a redundant first corner to handle out of bounds error
-    /// </summary>
-    static Vector3[] corners = {
-        new Vector3(0f, 0f, outerRadius),
-        new Vector3(innerRadius, 0f, 0.5f * outerRadius),
-        new Vector3(innerRadius, 0f, -0.5f * outerRadius),
-        new Vector3(0f, 0f, -outerRadius),
-        new Vector3(-innerRadius, 0f, -0.5f * outerRadius),
-        new Vector3(-innerRadius, 0f, 0.5f * outerRadius),
-        new Vector3(0f, 0f, outerRadius)
-    };
-
-    /// <summary>
-    /// percent of a HexCell that is blended and altered by its neighbors; calculated directly from
-    /// solidFactor
-    /// </summary>
-    public const float blendFactor = 1f - solidFactor;
-
-    /// <summary>
-    /// horizontal terrace intervals; even intervals are sloped quads, odd are flat quads
-    /// </summary>
-    public const int terraceSteps = terracesPerSlope * 2 + 1;
-
-    /// <summary>
-    /// percent distance between each horizontal terrace step 
-    /// </summary>
-    public const float horizontalTerraceStepSize = 1f / terraceSteps;
-
-    /// <summary>
-    /// percent distance between each vertical terrace step
-    /// </summary>
-    public const float verticalTerraceStepSize = 1f / (terracesPerSlope + 1);
-
-    /// <summary>
-    /// source of map noise; HexGrid serves as an intermediate to assign the noise source to 
-    /// HexMetrics because this is a static class, UNDONE: remove assignment from HexGrid
-    /// HexGrid
-    /// </summary>
-    public static Texture2D noiseSource;
-
+    public static HexConfig Configuration { get; set; }
+    
     #endregion
     /************************************************************/
     #region Class Functions
@@ -148,7 +39,7 @@ public static class HexMetrics
     /// <returns>the location of a Hex corner</returns>
     public static Vector3 GetFirstCorner(HexDirection direction)
     {
-        return corners[(int)direction];
+        return Configuration.Corners[(int)direction];
     }
 
     /// <summary>
@@ -158,7 +49,7 @@ public static class HexMetrics
     /// <returns>the location of a Hex corner</returns>
     public static Vector3 GetSecondCorner(HexDirection direction)
     {
-        return corners[(int)direction + 1];
+        return Configuration.Corners[(int)direction + 1];
     }
 
     /// <summary>
@@ -169,7 +60,7 @@ public static class HexMetrics
     /// <returns>the location of a solid Hex corner</returns>
     public static Vector3 GetFirstSolidCorner(HexDirection direction)
     {
-        return corners[(int)direction] * solidFactor;
+        return Configuration.Corners[(int)direction] * Configuration.SolidFactor;
     }
 
     /// <summary>
@@ -180,7 +71,7 @@ public static class HexMetrics
     /// <returns>the location of a solid Hex corner</returns>
     public static Vector3 GetSecondSolidCorner(HexDirection direction)
     {
-        return corners[(int)direction + 1] * solidFactor;
+        return Configuration.Corners[(int)direction + 1] * Configuration.SolidFactor;
     }
 
     /// <summary>
@@ -195,7 +86,8 @@ public static class HexMetrics
     {
         // multiplying by blendFactor causes overlap (opposed to just averaging the vectors) this is
         // done to reduce triangulation
-        return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
+        return (Configuration.Corners[(int)direction] +
+            Configuration.Corners[(int)direction + 1]) * Configuration.BlendFactor;
     }
 
     /// <summary>
@@ -208,12 +100,12 @@ public static class HexMetrics
     public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step)
     {
         // horizontal lerp
-        float h = step * HexMetrics.horizontalTerraceStepSize;
+        float h = step * Configuration.HorizontalTerraceStepSize;
         a.x += (b.x - a.x) * h;
         a.z += (b.z - a.z) * h;
 
         // vertical lerp 
-        float v = ((step + 1) / 2) * HexMetrics.verticalTerraceStepSize;
+        float v = ((step + 1) / 2) * Configuration.VerticalTerraceStepSize;
         a.y += (b.y - a.y) * v;
 
         return a;
@@ -228,7 +120,7 @@ public static class HexMetrics
     /// <returns>a color somewhere along the terrace</returns>
     public static Color TerraceLerp(Color a, Color b, int step)
     {
-        float h = step * HexMetrics.horizontalTerraceStepSize;
+        float h = step * Configuration.HorizontalTerraceStepSize;
         return Color.Lerp(a, b, h);
     }
 
@@ -245,7 +137,7 @@ public static class HexMetrics
 
         // check if slope
         int delta = Mathf.Abs(elevation2 - elevation1);
-        if (delta < HexMetrics.cliffDelta) edgeType = HexEdgeType.Slope;
+        if (delta < HexMetrics.Configuration.CliffDelta) edgeType = HexEdgeType.Slope;
 
         // check if flat
         if (elevation1 == elevation2) edgeType = HexEdgeType.Flat;
@@ -265,20 +157,20 @@ public static class HexMetrics
     {
         // Samples the Perlin noise source for randomness using a given world position, yields a
         // random value between 0 and 1
-        Vector4 sample = noiseSource.GetPixelBilinear(
-            position.x * noiseScale, position.z * noiseScale
+        Vector4 sample = Configuration.NoiseSource.GetPixelBilinear(
+            position.x * Configuration.NoiseScale, position.z * Configuration.NoiseScale
         );
 
         // convert the sample to a value between -1 and 1, then multiply it by it corresponding
         // noise strength
         if (perturbElevation)
         {
-            position.y += (sample.y * 2f - 1f) * elevationPerturbStrength;
+            position.y += (sample.y * 2f - 1f) * Configuration.ElevationPerturbStrength;
         }
         else
         {
-            position.x += (sample.x * 2f - 1f) * cellPerturbStrength;
-            position.z += (sample.z * 2f - 1f) * cellPerturbStrength;
+            position.x += (sample.x * 2f - 1f) * Configuration.CellPerturbStrength;
+            position.z += (sample.z * 2f - 1f) * Configuration.CellPerturbStrength;
         }
 
         // return position

@@ -49,12 +49,8 @@ public class Initializer : MonoBehaviour
     [SerializeField] PopupMenu popupMenuPrefab = null;
 
     [Header("HexMetrics")]
-    [Tooltip("noise source for Hex Metrics")]
-    [SerializeField] Texture2D noiseSource;
-
-    [Header("HexGrid")]
-    [Tooltip("reference to the HexGrid prefab")]
-    [SerializeField] HexGrid hexGridPrefab;
+    [Tooltip("hex map configuration file for Hex Metrics")]
+    [SerializeField] HexConfig configuration;
 
     [Header("Fort")]
     [Tooltip("reference to the Fort prefab")]
@@ -104,7 +100,7 @@ public class Initializer : MonoBehaviour
         if (popupMenuPrefab && !PopupMenu.Prefab) PopupMenu.Prefab = popupMenuPrefab;
 
         /** HexMetrics **/
-        if (noiseSource && !HexMetrics.noiseSource) HexMetrics.noiseSource = noiseSource;
+        if (configuration && !HexMetrics.Configuration) HexMetrics.Configuration = configuration;
 
         /** Fort **/
         if (fortPrefab && !Fort.Prefab) Fort.Prefab = fortPrefab;

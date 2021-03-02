@@ -251,7 +251,7 @@ public class HexGrid : NetworkBehaviour
         if (GameSession.IsEditorMode) Shader.EnableKeyword("MAP_EDITOR_MODE");
         else Shader.DisableKeyword("MAP_EDITOR_MODE");
         //terrainMaterial.DisableKeyword("GRID_ON");
-        Shader.SetGlobalFloat("_HexCellSize", HexMetrics.outerRadius);
+        Shader.SetGlobalFloat("_HexCellSize", HexMetrics.Configuration.OuterRadius);
 
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
 
@@ -272,7 +272,7 @@ public class HexGrid : NetworkBehaviour
         }
 
         // verify valid map; TODO: add support for chunks that are partially filled with cells
-        if (x <= 0 || x % HexMetrics.chunkSizeX != 0 || z <= 0 || z % HexMetrics.chunkSizeZ != 0)
+        if (x <= 0 || x % HexMetrics.Configuration.ChunkSizeX != 0 || z <= 0 || z % HexMetrics.Configuration.ChunkSizeZ != 0)
         {
             Debug.LogError("Unsupported map size.");
             return false;
@@ -283,8 +283,8 @@ public class HexGrid : NetworkBehaviour
         cellCountZ = z;
 
         // initialize number of chunks
-        chunkCountX = cellCountX / HexMetrics.chunkSizeX;
-        chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
+        chunkCountX = cellCountX / HexMetrics.Configuration.ChunkSizeX;
+        chunkCountZ = cellCountZ / HexMetrics.Configuration.ChunkSizeZ;
 
         // initialize shader data
         cellShaderData.Initialize(cellCountX, cellCountZ);
@@ -348,10 +348,10 @@ public class HexGrid : NetworkBehaviour
         // calculate x position
         cellPosition.x += (z / 2f); // offset x by half of z (horizontal shift)
         cellPosition.x -= (z / 2); // undo offset with integer math (this will effect odd rows) 
-        cellPosition.x *= (2f * HexMetrics.innerRadius); // multiply by correct z hex metric
+        cellPosition.x *= (2f * HexMetrics.Configuration.InnerRadius); // multiply by correct z hex metric
 
         // calculate z position
-        cellPosition.z *= (1.5f * HexMetrics.outerRadius);
+        cellPosition.z *= (1.5f * HexMetrics.Configuration.OuterRadius);
 
         // instantiate cell under the grid at its calculated position TODO: rewrite comment
         HexCell cell = Instantiate<HexCell>(cellPrefab);
@@ -417,19 +417,19 @@ public class HexGrid : NetworkBehaviour
     void AddCellToChunk(int x, int z, HexCell cell)
     {
         // gets the corresponding chunk given the offset x and z
-        int chunkX = x / HexMetrics.chunkSizeX;
-        int chunkZ = z / HexMetrics.chunkSizeZ;
+        int chunkX = x / HexMetrics.Configuration.ChunkSizeX;
+        int chunkZ = z / HexMetrics.Configuration.ChunkSizeZ;
 
         // fetch chunk with chunk index calculation
         int chunkIndex = chunkX + chunkZ * chunkCountX;
         HexGridChunk chunk = chunks[chunkIndex];
 
         // gets the local index for x and z
-        int localX = x - chunkX * HexMetrics.chunkSizeX;
-        int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
+        int localX = x - chunkX * HexMetrics.Configuration.ChunkSizeX;
+        int localZ = z - chunkZ * HexMetrics.Configuration.ChunkSizeZ;
 
         // add the cell to the chunk using the local cell index
-        int localCellIndex = localX + localZ * HexMetrics.chunkSizeX;
+        int localCellIndex = localX + localZ * HexMetrics.Configuration.ChunkSizeX;
         chunk.AddCell(localCellIndex, cell);
     }
 

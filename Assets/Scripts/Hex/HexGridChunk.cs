@@ -51,7 +51,7 @@ public class HexGridChunk : MonoBehaviour
         gridCanvas = GetComponentInChildren<Canvas>();
 
         // initialize cells
-        cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
+        cells = new HexCell[HexMetrics.Configuration.ChunkSizeX * HexMetrics.Configuration.ChunkSizeZ];
 	}
 
 	/// <summary>
@@ -227,7 +227,7 @@ public class HexGridChunk : MonoBehaviour
         HexEdgeVertices end, HexCell endCell
     )
     {
-        for (int i = 0; i < HexMetrics.terraceSteps; i++)
+        for (int i = 0; i < HexMetrics.Configuration.TerraceSteps; i++)
         {
             HexEdgeVertices e1 = HexEdgeVertices.TerraceLerp(begin, end, i);
             HexEdgeVertices e2 = HexEdgeVertices.TerraceLerp(begin, end, i + 1);
@@ -336,7 +336,7 @@ public class HexGridChunk : MonoBehaviour
         indices.y = leftCell.Index;
         indices.z = rightCell.Index;
 
-        for (int i = 0; i < HexMetrics.terraceSteps; i++)
+        for (int i = 0; i < HexMetrics.Configuration.TerraceSteps; i++)
         {
             Vector3 v1 = HexMetrics.TerraceLerp(begin, left, i);
             Vector3 v2 = HexMetrics.TerraceLerp(begin, right, i);
@@ -449,7 +449,7 @@ public class HexGridChunk : MonoBehaviour
         terrain.AddTriangle(HexMetrics.Perturb(begin), v2, boundary, perturb: false);
         terrain.AddTriangleCellData(indices, beginWeights, w2, boundaryWeights);
 
-        for (int i = 2; i < HexMetrics.terraceSteps; i++)
+        for (int i = 2; i < HexMetrics.Configuration.TerraceSteps; i++)
         {
             Vector3 v1 = v2;
             Color w1 = w2;

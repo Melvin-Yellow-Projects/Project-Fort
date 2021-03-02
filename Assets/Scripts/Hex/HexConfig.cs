@@ -37,7 +37,7 @@ public class HexConfig : ScriptableObject
     [SerializeField] float outerRadius = 12f;
 
     [Tooltip("percent of a HexCell that is solid and unaltered by its neighbors")]
-    [SerializeField] float solidFactor = 0.8f;
+    [SerializeField, Range(0, 1)] float solidFactor = 0.8f;
 
     [Header("Elevation Settings")]
     [Tooltip("height of each successive elevation change")]
@@ -68,9 +68,8 @@ public class HexConfig : ScriptableObject
     float noiseScale = 0.003f;
 
     #endregion
-
     /************************************************************/
-    #region Properties
+    #region Variable Properties
 
     public int ChunkSizeX => chunkSizeX;
 
@@ -93,6 +92,65 @@ public class HexConfig : ScriptableObject
     public Texture2D NoiseSource => noiseSource;
 
     public float NoiseScale => noiseScale;
+
+    #endregion
+    /************************************************************/
+    #region Constant Properties
+
+    /// <summary>
+    /// conversion from a hex's outer radius to its inner radius
+    /// </summary>
+    public float OuterToInner => 0.866025404f;
+
+    /// <summary>
+    /// conversion from a hex's inner radius to its outer radius
+    /// </summary>
+    public float InnerToOuter => 1f / OuterToInner;
+
+    /// <summary>
+    /// a hex's inner radius
+    /// </summary>
+    public float InnerRadius => outerRadius * OuterToInner;
+
+    /// <summary>
+    /// a hex's 6 corners; has a redundant first corner to handle out of bounds error
+    /// </summary>
+    public Vector3[] Corners
+    {
+        get
+        {
+            return new Vector3[] {
+                new Vector3(0f, 0f, outerRadius),
+                new Vector3(InnerRadius, 0f, 0.5f * outerRadius),
+                new Vector3(InnerRadius, 0f, -0.5f * outerRadius),
+                new Vector3(0f, 0f, -outerRadius),
+                new Vector3(-InnerRadius, 0f, -0.5f * outerRadius),
+                new Vector3(-InnerRadius, 0f, 0.5f * outerRadius),
+                new Vector3(0f, 0f, outerRadius)
+            };
+        }
+    }
+
+    /// <summary>
+    /// percent of a HexCell that is blended and altered by its neighbors; calculated directly from
+    /// solidFactor
+    /// </summary>
+    public float BlendFactor => 1f - solidFactor;
+
+    /// <summary>
+    /// horizontal terrace intervals; even intervals are sloped quads, odd are flat quads
+    /// </summary>
+    public int TerraceSteps => terracesPerSlope * 2 + 1;
+
+    /// <summary>
+    /// percent distance between each horizontal terrace step 
+    /// </summary>
+    public float HorizontalTerraceStepSize => 1f / TerraceSteps;
+
+    /// <summary>
+    /// percent distance between each vertical terrace step
+    /// </summary>
+    public float VerticalTerraceStepSize => 1f / (terracesPerSlope + 1);
 
     #endregion
 }

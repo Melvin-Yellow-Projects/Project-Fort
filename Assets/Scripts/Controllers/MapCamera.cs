@@ -233,12 +233,12 @@ public class MapCamera : MonoBehaviour
 	Vector3 ClampPosition(Vector3 position)
 	{
 		//Debug.Log($"{HexGrid.Singleton.cellCountX}, {HexMetrics.chunkSizeX}, {2f * HexMetrics.innerRadius}");
-		float xMax = (HexGrid.Singleton.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
+		float xMax = (HexGrid.Singleton.cellCountX - 0.5f) * (2f * HexMetrics.Configuration.InnerRadius);
 		//float xMax = (HexGrid.Singleton.cellCountX * HexMetrics.chunkSizeX - 0.5f) *
   //          (2f * HexMetrics.innerRadius);
         position.x = Mathf.Clamp(position.x, 0f, xMax);
 
-		float zMax = (HexGrid.Singleton.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
+		float zMax = (HexGrid.Singleton.cellCountZ - 1) * (1.5f * HexMetrics.Configuration.OuterRadius);
 		//float zMax = (HexGrid.Singleton.cellCountZ * HexMetrics.chunkSizeZ - 1) *
   //          (1.5f * HexMetrics.outerRadius);
         position.z = Mathf.Clamp(position.z, 0f, zMax);

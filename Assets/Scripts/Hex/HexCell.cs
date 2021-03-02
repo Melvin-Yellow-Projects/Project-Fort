@@ -340,7 +340,7 @@ public class HexCell : MonoBehaviour
     /// <returns>whether this cell has the high ground or not</returns>
     public bool HasTheHighGround(HexCell relativeCell)
     {
-        return (Elevation - relativeCell.Elevation >= HexMetrics.cliffDelta);
+        return (Elevation - relativeCell.Elevation >= HexMetrics.Configuration.CliffDelta);
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public class HexCell : MonoBehaviour
     {
         // update old position to new height
         Vector3 position = transform.localPosition;
-        position.y = elevation * HexMetrics.elevationStep;
+        position.y = elevation * HexMetrics.Configuration.ElevationStep;
 
         // perturb hex height
         position = HexMetrics.Perturb(position, perturbElevation: true);

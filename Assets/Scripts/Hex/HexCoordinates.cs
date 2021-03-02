@@ -164,11 +164,11 @@ public struct HexCoordinates
     public static HexCoordinates FromPosition(Vector3 position)
     {
         // get x coordinate by dividing by a stacked horizontal hex
-        float x = position.x / (2f * HexMetrics.innerRadius);
+        float x = position.x / (2f * HexMetrics.Configuration.InnerRadius);
         float y = -x;
 
         // calculate horizontal offset as the position moves vertically 
-        float offset = position.z / (3f * HexMetrics.outerRadius);
+        float offset = position.z / (3f * HexMetrics.Configuration.OuterRadius);
         x -= offset;
         y -= offset;
 
