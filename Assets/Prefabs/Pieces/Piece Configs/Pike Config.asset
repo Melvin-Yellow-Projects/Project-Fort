@@ -21,7 +21,7 @@ MonoBehaviour:
   travelSpeed: 6
   rotationSpeed: 360
   captureTypes: 00000000010000000200000003000000
-  allyActiveBorderCollisionSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+  allyActiveBorderCollisionSkill: {fileID: 11400000, guid: 6aaf95566c97a47b68c5f3ce1fb8e166,
     type: 2}
   allyActiveCenterCollisionSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
     type: 2}
@@ -33,8 +33,8 @@ MonoBehaviour:
     type: 2}
   enemyInactiveCollision: {fileID: 11400000, guid: e18394e435b7a4a78b670cbdf0ec7229,
     type: 2}
-  onStartTurnSkill: {fileID: 0}
   onStopTurnSkill: {fileID: 11400000, guid: 8a0165ceed7124aa89b6e629a8ffafac, type: 2}
+  onStartTurnSkill: {fileID: 0}
   onStartTurnStepSkill: {fileID: 0}
   onStopTurnStepSkill: {fileID: 0}
   onDeathSkill: {fileID: 0}

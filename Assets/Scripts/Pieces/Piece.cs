@@ -115,6 +115,8 @@ public class Piece : NetworkBehaviour
 
     public bool IsActive => Movement.EnRouteCell;
 
+    public bool ForcedActive { get; set; } = false;
+
     public bool HasCaptured { get; set; } = false;
 
     public bool HasBonked { get; set; } = false;
@@ -210,7 +212,7 @@ public class Piece : NetworkBehaviour
         {
             // HACK: i don't like this, this is only being done because the piece is "in the way"; 
             //          can this be improved? maybe only disable when battle is decisive 
-            if (PieceCollisionHandler.IsBorderCollision(this, piece))
+            if (!PieceCollisionHandler.IsCenterCollision(this, piece))
                 piece.CollisionHandler.gameObject.SetActive(false); 
             piece.Die(); // TODO: this doesn't create racetime collision errors right?
             //HexGrid.Pieces.Remove(this); 

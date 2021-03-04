@@ -52,19 +52,19 @@ public class PieceConfig : ScriptableObject
 
     /** Ally Collision Skill Settings **/
     [Header("Ally Collision Skill Settings")]
-    [Tooltip("skill that activates during an ally active border collision")]
-    [SerializeField] CollisionSkill allyActiveBorderCollisionSkill;
     [Tooltip("skill that activates during an ally active center collision")]
     [SerializeField] CollisionSkill allyActiveCenterCollisionSkill;
+    [Tooltip("skill that activates during an ally active border collision")]
+    [SerializeField] CollisionSkill allyActiveBorderCollisionSkill;
     [Tooltip("skill that activates during an ally inactive collision when this piece is active")]
     [SerializeField] CollisionSkill allyInactiveCollision;
 
     /** Enemy Collision Skill Settings **/
     [Header("Enemy Collision Skill Settings")]
-    [Tooltip("skill that activates during an enemy active border collision")]
-    [SerializeField] CollisionSkill enemyActiveBorderCollisionSkill;
     [Tooltip("skill that activates during an enemy active center collision")]
     [SerializeField] CollisionSkill enemyActiveCenterCollisionSkill;
+    [Tooltip("skill that activates during an enemy active border collision")]
+    [SerializeField] CollisionSkill enemyActiveBorderCollisionSkill;
     [Tooltip("skill that activates during an enemy inactive collision when this piece is active")]
     [SerializeField] CollisionSkill enemyInactiveCollision;
 

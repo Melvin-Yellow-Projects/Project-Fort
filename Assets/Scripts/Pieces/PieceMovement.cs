@@ -24,7 +24,7 @@ public class PieceMovement : NetworkBehaviour
     protected int currentMovement;
 
     [SyncVar(hook = nameof(HookOnMyCell))]
-    HexCell myCell;
+    public HexCell myCell;
 
     #endregion
     /************************************************************/
@@ -202,7 +202,14 @@ public class PieceMovement : NetworkBehaviour
         EnRouteCell = null;
 
         // TODO: relay this message to allies too
-        if (connectionToClient != null) TargetCompleteMove(connectionToClient); 
+        if (connectionToClient != null) TargetCompleteMove(connectionToClient);
+
+        if (!MyPiece.HasMove)
+        {
+            MyPiece.HasBonked = false;
+            MyPiece.ForcedActive = false;
+            return;
+        }
 
         CurrentMovement--; // FIXME assumes all tiles have the same cost // HACK: this can be done earlier
 
@@ -216,6 +223,8 @@ public class PieceMovement : NetworkBehaviour
             MyPiece.Configuration.OnStopTurnStepSkill.Invoke(MyPiece);
 
         MyPiece.HasBonked = false;
+        MyPiece.ForcedActive = false;
+
         if (!Path.HasPath) MyPiece.HasMove = false; // HACK: this might not be very useful
     }
 
@@ -225,13 +234,32 @@ public class PieceMovement : NetworkBehaviour
         // HACK: there must be a better implementation
         if (!EnRouteCell || MyPiece.IsDying || MyPiece.HasBonked) return;
 
-        CanMove = false;
+        if (MyPiece.HasMove) CanMove = false;
         MyPiece.HasBonked = true;
 
         RpcBonk(); // TODO: relay this message to allies too
 
         StopAllCoroutines();
         StartCoroutine(RouteCanceled());
+    }
+
+    public void ForceMove(HexDirection direction)
+    {
+        if (MyPiece.ForcedActive)
+        {
+            Server_Bonk();
+            return;
+        }
+
+        MyPiece.ForcedActive = true;
+
+        HexCell endCell = myCell.GetNeighbor(direction);
+        if (!endCell) return;
+
+        if (!IsValidCellForPath(myCell, endCell) || !IsValidEdgeForPath(myCell, endCell)) return;
+
+        //Direction = HexMetrics.GetDirection(Path[0], Path[1]);
+        StartCoroutine(Route(myCell, endCell));
     }
 
     /// <summary>
@@ -516,6 +544,7 @@ public class PieceMovement : NetworkBehaviour
     {
         MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
 
+        MyPiece.ForcedActive = false;
         MyPiece.HasCaptured = false;
         MyPiece.HasMove = false;
         HandleRpcOnStopTurn();
@@ -527,6 +556,8 @@ public class PieceMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
+
+        MyPiece.ForcedActive = false;
         MyPiece.HasCaptured = false;
         MyPiece.HasMove = false;
     }
