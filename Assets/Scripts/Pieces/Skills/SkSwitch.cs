@@ -22,9 +22,11 @@ public class SkSwitch : CollisionSkill
 
     protected override void ActiveCollision(Piece myPiece, Piece otherPiece)
     {
-        //HexCell temp = myPiece.Movement.myCell;
-        //myPiece.Movement.myCell = otherPiece.Movement.myCell;
-        //otherPiece.Movement.myCell = temp;
+        if (myPiece.Id < otherPiece.Id) return;
+
+        HexCell temp = myPiece.Movement.myCell;
+        myPiece.Movement.myCell = otherPiece.Movement.myCell;
+        otherPiece.Movement.myCell = temp;
     }
 
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)

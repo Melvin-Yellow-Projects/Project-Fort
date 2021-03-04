@@ -8,6 +8,8 @@
  * Additional Comments: 
  * 
  *      Previously known as Laser.cs
+ *      HACK: im pretty sure the WillDie flag will fail if the turn ends before the WillDie step
+ *              flag clears and the piece dies
  **/
 
 using System;

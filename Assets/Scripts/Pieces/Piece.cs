@@ -60,12 +60,15 @@ public class Piece : NetworkBehaviour
     #region Properties
 
     public static List<Piece> Prefabs { get; set; }
+    private static int IdAutoIncrement { get; set; }
 
     /** Configuration Convenience Properties **/
     public PieceConfig Configuration => configuration;
     public PieceType Type => configuration.Type;
     public string PieceTitle => configuration.PieceTitle;
     public int Credits => configuration.Credits;
+
+    public int Id { get; private set; }
 
     public Team MyTeam { get; private set; }
 
@@ -147,7 +150,8 @@ public class Piece : NetworkBehaviour
             Debug.LogError($"piece {name} is missing an essential component");
 
         HexGrid.Pieces.Add(this); // HACK: should this be an event?
-        name = $"piece {UnityEngine.Random.Range(0, 100000)}";
+        Id = IdAutoIncrement++;
+        name = $"piece {Id}";
     }
 
     private void OnDestroy()
