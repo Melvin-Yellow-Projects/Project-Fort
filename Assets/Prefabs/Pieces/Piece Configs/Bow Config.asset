@@ -15,21 +15,21 @@ MonoBehaviour:
   type: 1
   pieceTitle: Dhole
   credits: 100
-  maxMovement: 3
-  visionRange: 3
+  maxMovement: 2
+  visionRange: 2
   movesPerStep: 1
   travelSpeed: 6
   rotationSpeed: 360
   captureTypes: 
-  allyActiveBorderCollisionSkill: {fileID: 11400000, guid: 6aaf95566c97a47b68c5f3ce1fb8e166,
-    type: 2}
   allyActiveCenterCollisionSkill: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
+    type: 2}
+  allyActiveBorderCollisionSkill: {fileID: 11400000, guid: 6aaf95566c97a47b68c5f3ce1fb8e166,
     type: 2}
   allyInactiveCollision: {fileID: 11400000, guid: f599d94a0d64242e49d9f9d875b66b06,
     type: 2}
-  enemyActiveBorderCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
-    type: 2}
   enemyActiveCenterCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
+    type: 2}
+  enemyActiveBorderCollisionSkill: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
     type: 2}
   enemyInactiveCollision: {fileID: 11400000, guid: fd0691ced5e204d72aec23f542164d61,
     type: 2}
