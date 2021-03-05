@@ -15,7 +15,7 @@ MonoBehaviour:
   configurationDescription: 
   chunkSizeX: 4
   chunkSizeZ: 3
-  outerRadius: 3
+  outerRadius: 10
   solidFactor: 1
   elevationStep: 8
   terracesPerSlope: 0

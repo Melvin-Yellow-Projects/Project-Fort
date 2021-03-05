@@ -13,6 +13,7 @@
  *      Previously known as UnitPathfinding.cs & HexPathfinding.cs
  *      
  *      TODO: Display A* calculation
+ *      HACK: why is this a MonoBehaviour
  **/
 
 using System.Collections;
@@ -74,7 +75,9 @@ public class PiecePathfinding : MonoBehaviour
     {
         startCell.PathFrom = null;
 
-        return Search(piece, startCell, endCell);
+        List<HexCell> cells = Search(piece, startCell, endCell);
+
+        return cells;
     }
 
     /// <summary>
@@ -112,8 +115,6 @@ public class PiecePathfinding : MonoBehaviour
             {
                 return GetPathCells(startCell, endCell);
             }
-
-            int currentTurn = (current.Distance - 1) / piece.Movement.MaxMovement;
 
             // search all neighbors of the current cell
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++)

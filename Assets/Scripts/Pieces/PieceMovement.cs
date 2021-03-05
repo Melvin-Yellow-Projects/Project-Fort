@@ -97,6 +97,8 @@ public class PieceMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, MaxMovement);
 
+            if (currentMovement == 0) Path.Clear();
+
             if (!hasAuthority) return;
 
             Display.RefreshMovementDisplay(currentMovement);
