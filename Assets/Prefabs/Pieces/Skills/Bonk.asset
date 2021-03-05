@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bfff935d0bd6488cb110201b664cd13, type: 3}
-  m_Name: Bonk Skill
+  m_Name: Bonk
   m_EditorClassIdentifier: 

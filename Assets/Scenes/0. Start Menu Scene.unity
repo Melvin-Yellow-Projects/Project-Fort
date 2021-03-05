@@ -2628,6 +2628,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: hexConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 9d2325d020aa145e5af580ca52760a90,
+        type: 2}
+    - target: {fileID: 1281260488067124433, guid: 6802af71713a6419299b314b78983ba1,
+        type: 3}
+      propertyPath: configuration
+      value: 
+      objectReference: {fileID: 11400000, guid: a8a42b8586bfa48d084765e433618406,
+        type: 2}
     - target: {fileID: 1281260488067124436, guid: 6802af71713a6419299b314b78983ba1,
         type: 3}
       propertyPath: m_Name

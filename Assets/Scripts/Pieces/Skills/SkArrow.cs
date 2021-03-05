@@ -8,6 +8,8 @@
  * Additional Comments: 
  * 
  *      Previously known as Laser.cs
+ *      HACK: im pretty sure the WillDie flag will fail if the turn ends before the WillDie step
+ *              flag clears and the piece dies
  **/
 
 using System;
@@ -27,8 +29,10 @@ public class SkArrow : Skill
     [Tooltip("a list of piece types that this skill can Capture")]
     [SerializeField] PieceType[] captureTypes;
 
-    [Header("Laser Settings")]
+    [Header("Skill Settings")]
+    [Tooltip("number of steps the piece can take and still fire")]
     [SerializeField, Range(1, 10)] int maxStepsBeforeFire = 2;
+    [Tooltip("number of cells the effective range is")]
     [SerializeField] int range = 10000;
 
     #endregion
@@ -37,8 +41,7 @@ public class SkArrow : Skill
 
     public override void Invoke(Piece myPiece)
     {
-        if (!CanLaser(myPiece)) return;
-
+        if (!CanFire(myPiece)) return;
         Piece piece = null;
 
         HexCell targetCell = myPiece.MyCell.GetNeighbor(myPiece.Movement.Direction);
@@ -59,10 +62,11 @@ public class SkArrow : Skill
 
         if (piece.MyTeam == myPiece.MyTeam) return;
 
-        if (CanCapturePiece(piece, captureTypes)) piece.Die();
+        // HACK: when a piece can die but not have racetime errors, change this to Die();
+        if (CanCapturePiece(piece, captureTypes)) piece.WillDie = true;
     }
 
-    private bool CanLaser(Piece myPiece)
+    private bool CanFire(Piece myPiece)
     {
         PieceMovement movement = myPiece.Movement;
         int stepsTaken = movement.MaxMovement - movement.CurrentMovement;
@@ -71,9 +75,6 @@ public class SkArrow : Skill
 
     private bool CanCapturePiece(Piece piece, PieceType[] withCaptureTypes)
     {
-        // TODO: be absolutely certain this line is needed
-        if (piece.IsDying) return false;
-
         foreach (PieceType type in withCaptureTypes)
             if (piece.Configuration.Type == type) return true;
         return false;

@@ -57,17 +57,20 @@ public class PieceCollisionHandler : MonoBehaviour
 
         if (IsActiveCollision(MyPiece, OtherPiece)) // Active Collision
         {
-            if (IsBorderCollision(MyPiece, OtherPiece))
+            if (IsCenterCollision(MyPiece, OtherPiece))
             {
-                ActiveBorderCollision();
+                Debug.LogWarning("ActiveCenterCollision");
+                ActiveCenterCollision();
             }
             else
             {
-                ActiveCenterCollision();
+                Debug.LogWarning("ActiveBorderCollision");
+                ActiveBorderCollision();
             }
         }
         else // Inactive Collision
         {
+            Debug.LogWarning("InactiveCollision");
             InactiveCollision();
         }
         OtherPiece = null;
@@ -82,21 +85,9 @@ public class PieceCollisionHandler : MonoBehaviour
         return piece.IsActive && otherPiece.IsActive;
     }
 
-    public static bool IsBorderCollision(Piece piece, Piece otherPiece)
+    public static bool IsCenterCollision(Piece piece, Piece otherPiece)
     {
         return piece.Movement.EnRouteCell == otherPiece.Movement.EnRouteCell;
-    }
-
-    private void ActiveBorderCollision()
-    {
-        if (MyPiece.MyTeam == OtherPiece.MyTeam)
-        {
-            MyPiece.Configuration.AllyActiveBorderCollisionSkill.Invoke(MyPiece);
-        }
-        else
-        {
-            MyPiece.Configuration.EnemyActiveBorderCollisionSkill.Invoke(MyPiece);
-        }
     }
 
     private void ActiveCenterCollision()
@@ -108,6 +99,18 @@ public class PieceCollisionHandler : MonoBehaviour
         else
         {
             MyPiece.Configuration.EnemyActiveCenterCollisionSkill.Invoke(MyPiece);
+        }
+    }
+
+    private void ActiveBorderCollision()
+    {
+        if (MyPiece.MyTeam == OtherPiece.MyTeam)
+        {
+            MyPiece.Configuration.AllyActiveBorderCollisionSkill.Invoke(MyPiece);
+        }
+        else
+        {
+            MyPiece.Configuration.EnemyActiveBorderCollisionSkill.Invoke(MyPiece);
         }
     }
 

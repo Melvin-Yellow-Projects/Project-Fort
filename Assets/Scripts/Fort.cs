@@ -63,6 +63,9 @@ public class Fort : NetworkBehaviour
     #region Properties
 
     public static Fort Prefab { get; set; }
+    private static int IdAutoIncrement { get; set; }
+
+    public int Id { get; private set; }
 
     public Team MyTeam { get; private set; }
 
@@ -105,7 +108,8 @@ public class Fort : NetworkBehaviour
         MyTeam = GetComponent<Team>();
 
         HexGrid.Forts.Add(this); // HACK: should this be an event?
-        name = $"fort {UnityEngine.Random.Range(0, 100000)}";
+        Id = IdAutoIncrement++;
+        name = $"fort {Id}";
     }
 
     private void OnDestroy()

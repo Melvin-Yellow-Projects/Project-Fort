@@ -32,12 +32,12 @@ public class HexCellLabel : MonoBehaviour
     {
         // 10f comes from empirical measurements
         outline.sizeDelta = new Vector2(
-            outline.sizeDelta.x / 10f * HexMetrics.outerRadius,
-            outline.sizeDelta.y / 10f * HexMetrics.outerRadius
+            outline.sizeDelta.x / 10f * HexMetrics.Configuration.OuterRadius,
+            outline.sizeDelta.y / 10f * HexMetrics.Configuration.OuterRadius
         );
         pathIndicator.sizeDelta = new Vector2(
-            pathIndicator.sizeDelta.x / 10f * HexMetrics.outerRadius,
-            pathIndicator.sizeDelta.y / 10f * HexMetrics.outerRadius
+            pathIndicator.sizeDelta.x / 10f * HexMetrics.Configuration.OuterRadius,
+            pathIndicator.sizeDelta.y / 10f * HexMetrics.Configuration.OuterRadius
         );
     }
 

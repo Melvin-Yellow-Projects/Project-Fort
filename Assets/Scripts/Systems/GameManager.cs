@@ -262,7 +262,7 @@ public class GameManager : NetworkBehaviour
         // How many Moves/Steps pieces can Utilize
         for (int step = 0; step < numberOfTurnSteps; step++)
         {
-            ServerMovePieces();
+            ServerStartTurnStep();
 
             yield return ServerWaitForPieces();
 
@@ -282,13 +282,22 @@ public class GameManager : NetworkBehaviour
     }
 
     [Server]
-    private void ServerMovePieces()
+    private void ServerStartTurnStep()
     {
         // Moving pieces
-        for (int i = 0; i < HexGrid.Pieces.Count; i++)
+        for (int i = HexGrid.Pieces.Count - 1; i >= 0; i--)
         {
             Piece piece = HexGrid.Pieces[i];
-            piece.Movement.ServerDoAction(); // TODO: correct number of steps
+            if (piece.IsDying || piece.WillDie)
+            {
+                if (piece.WillDie) piece.Die();
+                HexGrid.Pieces.Remove(piece);
+                piece.CollisionHandler.gameObject.SetActive(false);
+            }
+            else
+            {
+                piece.Movement.ServerDoStep(); // TODO: correct number of steps
+            }
         }
     }
 
@@ -311,20 +320,7 @@ public class GameManager : NetworkBehaviour
     private void ServerCompleteTurnStep()
     {
         // Setting new cell for pieces now that they moved
-        for (int i = 0; i < HexGrid.Pieces.Count; i++)
-        {
-            Piece piece = HexGrid.Pieces[i];
-            piece.Movement.ServerCompleteAction(); // HACK bad name, should mention Step
-        }
-
-        // FIXME: these two loops can be combined
-
-        // Setting new cell for pieces now that they moved
-        foreach (Piece piece in HexGrid.Pieces)
-        {
-            if (piece.Configuration.OnStopTurnStepSkill)
-                piece.Configuration.OnStopTurnStepSkill.Invoke(piece);
-        }
+        foreach (Piece piece in HexGrid.Pieces)  piece.Movement.Server_CompleteTurnStep(); 
     }
 
     #endregion

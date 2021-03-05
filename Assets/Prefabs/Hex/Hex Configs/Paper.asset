@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcbc452714db042b4a88252df06185dc, type: 3}
+  m_Name: Paper
+  m_EditorClassIdentifier: 
+  configurationDescription: 
+  chunkSizeX: 4
+  chunkSizeZ: 3
+  outerRadius: 14
+  solidFactor: 0.85
+  elevationStep: 6
+  terracesPerSlope: 2
+  cliffDelta: 2
+  noiseSource: {fileID: 2800000, guid: 1e50e6ea9fe0e4d769145f832958c457, type: 3}
+  cellPerturbStrength: 8
+  elevationPerturbStrength: 3

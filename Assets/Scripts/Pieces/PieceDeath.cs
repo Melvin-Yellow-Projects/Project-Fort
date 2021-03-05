@@ -47,20 +47,12 @@ public class PieceDeath : MonoBehaviour
 
     #endregion
     /************************************************************/
-    #region Properties
-
-    Piece MyPiece => GetComponent<Piece>();
-
-    #endregion
-    /************************************************************/
     #region Server Functions
 
     [Server]
     public void Die(bool isPlayingAnimation = true)
     {
         ServerOnPieceDeath?.Invoke(GetComponent<Piece>());
-
-        MyPiece.IsDying = true;
 
         if (isPlayingAnimation) StartCoroutine(DeathAnim());
         else NetworkServer.Destroy(gameObject);

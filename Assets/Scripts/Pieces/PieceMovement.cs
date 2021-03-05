@@ -24,7 +24,7 @@ public class PieceMovement : NetworkBehaviour
     protected int currentMovement;
 
     [SyncVar(hook = nameof(HookOnMyCell))]
-    HexCell myCell;
+    public HexCell myCell;
 
     #endregion
     /************************************************************/
@@ -97,6 +97,8 @@ public class PieceMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, MaxMovement);
 
+            if (currentMovement == 0) Path.Clear();
+
             if (!hasAuthority) return;
 
             Display.RefreshMovementDisplay(currentMovement);
@@ -114,6 +116,9 @@ public class PieceMovement : NetworkBehaviour
     public HexCell EnRouteCell { get; private set; }
 
     public bool IsEnRoute { get; private set; }
+
+    // HACK: not quite, this assumes piece has already moved it's final step
+    //public bool LastStep => MyPiece.HasMove && !(Path.HasPath); 
 
     // HACK: might be better broken up into a property and function FreezePiece()/CannotMove() 
     public bool CanMove
@@ -174,56 +179,64 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    public void ServerDoAction()
+    public void ServerDoStep()
     {
         if (!MyPiece.HasMove) return;
 
         // HACK: removing line causes errors, HasAction should better reflect action status of piece
         if (!Path.HasPath || CurrentMovement == 0) return;
 
-        List<HexCell> cells = new List<HexCell>();
-        cells.Add(Path[0]);
-        cells.Add(Path[1]);
+        Direction = HexMetrics.GetDirection(Path[0], Path[1]);
 
-        StartCoroutine(Route(cells));
+        if (MyPiece.Configuration.OnStartTurnStepSkill)
+            MyPiece.Configuration.OnStartTurnStepSkill.Invoke(MyPiece);
+
+        StartCoroutine(Route(Path[0], Path[1]));
     }
 
     [Server]
-    public void ServerCompleteAction()
+    public void Server_CompleteTurnStep()
     {
-        if (MyPiece.IsDying)
+        if (!EnRouteCell || MyPiece.IsDying) return;
+        Direction = HexMetrics.GetDirection(MyCell, EnRouteCell); // HACK: this can be done earlier
+
+        MyCell = EnRouteCell;
+        EnRouteCell = null;
+
+        // TODO: relay this message to allies too
+        if (connectionToClient != null) TargetCompleteMove(connectionToClient);
+
+        if (!MyPiece.HasMove)
         {
-            // TODO: Brute Force repitition, this can be improved
-            MyPiece.CollisionHandler.gameObject.SetActive(false);
-            Debug.Log("Disabling Combat Handler");
+            MyPiece.HasBonked = false;
+            MyPiece.ForcedActive = false;
             return;
         }
 
-        if (!EnRouteCell) return;
-
-        Direction = HexMetrics.GetDirection(MyCell, EnRouteCell); // HACK: this can be done earlier
-        MyCell = EnRouteCell;
-        EnRouteCell = null;
-        MyPiece.HasBonked = false;
-
-        // TODO: relay this message to allies too
-        if (connectionToClient != null) TargetCompleteMove(connectionToClient); 
-
         CurrentMovement--; // FIXME assumes all tiles have the same cost // HACK: this can be done earlier
 
-        if (!Path.HasPath) return;
+        if (Path.HasPath)
+        {
+            Path.RemoveTailCells(numberToRemove: MyPiece.Configuration.MovesPerStep);
+            if (hasAuthority) Path.Show();
+        }
 
-        Path.RemoveTailCells(numberToRemove: MyPiece.Configuration.MovesPerStep);
-        if (hasAuthority) Path.Show();
+        if (!MyPiece.HasBonked && MyPiece.Configuration.OnStopTurnStepSkill)
+            MyPiece.Configuration.OnStopTurnStepSkill.Invoke(MyPiece);
+
+        MyPiece.HasBonked = false;
+        MyPiece.ForcedActive = false;
+
+        if (!Path.HasPath) MyPiece.HasMove = false; // HACK: this might not be very useful
     }
 
     [Server]
-    public void Bonk()
+    public void Server_Bonk()
     {
         // HACK: there must be a better implementation
         if (!EnRouteCell || MyPiece.IsDying || MyPiece.HasBonked) return;
 
-        CanMove = false;
+        if (MyPiece.HasMove) CanMove = false;
         MyPiece.HasBonked = true;
 
         RpcBonk(); // TODO: relay this message to allies too
@@ -232,52 +245,71 @@ public class PieceMovement : NetworkBehaviour
         StartCoroutine(RouteCanceled());
     }
 
+    public void ForceMove(HexDirection direction)
+    {
+        if (MyPiece.ForcedActive)
+        {
+            Server_Bonk();
+            return;
+        }
+
+        MyPiece.ForcedActive = true;
+
+        HexCell endCell = myCell.GetNeighbor(direction);
+        if (!endCell) return;
+
+        if (!IsValidCellForPath(myCell, endCell) || !IsValidEdgeForPath(myCell, endCell)) return;
+
+        //Direction = HexMetrics.GetDirection(Path[0], Path[1]);
+        StartCoroutine(Route(myCell, endCell));
+    }
+
     /// <summary>
     /// TODO: comment this; apparently a piece's velocity will slow down when changing directions,
     /// why?
+    /// HACK: this method has been jank since it was created, fix this
     /// </summary>
     /// <returns></returns>
     [Server]
-    private IEnumerator Route(List<HexCell> cells)
+    private IEnumerator Route(HexCell startCell, HexCell endCell)
     {
         IsEnRoute = true;
-        Vector3 a, b, c = cells[0].Position;
+        Vector3 a, b, c = startCell.Position;
 
         // perform lookat
         //yield return LookAt(cells[1].Position);
 
         // decrease vision HACK: this ? shenanigans is confusing
         PiecePathfinding.DecreaseVisibility(
-            (EnRouteCell) ? EnRouteCell : cells[0],
+            (EnRouteCell) ? EnRouteCell : startCell,
             MyPiece.Configuration.VisionRange
         );
 
         float interpolator = Time.deltaTime * MyPiece.Configuration.TravelSpeed;
-        for (int i = 1; i < cells.Count; i++)
+
+        EnRouteCell = endCell; // prevents teleportation
+
+        a = c;
+        b = startCell.Position;
+        c = (b + EnRouteCell.Position) * 0.5f;
+
+        PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
+
+        for (; interpolator < 1f; interpolator += Time.deltaTime * MyPiece.Configuration.TravelSpeed)
         {
-            EnRouteCell = cells[i]; // prevents teleportation
-
-            a = c;
-            b = cells[i - 1].Position;
-            c = (b + EnRouteCell.Position) * 0.5f;
-
-            PiecePathfinding.IncreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
-
-            for (; interpolator < 1f; interpolator += Time.deltaTime * MyPiece.Configuration.TravelSpeed)
-            {
-                //transform.localPosition = Vector3.Lerp(a, b, interpolator);
-                transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
-                //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
-                //d.y = 0f;
-                //transform.localRotation = Quaternion.LookRotation(d);
-                yield return null;
-            }
-
-            PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
-
-            interpolator -= 1f;
+            //transform.localPosition = Vector3.Lerp(a, b, interpolator);
+            transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
+            //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator);
+            //d.y = 0f;
+            //transform.localRotation = Quaternion.LookRotation(d);
+            yield return null;
         }
-        EnRouteCell = cells[cells.Count - 1];
+
+        PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
+
+        interpolator -= 1f;
+        
+        EnRouteCell = endCell;
 
         // arriving at the center if the last cell
         a = c;
@@ -514,6 +546,7 @@ public class PieceMovement : NetworkBehaviour
     {
         MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
 
+        MyPiece.ForcedActive = false;
         MyPiece.HasCaptured = false;
         MyPiece.HasMove = false;
         HandleRpcOnStopTurn();
@@ -525,6 +558,8 @@ public class PieceMovement : NetworkBehaviour
         if (!isClientOnly) return;
 
         MyPiece.Configuration.OnStopTurnSkill.Invoke(MyPiece);
+
+        MyPiece.ForcedActive = false;
         MyPiece.HasCaptured = false;
         MyPiece.HasMove = false;
     }
