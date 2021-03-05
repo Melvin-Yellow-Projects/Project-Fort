@@ -15,11 +15,11 @@ MonoBehaviour:
   configurationDescription: 
   chunkSizeX: 4
   chunkSizeZ: 3
-  outerRadius: 12
-  solidFactor: 0.8
-  elevationStep: 6
-  terracesPerSlope: 3
+  outerRadius: 3
+  solidFactor: 1
+  elevationStep: 8
+  terracesPerSlope: 0
   cliffDelta: 2
   noiseSource: {fileID: 2800000, guid: 1e50e6ea9fe0e4d769145f832958c457, type: 3}
-  cellPerturbStrength: 2
-  elevationPerturbStrength: 3
+  cellPerturbStrength: 0
+  elevationPerturbStrength: 8

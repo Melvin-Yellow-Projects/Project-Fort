@@ -202,9 +202,6 @@ public class Piece : NetworkBehaviour
 
     public bool CanCapturePiece(Piece piece)
     {
-        // TODO: be absolutely certain this line is needed
-        if (piece.IsDying) return false; 
-
         foreach (PieceType type in Configuration.CaptureTypes)
             if (piece.Configuration.Type == type) return true;
         return false;
@@ -227,15 +224,22 @@ public class Piece : NetworkBehaviour
         return false;
     }
 
+    public bool CanBlockPiece(Piece piece)
+    {
+        if (piece.CanCapturePiece(this)) return false;
+
+        if (CanCapturePiece(piece) && IsActive) return false;
+
+        return true;
+    }
+
     public bool TryToBlockPiece(Piece piece)
     {
-        if (!piece.CanCapturePiece(this))
-        {
-            piece.Movement.Server_Bonk(); // tell piece to bonk
-            return true;
-        }
+        bool hasBlocked = CanBlockPiece(piece);
+        Debug.Log($"{Type} has {hasBlocked} blocked {piece.Type}");
+        if (hasBlocked) piece.Movement.Server_Bonk();
 
-        return false;
+        return hasBlocked;
     }
 
     public void Die(bool isPlayingAnimation = true)
