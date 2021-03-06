@@ -47,6 +47,11 @@ public class MainMenu : MonoBehaviour
         GameSession.IsOnline = true;
     }
 
+    public void MapEditorButtonPressed()
+    {
+        SceneLoader.LoadMapEditorScene();
+    }
+
     public void GoOffline() // HACK: this function is a little off
     {
         GameSession.IsOnline = false;

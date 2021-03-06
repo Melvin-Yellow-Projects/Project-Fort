@@ -46,8 +46,8 @@ public class HumanPlayer : Player
     protected void OnEnable()
     {
         mapCamera.enabled = true;
-        PlayerMenu.MyPlayer = this;
-        PlayerMenu.RefreshCreditsText();
+        PlayerDisplay.MyPlayer = this;
+        PlayerDisplay.RefreshCreditsText();
     }
 
     protected void LateUpdate() 
@@ -82,14 +82,14 @@ public class HumanPlayer : Player
 
         if (GameManager.IsEconomyPhase)
         {
-            CmdTryBuyPiece(PlayerMenu.PieceId, currentCell);
+            CmdTryBuyPiece(PlayerDisplay.PieceId, currentCell);
         }
         else
         {
             if (selectedPiece)
             {
                 CmdSetAction(PieceData.Instantiate(selectedPiece));
-                PlayerMenu.RefreshMoveCountText();
+                PlayerDisplay.RefreshMoveCountText();
                 DeselectPiece();
             }
             else
@@ -295,13 +295,13 @@ public class HumanPlayer : Player
     [Client]
     protected override void HookOnCredits(int oldValue, int newValue)
     {
-        if (PlayerMenu.MyPlayer) PlayerMenu.RefreshCreditsText();
+        if (PlayerDisplay.MyPlayer) PlayerDisplay.RefreshCreditsText();
     }
 
     [Client]
     protected override void HookOnMoveCount(int oldValue, int newValue)
     {
-        PlayerMenu.RefreshMoveCountText();
+        PlayerDisplay.RefreshMoveCountText();
     }
 
     #endregion

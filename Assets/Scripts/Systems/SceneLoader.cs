@@ -16,9 +16,9 @@ using Mirror;
 /// <summary>
 /// 
 /// </summary>
-public class SceneLoader : MonoBehaviour
+public class SceneLoader
 {
-    /********** MARK: Properties **********/
+    /************************************************************/
     #region Properties
 
     public static string MenuSceneName { get; set; }
@@ -36,8 +36,7 @@ public class SceneLoader : MonoBehaviour
     }
 
     #endregion
-
-    /********** MARK: Class Functions **********/
+    /************************************************************/
     #region Class Functions
 
     public static void LoadStartScene()

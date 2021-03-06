@@ -89,11 +89,11 @@ public class MapCamera : MonoBehaviour
 			// HACK i really dont like fetching the player through PlayerMenu
 			if (GameManager.IsEconomyPhase) 
             {
-				if (nextIndex >= PlayerMenu.MyPlayer.MyForts.Count) nextIndex = 0;
+				if (nextIndex >= PlayerDisplay.MyPlayer.MyForts.Count) nextIndex = 0;
 			}
 			else
             {
-				if (nextIndex >= PlayerMenu.MyPlayer.MyPieces.Count) nextIndex = 0;
+				if (nextIndex >= PlayerDisplay.MyPlayer.MyPieces.Count) nextIndex = 0;
 			}
 		}
     }
@@ -187,7 +187,7 @@ public class MapCamera : MonoBehaviour
 	private void FocusOnNextEntity(InputAction.CallbackContext ctx)
     {
 		// HACK attacc but it a snacc
-		Player player = PlayerMenu.MyPlayer;
+		Player player = PlayerDisplay.MyPlayer;
 
 		if (!player) return;
 
@@ -299,7 +299,7 @@ public class MapCamera : MonoBehaviour
 		if (GameManager.RoundCount == 1)
         {
 			// HACK this is really rushed
-			Player player = PlayerMenu.MyPlayer;
+			Player player = PlayerDisplay.MyPlayer;
 			if (!player) return;
 
 			Vector3 pos = player.MyForts[0].transform.position;

@@ -304,6 +304,11 @@ public abstract class Player : NetworkBehaviour
         return false;
     }
 
+    private void EndMyTurn()
+    {
+
+    }
+
     #endregion
     /************************************************************/
     #region Event Handler Functions

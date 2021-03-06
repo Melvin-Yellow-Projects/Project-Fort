@@ -18,7 +18,7 @@ using TMPro;
 /// <summary>
 /// 
 /// </summary>
-public class PlayerMenu : MonoBehaviour
+public class PlayerDisplay : MonoBehaviour
 {
     /************************************************************/
     #region Variables
@@ -45,7 +45,7 @@ public class PlayerMenu : MonoBehaviour
     /************************************************************/
     #region Properties
 
-    public static PlayerMenu Singleton { get; set; }
+    public static PlayerDisplay Singleton { get; set; }
 
     public static HumanPlayer MyPlayer
     {

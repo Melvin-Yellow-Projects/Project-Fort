@@ -96,7 +96,7 @@ public class DebugHand : MonoBehaviour
 
         grabbedUnit.transform.position = new Vector3(
             hit.point.x,
-            (PlayerMenu.MyPlayer.currentCell.Position.y + hit.point.y) / 2,
+            (PlayerDisplay.MyPlayer.currentCell.Position.y + hit.point.y) / 2,
             hit.point.z
         );
     }
@@ -108,13 +108,13 @@ public class DebugHand : MonoBehaviour
         {
             grabbedUnit.transform.position = Vector3.Lerp(
                 currentPosition,
-                PlayerMenu.MyPlayer.currentCell.Position,
+                PlayerDisplay.MyPlayer.currentCell.Position,
                 interpolator);
 
             yield return null;
         }
 
-        currentPosition = PlayerMenu.MyPlayer.currentCell.Position;
+        currentPosition = PlayerDisplay.MyPlayer.currentCell.Position;
     }
 
     #endregion

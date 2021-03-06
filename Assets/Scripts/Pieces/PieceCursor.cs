@@ -125,7 +125,7 @@ public class PieceCursor : MonoBehaviour
         {
             // HACK this is bad
             //return new Color(color, errorColor, errorColor, alpha);
-            return PlayerMenu.MyPlayer.MyTeam.TeamColor;
+            return PlayerDisplay.MyPlayer.MyTeam.TeamColor;
         }
     }
     #endregion

@@ -3200,13 +3200,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2148208256511797350, guid: caf4da95add9a8a4c9eaab2540fd7911,
-        type: 3}
-      propertyPath: m_Text
-      value: 'Fort  v2.0-alpha
-
-'
-      objectReference: {fileID: 0}
     - target: {fileID: 3953701095290871864, guid: caf4da95add9a8a4c9eaab2540fd7911,
         type: 3}
       propertyPath: lobbyMenu
