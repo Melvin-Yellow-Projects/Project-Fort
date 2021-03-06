@@ -162,7 +162,7 @@ public class GameNetworkManager : NetworkManager
 
         Singleton.hasSpawnedComputers = false;
 
-        GameManager.ServerStopGame();
+        GameManager.Server_StopGame();
 
         autoCreatePlayer = true;
         GameSession.IsOnline = false;
@@ -361,7 +361,7 @@ public class GameNetworkManager : NetworkManager
         // HACK you shouldn't manually have to destroy these
         if (HexGrid.Singleton) Destroy(HexGrid.Singleton.gameObject);
 
-        GameManager.ServerStopGame();
+        GameManager.Server_StopGame();
         SceneLoader.LoadStartScene();
     }
 

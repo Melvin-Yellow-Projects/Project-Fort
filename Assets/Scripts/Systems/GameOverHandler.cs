@@ -100,7 +100,7 @@ public class GameOverHandler : NetworkBehaviour
 
         GameManager.Players[0].enabled = false;
 
-        GameManager.ServerStopGame();
+        GameManager.Server_StopGame();
 
         NetworkServer.Destroy(GameManager.Singleton.gameObject);
     }

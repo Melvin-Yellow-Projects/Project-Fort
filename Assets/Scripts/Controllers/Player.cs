@@ -87,7 +87,7 @@ public abstract class Player : NetworkBehaviour
         set
         {
             hasEndedTurn = value;
-            if (hasEndedTurn) GameManager.Singleton.ServerTryEndTurn();
+            if (hasEndedTurn) GameManager.Singleton.Server_TryEndTurn();
         }
     }
 

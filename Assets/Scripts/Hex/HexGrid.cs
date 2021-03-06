@@ -184,7 +184,7 @@ public class HexGrid : NetworkBehaviour
         }
 
         // TODO: do clients need to send ready message after they attempted to spawn all the pieces?
-        GameManager.Singleton.ServerStartGame();
+        GameManager.Singleton.Server_StartGame();
     }
 
     #endregion
