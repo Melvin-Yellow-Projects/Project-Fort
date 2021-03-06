@@ -36,21 +36,6 @@ public abstract class Player : NetworkBehaviour
 
     #endregion
     /************************************************************/
-    #region Class Events
-
-    /// <summary>
-    /// Client event for when a player's resources have updated
-    /// </summary>
-    //public static event Action ClientOnResourcesUpdated;
-
-    /// <summary>
-    /// Client event for when a player has ended their turn
-    /// </summary>
-    /// <subscriber class="PlayerMenu">Updates the player menu status</subscriber>
-    public static event Action ClientOnHasEndedTurn; 
-
-    #endregion
-    /************************************************************/
     #region Properties
 
     public Team MyTeam
@@ -102,9 +87,7 @@ public abstract class Player : NetworkBehaviour
         set
         {
             hasEndedTurn = value;
-            if (isServer && connectionToClient != null)
-                //TargetSetHasEndedTurn(connectionToClient, value);
-                TargetSetHasEndedTurn(connectionToClient, value);
+            if (hasEndedTurn) GameManager.Singleton.ServerTryEndTurn();
         }
     }
 
@@ -147,19 +130,6 @@ public abstract class Player : NetworkBehaviour
         ServerUnsubscribe();
 
         Debug.Log($"{name} OnStopServer");
-    }
-
-    [Command]
-    protected void CmdEndTurn()
-    {
-        HasEndedTurn = true;
-        GameManager.Singleton.ServerTryEndTurn();
-    }
-
-    [Command]
-    protected void CmdCancelEndTurn()
-    {
-        HasEndedTurn = false;
     }
 
     [Command]
@@ -281,7 +251,6 @@ public abstract class Player : NetworkBehaviour
     public void TargetSetHasEndedTurn(NetworkConnection target, bool status)
     {
         if (!isServer) HasEndedTurn = status;
-        ClientOnHasEndedTurn?.Invoke(); 
     }
 
     #endregion
@@ -302,11 +271,6 @@ public abstract class Player : NetworkBehaviour
         }
 
         return false;
-    }
-
-    private void EndMyTurn()
-    {
-
     }
 
     #endregion

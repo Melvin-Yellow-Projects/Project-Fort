@@ -224,13 +224,6 @@ public class HumanPlayer : Player
         //Debug.Log("There is a piece to DeselectPieceAndClearItsPath");
     }
 
-    [Client] 
-    public void EndTurnButtonPressed()
-    {
-        if (HasEndedTurn) CmdCancelEndTurn();
-        else CmdEndTurn();
-    }
-
     #endregion
     /************************************************************/
     #region Event Handler Functions

@@ -50,7 +50,6 @@ public class ComputerPlayer : Player
             }
         }
         HasEndedTurn = true;
-        GameManager.Singleton.ServerTryEndTurn();
     }
 
     private IEnumerator MovePieces()
@@ -69,7 +68,6 @@ public class ComputerPlayer : Player
             }
         }
         HasEndedTurn = true;
-        GameManager.Singleton.ServerTryEndTurn();
     }
 
     private HexCell GetTargetCell()
