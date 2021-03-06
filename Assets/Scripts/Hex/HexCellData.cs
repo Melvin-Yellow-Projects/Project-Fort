@@ -112,7 +112,8 @@ public static class HexCellSerializer
         }
         catch (Exception e)
         {
-            Debug.LogWarning("client has not loaded map, cannot deserialize HexCell index");
+            Debug.LogWarning($"client has not loaded map, cannot deserialize HexCell index; " +
+                $"{e.Message} ");
             return null;
         }
     }

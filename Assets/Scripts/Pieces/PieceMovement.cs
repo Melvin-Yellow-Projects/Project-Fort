@@ -387,15 +387,15 @@ public class PieceMovement : NetworkBehaviour
 
         PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
-        Vector3 a = myCell.Position;
-        Vector3 b = EnRouteCell.Position;
-        Vector3 c = b;
-        Vector3 d; // HACK: all of this is so jank
+        //Vector3 a = myCell.Position;
+        //Vector3 b = EnRouteCell.Position;
+        //Vector3 c = b;
+        //Vector3 d; // HACK: all of this is so jank
         EnRouteCell = myCell;
         //for (; interpolator > 0; interpolator -= Time.deltaTime * travelSpeed / 10)
         for (float t = 0; t < 1f; t += Time.deltaTime * MyPiece.Configuration.TravelSpeed / 2)
         {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, a, t);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, myCell.Position, t);
             //transform.localPosition = Bezier.GetPoint(a, b, c, interpolator);
             //Vector3 d = Bezier.GetDerivative(a, b, c, interpolator); // this will be backwards
             //d.y = 0f;

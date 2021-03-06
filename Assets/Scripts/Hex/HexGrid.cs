@@ -75,9 +75,6 @@ public class HexGrid : NetworkBehaviour
 
     HexCellShaderData cellShaderData;
 
-    int fortCount = 0;
-    int pieceCount = 0;
-
     int numberOfCellsLoaded = 0;
 
     #endregion
