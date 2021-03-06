@@ -291,12 +291,12 @@ public class Fort : NetworkBehaviour
 
     private void Subscribe()
     {
-        GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn += HandleServerOnStopTurn;
     }
 
     private void Unsubscribe()
     {
-        GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn -= HandleServerOnStopTurn;
     }
 
     [Server]

@@ -230,10 +230,10 @@ public class HumanPlayer : Player
 
     protected override void AuthoritySubscribe()
     {
-        GameManager.ClientOnStartRound += HandleClientOnStartRound;
-        GameManager.ClientOnStopEconomyPhase += HandleClientOnStopEconomyPhase;
-        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
-        GameManager.ClientOnStopTurn += HandleClientOnStopTurn;
+        GameManager.Client_OnStartRound += HandleClientOnStartRound;
+        GameManager.Client_OnStopEconomyPhase += HandleClientOnStopEconomyPhase;
+        GameManager.Client_OnPlayTurn += HandleClientOnPlayTurn;
+        GameManager.Client_OnStopTurn += HandleClientOnStopTurn;
 
         controls = new Controls();
         controls.Player.Command.performed += Command;
@@ -247,10 +247,10 @@ public class HumanPlayer : Player
 
     protected override void AuthorityUnsubscribe()
     {
-        GameManager.ClientOnStartRound -= HandleClientOnStartRound;
-        GameManager.ClientOnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
-        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
-        GameManager.ClientOnStopTurn -= HandleClientOnStopTurn;
+        GameManager.Client_OnStartRound -= HandleClientOnStartRound;
+        GameManager.Client_OnStopEconomyPhase -= HandleClientOnStopEconomyPhase;
+        GameManager.Client_OnPlayTurn -= HandleClientOnPlayTurn;
+        GameManager.Client_OnStopTurn -= HandleClientOnStopTurn;
 
         controls.Dispose();
 

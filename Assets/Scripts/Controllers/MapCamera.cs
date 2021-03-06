@@ -282,14 +282,14 @@ public class MapCamera : MonoBehaviour
 
 	private void Subscribe()
     {
-		GameManager.ClientOnStartRound += HandleClientOnStartRound;
-		GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
+		GameManager.Client_OnStartRound += HandleClientOnStartRound;
+		GameManager.Client_OnStartTurn += HandleClientOnStartTurn;
 	}
 
 	private void Unsubscribe()
     {
-		GameManager.ClientOnStartRound -= HandleClientOnStartRound;
-		GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
+		GameManager.Client_OnStartRound -= HandleClientOnStartRound;
+		GameManager.Client_OnStartTurn -= HandleClientOnStartTurn;
 	}
 
 	private void HandleClientOnStartRound()

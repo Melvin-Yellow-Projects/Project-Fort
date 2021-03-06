@@ -31,7 +31,7 @@ public class SkShove : Skill
 
         if (otherPiece.HasMove) return;
 
-        neighbor.MyPiece.Movement.ForceMove(myPiece.Movement.Direction);
+        neighbor.MyPiece.Movement.Server_ForceMove(myPiece.Movement.Direction);
 
         //Debug.Log($"myPiece's direction {myPiece.Movement.Direction}");
         //Debug.Log($"myPiece's cell {myPiece.MyCell.name}");

@@ -29,26 +29,26 @@ public class GameManager : NetworkBehaviour
     /// Server event for when a new round has begun
     /// </summary>
     /// <subscriber class="Piece">refreshes piece's movement</subscriber>
-    public static event Action ServerOnStartRound;
+    public static event Action Server_OnStartRound;
 
     /// <summary>
     /// Server event for when a new turn has begun
     /// </summary>
     /// <subscriber class="Player">refreshes a player's turn/move status</subscriber>
-    public static event Action ServerOnStartTurn;
+    public static event Action Server_OnStartTurn;
 
     /// <summary>
     /// Server event for turn is playing
     /// </summary>
     /// <subscriber class="Player">refreshes a player's turn status</subscriber>
-    public static event Action ServerOnPlayTurn;
+    public static event Action Server_OnPlayTurn;
 
     /// <summary>
     /// Server event for turn has stopped playing
     /// </summary>
     /// <subscriber class="Fort">checks to see if team has updated</subscriber>
     /// <subscriber class="PieceMovement">sets a piece's movement to 0 if it has moved</subscriber>
-    public static event Action ServerOnStopTurn;
+    public static event Action Server_OnStopTurn;
 
     /// <summary>
     /// Client event for when a new round has begun
@@ -56,32 +56,32 @@ public class GameManager : NetworkBehaviour
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
     /// <subscriber class="HumanPlayer">updates player's buy cells and piece displays</subscriber>
     /// <subscriber class="MapCamera">refreshes 'Next' index</subscriber>
-    public static event Action ClientOnStartRound;
+    public static event Action Client_OnStartRound;
 
     /// <summary>
     /// Client event for when the Economy Phase ends
     /// </summary>
     /// <subscriber class="HumanPlayer">updates player's buy cells and piece displays</subscriber>
-    public static event Action ClientOnStopEconomyPhase;
+    public static event Action Client_OnStopEconomyPhase;
 
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
     /// <subscriber class="PlayerMenu">refreshes the round and turn count UI</subscriber>
     /// <subscriber class="MapCamera">refreshes 'Next' index</subscriber>
-    public static event Action ClientOnStartTurn;
+    public static event Action Client_OnStartTurn;
 
     /// <summary>
     /// Client event for when a new turn has begun
     /// </summary>
     /// <subscriber class="HumanPlayer">disables controls when pieces are moving</subscriber>
-    public static event Action ClientOnPlayTurn;
+    public static event Action Client_OnPlayTurn;
 
     /// <summary>
     /// Client event for turn has stopped playing
     /// </summary>
     /// <subscriber class="HumanPlayer">enables controls when pieces are moving</subscriber>
-    public static event Action ClientOnStopTurn;
+    public static event Action Client_OnStopTurn;
 
     #endregion
     /************************************************************/
@@ -167,7 +167,7 @@ public class GameManager : NetworkBehaviour
         foreach (Player player in Players)
             player.Credits += player.MyForts.Count * GameSession.CreditsPerFort;
 
-        ServerOnStartRound?.Invoke();
+        Server_OnStartRound?.Invoke();
         RpcInvokeClientOnStartRound();
 
         // update timer and its text 
@@ -181,7 +181,7 @@ public class GameManager : NetworkBehaviour
 
         TurnCount++;
 
-        ServerOnStartTurn?.Invoke();
+        Server_OnStartTurn?.Invoke();
         RpcInvokeClientOnStartTurn();
 
         // update timer and its text
@@ -256,7 +256,7 @@ public class GameManager : NetworkBehaviour
     private IEnumerator ServerPlayTurn(int numberOfTurnSteps) 
     {
         IsPlayingTurn = true;
-        ServerOnPlayTurn?.Invoke();
+        Server_OnPlayTurn?.Invoke();
         RpcInvokeClientOnPlayTurn();
 
         // How many Moves/Steps pieces can Utilize
@@ -269,7 +269,7 @@ public class GameManager : NetworkBehaviour
             ServerCompleteTurnStep();
         }
 
-        ServerOnStopTurn?.Invoke();
+        Server_OnStopTurn?.Invoke();
         RpcInvokeClientOnStopTurn();
 
         IsPlayingTurn = false;
@@ -296,7 +296,7 @@ public class GameManager : NetworkBehaviour
             }
             else
             {
-                piece.Movement.DoStep(); // TODO: correct number of steps
+                piece.Movement.Server_DoStep(); // TODO: correct number of steps
             }
         }
     }
@@ -320,7 +320,7 @@ public class GameManager : NetworkBehaviour
     private void ServerCompleteTurnStep()
     {
         // Setting new cell for pieces now that they moved
-        foreach (Piece piece in HexGrid.Pieces)  piece.Movement.CompleteTurnStep(); 
+        foreach (Piece piece in HexGrid.Pieces)  piece.Movement.Server_CompleteTurnStep(); 
     }
 
     #endregion
@@ -345,14 +345,14 @@ public class GameManager : NetworkBehaviour
             //NetworkClient.connection.identity.GetComponent<Player>().Resources += 100;
         }
 
-        ClientOnStartRound?.Invoke();
+        Client_OnStartRound?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnStopEconomyPhase()
     {
         if (isClientOnly) IsEconomyPhase = false;
-        ClientOnStopEconomyPhase?.Invoke();
+        Client_OnStopEconomyPhase?.Invoke();
     }
 
     [ClientRpc]
@@ -364,21 +364,21 @@ public class GameManager : NetworkBehaviour
             if (GameSession.IsUsingTurnTimer) ResetTimer();
             TurnCount++;
         }
-        ClientOnStartTurn?.Invoke();
+        Client_OnStartTurn?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnPlayTurn()
     {
         //Debug.Log("RpcInvokeClientOnPlayTurn");
-        ClientOnPlayTurn?.Invoke();
+        Client_OnPlayTurn?.Invoke();
     }
 
     [ClientRpc]
     private void RpcInvokeClientOnStopTurn()
     {
         //Debug.Log("RpcInvokeClientOnStopTurn");
-        ClientOnStopTurn?.Invoke();
+        Client_OnStopTurn?.Invoke();
     }
 
     #endregion

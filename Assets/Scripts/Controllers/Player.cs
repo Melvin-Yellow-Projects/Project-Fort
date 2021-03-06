@@ -290,9 +290,9 @@ public abstract class Player : NetworkBehaviour
 
         Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
 
-        GameManager.ServerOnStartRound += HandleServerOnStartRound;
-        GameManager.ServerOnStartTurn += HandleServerOnStartTurn;
-        GameManager.ServerOnPlayTurn += HandleServerOnPlayTurn;
+        GameManager.Server_OnStartRound += HandleServerOnStartRound;
+        GameManager.Server_OnStartTurn += HandleServerOnStartTurn;
+        GameManager.Server_OnPlayTurn += HandleServerOnPlayTurn;
     }
 
     protected virtual void ServerUnsubscribe()
@@ -307,9 +307,9 @@ public abstract class Player : NetworkBehaviour
 
         Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
 
-        GameManager.ServerOnStartRound -= HandleServerOnStartRound;
-        GameManager.ServerOnStartTurn -= HandleServerOnStartTurn;
-        GameManager.ServerOnPlayTurn -= HandleServerOnPlayTurn;
+        GameManager.Server_OnStartRound -= HandleServerOnStartRound;
+        GameManager.Server_OnStartTurn -= HandleServerOnStartTurn;
+        GameManager.Server_OnPlayTurn -= HandleServerOnPlayTurn;
     }
 
     protected virtual void AuthoritySubscribe()

@@ -157,18 +157,18 @@ public class PlayerDisplay : MonoBehaviour
     {
         Debug.Log("PlayerMenu Subscribing");
 
-        GameManager.ClientOnStartRound += HandleClientOnStartRound;
-        GameManager.ClientOnStartTurn += HandleClientOnStartTurn;
-        GameManager.ClientOnPlayTurn += HandleClientOnPlayTurn;
+        GameManager.Client_OnStartRound += HandleClientOnStartRound;
+        GameManager.Client_OnStartTurn += HandleClientOnStartTurn;
+        GameManager.Client_OnPlayTurn += HandleClientOnPlayTurn;
     }
 
     private void Unsubscribe()
     {
         Debug.Log("PlayerMenu Unsubscribing");
 
-        GameManager.ClientOnStartRound -= HandleClientOnStartRound;
-        GameManager.ClientOnStartTurn -= HandleClientOnStartTurn;
-        GameManager.ClientOnPlayTurn -= HandleClientOnPlayTurn;
+        GameManager.Client_OnStartRound -= HandleClientOnStartRound;
+        GameManager.Client_OnStartTurn -= HandleClientOnStartTurn;
+        GameManager.Client_OnPlayTurn -= HandleClientOnPlayTurn;
     }
 
     private void HandleClientOnStartRound()

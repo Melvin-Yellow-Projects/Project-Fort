@@ -95,13 +95,13 @@ public class ComputerPlayer : Player
 
     protected override void ServerSubscribe()
     {
-        GameManager.ServerOnStopTurn += HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn += HandleServerOnStopTurn;
         base.ServerSubscribe();
     }
 
     protected override void ServerUnsubscribe()
     {
-        GameManager.ServerOnStopTurn -= HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn -= HandleServerOnStopTurn;
         base.ServerUnsubscribe();
     }
 

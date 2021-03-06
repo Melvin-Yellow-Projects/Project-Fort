@@ -39,6 +39,8 @@ public class Piece : NetworkBehaviour
     /************************************************************/
     #region Properties
 
+    #region General Properties
+
     public static List<Piece> Prefabs { get; set; }
     private static int IdAutoIncrement { get; set; }
 
@@ -86,6 +88,8 @@ public class Piece : NetworkBehaviour
             //else Movement.HideMovementRange();
         }
     }
+
+    #endregion
 
     #region Piece Flags
 
@@ -200,7 +204,7 @@ public class Piece : NetworkBehaviour
     {
         bool hasBlocked = CanBlockPiece(piece);
         Debug.Log($"{Type} has {hasBlocked} blocked {piece.Type}");
-        if (hasBlocked) piece.Movement.Bonk();
+        if (hasBlocked) piece.Movement.Server_Bonk();
 
         return hasBlocked;
     }
