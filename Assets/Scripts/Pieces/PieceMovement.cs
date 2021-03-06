@@ -145,6 +145,8 @@ public class PieceMovement : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Non-Networked
+
     #region Unity Functions
 
     private void Awake()
@@ -165,21 +167,10 @@ public class PieceMovement : NetworkBehaviour
     }
 
     #endregion
-    /************************************************************/
-    #region Server Functions
 
-    public override void OnStartServer()
-    {
-        Subscribe();
+    #region Movement Functions
 
-        Orientation = Random.Range(0, 360f);
-
-        // this is called by the LateUpdate's reset in HexCellShaderData
-        PiecePathfinding.IncreaseVisibility(MyCell, VisionRange);
-    }
-
-    [Server]
-    public void ServerDoStep()
+    public void DoStep()
     {
         if (!MyPiece.HasMove) return;
 
@@ -194,8 +185,7 @@ public class PieceMovement : NetworkBehaviour
         StartCoroutine(Route(Path[0], Path[1]));
     }
 
-    [Server]
-    public void Server_CompleteTurnStep()
+    public void CompleteTurnStep()
     {
         if (!EnRouteCell || MyPiece.IsDying) return;
         Direction = HexMetrics.GetDirection(MyCell, EnRouteCell); // HACK: this can be done earlier
@@ -230,8 +220,7 @@ public class PieceMovement : NetworkBehaviour
         if (!Path.HasPath) MyPiece.HasMove = false; // HACK: this might not be very useful
     }
 
-    [Server]
-    public void Server_Bonk()
+    public void Bonk()
     {
         // HACK: there must be a better implementation
         if (!EnRouteCell || MyPiece.IsDying || MyPiece.HasBonked) return;
@@ -249,7 +238,7 @@ public class PieceMovement : NetworkBehaviour
     {
         if (MyPiece.ForcedActive)
         {
-            Server_Bonk();
+            Bonk();
             return;
         }
 
@@ -270,7 +259,6 @@ public class PieceMovement : NetworkBehaviour
     /// HACK: this method has been jank since it was created, fix this
     /// </summary>
     /// <returns></returns>
-    [Server]
     private IEnumerator Route(HexCell startCell, HexCell endCell)
     {
         IsEnRoute = true;
@@ -308,7 +296,7 @@ public class PieceMovement : NetworkBehaviour
         PiecePathfinding.DecreaseVisibility(EnRouteCell, MyPiece.Configuration.VisionRange);
 
         interpolator -= 1f;
-        
+
         EnRouteCell = endCell;
 
         // arriving at the center if the last cell
@@ -333,7 +321,6 @@ public class PieceMovement : NetworkBehaviour
         IsEnRoute = false;
     }
 
-    [Server]
     private IEnumerator RouteCanceled()
     {
         IsEnRoute = true;
@@ -363,7 +350,6 @@ public class PieceMovement : NetworkBehaviour
         IsEnRoute = false;
     }
 
-    [Server]
     public void LookAt(HexDirection direction)
     {
         // HACK: yea dis is weird, coroutine needs to probably be stopped first
@@ -371,7 +357,6 @@ public class PieceMovement : NetworkBehaviour
         StartCoroutine(LookAt(myCell.Position + localPoint));
     }
 
-    [Server]
     IEnumerator LookAt(Vector3 point)
     {
         // locks the y dimension
@@ -401,8 +386,54 @@ public class PieceMovement : NetworkBehaviour
 
     }
 
+    #endregion
+
+    #region Cell Pathfinding Functions
+
+    public virtual bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
+    {
+        // invalid if there is a river inbetween
+        //if (current.GetEdgeType(neighbor) == river) return false;
+
+        // invalid if edge between cells is a cliff
+        if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
+
+        // neighbor is a valid cell
+        return true;
+    }
+
+    public virtual bool IsValidCellForPath(HexCell current, HexCell neighbor)
+    {
+        // if a Piece exists on this cell // TODO: check unit type
+        //if (neighbor.MyPiece && neighbor.MyPiece.Team == Team) return false; 
+
+        // invalid if cell is unexplored
+        if (!neighbor.Explorable) return false;
+
+        //isValid &= !cell.IsUnderwater; // cell is not underwater
+
+        // neighbor is a valid cell
+        return true;
+    }
+
+    #endregion
+
+    #endregion
+    /************************************************************/
+    #region Server
+
+    public override void OnStartServer()
+    {
+        Subscribe();
+
+        Orientation = Random.Range(0, 360f);
+
+        // this is called by the LateUpdate's reset in HexCellShaderData
+        PiecePathfinding.IncreaseVisibility(MyCell, VisionRange);
+    }
+
     [Server]
-    public bool ServerClearMove()
+    public bool Server_ClearMove()
     {
         bool hadMove = MyPiece.HasMove;
 
@@ -416,7 +447,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server] // HACK: not sure if this is correct
-    public bool ServerSetMove(PieceData data)
+    public bool Server_SetMove(PieceData data)
     {
         if (!CanMove || data.pathCells.Count < 2) return false;
 
@@ -429,7 +460,7 @@ public class PieceMovement : NetworkBehaviour
 
     #endregion
     /************************************************************/
-    #region Client Functions
+    #region Client
 
     [TargetRpc]
     private void TargetClearPath()
@@ -458,55 +489,8 @@ public class PieceMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        CanMove = false; // This isn't needed, this can be a sync var
+        CanMove = false; 
     }
-
-    #endregion
-    /************************************************************/
-    #region Class Functions
-
-    public virtual bool IsValidEdgeForPath(HexCell current, HexCell neighbor)
-    {
-        // invalid if there is a river inbetween
-        //if (current.GetEdgeType(neighbor) == river) return false;
-
-        // invalid if edge between cells is a cliff
-        if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) return false;
-
-        // neighbor is a valid cell
-        return true;
-    }
-
-    public virtual bool IsValidCellForPath(HexCell current, HexCell neighbor)
-    {
-        // if a Piece exists on this cell // TODO: check unit type
-        //if (neighbor.MyPiece && neighbor.MyPiece.Team == Team) return false; 
-
-        // invalid if cell is unexplored
-        if (!neighbor.Explorable) return false;
-
-        //isValid &= !cell.IsUnderwater; // cell is not underwater
-
-        // neighbor is a valid cell
-        return true;
-    }
-
-    // TODO: this should show attack cells as well, maybe also be override-able 
-    public void ShowMovementRange()
-    {
-
-    }
-
-    public void HideMovementRange()
-    {
-
-    }
-
-    //public void RefreshPath()
-    //{
-    //    // updates path HACK: kinda sloppy, but used for when a piece is selected
-    //    Path.Show();
-    //}
 
     #endregion
     /************************************************************/

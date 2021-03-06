@@ -149,7 +149,7 @@ public abstract class Player : NetworkBehaviour
         if (player.MyTeam != data.MyPiece.MyTeam) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
-        if (data.MyPiece.Movement.ServerSetMove(data)) MoveCount--;
+        if (data.MyPiece.Movement.Server_SetMove(data)) MoveCount--;
     }
 
     [Command]
@@ -157,7 +157,7 @@ public abstract class Player : NetworkBehaviour
     {
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
-        if (data.MyPiece.Movement.ServerClearMove()) MoveCount++;
+        if (data.MyPiece.Movement.Server_ClearMove()) MoveCount++;
     }
 
     /// <summary>

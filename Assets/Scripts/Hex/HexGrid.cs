@@ -9,6 +9,8 @@
  *      The original version of this file can be found here:
  *      https://catlikecoding.com/unity/tutorials/hex-map/ within Catlike Coding's tutorial series:
  *      Hex Map; this file has been updated it to better fit this project
+ *      
+ *      TODO: there are way too many public fields in this class
  **/
 
 using System;
@@ -27,16 +29,16 @@ public class HexGrid : NetworkBehaviour
     /************************************************************/
     #region Public Variables
 
-    /* Cached References */
+    /* Cached References */ 
     [Header("Cached References")]
-    [Tooltip("reference to the HexCell prefab")] // TODO: move this to initializer and make a static hexcell function
+    [Tooltip("reference to the HexCell prefab")] 
     public HexCell cellPrefab;
 
-    [Tooltip("reference to the HexCell Label prefab")] // TODO: move this to initializer and make a static hexcell function
+    [Tooltip("reference to the HexCell Label prefab")] 
     public Text cellLabelPrefab;
 
     [Tooltip("reference to the HexGridChunk prefab")]
-    public HexGridChunk chunkPrefab;
+    public HexGridChunk chunkPrefab; 
 
     /* Settings */
     [Header("Settings")]

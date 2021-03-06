@@ -23,9 +23,7 @@ using Mirror;
 /// <summary>
 /// a piece that is able to interact with a hex map 
 /// </summary>
-[RequireComponent(typeof(Team))]
-[RequireComponent(typeof(ColorSetter))]
-[RequireComponent(typeof(PieceDisplay))]
+[RequireComponent(typeof(Team), typeof(ColorSetter), typeof(PieceDisplay))]
 public class Piece : NetworkBehaviour
 {
     /************************************************************/
@@ -36,24 +34,6 @@ public class Piece : NetworkBehaviour
     [SerializeField] PieceConfig configuration = null;
 
     bool isSelected = false;
-
-    #endregion
-    /************************************************************/
-    #region Class Events
-
-    /// <summary>
-    /// Event for when a piece is spawned, called in the Start Method
-    /// </summary>
-    /// <subscriber class="Player">adds piece to player's list of owned units</subscriber>
-    /// <subscriber class="Grid">adds unit to list of units</subscriber>
-    public static event Action<Piece> OnPieceSpawned;
-
-    ///// <summary>
-    ///// Event for when a unit is despawned, called in the OnDestroy Method
-    ///// </summary>
-    ///// <subscriber class="Player">removes unit from player's list of owned units</subscriber>
-    ///// <subscriber class="Grid">removes unit from list of units</subscriber>
-    //public static event Action<Piece> OnPieceDespawned;
 
     #endregion
     /************************************************************/
@@ -102,13 +82,11 @@ public class Piece : NetworkBehaviour
 
             //Movement.RefreshPath(); // shows that the unit is selected or not
 
-            if (value) Movement.ShowMovementRange();
-            else Movement.HideMovementRange();
+            //if (value) Movement.ShowMovementRange();
+            //else Movement.HideMovementRange();
         }
     }
 
-    #endregion
-    /************************************************************/
     #region Piece Flags
 
     /// <summary>
@@ -136,7 +114,22 @@ public class Piece : NetworkBehaviour
     public bool WillDie { get; set; } = false;
 
     #endregion
+
+    #endregion
     /************************************************************/
+    #region Non-Networked
+
+    #region Class Events
+
+    /// <summary>
+    /// Event for when a piece is spawned, called in the Start Method
+    /// </summary>
+    /// <subscriber class="Player">adds piece to player's list of owned units</subscriber>
+    /// <subscriber class="Grid">adds unit to list of units</subscriber>
+    public static event Action<Piece> OnPieceSpawned;
+
+    #endregion
+
     #region Unity Functions
 
     private void Awake()
@@ -161,37 +154,7 @@ public class Piece : NetworkBehaviour
     }
 
     #endregion
-    /************************************************************/
-    #region Server Functions
 
-    public override void OnStartServer()
-    {
-        OnPieceSpawned?.Invoke(this);
-
-        ValidateLocation();
-    }
-
-    public override void OnStopServer()
-    {
-        //OnPieceDespawned?.Invoke(this);
-    }
-
-    #endregion
-    /************************************************************/
-    #region Client Functions
-
-    public override void OnStartClient()
-    {
-        if (!isServer) OnPieceSpawned?.Invoke(this);
-    }
-
-    public override void OnStopClient()
-    {
-        //if (!isServer) OnPieceDespawned?.Invoke(this);
-    }
-
-    #endregion
-    /************************************************************/
     #region Class Functions
 
     public void ValidateLocation()
@@ -214,7 +177,7 @@ public class Piece : NetworkBehaviour
             // HACK: i don't like this, this is only being done because the piece is "in the way"; 
             //          can this be improved? maybe only disable when battle is decisive 
             if (!PieceCollisionHandler.IsCenterCollision(this, piece))
-                piece.CollisionHandler.gameObject.SetActive(false); 
+                piece.CollisionHandler.gameObject.SetActive(false);
             piece.Die(); // TODO: this doesn't create racetime collision errors right?
             //HexGrid.Pieces.Remove(this); 
             HasCaptured = true;
@@ -237,7 +200,7 @@ public class Piece : NetworkBehaviour
     {
         bool hasBlocked = CanBlockPiece(piece);
         Debug.Log($"{Type} has {hasBlocked} blocked {piece.Type}");
-        if (hasBlocked) piece.Movement.Server_Bonk();
+        if (hasBlocked) piece.Movement.Bonk();
 
         return hasBlocked;
     }
@@ -245,13 +208,13 @@ public class Piece : NetworkBehaviour
     public void Die(bool isPlayingAnimation = true)
     {
         // black team HACK: this is to force units to trade off better when colliding
-        MyTeam.SetTeam(9); 
+        MyTeam.SetTeam(9);
         IsDying = true;
         GetComponent<PieceDeath>().Die(isPlayingAnimation);
     }
 
     #endregion
-    /************************************************************/
+
     #region Save/Load Functions
 
     public void Save(BinaryWriter writer)
@@ -277,6 +240,28 @@ public class Piece : NetworkBehaviour
         //HexGrid.Singleton.ParentTransformToGrid(piece.transform);
 
         //NetworkServer.Spawn(piece.gameObject);
+    }
+
+    #endregion
+
+    #endregion
+    /************************************************************/
+    #region Server
+
+    public override void OnStartServer()
+    {
+        OnPieceSpawned?.Invoke(this);
+
+        ValidateLocation();
+    }
+
+    #endregion
+    /************************************************************/
+    #region Client
+
+    public override void OnStartClient()
+    {
+        if (!isServer) OnPieceSpawned?.Invoke(this);
     }
 
     #endregion

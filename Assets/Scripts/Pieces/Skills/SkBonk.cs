@@ -25,18 +25,18 @@ public class SkBonk : CollisionSkill
     {
         if (myPiece.MyTeam == otherPiece.MyTeam)
         {
-            myPiece.Movement.Server_Bonk();
+            myPiece.Movement.Bonk();
         }
         else
         {
             if (otherPiece.TryToCapturePiece(myPiece)) return;
-            myPiece.Movement.Server_Bonk();
+            myPiece.Movement.Bonk();
         }
     }
 
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)
     {
-        myPiece.Movement.Server_Bonk();
+        myPiece.Movement.Bonk();
     }
 
     #endregion
