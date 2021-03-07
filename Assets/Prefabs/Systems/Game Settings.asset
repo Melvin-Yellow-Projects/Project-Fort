@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Game Settings
   m_EditorClassIdentifier: Assembly-CSharp::GameSettings
   turnsPerRound: 3
-  movesPerTurn: 10
+  movesPerTurn: 5
   isUsingTurnTimer: 0
   turnTimerLength: 10
   startingCredits: 25
-  creditsPerFort: 0
+  creditsPerFort: 25
