@@ -262,7 +262,7 @@ public class GameManager : NetworkBehaviour
             }
             else
             {
-                piece.Movement.Server_DoStep(); // TODO: correct number of steps
+                piece.Movement.Server_StartTurnStep(); // TODO: correct number of steps
             }
         }
     }
@@ -285,8 +285,9 @@ public class GameManager : NetworkBehaviour
     [Server]
     private void Server_CompleteTurnStep()
     {
-        // Setting new cell for pieces now that they moved
-        foreach (Piece piece in HexGrid.Pieces)  piece.Movement.Server_CompleteTurnStep(); 
+        foreach (Piece piece in HexGrid.Pieces)  piece.Movement.Server_StopTurnStep();
+
+        foreach (Piece piece in HexGrid.Pieces) piece.Movement.Server_CompleteTurnStep();
     }
 
     [Server]

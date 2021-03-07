@@ -81,7 +81,7 @@ MonoBehaviour:
   syncInterval: 0.1
   canMakeMoves: 1
   maxActionWaitTime: 0.5
-  chanceToSkipAction: 0.3
+  chanceToSkipAction: 0
 --- !u!114 &-2715520160280375779
 MonoBehaviour:
   m_ObjectHideFlags: 0

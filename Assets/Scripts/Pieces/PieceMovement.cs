@@ -12,6 +12,8 @@
  *      TODO: maybe in the future some of the Server movement functions should be non-networked; 
  *              this way, a client can call these functions on its own; this might save network
  *              trafficking 
+ *              
+ *      TODO: remove Movement Display when a piece's movement can be easily displayed visually
  **/
 
 using System.Collections;
@@ -83,13 +85,7 @@ public class PieceMovement : NetworkBehaviour
     // TODO: maybe one day you can get this from orientation and the look angle
     public HexDirection Direction { get; private set; }
 
-    public int VisionRange
-    {
-        get
-        {
-            return MyPiece.Configuration.VisionRange;
-        }
-    }
+    public int VisionRange => MyPiece.Configuration.VisionRange;
 
     public int CurrentMovement
     {
@@ -101,15 +97,15 @@ public class PieceMovement : NetworkBehaviour
         {
             currentMovement = Mathf.Clamp(value, 0, MaxMovement);
 
-            if (currentMovement == 0) Path.Clear();
-
-            if (!hasAuthority) return;
-
-            Display.RefreshMovementDisplay(currentMovement);
-
             // refreshes color given if the piece can move
             MyPiece.MyColorSetter.SetColor(MyPiece.MyTeam.TeamColor, isSaturating: !CanMove);
 
+            // HACK: this is for computer players who have longer paths than possible
+            if (!CanMove) Path.Clear(); 
+
+            // update movement display if you own the piece
+            if (!hasAuthority) return;
+            Display.RefreshMovementDisplay(currentMovement);
             if (CanMove) Display.ShowDisplay();
             else Display.HideDisplay();
         }
@@ -121,29 +117,16 @@ public class PieceMovement : NetworkBehaviour
 
     public bool IsEnRoute { get; private set; }
 
-    // HACK: not quite, this assumes piece has already moved it's final step
-    //public bool LastStep => MyPiece.HasMove && !(Path.HasPath); 
-
-    // HACK: might be better broken up into a property and function FreezePiece()/CannotMove() 
     public bool CanMove
     {
         get
         {
-            return (currentMovement > 0);
+            return (CurrentMovement > 0);
         }
         set
         {
-            if (value)
-            {
-                CurrentMovement = MaxMovement;
-                if (hasAuthority) Display.ShowDisplay();
-            }
-            else
-            {
-                CurrentMovement = 0;
-                if (hasAuthority) Display.HideDisplay();
-            }
-            Path.Clear();
+            if (value) CurrentMovement = MaxMovement;
+            else CurrentMovement = 0;
         }
     }
 
@@ -223,7 +206,7 @@ public class PieceMovement : NetworkBehaviour
     #region Movement Functions
 
     [Server]
-    public void Server_DoStep()
+    public void Server_StartTurnStep()
     {
         if (!MyPiece.HasMove) return;
 
@@ -239,7 +222,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    public void Server_CompleteTurnStep()
+    public void Server_StopTurnStep()
     {
         if (!EnRouteCell || MyPiece.IsDying) return;
         Direction = HexMetrics.GetDirection(MyCell, EnRouteCell); // HACK: this can be done earlier
@@ -264,6 +247,12 @@ public class PieceMovement : NetworkBehaviour
             Path.RemoveTailCells(numberToRemove: MyPiece.Configuration.MovesPerStep);
             if (hasAuthority) Path.Show();
         }
+    }
+
+    [Server]
+    public void Server_CompleteTurnStep()
+    {
+        if (!MyPiece.HasMove) return;
 
         if (!MyPiece.HasBonked && MyPiece.Configuration.OnStopTurnStepSkill)
             MyPiece.Configuration.OnStopTurnStepSkill.Invoke(MyPiece);
@@ -382,6 +371,8 @@ public class PieceMovement : NetworkBehaviour
     private IEnumerator Server_RouteCanceled()
     {
         IsEnRoute = true;
+
+        yield return null;
 
         //yield return LookAt(myCell.Position);
 
