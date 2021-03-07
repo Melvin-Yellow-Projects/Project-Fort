@@ -238,7 +238,7 @@ public class PieceMovement : NetworkBehaviour
         EnRouteCell = null;
 
         // TODO: relay this message to allies too
-        if (connectionToClient != null) TargetCompleteMove(connectionToClient);
+        if (connectionToClient != null) Target_CompleteMove(connectionToClient);
 
         if (!MyPiece.HasMove)
         {
@@ -451,7 +451,7 @@ public class PieceMovement : NetworkBehaviour
 
         Path.Clear();
         MyPiece.HasMove = false;
-        if (connectionToClient != null) TargetClearPath();
+        if (connectionToClient != null) Target_ClearPath();
 
         return hadMove;
     }
@@ -502,7 +502,7 @@ public class PieceMovement : NetworkBehaviour
         MyPiece.ForcedActive = false;
         MyPiece.HasCaptured = false;
         MyPiece.HasMove = false;
-        HandleRpcOnStopTurn();
+        Rpc_HandleOnStopTurn();
     }
 
     [Server]
@@ -524,7 +524,7 @@ public class PieceMovement : NetworkBehaviour
 
         PiecePathfinding.DecreaseVisibility(cell, VisionRange);
 
-        HandleRpcOnDeath(cell);
+        Rpc_HandleOnDeath(cell);
     }
 
     #endregion
@@ -557,7 +557,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetClearPath()
+    private void Target_ClearPath()
     {
         if (!isClientOnly) return;
 
@@ -566,7 +566,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void TargetCompleteMove(NetworkConnection conn)
+    public void Target_CompleteMove(NetworkConnection conn)
     {
         if (!isClientOnly) return;
 
@@ -583,7 +583,7 @@ public class PieceMovement : NetworkBehaviour
     #region Event Handler Functions
 
     [ClientRpc]
-    protected virtual void HandleRpcOnStopTurn()
+    protected virtual void Rpc_HandleOnStopTurn()
     {
         if (!isClientOnly) return;
 
@@ -595,7 +595,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void HandleRpcOnDeath(HexCell cell)
+    private void Rpc_HandleOnDeath(HexCell cell)
     {
         if (GeneralUtilities.IsRunningOnHost()) return;
 
