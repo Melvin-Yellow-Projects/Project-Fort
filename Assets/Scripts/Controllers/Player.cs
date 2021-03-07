@@ -306,7 +306,7 @@ public abstract class Player : NetworkBehaviour
         GameManager.Server_OnPlayTurn += Server_HandleOnPlayTurn;
     }
 
-    [Server]
+    // HACK this is not server protected because otherwise it does not get called
     protected virtual void Server_Unsubscribe()
     {
         Debug.LogWarning($"ServerUnsubscribe on {name}");
@@ -441,7 +441,7 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned += HandleOnFortDespawned;
     }
 
-    [Client]
+    // HACK this is not server protected because otherwise it does not get called
     protected virtual void Client_AuthorityUnsubscribe()
     {
         Debug.LogWarning($"AuthorityUnsubscribe on {name}");

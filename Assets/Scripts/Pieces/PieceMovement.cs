@@ -29,7 +29,7 @@ public class PieceMovement : NetworkBehaviour
     protected float orientation;
     protected int currentMovement;
 
-    [SyncVar(hook = nameof(HookOnMyCell))]
+    [SyncVar(hook = nameof(SyncVar_myCell))]
     public HexCell myCell;
 
     #endregion
@@ -106,10 +106,15 @@ public class PieceMovement : NetworkBehaviour
             if (connectionToClient != null) Rpc_SetCurrentMovement(currentMovement);
 
             // update movement display if you own the piece
-            if (!hasAuthority) return;
-            Display.RefreshMovementDisplay(currentMovement);
-            if (CanMove) Display.ShowDisplay();
-            else Display.HideDisplay();
+            if (hasAuthority && CanMove)
+            {
+                Display.RefreshMovementDisplay(currentMovement);
+                Display.ShowDisplay();
+            }
+            else
+            {
+                Display.HideDisplay();
+            }
         }
     }
 
@@ -472,15 +477,15 @@ public class PieceMovement : NetworkBehaviour
     {
         GameManager.Server_OnStartRound += Server_HandleOnStartRound;
         GameManager.Server_OnStopTurn += Server_HandleOnStopTurn;
-        PieceDeath.Server_OnPieceDeath += HandleServerOnPieceDeath;
+        PieceDeath.Server_OnPieceDeath += Server_HandleOnPieceDeath;
     }
 
-    [ServerCallback]
+    // HACK this is not server protected because otherwise it does not get called
     private void Server_Unsubscribe()
     {
         GameManager.Server_OnStartRound -= Server_HandleOnStartRound;
         GameManager.Server_OnStopTurn -= Server_HandleOnStopTurn;
-        PieceDeath.Server_OnPieceDeath -= HandleServerOnPieceDeath;
+        PieceDeath.Server_OnPieceDeath -= Server_HandleOnPieceDeath;
     }
 
     [Server]
@@ -501,7 +506,7 @@ public class PieceMovement : NetworkBehaviour
     }
 
     [Server]
-    private void HandleServerOnPieceDeath(Piece piece)
+    private void Server_HandleOnPieceDeath(Piece piece)
     {
         if (piece != MyPiece) return;
 
@@ -511,7 +516,7 @@ public class PieceMovement : NetworkBehaviour
 
         IsEnRoute = false;
 
-        //CanMove = false;
+        CanMove = false;
         Path.Clear();
         Display.HideDisplay();
 
@@ -527,6 +532,21 @@ public class PieceMovement : NetworkBehaviour
     #endregion
     /************************************************************/
     #region Client
+
+    #region SyncVars
+
+    [Client]
+    private void SyncVar_myCell(HexCell oldValue, HexCell newValue)
+    {
+        if (GeneralUtilities.IsRunningOnHost()) return;
+
+        if (myCell) MyCell = myCell;
+
+        if (oldValue) PiecePathfinding.DecreaseVisibility(oldValue, VisionRange);
+        PiecePathfinding.IncreaseVisibility(newValue, VisionRange);
+    }
+
+    #endregion
 
     #region Movement Functions
 
@@ -579,22 +599,13 @@ public class PieceMovement : NetworkBehaviour
     {
         if (GeneralUtilities.IsRunningOnHost()) return;
 
-        //CanMove = false;
+        // HACK CanMove=false in Server_HandleOnPieceDeath should cover this... but it doesn't
+        CanMove = false; 
 
         PiecePathfinding.DecreaseVisibility(cell, VisionRange);
     }
 
-    [Client]
-    private void HookOnMyCell(HexCell oldValue, HexCell newValue)
-    {
-        if (GeneralUtilities.IsRunningOnHost()) return;
-
-        if (myCell) MyCell = myCell;
-
-        if (oldValue) PiecePathfinding.DecreaseVisibility(oldValue, VisionRange);
-        PiecePathfinding.IncreaseVisibility(newValue, VisionRange);
-    }
-
+    
     #endregion
 
     #endregion

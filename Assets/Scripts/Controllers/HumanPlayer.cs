@@ -273,7 +273,7 @@ public class HumanPlayer : Player
         base.Client_AuthoritySubscribe();
     }
 
-    [Client]
+    // HACK this is not server protected because otherwise it does not get called
     protected override void Client_AuthorityUnsubscribe()
     {
         GameManager.Client_OnStartRound -= Client_HandleOnStartRound;
