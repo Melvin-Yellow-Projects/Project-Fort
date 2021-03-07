@@ -46,7 +46,7 @@ public class ComputerPlayer : Player
                 yield return new WaitForSeconds(Random.Range(0, maxActionWaitTime));
 
                 if (Random.Range(0f, 1f) > chanceToSkipAction)
-                    ServerTryBuyPiece(Random.Range(0, 4), cell);
+                    Server_TryBuyPiece(Random.Range(0, 4), cell);
             }
         }
         HasEndedTurn = true;
@@ -64,7 +64,7 @@ public class ComputerPlayer : Player
 
                 piece.Movement.Path.Cells = PiecePathfinding.FindPath(piece, piece.MyCell, targetCell);
 
-                ServerSetAction(this, PieceData.Instantiate(piece));
+                Server_SetAction(this, PieceData.Instantiate(piece));
             }
         }
         HasEndedTurn = true;
@@ -93,22 +93,22 @@ public class ComputerPlayer : Player
     /************************************************************/
     #region Event Handler Functions
 
-    protected override void ServerSubscribe()
+    protected override void Server_Subscribe()
     {
         GameManager.Server_OnStopTurn += HandleServerOnStopTurn;
-        base.ServerSubscribe();
+        base.Server_Subscribe();
     }
 
-    protected override void ServerUnsubscribe()
+    protected override void Server_Unsubscribe()
     {
         GameManager.Server_OnStopTurn -= HandleServerOnStopTurn;
-        base.ServerUnsubscribe();
+        base.Server_Unsubscribe();
     }
 
     [Server]
-    protected override void HandleServerOnStartRound()
+    protected override void Server_HandleOnStartRound()
     {
-        base.HandleServerOnStartRound();
+        base.Server_HandleOnStartRound();
 
         Debug.Log($"{name} is buying");
         if (canMakeMoves) StartCoroutine(BuyPieces());
@@ -116,10 +116,10 @@ public class ComputerPlayer : Player
     }
 
     [Server]
-    protected override void HandleServerOnStartTurn()
+    protected override void Server_HandleOnStartTurn()
     {
         StopAllCoroutines();
-        base.HandleServerOnStartTurn();
+        base.Server_HandleOnStartTurn();
 
         // HACK should the cpu listen to a lost flag from the base function call?
 
@@ -129,10 +129,10 @@ public class ComputerPlayer : Player
     }
 
     [Server]
-    protected override void HandleServerOnPlayTurn()
+    protected override void Server_HandleOnPlayTurn()
     {
         StopAllCoroutines();
-        base.HandleServerOnPlayTurn();
+        base.Server_HandleOnPlayTurn();
     }
 
     private void HandleServerOnStopTurn()

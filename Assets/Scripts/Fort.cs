@@ -56,7 +56,7 @@ public class Fort : NetworkBehaviour
     /// Server event for when a fort is captured; passes captured fort and its previous team
     /// </summary>
     /// <subscriber class="Player">updates a player's forts</subscriber>
-    public static event Action<Fort, int> ServerOnFortCaptured;
+    public static event Action<Fort, int> Server_OnFortCaptured;
 
     #endregion
     /************************************************************/
@@ -291,16 +291,16 @@ public class Fort : NetworkBehaviour
 
     private void Subscribe()
     {
-        GameManager.Server_OnStopTurn += HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn += Server_HandleOnStopTurn;
     }
 
     private void Unsubscribe()
     {
-        GameManager.Server_OnStopTurn -= HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn -= Server_HandleOnStopTurn;
     }
 
     [Server]
-    public void HandleServerOnStopTurn()
+    public void Server_HandleOnStopTurn()
     {
         Piece unit = myCell.MyPiece;
 
@@ -312,7 +312,7 @@ public class Fort : NetworkBehaviour
 
         MyTeam.SetTeam(unit.MyTeam);
 
-        ServerOnFortCaptured?.Invoke(this, previousTeamId);
+        Server_OnFortCaptured?.Invoke(this, previousTeamId);
     }
 
     private void HookOnMyCell(HexCell oldValue, HexCell newValue)

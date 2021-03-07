@@ -26,13 +26,14 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    [SyncVar(hook = nameof(HookOnMoveCount))]
+    [SyncVar(hook = nameof(SyncVar_moveCount))]
     int moveCount = 0; // HACK: wrong, other clients shouldnt know this data.
 
-    [SyncVar(hook = nameof(HookOnCredits))]
+    [SyncVar(hook = nameof(SyncVar_credits))]
     int credits = 0; // HACK: wrong, other clients shouldnt know this data, or should they? 
 
-    bool hasEndedTurn = false;
+    // TODO: this should probably be a syncvar so clients know who still is taking their turn
+    protected bool hasEndedTurn = false;
 
     #endregion
     /************************************************************/
@@ -87,7 +88,15 @@ public abstract class Player : NetworkBehaviour
         set
         {
             hasEndedTurn = value;
-            if (hasEndedTurn) GameManager.Singleton.Server_TryEndTurn();
+
+            if (isClientOnly)
+            {
+                Cmd_HasEndedTurn(value);
+            }
+            else
+            {
+                if (hasEndedTurn) GameManager.Singleton.Server_TryEndTurn();
+            }
         }
     }
 
@@ -97,6 +106,8 @@ public abstract class Player : NetworkBehaviour
 
     #endregion
     /************************************************************/
+    #region Non-Networked
+
     #region Unity Functions
 
     protected virtual void Start()
@@ -108,17 +119,65 @@ public abstract class Player : NetworkBehaviour
 
     protected virtual void OnDestroy()
     {
-        ServerUnsubscribe(); // HACK brute force
+        Server_Unsubscribe(); // HACK brute force
     }
 
     #endregion
+
+    #region Class Functions
+
+    public bool CanMove()
+    {
+        return (MoveCount > 0);
+    }
+
+    private bool CanBuyOnCell(HexCell cell)
+    {
+        for (int i = 0; i < MyForts.Count; i++)
+        {
+            Fort fort = MyForts[i];
+            if (fort.IsBuyCell(cell)) return true;
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region Event Handler Functions
+
+    private void HandleOnFortSpawned(Fort fort)
+    {
+        if (fort.MyTeam != MyTeam) return;
+
+        MyForts.Add(fort);
+    }
+
+    // HACK: this is probably unneeded
+    private void HandleOnFortDespawned(Fort fort)
+    {
+        MyForts.Remove(fort);
+    }
+
+    private void HandleOnPieceSpawned(Piece piece)
+    {
+        if (piece.MyTeam != MyTeam) return;
+
+        MyPieces.Add(piece);
+    }
+
+    #endregion
+
+    #endregion
     /************************************************************/
-    #region Server Functions
+    #region Server
+
+    #region Mirror Functions
 
     public override void OnStartServer()
     {
         DontDestroyOnLoad(gameObject);
-        ServerSubscribe();
+        Server_Subscribe();
     }
 
     public override void OnStopServer()
@@ -127,21 +186,17 @@ public abstract class Player : NetworkBehaviour
         // HACK: not certain this works
         //if (GameManager.IsGameInProgress)
         //    GameOverHandler.Singleton.ServerPlayerHasLost(this, WinConditionType.Disconnect);
-        ServerUnsubscribe();
+        Server_Unsubscribe();
 
         Debug.Log($"{name} OnStopServer");
     }
 
-    [Command]
-    protected void CmdSetAction(PieceData data)
-    {
-        //if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+    #endregion
 
-        ServerSetAction(connectionToClient.identity.GetComponent<Player>(), data);
-    }
+    #region Server Functions
 
     [Server]
-    protected void ServerSetAction(Player player, PieceData data)
+    protected void Server_SetAction(Player player, PieceData data)
     {
         if (GameManager.IsEconomyPhase || GameManager.IsPlayingTurn) return;
         if (!CanMove()) return;
@@ -152,28 +207,8 @@ public abstract class Player : NetworkBehaviour
         if (data.MyPiece.Movement.Server_SetMove(data)) MoveCount--;
     }
 
-    [Command]
-    protected void CmdClearAction(PieceData data)
-    {
-        if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
-
-        if (data.MyPiece.Movement.Server_ClearMove()) MoveCount++;
-    }
-
-    /// <summary>
-    /// HACK: is pieceId Validation needed?
-    /// HACK: should this return bool?
-    /// </summary>
-    /// <param name="pieceId"></param>
-    /// <param name="cell"></param>
-    [Command] 
-    protected void CmdTryBuyPiece(int pieceId, HexCell cell)
-    {
-        ServerTryBuyPiece(pieceId, cell);
-    }
-
     [Server]
-    protected void ServerTryBuyPiece(int pieceId, HexCell cell)
+    protected void Server_TryBuyPiece(int pieceId, HexCell cell)
     {
         if (!GameManager.IsEconomyPhase) return;
         if (cell.MyPiece) return;
@@ -194,8 +229,46 @@ public abstract class Player : NetworkBehaviour
         Credits -= piece.Credits;
     }
 
+    #endregion
+
+    #region Server Commands
+
     [Command]
-    protected void CmdTrySellPiece(HexCell cell)
+    private void Cmd_HasEndedTurn(bool hasEndedTurn)
+    {
+        HasEndedTurn = hasEndedTurn;
+    }
+
+    [Command]
+    protected void Cmd_SetAction(PieceData data)
+    {
+        //if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+
+        Server_SetAction(connectionToClient.identity.GetComponent<Player>(), data);
+    }
+    
+    [Command]
+    protected void Cmd_ClearAction(PieceData data)
+    {
+        if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
+
+        if (data.MyPiece.Movement.Server_ClearMove()) MoveCount++;
+    }
+
+    /// <summary>
+    /// HACK: is pieceId Validation needed?
+    /// HACK: should this return bool?
+    /// </summary>
+    /// <param name="pieceId"></param>
+    /// <param name="cell"></param>
+    [Command] 
+    protected void Cmd_TryBuyPiece(int pieceId, HexCell cell)
+    {
+        Server_TryBuyPiece(pieceId, cell);
+    }
+
+    [Command]
+    protected void Cmd_TrySellPiece(HexCell cell)
     {
         if (!GameManager.IsEconomyPhase) return;
 
@@ -211,8 +284,110 @@ public abstract class Player : NetworkBehaviour
     }
 
     #endregion
+
+    #region Event Handler Functions
+
+    // HACK this line does not work, subscribe needs to happen on server and authoritive client
+    [Server]
+    protected virtual void Server_Subscribe()
+    {
+        Debug.LogWarning($"ServerSubscribe on {name}");
+        Piece.OnPieceSpawned += HandleOnPieceSpawned;
+
+        Fort.OnFortSpawned += HandleOnFortSpawned;
+        Fort.OnFortDespawned += HandleOnFortDespawned;
+
+        PieceDeath.Server_OnPieceDeath += Server_HandleOnPieceDeath;
+
+        Fort.Server_OnFortCaptured += Server_HandleOnFortCaptured;
+
+        GameManager.Server_OnStartRound += Server_HandleOnStartRound;
+        GameManager.Server_OnStartTurn += Server_HandleOnStartTurn;
+        GameManager.Server_OnPlayTurn += Server_HandleOnPlayTurn;
+    }
+
+    [Server]
+    protected virtual void Server_Unsubscribe()
+    {
+        Debug.LogWarning($"ServerUnsubscribe on {name}");
+        Piece.OnPieceSpawned -= HandleOnPieceSpawned;
+
+        Fort.OnFortSpawned -= HandleOnFortSpawned;
+        Fort.OnFortDespawned -= HandleOnFortDespawned;
+
+        PieceDeath.Server_OnPieceDeath -= Server_HandleOnPieceDeath;
+
+        Fort.Server_OnFortCaptured -= Server_HandleOnFortCaptured;
+
+        GameManager.Server_OnStartRound -= Server_HandleOnStartRound;
+        GameManager.Server_OnStartTurn -= Server_HandleOnStartTurn;
+        GameManager.Server_OnPlayTurn -= Server_HandleOnPlayTurn;
+    }
+
+    [Server] // HACK: this function is so jank
+    private void Server_HandleOnFortCaptured(Fort fort, int previousTeamId)
+    {
+        if (MyTeam == fort.MyTeam)
+        {
+            Debug.Log($"{name} is adding {fort.name} they just gained");
+
+            MyForts.Add(fort);
+            if (connectionToClient != null) Target_AddFort(connectionToClient, fort.netIdentity);
+        }
+        else if (MyTeam.Id == previousTeamId)
+        {
+            Debug.LogWarning($"{name} is removing {fort.name} they just lost");
+
+            MyForts.Remove(fort);
+            if (connectionToClient != null) Target_RemoveFort(connectionToClient, fort.netIdentity);
+        }
+    }
+
+    [Server]
+    private void Server_HandleOnPieceDeath(Piece piece)
+    {
+        MyPieces.Remove(piece);
+        if (connectionToClient != null) Target_HandleOnPieceDeath(piece.netIdentity);
+    }
+
+    [Server]
+    protected virtual void Server_HandleOnStartRound()
+    {
+        MoveCount = 0;
+        HasEndedTurn = false;
+    }
+
+    [Server]
+    protected virtual void Server_HandleOnStartTurn()
+    {
+
+        MoveCount = GameSession.MovesPerTurn;
+        HasEndedTurn = false;
+    }
+
+    [Server]
+    protected virtual void Server_HandleOnPlayTurn()
+    {
+        HasEndedTurn = true;
+    }
+
+    #endregion
+
+    #endregion
     /************************************************************/
-    #region Client Functions
+    #region Client
+
+    #region SyncVars
+
+    [Client]
+    protected virtual void SyncVar_credits(int oldValue, int newValue) { }
+
+    [Client]
+    protected virtual void SyncVar_moveCount(int oldValue, int newValue) { }
+
+    #endregion
+
+    #region Mirror Functions
 
     public override void OnStartClient()
     {
@@ -224,15 +399,19 @@ public abstract class Player : NetworkBehaviour
 
     public override void OnStopClient()
     {
-        if (hasAuthority) AuthorityUnsubscribe();
+        if (hasAuthority) Client_AuthorityUnsubscribe();
 
         GameManager.Players.Remove(this); // HACK host will try and remove twice; idk how to stop it
     }
 
+    #endregion
+
+    #region Client Functions
+
     // HACK: can probably replace with psuedo Handler function since it's specifically called by a
     // handler
     [TargetRpc] 
-    public void TargetAddFort(NetworkConnection target, NetworkIdentity fortNetId)
+    public void Target_AddFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
         if (isServer) return;
         MyForts.Add(fortNetId.GetComponent<Fort>());
@@ -241,78 +420,18 @@ public abstract class Player : NetworkBehaviour
     // HACK: can probably replace with psuedo Handler function since it's specifically called by a
     // handler
     [TargetRpc]
-    public void TargetRemoveFort(NetworkConnection target, NetworkIdentity fortNetId)
+    public void Target_RemoveFort(NetworkConnection target, NetworkIdentity fortNetId)
     {
         if (isServer) return;
         MyForts.Remove(fortNetId.GetComponent<Fort>());
     }
 
-    [TargetRpc]
-    public void TargetSetHasEndedTurn(NetworkConnection target, bool status)
-    {
-        if (!isServer) HasEndedTurn = status;
-    }
-
     #endregion
-    /************************************************************/
-    #region Class Functions
 
-    public bool CanMove()
-    {
-        return (MoveCount > 0);
-    }
-
-    private bool CanBuyOnCell(HexCell cell)
-    {
-        for (int i = 0; i < MyForts.Count; i++)
-        {
-            Fort fort = MyForts[i];
-            if (fort.IsBuyCell(cell)) return true;
-        }
-
-        return false;
-    }
-
-    #endregion
-    /************************************************************/
     #region Event Handler Functions
 
-    // HACK this line does not work, subscribe needs to happen on server and authoritive client
-    protected virtual void ServerSubscribe()
-    {
-        Debug.LogWarning($"ServerSubscribe on {name}");
-        Piece.OnPieceSpawned += HandleOnPieceSpawned;
-
-        Fort.OnFortSpawned += HandleOnFortSpawned;
-        Fort.OnFortDespawned += HandleOnFortDespawned;
-
-        PieceDeath.ServerOnPieceDeath += HandleServerOnPieceDeath;
-
-        Fort.ServerOnFortCaptured += HandleServerOnFortCaptured;
-
-        GameManager.Server_OnStartRound += HandleServerOnStartRound;
-        GameManager.Server_OnStartTurn += HandleServerOnStartTurn;
-        GameManager.Server_OnPlayTurn += HandleServerOnPlayTurn;
-    }
-
-    protected virtual void ServerUnsubscribe()
-    {
-        Debug.LogWarning($"ServerUnsubscribe on {name}");
-        Piece.OnPieceSpawned -= HandleOnPieceSpawned;
-
-        Fort.OnFortSpawned -= HandleOnFortSpawned;
-        Fort.OnFortDespawned -= HandleOnFortDespawned;
-
-        PieceDeath.ServerOnPieceDeath -= HandleServerOnPieceDeath;
-
-        Fort.ServerOnFortCaptured -= HandleServerOnFortCaptured;
-
-        GameManager.Server_OnStartRound -= HandleServerOnStartRound;
-        GameManager.Server_OnStartTurn -= HandleServerOnStartTurn;
-        GameManager.Server_OnPlayTurn -= HandleServerOnPlayTurn;
-    }
-
-    protected virtual void AuthoritySubscribe()
+    [Client]
+    protected virtual void Client_AuthoritySubscribe()
     {
         if (isServer) return;
         Debug.LogWarning($"AuthoritySubscribe on {name}");
@@ -322,7 +441,8 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned += HandleOnFortDespawned;
     }
 
-    protected virtual void AuthorityUnsubscribe()
+    [Client]
+    protected virtual void Client_AuthorityUnsubscribe()
     {
         Debug.LogWarning($"AuthorityUnsubscribe on {name}");
         Piece.OnPieceSpawned -= HandleOnPieceSpawned;
@@ -331,86 +451,15 @@ public abstract class Player : NetworkBehaviour
         Fort.OnFortDespawned -= HandleOnFortDespawned;
     }
 
-    private void HandleOnFortSpawned(Fort fort)
-    {
-        if (fort.MyTeam != MyTeam) return;
-
-        MyForts.Add(fort);
-    }
-
-    // HACK: this is probably unneeded
-    private void HandleOnFortDespawned(Fort fort)
-    {
-        MyForts.Remove(fort);
-    }
-
-    [Server] // HACK: this function is so jank
-    private void HandleServerOnFortCaptured(Fort fort, int previousTeamId)
-    {
-        if (MyTeam == fort.MyTeam)
-        {
-            Debug.Log($"{name} is adding {fort.name} they just gained");
-
-            MyForts.Add(fort);
-            if (connectionToClient != null) TargetAddFort(connectionToClient, fort.netIdentity); 
-        }
-        else if (MyTeam.Id == previousTeamId)
-        {
-            Debug.LogWarning($"{name} is removing {fort.name} they just lost");
-
-            MyForts.Remove(fort);
-            if (connectionToClient != null) TargetRemoveFort(connectionToClient, fort.netIdentity);
-        }
-    }
-
-    private void HandleOnPieceSpawned(Piece piece)
-    {
-        if (piece.MyTeam != MyTeam) return;
-
-        MyPieces.Add(piece);
-    }
-
-    [Server]
-    private void HandleServerOnPieceDeath(Piece piece)
-    {
-        MyPieces.Remove(piece);
-        if (connectionToClient != null) HandleTargetOnPieceDeath(piece.netIdentity);
-    }
-
     [TargetRpc] // HACK: this could be PieceData? ...but i mean it is coming from the server so idk
-    private void HandleTargetOnPieceDeath(NetworkIdentity pieceNetId)
+    private void Target_HandleOnPieceDeath(NetworkIdentity pieceNetId)
     {
         if (isServer) return;
 
         MyPieces.Remove(pieceNetId.GetComponent<Piece>());
     }
 
-    [Server]
-    protected virtual void HandleServerOnStartRound()
-    {
-        MoveCount = 0;
-        HasEndedTurn = false;
-    }
-
-    [Server]
-    protected virtual void HandleServerOnStartTurn()
-    {
-
-        MoveCount = GameSession.MovesPerTurn;
-        HasEndedTurn = false;
-    }
-
-    [Server]
-    protected virtual void HandleServerOnPlayTurn()
-    {
-        HasEndedTurn = true;
-    }
-
-    [Client]
-    protected virtual void HookOnCredits(int oldValue, int newValue) { }
-
-    [Client]
-    protected virtual void HookOnMoveCount(int oldValue, int newValue) { }
+    #endregion
 
     #endregion
 }

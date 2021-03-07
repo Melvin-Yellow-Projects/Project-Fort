@@ -9,6 +9,7 @@
  *      Previously known as UnitDeath.cs
  * 
  *      TODO: find date created
+ *      TODO: when pieces are not collision based, this should be not server locked
  **/
 
 using System.Collections;
@@ -43,23 +44,22 @@ public class PieceDeath : MonoBehaviour
     /// </summary>
     /// <subscriber class="Player">removes piece from owned pieces</subscriber>
     /// <subscriber class="PieceMovement">clears movement data and removes visibility</subscriber>
-    public static event Action<Piece> ServerOnPieceDeath;
+    public static event Action<Piece> Server_OnPieceDeath;
 
     #endregion
     /************************************************************/
     #region Server Functions
 
     [Server]
-    public void Die(bool isPlayingAnimation = true)
+    public void Server_Die(bool isPlayingAnimation = true)
     {
-        ServerOnPieceDeath?.Invoke(GetComponent<Piece>());
+        Server_OnPieceDeath?.Invoke(GetComponent<Piece>());
 
-        if (isPlayingAnimation) StartCoroutine(DeathAnim());
+        if (isPlayingAnimation) StartCoroutine(PlayDeathAnimation());
         else NetworkServer.Destroy(gameObject);
     }
 
-    [Server]
-    private IEnumerator DeathAnim()
+    private IEnumerator PlayDeathAnimation()
     {
         originalPosition = transform.position;
 
@@ -72,7 +72,6 @@ public class PieceDeath : MonoBehaviour
         NetworkServer.Destroy(gameObject);
     }
 
-    [Server]
     private void DisplacementUpdate()
     {
         float jitter = UnityEngine.Random.Range(-maxJitter, maxJitter);

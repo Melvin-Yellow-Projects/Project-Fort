@@ -214,7 +214,7 @@ public class Piece : NetworkBehaviour
         // black team HACK: this is to force units to trade off better when colliding
         MyTeam.SetTeam(9);
         IsDying = true;
-        GetComponent<PieceDeath>().Die(isPlayingAnimation);
+        GetComponent<PieceDeath>().Server_Die(isPlayingAnimation);
     }
 
     #endregion

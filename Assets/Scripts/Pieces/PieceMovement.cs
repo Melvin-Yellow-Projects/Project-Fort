@@ -93,7 +93,7 @@ public class PieceMovement : NetworkBehaviour
         {
             return currentMovement;
         }
-        private set
+        set
         {
             currentMovement = Mathf.Clamp(value, 0, MaxMovement);
 
@@ -101,7 +101,9 @@ public class PieceMovement : NetworkBehaviour
             MyPiece.MyColorSetter.SetColor(MyPiece.MyTeam.TeamColor, isSaturating: !CanMove);
 
             // HACK: this is for computer players who have longer paths than possible
-            if (!CanMove) Path.Clear(); 
+            if (!CanMove) Path.Clear();
+
+            if (connectionToClient != null) Rpc_SetCurrentMovement(currentMovement);
 
             // update movement display if you own the piece
             if (!hasAuthority) return;
@@ -271,8 +273,6 @@ public class PieceMovement : NetworkBehaviour
 
         if (MyPiece.HasMove) CanMove = false;
         MyPiece.HasBonked = true;
-
-        RpcBonk(); // TODO: relay this message to allies too
 
         StopAllCoroutines();
         StartCoroutine(Server_RouteCanceled());
@@ -472,7 +472,7 @@ public class PieceMovement : NetworkBehaviour
     {
         GameManager.Server_OnStartRound += Server_HandleOnStartRound;
         GameManager.Server_OnStopTurn += Server_HandleOnStopTurn;
-        PieceDeath.ServerOnPieceDeath += HandleServerOnPieceDeath;
+        PieceDeath.Server_OnPieceDeath += HandleServerOnPieceDeath;
     }
 
     [ServerCallback]
@@ -480,14 +480,13 @@ public class PieceMovement : NetworkBehaviour
     {
         GameManager.Server_OnStartRound -= Server_HandleOnStartRound;
         GameManager.Server_OnStopTurn -= Server_HandleOnStopTurn;
-        PieceDeath.ServerOnPieceDeath -= HandleServerOnPieceDeath;
+        PieceDeath.Server_OnPieceDeath -= HandleServerOnPieceDeath;
     }
 
     [Server]
     private void Server_HandleOnStartRound()
     {
         CanMove = true;
-        HandleRpcOnStartRound();
     }
 
     [Server]
@@ -531,6 +530,12 @@ public class PieceMovement : NetworkBehaviour
 
     #region Movement Functions
 
+    [ClientRpc]
+    private void Rpc_SetCurrentMovement(int currentMovement)
+    {
+        if (!isServer) CurrentMovement = currentMovement;
+    }
+
     [TargetRpc]
     private void TargetClearPath()
     {
@@ -545,7 +550,7 @@ public class PieceMovement : NetworkBehaviour
     {
         if (!isClientOnly) return;
 
-        CurrentMovement--; // TODO: This isn't needed, this can be a sync var
+        //CurrentMovement--; // TODO: This isn't needed, this can be a sync var
 
         if (!Path.HasPath) return;
 
@@ -553,25 +558,9 @@ public class PieceMovement : NetworkBehaviour
         Path.Show();
     }
 
-    [ClientRpc]
-    public void RpcBonk()
-    {
-        if (!isClientOnly) return;
-
-        CanMove = false; 
-    }
-
     #endregion
 
     #region Event Handler Functions
-
-    [ClientRpc]
-    private void HandleRpcOnStartRound()
-    {
-        if (!isClientOnly) return;
-
-        CanMove = true;
-    }
 
     [ClientRpc]
     protected virtual void HandleRpcOnStopTurn()
@@ -590,7 +579,7 @@ public class PieceMovement : NetworkBehaviour
     {
         if (GeneralUtilities.IsRunningOnHost()) return;
 
-        CanMove = false;
+        //CanMove = false;
 
         PiecePathfinding.DecreaseVisibility(cell, VisionRange);
     }
