@@ -22,8 +22,7 @@ public class SkConserve : Skill
 
     public override void Invoke(Piece myPiece)
     {
-        // HACK: is the clear action really needed?
-        if (myPiece.Movement.CurrentMovement == 0) myPiece.Movement.Server_ClearMove();
+        myPiece.Movement.Path.Clear();
     }
 
     #endregion

@@ -25,13 +25,15 @@ public class SkCapture : CollisionSkill
     {
         if (otherPiece.TryToCapturePiece(myPiece)) return;
         if (otherPiece.TryToBlockPiece(myPiece)) return;
-        myPiece.Movement.CanMove = false; // piece has not been captured nor blocked, it won
+
+        // piece has not been captured nor blocked, it won
+        myPiece.Configuration.OnStopTurnSkill.Invoke(myPiece); 
     }
 
     protected override void InactiveCollision(Piece myPiece, Piece otherPiece)
     {
         if (otherPiece.TryToBlockPiece(myPiece)) return;
-        myPiece.Movement.CanMove = false;
+        myPiece.Configuration.OnStopTurnSkill.Invoke(myPiece); 
 
         // HACK: this should be guaranteed to succeed
         myPiece.TryToCapturePiece(otherPiece); 
