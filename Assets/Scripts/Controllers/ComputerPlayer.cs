@@ -35,6 +35,8 @@ public class ComputerPlayer : Player
 
     #endregion
     /************************************************************/
+    #region Non-Networked 
+
     #region Class Functions
 
     private IEnumerator BuyPieces()
@@ -90,18 +92,22 @@ public class ComputerPlayer : Player
     }
 
     #endregion
+
+    #endregion
     /************************************************************/
+    #region Server 
+
     #region Event Handler Functions
 
     protected override void Server_Subscribe()
     {
-        GameManager.Server_OnStopTurn += HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn += Server_HandleOnStopTurn;
         base.Server_Subscribe();
     }
 
     protected override void Server_Unsubscribe()
     {
-        GameManager.Server_OnStopTurn -= HandleServerOnStopTurn;
+        GameManager.Server_OnStopTurn -= Server_HandleOnStopTurn;
         base.Server_Unsubscribe();
     }
 
@@ -135,7 +141,8 @@ public class ComputerPlayer : Player
         base.Server_HandleOnPlayTurn();
     }
 
-    private void HandleServerOnStopTurn()
+    [Server]
+    private void Server_HandleOnStopTurn()
     {
         if (!targetCell) return;
         // if one of my pieces get to the target, break
@@ -148,6 +155,8 @@ public class ComputerPlayer : Player
             }
         }
     }
+
+    #endregion
 
     #endregion
 }

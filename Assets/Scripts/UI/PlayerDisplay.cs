@@ -114,9 +114,10 @@ public class PlayerDisplay : MonoBehaviour
         Singleton.endTurnButtonText.text = "End Turn";
         Singleton.endTurnButton.interactable = true;
 
-        string moveCountString = $"M{MyPlayer.MoveCount}";
+        string moveCountString =
+            $"M{MyPlayer.CurrentAvailableMoves} -> {MyPlayer.GetAvailableMovesForNextTurn()}";
 
-        Singleton.moveCountText.text = $"R{GameManager.RoundCount}: T{GameManager.TurnCount}:" +
+        Singleton.moveCountText.text = $"R{GameManager.RoundCount}: T{GameManager.TurnCount}: " +
             moveCountString;
 
         Singleton.enabled = true;

@@ -88,7 +88,7 @@ public class HumanPlayer : Player
     }
 
     [Client]
-    protected override void SyncVar_moveCount(int oldValue, int newValue)
+    protected override void SyncVar_currentMovesPerTurn(int oldValue, int newValue)
     {
         PlayerDisplay.RefreshMoveCountText();
     }

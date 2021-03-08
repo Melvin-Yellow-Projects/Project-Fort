@@ -26,8 +26,11 @@ public abstract class Player : NetworkBehaviour
     /************************************************************/
     #region Variables
 
-    [SyncVar(hook = nameof(SyncVar_moveCount))]
-    int moveCount = 0; // HACK: wrong, other clients shouldnt know this data.
+    [SyncVar] // HACK: wrong, other clients shouldnt know this data.
+    int maxAvailableMoves = 0;
+
+    [SyncVar(hook = nameof(SyncVar_currentMovesPerTurn))]
+    int currentAvailableMoves = 0; // HACK: wrong, other clients shouldnt know this data.
 
     [SyncVar(hook = nameof(SyncVar_credits))]
     int credits = 0; // HACK: wrong, other clients shouldnt know this data, or should they? 
@@ -55,15 +58,27 @@ public abstract class Player : NetworkBehaviour
         }
     }
 
-    public int MoveCount
+    public int CurrentAvailableMoves
     {
         get
         {
-            return moveCount;
+            return currentAvailableMoves;
         }
         set
         {
-            moveCount = value;
+            currentAvailableMoves = value;
+        }
+    }
+
+    public int MaxAvailableMoves
+    {
+        get
+        {
+            return maxAvailableMoves;
+        }
+        set
+        {
+            maxAvailableMoves = value;
         }
     }
 
@@ -128,7 +143,7 @@ public abstract class Player : NetworkBehaviour
 
     public bool CanMove()
     {
-        return (MoveCount > 0);
+        return (CurrentAvailableMoves > 0);
     }
 
     private bool CanBuyOnCell(HexCell cell)
@@ -140,6 +155,11 @@ public abstract class Player : NetworkBehaviour
         }
 
         return false;
+    }
+
+    public int GetAvailableMovesForNextTurn()
+    {
+        return 1 + MaxAvailableMoves - CurrentAvailableMoves;
     }
 
     #endregion
@@ -204,7 +224,7 @@ public abstract class Player : NetworkBehaviour
         if (player.MyTeam != data.MyPiece.MyTeam) return;
 
         // TODO: verify that a player can't send the cell theyre currently on
-        if (data.MyPiece.Movement.Server_SetMove(data)) MoveCount--;
+        if (data.MyPiece.Movement.Server_SetMove(data)) CurrentAvailableMoves--;
     }
 
     [Server]
@@ -252,7 +272,7 @@ public abstract class Player : NetworkBehaviour
     {
         if (!data.DoesConnectionHaveAuthority(connectionToClient)) return;
 
-        if (data.MyPiece.Movement.Server_ClearMove()) MoveCount++;
+        if (data.MyPiece.Movement.Server_ClearMove()) CurrentAvailableMoves++;
     }
 
     /// <summary>
@@ -353,15 +373,23 @@ public abstract class Player : NetworkBehaviour
     [Server]
     protected virtual void Server_HandleOnStartRound()
     {
-        MoveCount = 0;
+        //CurrentMovesPerTurn = 0;
         HasEndedTurn = false;
     }
 
     [Server]
     protected virtual void Server_HandleOnStartTurn()
     {
+        if (GameManager.RoundCount == 1 && GameManager.TurnCount == 1)
+        {
+            MaxAvailableMoves = GameSession.MovesPerTurn;
+        }
+        else
+        {
+            MaxAvailableMoves = GetAvailableMovesForNextTurn();
+        }
 
-        MoveCount = GameSession.MovesPerTurn;
+        CurrentAvailableMoves = MaxAvailableMoves;
         HasEndedTurn = false;
     }
 
@@ -383,7 +411,7 @@ public abstract class Player : NetworkBehaviour
     protected virtual void SyncVar_credits(int oldValue, int newValue) { }
 
     [Client]
-    protected virtual void SyncVar_moveCount(int oldValue, int newValue) { }
+    protected virtual void SyncVar_currentMovesPerTurn(int oldValue, int newValue) { }
 
     #endregion
 

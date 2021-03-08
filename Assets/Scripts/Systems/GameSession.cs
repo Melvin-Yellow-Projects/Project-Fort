@@ -37,7 +37,7 @@ public class GameSession : NetworkBehaviour
     /// Event for when the client recieves a GameSettings update from the server
     /// </summary>
     /// <subscriber class="GameSettingsMenu">refreshes Game Settings Menu informtion</subscriber>
-    public static event Action ClientOnGameSettingsChanged;
+    public static event Action Client_OnGameSettingsChanged;
 
     /// <summary>
     /// Event for when a client disconnects from the server
@@ -278,13 +278,13 @@ public class GameSession : NetworkBehaviour
     private void HookOnGameSettingsInt32(int oldValue, int newValue)
     {
         //Debug.LogWarning("Updating GameSettings");
-        ClientOnGameSettingsChanged?.Invoke();
+        Client_OnGameSettingsChanged?.Invoke();
     }
 
     private void HookOnGameSettingsBool(bool oldValue, bool newValue)
     {
         //Debug.LogWarning("Updating GameSettings");
-        ClientOnGameSettingsChanged?.Invoke();
+        Client_OnGameSettingsChanged?.Invoke();
     }
 
     #endregion

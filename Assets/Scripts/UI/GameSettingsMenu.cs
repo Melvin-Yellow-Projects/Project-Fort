@@ -141,13 +141,13 @@ public class GameSettingsMenu : MonoBehaviour
     private void Subscribe()
     {
         Debug.Log("Subscribing GameSettingsMenu");
-        GameSession.ClientOnGameSettingsChanged += RefreshGameSettings; 
+        GameSession.Client_OnGameSettingsChanged += RefreshGameSettings; 
     }
 
     private void Unsubscribe()
     {
         Debug.Log("Unsubscribing GameSettingsMenu");
-        GameSession.ClientOnGameSettingsChanged -= RefreshGameSettings;
+        GameSession.Client_OnGameSettingsChanged -= RefreshGameSettings;
     }
 
     #endregion
